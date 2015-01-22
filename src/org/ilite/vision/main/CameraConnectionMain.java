@@ -25,15 +25,16 @@ public class CameraConnectionMain {
 	
 	Executors.newSingleThreadExecutor().submit(aConnection);
 
+	System.out.println("SLEEP!!!");
 	Thread.sleep(5000);
 	
 	final BufferedImage aGrabImage = aConnection.grabImage();
-	
+	System.out.println("HAS IMAGE= " + aGrabImage);
 	SwingUtilities.invokeLater(new Runnable() {
 	    
 	    @Override
 	    public void run() {
-		OpenCVUtils.showImage(aGrabImage);
+		OpenCVUtils.showImage(aGrabImage).show();
 		
 	    }
 	});
