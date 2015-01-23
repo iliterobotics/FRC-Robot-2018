@@ -1,4 +1,4 @@
-package org.ilite.vision.camera;
+package org.ilite.vision.camera.axis;
 public class Base64Encoder 
 {
 	  public String encode(String s) 

@@ -1,4 +1,4 @@
-package org.ilite.vision.camera;
+package org.ilite.vision.camera.axis;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -7,10 +7,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+
+import org.ilite.vision.camera.ICameraConnection;
+import org.ilite.vision.camera.ICameraFrameUpdateListener;
 
 /**
  * 
@@ -22,7 +33,17 @@ import javax.imageio.ImageIO;
  * @author David E. Mireles, Ph.D.
  * @author Carl Gould
  */
-public class AxisCameraConnection implements Runnable {
+public class AxisCameraConnection implements Runnable,ICameraConnection {
+    private static final ExecutorService sService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        
+        @Override
+        public Thread newThread(Runnable pR) {
+    	return new Thread(pR, "AxisCameraRunnable");
+        }
+    });
+    
+    private static final ScheduledExecutorService sScheduler = 
+	    Executors.newSingleThreadScheduledExecutor();
 
      // public String mjpgURL = "http://your-ip-here/axis-cgi/mjpg/video.cgi?resolution=352x240";
      // public String mjpgURL = "http://192.168.1.242/nphMotionJpeg?Resolution=640x480&Quality=Standard";
@@ -163,6 +184,41 @@ public class AxisCameraConnection implements Runnable {
          return null;
  
      }
+
+    @Override
+    public void addCameraFrameListener(ICameraFrameUpdateListener pListener) {
+	mListeners.add(pListener);
+	
+    }
+
+    @Override
+    public void removeCameraFrameListener(ICameraFrameUpdateListener pListener) {
+	mListeners.remove(pListener);
+	
+    }
+    
+    private Set<ICameraFrameUpdateListener>mListeners = new CopyOnWriteArraySet<ICameraFrameUpdateListener>();
+
+    @Override
+    public void start() {
+	connect();
+	sService.submit(this);
+	sScheduler.scheduleAtFixedRate(new Runnable() {
+	    
+	    @Override
+	    public void run() {
+		BufferedImage aGrabImage = grabImage();
+		
+		for(ICameraFrameUpdateListener aListener : mListeners) {
+		    aListener.frameAvail(aGrabImage);
+		}
+		
+	    }
+	}, 5000, 500, TimeUnit.MILLISECONDS);
+	
+	
+	
+    }
 }
 
 
