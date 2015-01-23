@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 
@@ -33,7 +34,7 @@ import org.ilite.vision.camera.ICameraFrameUpdateListener;
  * @author David E. Mireles, Ph.D.
  * @author Carl Gould
  */
-public class AxisCameraConnection implements Runnable,ICameraConnection {
+public class AxisCameraConnection extends AbstractCameraConnection implements Runnable{
     private static final ExecutorService sService = Executors.newSingleThreadExecutor(new ThreadFactory() {
         
         @Override
@@ -184,21 +185,7 @@ public class AxisCameraConnection implements Runnable,ICameraConnection {
          return null;
  
      }
-
-    @Override
-    public void addCameraFrameListener(ICameraFrameUpdateListener pListener) {
-	mListeners.add(pListener);
-	
-    }
-
-    @Override
-    public void removeCameraFrameListener(ICameraFrameUpdateListener pListener) {
-	mListeners.remove(pListener);
-	
-    }
-    
-    private Set<ICameraFrameUpdateListener>mListeners = new CopyOnWriteArraySet<ICameraFrameUpdateListener>();
-
+     
     @Override
     public void start() {
 	connect();
@@ -208,16 +195,11 @@ public class AxisCameraConnection implements Runnable,ICameraConnection {
 	    @Override
 	    public void run() {
 		BufferedImage aGrabImage = grabImage();
-		
-		for(ICameraFrameUpdateListener aListener : mListeners) {
-		    aListener.frameAvail(aGrabImage);
-		}
+		notifyListeners(aGrabImage);
 		
 	    }
 	}, 5000, 500, TimeUnit.MILLISECONDS);
-	
-	
-	
+		
     }
 }
 

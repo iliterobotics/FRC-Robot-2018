@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
 
+import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.axis.AxisCameraConnection;
@@ -34,7 +35,15 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener{
     
     public static void createAndShowGUI() {
 	OpenCVUtils.init();
-	ColorBlobTrainer aTrainer = new ColorBlobTrainer(new AxisCameraConnection("192.168.137.85"));
+
+	//null IP means connect to webcam
+	//Put the IP address to connect to an MPEG-J camera, otherwise null will
+	//connect to a local webcam
+	String ip = null;
+	// ip = "192.168.137.85"
+
+	ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(ip);
+	ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
 	aTrainer.connectToCamera();
 	aTrainer.show();
     }
