@@ -41,12 +41,15 @@ public class ImageWindow {
 
 	mFrame = new JFrame(pWindowTitle);
 	mCurrentFrame = pImage;
+	
 	if (mCurrentFrame != null) {
-	    mImagePanel.setPreferredSize(new Dimension(
+	    mImagePanel.setSize(new Dimension(
 		    mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
 	}
+	
 	mFrame.setContentPane(mImagePanel);
-	mFrame.pack();
+	mFrame.setSize(mImagePanel.getSize());
+	mFrame.setResizable(false);
 	mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
