@@ -1,21 +1,27 @@
 package org.ilite.vision.camera.opencv;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class ImageWindow {
 
     private Set<IRenderable>mRenderables = new CopyOnWriteArraySet<IRenderable>();
-
+    private JButton pauseButton;
+    private boolean isPaused;
+    
     private JPanel mImagePanel = new JPanel() {
-
+    
 	protected void paintComponent(java.awt.Graphics g) {
 	    super.paintComponent(g);
 
@@ -37,18 +43,38 @@ public class ImageWindow {
     public ImageWindow(BufferedImage pImage) {
 	this(pImage, "");
     }
+    
     public ImageWindow(BufferedImage pImage, String pWindowTitle) {
 
 	mFrame = new JFrame(pWindowTitle);
 	mCurrentFrame = pImage;
 	
 	if (mCurrentFrame != null) {
-	    mImagePanel.setSize(new Dimension(
+	    mImagePanel.setPreferredSize(new Dimension(
 		    mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
 	}
 	
-	mFrame.setContentPane(mImagePanel);
-	mFrame.setSize(mImagePanel.getSize());
+	pauseButton = new JButton("pause");
+	pauseButton.addActionListener(new ActionListener() {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+	    if(pauseButton.getText().equals("pause")) {
+	        pauseButton.setText("resume");
+	    }
+	    else if(pauseButton.getText().equals("resume")) {
+	        pauseButton.setText("pause");
+	    }
+	    
+	    isPaused = !isPaused;
+	}});
+	
+	JPanel wrapper = new JPanel(new BorderLayout());
+	wrapper.add(pauseButton, BorderLayout.NORTH);
+	wrapper.add(mImagePanel, BorderLayout.CENTER);
+	
+	mFrame.setContentPane(wrapper);
+	mFrame.pack();
 	mFrame.setResizable(false);
 	mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -66,16 +92,17 @@ public class ImageWindow {
 
 
     public void updateImage(BufferedImage pImage) {
-
-
-
-	mCurrentFrame = pImage;
-	if (mCurrentFrame != null) {
-	    mImagePanel.setPreferredSize(new Dimension(
-		    mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
-	}
-	mImagePanel.repaint();
-	mFrame.pack();
+        
+    if(!isPaused) {
+    	mCurrentFrame = pImage;
+    	if (mCurrentFrame != null) {
+    	    mImagePanel.setPreferredSize(new Dimension(
+    		    mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
+    	}
+    	
+    	mImagePanel.repaint();
+    	mFrame.pack();
+        }
     }
 
     public void show() {
