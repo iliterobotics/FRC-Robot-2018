@@ -60,9 +60,9 @@ public class HistoGramImageWindow extends ImageWindow {
 	// Create space for histogram image
 	// Normalize histogram                          
 	Core.normalize(histogram, histogram, 1, pHistImage.rows() , Core.NORM_MINMAX, -1, new Mat() );   
-	
-	
-	
+
+
+
 	// Draw lines for histogram points
 	for( int i = 0; i < (int)pHistSize.get(0, 0)[0]; i++ )
 	{                   

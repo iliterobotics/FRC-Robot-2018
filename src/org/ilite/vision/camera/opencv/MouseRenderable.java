@@ -20,49 +20,49 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
     @Override
     public void mouseDragged(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void mouseMoved(MouseEvent pE) {
 	mMousePoint = pE.getPoint();
 	mView.repaint();
-	
+
     }
 
     @Override
     public void mouseClicked(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void mousePressed(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void mouseReleased(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void mouseEntered(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void mouseExited(MouseEvent pE) {
 	// TODO Auto-generated method stub
-	
+
     }
 
     @Override
     public void paint(Graphics pGraphics) {
-	
+
 	if(mMousePoint != null) {
 	    Color oldColor = pGraphics.getColor();
 	    pGraphics.setColor(Color.MAGENTA);
@@ -70,7 +70,7 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
 	    pGraphics.drawLine(mMousePoint.x, 0, mMousePoint.x, mView.getHeight());
 	    pGraphics.setColor(oldColor);
 	}
-	
+
     }
 
 }
