@@ -7,9 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ImageWindow {
@@ -67,19 +65,19 @@ public class ImageWindow {
     
     
     public void addMouseListener(MouseListener pListener) {
-	
+	mImagePanel.addMouseListener(pListener);
     }
     
     public void removeMouseListener(MouseListener pListener) {
-	
+	mImagePanel.removeMouseListener(pListener);
     }
     
-    public void addMouseMotionListener(MouseListener pListener) {
-	
+    public void addMouseMotionListener(MouseMotionListener pListener) {
+	mImagePanel.addMouseMotionListener(pListener);
     }
     
-    public void removeMouseMotionListener(MouseMotionListener pL) {
-	
+    public void removeMouseMotionListener(MouseMotionListener pListener) {
+	mImagePanel.removeMouseMotionListener(pListener);
     }
     
 
