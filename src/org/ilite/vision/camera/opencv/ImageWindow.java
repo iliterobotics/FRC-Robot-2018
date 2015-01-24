@@ -23,6 +23,10 @@ public class ImageWindow {
 		g.drawImage(mCurrentFrame, 0, 0, getWidth(), getHeight(), null);
 	    }
 	    
+	    for(IRenderable renderables2 : mRenderables ){
+	    	renderables2.paint(g);
+	    }
+	    
 	    //TODO MAR: How do you draw renderables?
 	    
 	};
