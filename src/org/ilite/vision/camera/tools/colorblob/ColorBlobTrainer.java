@@ -9,17 +9,22 @@ import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.camera.opencv.Renderable;
 
 //Based off of: https://github.com/Itseez/opencv/blob/master/samples/android/color-blob-detection/src/org/opencv/samples/colorblobdetect/ColorBlobDetectionActivity.java
 public class ColorBlobTrainer implements ICameraFrameUpdateListener{
     
     private ImageWindow mWindow = 
 	    new ImageWindow(null);
-    private ICameraConnection mCamera;
+    private ICameraConnection mCamera; 
+    private Renderable renderable;
     
     public ColorBlobTrainer(ICameraConnection pConnection) {
 	mCamera = pConnection;
-	mCamera.addCameraFrameListener(this);
+	mCamera.addCameraFrameListener(this); 
+	
+	renderable = new Renderable(); 
+	mWindow.addRenderable(renderable);
     }
     
     public void connectToCamera() {
