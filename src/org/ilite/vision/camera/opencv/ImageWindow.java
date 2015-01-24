@@ -50,14 +50,16 @@ public class ImageWindow {
 	mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
-	MouseRenderable aMouseRenderable = new MouseRenderable(mImagePanel);
-	addRenderable(aMouseRenderable);
-	mImagePanel.addMouseListener(aMouseRenderable);
-	mImagePanel.addMouseMotionListener(aMouseRenderable);
+	mMouseRenderable = new MouseRenderable(mImagePanel);
+	addRenderable(mMouseRenderable);
+	mImagePanel.addMouseListener(mMouseRenderable);
+	mImagePanel.addMouseMotionListener(mMouseRenderable);
     }
 
     private BufferedImage mCurrentFrame = null;
     private JFrame mFrame;
+
+    private MouseRenderable mMouseRenderable;
 
 
     public void updateImage(BufferedImage pImage) {
@@ -92,6 +94,15 @@ public class ImageWindow {
 
     public void removeMouseMotionListener(MouseMotionListener pListener) {
 	mImagePanel.removeMouseMotionListener(pListener);
+    }
+    
+    public MouseRenderable getMouseRenderable() {
+	return mMouseRenderable;
+    }
+
+    public void repaint() {
+	mImagePanel.repaint();
+	
     }
 
 
