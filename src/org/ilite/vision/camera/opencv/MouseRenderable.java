@@ -7,6 +7,8 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.swing.JPanel;
 
@@ -15,6 +17,9 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
     private Point mMousePoint;
     private Point mDragStart = null;
     private Point mDragEnd = null;
+    
+    private Set<ISelectionChangedListener>mSelectionListeners = 
+	    new CopyOnWriteArraySet<ISelectionChangedListener>();
 
     public MouseRenderable(JPanel pPanel) {
 	mView = pPanel;
@@ -22,10 +27,8 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
 
     @Override
     public void mouseDragged(MouseEvent pE) {
-	System.out.println("DRAGGING");
 	if(mDragStart != null) {
 	    mDragEnd = pE.getPoint();
-	    System.out.println("DRAG END");
 	}
 	mView.repaint();
 
@@ -48,7 +51,6 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
     @Override
     public void mousePressed(MouseEvent pE) {
 	mDragStart = pE.getPoint();
-	System.out.println("DRAG STARTED");
 	mDragEnd = mDragStart;
 	mView.repaint();
 
@@ -56,9 +58,11 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
 
     @Override
     public void mouseReleased(MouseEvent pE) {
+	Rectangle selectionRect = getSelectionRectangle();
 	mDragStart = null;
 	mDragEnd = null;
 	mView.repaint();
+	notifyListener(selectionRect);
 
     }
 
@@ -84,11 +88,18 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
 	}
 	
 	if(mDragStart != null && mDragEnd != null) {
-	    System.out.println("DRAW DRAG");
 	   pGraphics.setColor(Color.RED);
 	   
 	   
-	   int startX = Math.min(mDragStart.x, mDragEnd.x);
+	   Rectangle selectRect = getSelectionRectangle();
+	   
+	   pGraphics.drawRect(selectRect.x, selectRect.y, selectRect.width, selectRect.height);
+	}
+
+    }
+
+    private Rectangle getSelectionRectangle() {
+	int startX = Math.min(mDragStart.x, mDragEnd.x);
 	   int startY = Math.min(mDragStart.y, mDragEnd.y);
 	   
 	   int endX = Math.max(mDragStart.x, mDragEnd.x);
@@ -97,12 +108,22 @@ public class MouseRenderable implements IRenderable, MouseListener, MouseMotionL
 	   int width = Math.abs(startX -endX);
 	   int height = Math.abs(startY - endY);
 	   
-	   Rectangle aRect = new Rectangle(startX, startY, width, height);
-	   System.out.println(aRect);
+	   return new Rectangle(startX, startY, width, height);
 	   
-	   pGraphics.drawRect(startX, startY, width, height);
+    }
+    
+    public void addSelectionListener(ISelectionChangedListener pListener) {
+	mSelectionListeners.add(pListener);
+    }
+    
+    public void removeSelectionListener(ISelectionChangedListener pListener) {
+	mSelectionListeners.remove(pListener);
+    }
+    
+    private void notifyListener(Rectangle pNewRect) {
+	for(ISelectionChangedListener aListener : mSelectionListeners) {
+	    aListener.selectionBoundsChanged(pNewRect);
 	}
-
     }
 
 }
