@@ -1,5 +1,6 @@
 package org.ilite.vision.camera.tools.colorblob;
 
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
@@ -51,6 +52,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener{
 	aTrainer.connectToCamera();
 	aTrainer.show();
     }
+
     
     
     public static void main(String[] args) {
