@@ -23,9 +23,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener{
     public ColorBlobTrainer(ICameraConnection pConnection) {
 	mCamera = pConnection;
 	mCamera.addCameraFrameListener(this); 
-	
-	renderable = new Renderable(); 
-	mWindow.addRenderable(renderable);
+
     }
     
     public void connectToCamera() {
