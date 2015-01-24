@@ -19,6 +19,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener{
     private ImageWindow mWindow = 
 	    new ImageWindow(null, "Raw Image");
     private HistoGramImageWindow mHisto = new HistoGramImageWindow(null);
+    
     private ICameraConnection mCamera; 
     private Renderable renderable;
 
