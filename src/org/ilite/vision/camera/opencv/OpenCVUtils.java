@@ -21,16 +21,16 @@ public class OpenCVUtils {
      * Load the opencv library
      */
     static {
-	
+
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-	
+
     }
 
     public static void init() {
 	System.out.println("Init method");
-	
+
     }
-    
+
     /**
      * Helper method to convert an OPENCV {@link Mat} to an {@link Image}
      * If the passed in image is a gray scale, the returned image will be gray. 
@@ -41,7 +41,7 @@ public class OpenCVUtils {
      * 	The Image
      */
     public static BufferedImage toBufferedImage(Mat pMatrix){
-	
+
 	int type = BufferedImage.TYPE_BYTE_GRAY;
 	if ( pMatrix.channels() > 1 ) {
 	    Mat m2 = new Mat();
@@ -67,7 +67,7 @@ public class OpenCVUtils {
     public static Mat toMatrix(BufferedImage pImage)
     {
 	byte[] pixels = ((DataBufferByte) pImage.getRaster().getDataBuffer()).getData();
-	
+
 	int cvType = CvType.CV_8UC3; 
 	if(pImage.getType() != BufferedImage.TYPE_3BYTE_BGR) {
 	    cvType = CvType.CV_8UC1;
@@ -76,9 +76,9 @@ public class OpenCVUtils {
 	tmp.put(0, 0, pixels);
 	return tmp;
     }
-    
+
     public static ImageWindow showImage(BufferedImage pImage) {
 	return new ImageWindow(pImage);
     }
-    
+
 }

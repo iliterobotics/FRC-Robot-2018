@@ -11,12 +11,12 @@ import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
 public class LocalCamera extends AbstractCameraConnection {
-    
+
     /**
      * The rate at which to pull frames from the camera, in milliseconds
      */
     private static final long CAM_RATE_MILLIS = 100;
-    
+
     /**
      * Executor service to start a timer to start pulling frames of the camera 
      * and then notify listeners
@@ -45,11 +45,11 @@ public class LocalCamera extends AbstractCameraConnection {
 
 
 	    mCamera.open(DEVICE);
-	    
-		if(!mCamera.isOpened()) {
-		    throw new IllegalStateException("Unable to start the camera");
-		}
-		CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, CAM_RATE_MILLIS, CAM_RATE_MILLIS, TimeUnit.MILLISECONDS);
+
+	    if(!mCamera.isOpened()) {
+		throw new IllegalStateException("Unable to start the camera");
+	    }
+	    CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, CAM_RATE_MILLIS, CAM_RATE_MILLIS, TimeUnit.MILLISECONDS);
 
 	}
 

@@ -8,6 +8,6 @@ import java.awt.Graphics;
  */
 public interface IRenderable {
 
-    
+
     public void paint(Graphics pGraphics);
 }
