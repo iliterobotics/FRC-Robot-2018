@@ -7,7 +7,6 @@ import javax.swing.SwingUtilities;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
-import org.ilite.vision.camera.axis.AxisCameraConnection;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 

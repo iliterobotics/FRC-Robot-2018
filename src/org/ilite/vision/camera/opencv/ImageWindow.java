@@ -1,37 +1,57 @@
 package org.ilite.vision.camera.opencv;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class ImageWindow {
-
-    private final ImageIcon mIcon = new ImageIcon();
+    
+    private Set<IRenderable>mRenderables = new CopyOnWriteArraySet<IRenderable>();
+    
+    private JPanel mImagePanel = new JPanel() {
+	
+	protected void paintComponent(java.awt.Graphics g) {
+	    super.paintComponent(g);
+	    
+	    if(mCurrentFrame != null) {
+		g.drawImage(mCurrentFrame, 0, 0, getWidth(), getHeight(), null);
+	    }
+	    
+	    //TODO MAR: How do you draw renderables?
+	    
+	};
+	
+    };
+    private BufferedImage mCurrentFrame = null;
     private JFrame mFrame;
-    private final JLabel mIconLabel;
     public ImageWindow(BufferedImage pImage) {
 
 	mFrame = new JFrame();
-	if(pImage == null) {
-
-	} else {
-	    mIcon.setImage(pImage);
-
+	mCurrentFrame = pImage;
+	if(mCurrentFrame != null) {
+	    mImagePanel.setPreferredSize(new Dimension(mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
 	}
-	mIconLabel = new JLabel(mIcon);
-	mFrame.setContentPane(mIconLabel);
+	mFrame.setContentPane(mImagePanel);
 	mFrame.pack();
 	mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public void updateImage(BufferedImage pImage) {
-	mIcon.setImage(pImage);
-	mIconLabel.repaint();
+	mCurrentFrame = pImage;
+	if(mCurrentFrame != null) {
+	    mImagePanel.setPreferredSize(new Dimension(mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
+	}
 	
 	mFrame.revalidate();
 	mFrame.pack();
+
+	mImagePanel.repaint();
     }
 
     public void show() {
