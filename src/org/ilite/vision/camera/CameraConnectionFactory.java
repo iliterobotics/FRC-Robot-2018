@@ -8,18 +8,15 @@ public class CameraConnectionFactory {
 
     public static synchronized ICameraConnection getCameraConnection(String pIP) {
 
+        if (mConnection != null) {
+        } else if (pIP != null) {
+            mConnection = new AxisCameraConnection(pIP);
+        } else {
+            mConnection = new LocalCamera();
+        }
 
-	if(mConnection != null) {
-	} else if(pIP != null) {
-	    mConnection =  new AxisCameraConnection(pIP);
-	} else {
-	    mConnection = new LocalCamera();
-	}
-
-	return mConnection;
+        return mConnection;
 
     }
-
-
 
 }
