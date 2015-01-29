@@ -11,7 +11,6 @@ public abstract class AbstractCameraConnection implements ICameraConnection {
     @Override
     public void addCameraFrameListener(ICameraFrameUpdateListener pListener) {
         mListeners.add(pListener);
-
     }
 
     public void removeCameraFrameListener(ICameraFrameUpdateListener pListener) {
