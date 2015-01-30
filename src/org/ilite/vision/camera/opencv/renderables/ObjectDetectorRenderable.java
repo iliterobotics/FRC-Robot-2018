@@ -3,7 +3,6 @@ package org.ilite.vision.camera.opencv.renderables;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -71,7 +70,7 @@ public class ObjectDetectorRenderable implements IRenderable,
     }
 
     @Override
-    public void paint(Graphics pGraphics) {
+    public void paint(Graphics pGraphics, BufferedImage pImage) {
 
         for (int i = 0; i < mContours.size(); i++) {
             MatOfPoint aMatOfPoint = mContours.get(i);

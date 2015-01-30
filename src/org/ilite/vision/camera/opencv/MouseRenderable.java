@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -77,7 +78,7 @@ public class MouseRenderable implements IRenderable, MouseListener,
     }
 
     @Override
-    public void paint(Graphics pGraphics) {
+    public void paint(Graphics pGraphics, BufferedImage pImage) {
 
         if (mMousePoint != null) {
             Color oldColor = pGraphics.getColor();
