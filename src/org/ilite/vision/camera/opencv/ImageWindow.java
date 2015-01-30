@@ -34,7 +34,7 @@ public class ImageWindow {
             }
 
             for (IRenderable renderables2 : mRenderables) {
-                renderables2.paint(g);
+                renderables2.paint(g, mCurrentFrame);
             }
         }
     };
