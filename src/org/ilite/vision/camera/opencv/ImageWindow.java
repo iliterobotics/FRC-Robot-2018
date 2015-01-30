@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import org.ilite.vision.camera.CameraConnectionFactory;
 
 public class ImageWindow {
 
@@ -79,6 +83,39 @@ public class ImageWindow {
         mFrame.setResizable(false);
         mFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        mFrame.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowActivated(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowClosed(WindowEvent arg0) {
+                CameraConnectionFactory.destroy();
+            }
+
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowIconified(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+            }
+            
+        });
+        
         mMouseRenderable = new MouseRenderable(mImagePanel);
         addRenderable(mMouseRenderable);
         mImagePanel.addMouseListener(mMouseRenderable);
@@ -130,7 +167,6 @@ public class ImageWindow {
 
     public void repaint() {
         mImagePanel.repaint();
-
     }
 
 }

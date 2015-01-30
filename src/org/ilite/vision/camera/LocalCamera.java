@@ -70,6 +70,7 @@ public class LocalCamera extends AbstractCameraConnection {
 
     @Override
     public void destroy() {
-        
+        CAMERA_EXEC.shutdown();
+        mCamera.release();
     }
 }
