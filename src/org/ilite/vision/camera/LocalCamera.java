@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
-import org.opencv.imgproc.Imgproc;
 
 public class LocalCamera extends AbstractCameraConnection {
 
@@ -68,4 +67,10 @@ public class LocalCamera extends AbstractCameraConnection {
             notifyListeners(OpenCVUtils.toBufferedImage(currentFrame));
         }
     };
+
+    @Override
+    public void destroy() {
+        CAMERA_EXEC.shutdown();
+        mCamera.release();
+    }
 }

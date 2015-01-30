@@ -209,6 +209,10 @@ public class AxisCameraConnection extends AbstractCameraConnection implements
         }, 5000, 500, TimeUnit.MILLISECONDS);
 
     }
+
+    @Override
+    public void destroy() {
+    }
 }
 
 /**

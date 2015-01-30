@@ -18,5 +18,8 @@ public class CameraConnectionFactory {
         return mConnection;
 
     }
-
+    
+    public static void destroy() {
+        mConnection.destroy();
+    }
 }

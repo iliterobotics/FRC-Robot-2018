@@ -6,6 +6,7 @@ public interface ICameraConnection {
 
     public void removeCameraFrameListener(ICameraFrameUpdateListener pListener);
 
+    public void destroy();
     public void start();
 
 }

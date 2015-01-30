@@ -1,6 +1,5 @@
 package org.ilite.vision.camera.tools.colorblob;
 
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
