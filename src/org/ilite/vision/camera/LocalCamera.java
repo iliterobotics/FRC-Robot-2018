@@ -68,4 +68,9 @@ public class LocalCamera extends AbstractCameraConnection {
             notifyListeners(OpenCVUtils.toBufferedImage(currentFrame));
         }
     };
+
+    @Override
+    public void destroy() {
+        
+    }
 }
