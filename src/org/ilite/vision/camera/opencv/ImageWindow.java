@@ -22,7 +22,6 @@ public class ImageWindow {
 
     private Set<IRenderable> mRenderables = new CopyOnWriteArraySet<IRenderable>();
     private JButton pauseButton;
-    private boolean isPaused;
 
     private JPanel mImagePanel = new JPanel() {
 
@@ -44,12 +43,16 @@ public class ImageWindow {
 
         mImagePanel.repaint();
     }
-
+    
     public ImageWindow(BufferedImage pImage) {
-        this(pImage, "");
+        this(pImage, false);
     }
 
-    public ImageWindow(BufferedImage pImage, String pWindowTitle) {
+    public ImageWindow(BufferedImage pImage, boolean pShowPause) {
+        this(pImage, "", pShowPause);
+    }
+
+    public ImageWindow(BufferedImage pImage, String pWindowTitle, boolean pShowPause) {
 
         mFrame = new JFrame(pWindowTitle);
         mCurrentFrame = pImage;
@@ -64,13 +67,15 @@ public class ImageWindow {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
+
                 if (pauseButton.getText().equals("pause")) {
                     pauseButton.setText("resume");
+
+                    CameraConnectionFactory.getCameraConnection(null).pauseResume(true);
                 } else if (pauseButton.getText().equals("resume")) {
                     pauseButton.setText("pause");
+                    CameraConnectionFactory.getCameraConnection(null).pauseResume(false);
                 }
-
-                isPaused = !isPaused;
             }
         });
 
@@ -129,16 +134,15 @@ public class ImageWindow {
 
     public void updateImage(BufferedImage pImage) {
 
-        if (!isPaused) {
-            mCurrentFrame = pImage;
-            if (mCurrentFrame != null) {
-                mImagePanel.setPreferredSize(new Dimension(mCurrentFrame
-                        .getWidth(), mCurrentFrame.getHeight()));
-            }
-
-            mImagePanel.repaint();
-            mFrame.pack();
+        mCurrentFrame = pImage;
+        if (mCurrentFrame != null) {
+            mImagePanel.setPreferredSize(new Dimension(mCurrentFrame
+                    .getWidth(), mCurrentFrame.getHeight()));
         }
+
+        mImagePanel.repaint();
+        mFrame.pack();
+
     }
 
     public void show() {
