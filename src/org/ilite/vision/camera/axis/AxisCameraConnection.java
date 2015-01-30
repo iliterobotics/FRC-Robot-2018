@@ -212,6 +212,11 @@ public class AxisCameraConnection extends AbstractCameraConnection implements
 
     @Override
     public void destroy() {
+        
+    }
+    public void pauseResume(boolean pShouldPause) {
+        // TODO Auto-generated method stub
+        
     }
 }
 

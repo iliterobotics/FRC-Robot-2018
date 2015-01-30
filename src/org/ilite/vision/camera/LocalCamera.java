@@ -2,6 +2,7 @@ package org.ilite.vision.camera;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +32,8 @@ public class LocalCamera extends AbstractCameraConnection {
 
     private VideoCapture mCamera;
 
+    private ScheduledFuture<?> mScheduleAtFixedRate;
+
     @Override
     public void start() {
 
@@ -48,10 +51,10 @@ public class LocalCamera extends AbstractCameraConnection {
             if (!mCamera.isOpened()) {
                 throw new IllegalStateException("Unable to start the camera");
             }
-            CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, CAM_RATE_MILLIS,
-                    CAM_RATE_MILLIS, TimeUnit.MILLISECONDS);
 
         }
+        
+        pauseResume(false);
 
     }
 
@@ -67,10 +70,24 @@ public class LocalCamera extends AbstractCameraConnection {
             notifyListeners(OpenCVUtils.toBufferedImage(currentFrame));
         }
     };
-
     @Override
     public void destroy() {
         CAMERA_EXEC.shutdown();
         mCamera.release();
     }
+    public void pauseResume(boolean pShouldPause) {
+
+        if(pShouldPause) {
+            if(mScheduleAtFixedRate != null) {
+                mScheduleAtFixedRate.cancel(true);
+                mScheduleAtFixedRate  = null;
+            }
+
+        } else if(mScheduleAtFixedRate == null){
+
+            mScheduleAtFixedRate = CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, CAM_RATE_MILLIS,
+                    CAM_RATE_MILLIS, TimeUnit.MILLISECONDS);
+        }
+
+    };
 }
