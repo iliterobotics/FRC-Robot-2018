@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class BlobModel {
     private String name;
-    private float r, g, b;
+    private float average;
     
     public BlobModel() {
         
@@ -16,35 +16,17 @@ public class BlobModel {
         return name;
     }
 
+    public float getAverage() {
+        return average;
+    }
+    
     @XmlElement
     public void setName(String pName) {
         name = pName;
     }
 
     @XmlElement
-    public void setRed(float r) {
-        this.r = r;
-    }
-    
-    @XmlElement
-    public void setGreen(float g) {
-        this.g = g;
-    }
-    
-    @XmlElement
-    public void setBlue(float b) {
-        this.b = b;
-    }
-    
-    public float getRed() {
-        return r;
-    }
-    
-    public float getGreen() {
-        return g;
-    }
-    
-    public float getBlue() {
-        return b;
+    public void setAverage(float average) {
+        this.average = average;
     }
 }
