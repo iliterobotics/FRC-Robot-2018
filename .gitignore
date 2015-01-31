@@ -25,5 +25,5 @@ gradle-app.setting
 hs_err_pid*
 .project
 .classpath
-libaries/opencv/*
+libaries/*
 .settings/*
