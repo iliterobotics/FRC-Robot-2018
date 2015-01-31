@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
 import org.ilite.vision.camera.opencv.ISelectionChangedListener;
@@ -55,6 +57,14 @@ public class ObjectDetectorRenderable implements IRenderable,
 
     public ObjectDetectorRenderable(ImageWindow pWindow) {
         mParentWindow = pWindow;
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                ObjectDetectRenderableControls.show(ObjectDetectorRenderable.this);
+                
+            }
+        });
     }
 
     @Override
@@ -224,4 +234,21 @@ public class ObjectDetectorRenderable implements IRenderable,
         Imgproc.cvtColor(spectrumHsv, mSpectrum, Imgproc.COLOR_HSV2RGB_FULL, 4);
     }
 
+    
+    public Scalar getColorRadius() {
+        return mColorRadius;
+    }
+
+    public void updateColorRadius(Scalar pColorRadius) {
+        synchronized(SYNC_OBJECT) {
+            mColorRadius = pColorRadius;
+            if(mBlobColorHsv != null) {
+                setHsvColor(mBlobColorHsv);
+            }
+            if(mCurrentFrame != null) {
+                frameAvail(mCurrentFrame);
+            }
+        }
+
+    }
 }
