@@ -157,6 +157,8 @@ public class ObjectDetectorRenderable implements IRenderable,
                 
                 setHsvColor(mBlobColorHsv);
                 
+                frameAvail(mCurrentFrame);
+                
                 openSaveDialog(mCurrentFrame);
             }
         }
