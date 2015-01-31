@@ -22,9 +22,9 @@ public class SaveDialog extends JFrame {
     private BufferedImage image;
     private BlobModel model;
     
-    public SaveDialog(BufferedImage image, BlobModel model) {
+    public SaveDialog(BufferedImage image, final BlobModel pModel) {
         this.image = image;
-        this.model = model;
+        this.model = pModel;
              
         JButton saveButton = new JButton("Save");
         
@@ -71,9 +71,9 @@ public class SaveDialog extends JFrame {
         
         Box box = Box.createVerticalBox();
         box.add(imageLabel);
-        box.add(new JLabel("Average Hue: " + model.getAverageHue()));
-        box.add(new JLabel("Average Saturation: " + model.getAverageSaturation()));
-        box.add(new JLabel("Average Value: " + model.getAverageSaturation()));
+        box.add(new JLabel("Average Hue: " + pModel.getAverageHue()));
+        box.add(new JLabel("Average Saturation: " + pModel.getAverageSaturation()));
+        box.add(new JLabel("Average Value: " + pModel.getAverageSaturation()));
         box.add(nameTextField);
         box.add(buttonPanel);
         
