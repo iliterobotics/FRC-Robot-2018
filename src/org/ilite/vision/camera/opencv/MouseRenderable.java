@@ -64,7 +64,6 @@ public class MouseRenderable implements IRenderable, MouseListener,
         mDragEnd = null;
         mView.repaint();
         notifyListener(selectionRect);
-
     }
 
     @Override
@@ -79,7 +78,7 @@ public class MouseRenderable implements IRenderable, MouseListener,
 
     @Override
     public void paint(Graphics pGraphics, BufferedImage pImage) {
-
+        
         if (mMousePoint != null) {
             Color oldColor = pGraphics.getColor();
             pGraphics.setColor(Color.MAGENTA);
@@ -95,8 +94,9 @@ public class MouseRenderable implements IRenderable, MouseListener,
 
             Rectangle selectRect = getSelectionRectangle();
 
-            pGraphics.drawRect(selectRect.x, selectRect.y, selectRect.width,
-                    selectRect.height);
+            if(selectRect != null) {  
+                pGraphics.drawRect(selectRect.x, selectRect.y, selectRect.width, selectRect.height);
+            }
         }
 
     }
@@ -110,8 +110,13 @@ public class MouseRenderable implements IRenderable, MouseListener,
 
         int width = Math.abs(startX - endX);
         int height = Math.abs(startY - endY);
-
-        return new Rectangle(startX, startY, width, height);
+        
+        if(width > 0 && height > 0) {
+            return new Rectangle(startX, startY, width, height);
+        }
+        else {
+            return null;
+        }
 
     }
 

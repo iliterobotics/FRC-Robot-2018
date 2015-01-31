@@ -136,10 +136,30 @@ public class ObjectDetectorRenderable implements IRenderable,
     @Override
     public void selectionBoundsChanged(Rectangle pRect) {
         synchronized (SYNC_OBJECT) {
-            if (mCurrentFrame != null) {
+            if (mCurrentFrame != null && pRect != null) {
                 Mat origMat = OpenCVUtils.toMatrix(mCurrentFrame);
                 
                 Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width, pRect.height);
+
+                if(selectedRect.x + selectedRect.width > mCurrentFrame.getWidth()) {
+                    selectedRect.width = Math.min(selectedRect.width - mCurrentFrame.getWidth(), selectedRect.x + selectedRect.width);
+                }
+  
+                if(selectedRect.y  < 0) {
+                    selectedRect.y = 0;
+                }
+                
+                if(selectedRect.x < 0) {
+                    selectedRect.x = 0;
+                }
+                
+                if(selectedRect.x + selectedRect.width < mCurrentFrame.getWidth()) {
+                    selectedRect.width = mCurrentFrame.getWidth() - selectedRect.x;
+                }
+                
+                if(selectedRect.y + selectedRect.height > mCurrentFrame.getHeight()) {
+                    selectedRect.height = mCurrentFrame.getHeight() - selectedRect.y;
+                }
                 
                 Mat selectedRegionRgba = origMat.submat(selectedRect);
 
@@ -156,10 +176,9 @@ public class ObjectDetectorRenderable implements IRenderable,
                 }
                 
                 setHsvColor(mBlobColorHsv);
-                
+
                 frameAvail(mCurrentFrame);
-                
-                openSaveDialog(mCurrentFrame);
+                openSaveDialog(OpenCVUtils.toBufferedImage(selectedRegionRgba));
             }
         }
 

@@ -29,7 +29,6 @@ public class OpenCVUtils {
 
     public static void init() {
         System.out.println("Init method");
-
     }
 
     /**
@@ -44,19 +43,22 @@ public class OpenCVUtils {
     public static BufferedImage toBufferedImage(Mat pMatrix) {
 
         int type = BufferedImage.TYPE_BYTE_GRAY;
+        
         if (pMatrix.channels() > 1) {
             Mat m2 = new Mat();
             Imgproc.cvtColor(pMatrix, m2, Imgproc.COLOR_BGR2RGB);
             type = BufferedImage.TYPE_3BYTE_BGR;
             pMatrix = m2;
         }
-        byte[] b = new byte[pMatrix.channels() * pMatrix.cols()
-                * pMatrix.rows()];
+        
+        byte[] b = new byte[pMatrix.channels() * pMatrix.cols() * pMatrix.rows()];
+        
         pMatrix.get(0, 0, b); // get all the pixels
-        BufferedImage image = new BufferedImage(pMatrix.cols(), pMatrix.rows(),
-                type);
-        image.getRaster().setDataElements(0, 0, pMatrix.cols(), pMatrix.rows(),
-                b);
+        
+        BufferedImage image = new BufferedImage(pMatrix.cols(), pMatrix.rows(), type);
+        
+        image.getRaster().setDataElements(0, 0, pMatrix.cols(), pMatrix.rows(), b);
+        
         return image;
     }
 
