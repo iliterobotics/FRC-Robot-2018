@@ -7,7 +7,7 @@ import javax.xml.bind.Marshaller;
 
 public class XMLManager {
     
-    public static Object read(File file, Class cls) throws JAXBException {
+    public static Object read(File file, Class<?> cls) throws JAXBException {
         return JAXBContext.newInstance(cls).createUnmarshaller().unmarshal(file);
     }
     
