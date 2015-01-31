@@ -1,14 +1,12 @@
 package org.ilite.vision.camera.tools.colorblob;
 
-import java.awt.Color;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class BlobModel {
     private String name;
-    private Color avgColor;
+    private float r, g, b;
     
     public BlobModel() {
         
@@ -23,13 +21,30 @@ public class BlobModel {
         name = pName;
     }
 
-    public Color getAvgColor() {
-        return avgColor;
-    }
-
     @XmlElement
-    public void setAvgColor(Color pAvgColor) {
-        avgColor = pAvgColor;
+    public void setRed(float r) {
+        this.r = r;
     }
-   
+    
+    @XmlElement
+    public void setGreen(float g) {
+        this.g = g;
+    }
+    
+    @XmlElement
+    public void setBlue(float b) {
+        this.b = b;
+    }
+    
+    public float getRed() {
+        return r;
+    }
+    
+    public float getGreen() {
+        return g;
+    }
+    
+    public float getBlue() {
+        return b;
+    }
 }
