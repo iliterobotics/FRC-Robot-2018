@@ -5,7 +5,8 @@ import org.opencv.core.Scalar;
 public enum EHSVValues {
     HUE("Hue Value",25,0,100),
     SAT("Sat Value",50,0,100),
-    VALUE("Value Value: ",50,0,100);
+    VALUE("Value Value: ",50,0,100),
+    MIN_CONTOUR("Min Contour %: ", 10,0,100);
     
     private String mLabelText;
     private double mDefault;
