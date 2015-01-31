@@ -23,7 +23,7 @@ public class HSVWindow {
     public HSVWindow() {
         frame = new JFrame();
         
-        Box box = Box.createVerticalBox();
+        final Box box = Box.createVerticalBox();
         
         imageLabel = new JLabel();
         
