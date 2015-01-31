@@ -15,6 +15,8 @@ import org.ilite.vision.camera.opencv.IRenderable;
 import org.ilite.vision.camera.opencv.ISelectionChangedListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.camera.opencv.SaveDialog;
+import org.ilite.vision.camera.tools.colorblob.BlobModel;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -136,27 +138,40 @@ public class ObjectDetectorRenderable implements IRenderable,
         synchronized (SYNC_OBJECT) {
             if (mCurrentFrame != null) {
                 Mat origMat = OpenCVUtils.toMatrix(mCurrentFrame);
-                Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width,
-                        pRect.height);
+                
+                Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width, pRect.height);
+                
                 Mat selectedRegionRgba = origMat.submat(selectedRect);
 
                 Mat selectedRegionHsv = new Mat();
-                Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv,
-                        Imgproc.COLOR_RGB2HSV_FULL);
+                
+                Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
                 // Calculate average color of touched region
                 mBlobColorHsv = Core.sumElems(selectedRegionHsv);
+
                 int pointCount = selectedRect.width * selectedRect.height;
                 for (int i = 0; i < mBlobColorHsv.val.length; i++) {
                     mBlobColorHsv.val[i] /= pointCount;
                 }
+                
                 setHsvColor(mBlobColorHsv);
-
+                
+                openSaveDialog(mCurrentFrame);
             }
         }
 
     }
 
+    private void openSaveDialog(BufferedImage img) {
+        BlobModel model = new BlobModel();
+        model.setAverageHue(mBlobColorHsv.val[0]);
+        model.setAverageSaturation(mBlobColorHsv.val[1]);
+        model.setAverageValue(mBlobColorHsv.val[2]);
+        
+        new SaveDialog(img, model);
+    }
+    
     private void setHsvColor(Scalar hsvColor) {
         double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0]
                 - mColorRadius.val[0]
