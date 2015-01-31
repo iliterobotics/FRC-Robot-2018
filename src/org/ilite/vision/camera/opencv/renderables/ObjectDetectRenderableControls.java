@@ -81,6 +81,10 @@ public class ObjectDetectRenderableControls implements ChangeListener {
         int sat = mSliders.get(EHSVValues.SAT).getValue();
         int value = mSliders.get(EHSVValues.VALUE).getValue();
         
+        double minContourPercent = mSliders.get(EHSVValues.MIN_CONTOUR).getValue();
+        mHSVLabels.get(EHSVValues.MIN_CONTOUR).setText(Double.toString(minContourPercent) + "%");
+        minContourPercent/=100d;
+        
         mHSVLabels.get(EHSVValues.HUE).setText(Integer.toString(hue));
         mHSVLabels.get(EHSVValues.SAT).setText(Integer.toString(sat));
         mHSVLabels.get(EHSVValues.VALUE).setText(Integer.toString(value));
@@ -89,7 +93,7 @@ public class ObjectDetectRenderableControls implements ChangeListener {
         aColorRadius.val[1] = sat;
         aColorRadius.val[2] = value;
         
-        mRenderable.updateColorRadius(aColorRadius);
+        mRenderable.updateColorRadius(aColorRadius,minContourPercent);
         
     }
 
