@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.7
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile files('libraries/opencv/build/java/opencv-248.jar')
+}
+
+tasks.withType(Test) {
+    systemProperty "java.library.path", "libraries/opencv/build/lib/"
+}

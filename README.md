@@ -1,17 +1,18 @@
 FRC-Vision: Ilite 2015
 
+Vision code for the Battlefield High School Ilite team, starting with 2015. 
 
-Links to resources used for learning Computer Vision:
 
-January 17th, 2014
-2D Convolution:
-	http://williamson-labs.com/convolution-2d.htm
-    	http://en.wikipedia.org/wiki/Kernel_%28image_processing%29#Convolution
+<h1>Dependencies</h1>
+<ul>
+<li>Gradle: This project uses gradle to compile and generate eclipse workspaces. Gradle can be found: 
+https://gradle.org/</li>
+<li>OpenCV: Download OpenCV: http://docs.opencv.org/doc/tutorials/introduction/desktop_java/java_dev_intro.html Put openCV into libraries directory, with root of opencv named "opencv" </li>
+</ul>
 
-Gaussian Blur 
-	http://docs.opencv.org/doc/tutorials/imgproc/gausian_median_blur_bilateral_filter/gausian_median_blur_bilateral_filter.html 
-    
-Edge Detection:
-    Canny: http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/canny_detector/canny_detector.html
-    Sobel: http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/sobel_derivatives/sobel_derivatives.html
-   TEST 
+<h1>To Compile</h1>
+On the root of the project, run: 
+
+gradle build eclipse
+
+This will compile the project and generate Eclipse project. 
