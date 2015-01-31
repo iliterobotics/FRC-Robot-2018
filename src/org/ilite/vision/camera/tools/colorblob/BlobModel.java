@@ -1,12 +1,7 @@
 package org.ilite.vision.camera.tools.colorblob;
 
-import java.io.File;
-
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.ilite.vision.data.XMLManager;
 
 @XmlRootElement
 public class BlobModel {
