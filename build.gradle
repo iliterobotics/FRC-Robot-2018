@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.7
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile files('libraries/opencv/build/java/opencv-248.jar')
+	compile 'log4j:log4j:1.2.17'
+}
+
+tasks.withType(Test) {
+    systemProperty "java.library.path", "libraries/opencv/build/lib/"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.ilite.vision.camera.tools.colorblob.ColorBlobTrainer'
+    }
+}

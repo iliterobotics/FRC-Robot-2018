@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
@@ -15,6 +16,8 @@ import org.ilite.vision.camera.tools.colorblob.histogram.HistoGramImageWindow;
 
 //Based off of: https://github.com/Itseez/opencv/blob/master/samples/android/color-blob-detection/src/org/opencv/samples/colorblobdetect/ColorBlobDetectionActivity.java
 public class ColorBlobTrainer implements ICameraFrameUpdateListener {
+    
+    private static final Logger sLog = Logger.getLogger(ColorBlobTrainer.class);
 
     private ImageWindow mWindow = new ImageWindow(null, "Raw Image",true);
     private HistoGramImageWindow mHisto = new HistoGramImageWindow(null);
@@ -65,6 +68,9 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     }
 
     public static void main(String[] args) {
+
+        sLog.debug("Starting the Color Blob Trainer");
+       
 
         SwingUtilities.invokeLater(new Runnable() {
 
