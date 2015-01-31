@@ -1,5 +1,6 @@
 package org.ilite.vision.camera;
 
+import java.awt.image.BufferedImage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -11,6 +12,12 @@ import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
 
 public class LocalCamera extends AbstractCameraConnection {
+    
+
+    /**
+     * The last buffered image
+     */
+    private BufferedImage mLastFrame;
 
     /**
      * The rate at which to pull frames from the camera, in milliseconds
@@ -63,11 +70,13 @@ public class LocalCamera extends AbstractCameraConnection {
      */
     private final Runnable mCameraRunnable = new Runnable() {
 
+
         @Override
         public void run() {
             Mat currentFrame = new Mat();
             mCamera.read(currentFrame);
-            notifyListeners(OpenCVUtils.toBufferedImage(currentFrame));
+            mLastFrame = OpenCVUtils.toBufferedImage(currentFrame);
+            notifyListeners(mLastFrame);
         }
     };
     @Override
@@ -82,6 +91,9 @@ public class LocalCamera extends AbstractCameraConnection {
                 mScheduleAtFixedRate.cancel(true);
                 mScheduleAtFixedRate  = null;
             }
+            
+            notifyListeners(mLastFrame);
+            
 
         } else if(mScheduleAtFixedRate == null){
 

@@ -10,11 +10,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
 import org.ilite.vision.camera.opencv.ISelectionChangedListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.camera.opencv.SaveDialog;
+import org.ilite.vision.camera.tools.colorblob.BlobModel;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -36,7 +40,7 @@ public class ObjectDetectorRenderable implements IRenderable,
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
     // Minimum contour area in percent for contours filtering
-    private static double mMinContourArea = 0.1;
+    private double mMinContourArea = 0.1;
     // Color radius for range checking in HSV color space
     private Scalar mColorRadius = new Scalar(25, 50, 50, 0);
     private Mat mSpectrum = new Mat();
@@ -53,6 +57,14 @@ public class ObjectDetectorRenderable implements IRenderable,
 
     public ObjectDetectorRenderable(ImageWindow pWindow) {
         mParentWindow = pWindow;
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                ObjectDetectRenderableControls.show(ObjectDetectorRenderable.this);
+                
+            }
+        });
     }
 
     @Override
@@ -134,29 +146,64 @@ public class ObjectDetectorRenderable implements IRenderable,
     @Override
     public void selectionBoundsChanged(Rectangle pRect) {
         synchronized (SYNC_OBJECT) {
-            if (mCurrentFrame != null) {
+            if (mCurrentFrame != null && pRect != null) {
                 Mat origMat = OpenCVUtils.toMatrix(mCurrentFrame);
-                Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width,
-                        pRect.height);
+                
+                Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width, pRect.height);
+
+                if(selectedRect.x + selectedRect.width > mCurrentFrame.getWidth()) {
+                    selectedRect.width = Math.min(selectedRect.width - mCurrentFrame.getWidth(), selectedRect.x + selectedRect.width);
+                }
+  
+                if(selectedRect.y  < 0) {
+                    selectedRect.y = 0;
+                }
+                
+                if(selectedRect.x < 0) {
+                    selectedRect.x = 0;
+                }
+                
+                if(selectedRect.x + selectedRect.width < mCurrentFrame.getWidth()) {
+                    selectedRect.width = mCurrentFrame.getWidth() - selectedRect.x;
+                }
+                
+                if(selectedRect.y + selectedRect.height > mCurrentFrame.getHeight()) {
+                    selectedRect.height = mCurrentFrame.getHeight() - selectedRect.y;
+                }
+                
                 Mat selectedRegionRgba = origMat.submat(selectedRect);
 
                 Mat selectedRegionHsv = new Mat();
-                Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv,
-                        Imgproc.COLOR_RGB2HSV_FULL);
+                
+                Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
                 // Calculate average color of touched region
                 mBlobColorHsv = Core.sumElems(selectedRegionHsv);
+
                 int pointCount = selectedRect.width * selectedRect.height;
                 for (int i = 0; i < mBlobColorHsv.val.length; i++) {
                     mBlobColorHsv.val[i] /= pointCount;
                 }
+                
                 setHsvColor(mBlobColorHsv);
-
+                
+                frameAvail(mCurrentFrame);
+                
+                openSaveDialog(OpenCVUtils.toBufferedImage(selectedRegionRgba));
             }
         }
 
     }
 
+    private void openSaveDialog(BufferedImage img) {
+        BlobModel model = new BlobModel();
+        model.setAverageHue(mBlobColorHsv.val[0]);
+        model.setAverageSaturation(mBlobColorHsv.val[1]);
+        model.setAverageValue(mBlobColorHsv.val[2]);
+        
+        new SaveDialog(img, model);
+    }
+    
     private void setHsvColor(Scalar hsvColor) {
         double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0]
                 - mColorRadius.val[0]
@@ -187,4 +234,22 @@ public class ObjectDetectorRenderable implements IRenderable,
         Imgproc.cvtColor(spectrumHsv, mSpectrum, Imgproc.COLOR_HSV2RGB_FULL, 4);
     }
 
+    
+    public Scalar getColorRadius() {
+        return mColorRadius;
+    }
+
+    public void updateColorRadius(Scalar pColorRadius, double pMinContourPercent) {
+        synchronized(SYNC_OBJECT) {
+            mColorRadius = pColorRadius;
+            mMinContourArea = pMinContourPercent;
+            if(mBlobColorHsv != null) {
+                setHsvColor(mBlobColorHsv);
+            }
+            if(mCurrentFrame != null) {
+                frameAvail(mCurrentFrame);
+            }
+        }
+
+    }
 }
