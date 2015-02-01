@@ -150,20 +150,16 @@ public class ObjectDetectorRenderable implements IRenderable,
                 Mat origMat = OpenCVUtils.toMatrix(mCurrentFrame);
                 
                 Rect selectedRect = new Rect(pRect.x, pRect.y, pRect.width, pRect.height);
-
-                if(selectedRect.x + selectedRect.width > mCurrentFrame.getWidth()) {
-                    selectedRect.width = Math.min(selectedRect.width - mCurrentFrame.getWidth(), selectedRect.x + selectedRect.width);
-                }
-  
-                if(selectedRect.y  < 0) {
-                    selectedRect.y = 0;
-                }
                 
                 if(selectedRect.x < 0) {
                     selectedRect.x = 0;
                 }
                 
-                if(selectedRect.x + selectedRect.width < mCurrentFrame.getWidth()) {
+                if(selectedRect.y < 0) {
+                    selectedRect.y = 0;
+                }
+                
+                if(selectedRect.x + selectedRect.width > mCurrentFrame.getWidth()) {
                     selectedRect.width = mCurrentFrame.getWidth() - selectedRect.x;
                 }
                 
