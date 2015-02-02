@@ -6,11 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 
+/**
+ * Contains data coming from the camera
+ * @author Daniel Christopher
+ * @version 2/1/15
+ *
+ */
 public final class RobotVisionMsg {
     private final BufferedImage rawImage;
     private final List<VisibleObject> visibleObjects;
     
-    protected RobotVisionMsg(BufferedImage rawImage) {
+    public RobotVisionMsg(BufferedImage rawImage) {
         this.rawImage = rawImage;
         
         visibleObjects = new LinkedList<VisibleObject>();
