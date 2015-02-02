@@ -32,6 +32,17 @@ public class OpenCVUtils {
         System.out.println("Init method");
     }
 
+    /**
+     * Method that is used to create a deep copy of a BufferedImage
+     * @param image Image to make a copy of
+     * @return The copied image
+     */
+    public static BufferedImage deepCopy(BufferedImage image) {
+        return new BufferedImage(image.getColorModel(), 
+                                 image.copyData(null), 
+                                 image.getColorModel().isAlphaPremultiplied(), 
+                                 null);    
+    }
     
     /**
      * Helper method to convert an OPENCV {@link Mat} to an {@link Image} If the
