@@ -9,6 +9,7 @@ repositories {
 dependencies {
 	compile files('libraries/opencv/build/java/opencv-2410.jar')
 	compile 'log4j:log4j:1.2.17'
+    compile 'org.json:json:20090211'
 }
 
 tasks.withType(Test) {
