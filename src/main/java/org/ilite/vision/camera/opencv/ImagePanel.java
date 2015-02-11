@@ -26,7 +26,6 @@ public class ImagePanel implements VisionListener {
                 if (currentFrame != null) {
                     g.drawImage(currentFrame, 0, 0, getWidth(), getHeight(), null);
                 }
-                
             }
         };
     }
