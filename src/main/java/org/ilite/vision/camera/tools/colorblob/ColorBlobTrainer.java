@@ -57,8 +57,8 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // Put the IP address to connect to an MPEG-J camera, otherwise null
         // will
         // connect to a local webcam
-        String ip = null;
-        // ip = "192.168.137.85"
+//        String ip = null;
+        String ip = "169.254.36.239";
 
         ICameraConnection aCameraConnection = CameraConnectionFactory
                 .getCameraConnection(ip);

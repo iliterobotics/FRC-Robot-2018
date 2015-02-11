@@ -56,8 +56,8 @@ public class AxisCameraConnection extends AbstractCameraConnection implements
     // "http://192.168.1.242/nphMotionJpeg?Resolution=640x480&Quality=Standard";
     private String ipAddress;
     public String mjpgURL;
-    // String username = "root";
-    // String password = "team1885";
+     String username = "root";
+     String password = "team1885";
     String base64authorization = null;
 
     private boolean connected = false;
@@ -76,10 +76,10 @@ public class AxisCameraConnection extends AbstractCameraConnection implements
         ipAddress = pIp;
         mjpgURL = "http://" + ipAddress + "/mjpg/video.mjpg";
         // only use authorization if all informations are available
-        // if (username != null && password != null) {
-        // base64authorization = encodeUsernameAndPasswordInBase64(username,
-        // password);
-        // }
+         if (username != null && password != null) {
+         base64authorization = encodeUsernameAndPasswordInBase64(username,
+         password);
+         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
