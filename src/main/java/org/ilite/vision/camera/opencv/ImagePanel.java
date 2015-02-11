@@ -5,16 +5,17 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import org.ilite.vision.api.messages.RobotVisionMsg;
+import org.ilite.vision.api.system.IVisionSystem;
 import org.ilite.vision.api.system.VisionListener;
-import org.ilite.vision.api.system.VisionSystem;
+import org.ilite.vision.api.system.VisionSystemAPI;
 
 public class ImagePanel implements VisionListener {
     private BufferedImage currentFrame;
-    private VisionSystem system;
     private JPanel panel;
+    private IVisionSystem system;
     
     public ImagePanel() {
-        system = new VisionSystem();
+        system = VisionSystemAPI.getVisionSystem();
         
         system.subscribe(this);
         
