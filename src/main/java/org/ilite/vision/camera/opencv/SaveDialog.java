@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import javax.xml.bind.JAXBException;
 
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
-import org.ilite.vision.data.XMLManager;
 
 public class SaveDialog extends JFrame {
     private BufferedImage image;
@@ -37,11 +36,11 @@ public class SaveDialog extends JFrame {
                 int result = fileChooser.showSaveDialog(SaveDialog.this);
                 
                 if(result == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        XMLManager.write(fileChooser.getSelectedFile(), model);
-                    } catch (JAXBException e1) {
-                        e1.printStackTrace();
-                    }
+                    //try {
+                        //XMLManager.write(fileChooser.getSelectedFile(), model);
+                    //} catch (JAXBException e1) {
+                        //e1.printStackTrace();
+                    //}
                 }
             }
             
