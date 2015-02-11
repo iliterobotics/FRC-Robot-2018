@@ -7,17 +7,21 @@ import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
+import org.ilite.vision.camera.opencv.OpenCVUtils;
 
-public final class VisionSystem implements ICameraFrameUpdateListener {
+final class VisionSystem implements ICameraFrameUpdateListener, IVisionSystem {
     private LinkedHashSet<VisionListener> listeners;
     private ICameraConnection connection;
     
-    public VisionSystem() {
+    protected VisionSystem(String pIP) {
+        
+        OpenCVUtils.init();
         listeners = new LinkedHashSet<VisionListener>();
         
-        connection = CameraConnectionFactory.getCameraConnection(null);
+        connection = CameraConnectionFactory.getCameraConnection(pIP);
         
         connection.addCameraFrameListener(this);
+        connection.start();
     }
     
     @Override
@@ -29,10 +33,18 @@ public final class VisionSystem implements ICameraFrameUpdateListener {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.ilite.vision.api.system.IVisionSystem#subscribe(org.ilite.vision.api.system.VisionListener)
+     */
+    @Override
     public void subscribe(VisionListener listener) {
         listeners.add(listener);
     }
     
+    /* (non-Javadoc)
+     * @see org.ilite.vision.api.system.IVisionSystem#unsubscribe(org.ilite.vision.api.system.VisionListener)
+     */
+    @Override
     public void unsubscribe(VisionListener listener) {
         listeners.remove(listener);
     }
