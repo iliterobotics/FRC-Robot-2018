@@ -17,9 +17,11 @@ public class VisionSystemAPI {
 		private static final IVisionSystem sSystem = new VisionSystem(CAMERA_IP);
 	}
 
-	public static void loadImage(String FILEPATH)throws IOException {
+	public static BufferedImage loadImage(String FILEPATH)throws IOException {
 		BufferedImage myImage = ImageIO.read(new File(FILEPATH));
-
+ 
+		return myImage;
+		
 	}
 
 	public static IVisionSystem getVisionSystem() {
