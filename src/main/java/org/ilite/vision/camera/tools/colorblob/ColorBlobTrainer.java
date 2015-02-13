@@ -2,8 +2,6 @@ package org.ilite.vision.camera.tools.colorblob;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import javax.swing.SwingUtilities;
@@ -17,6 +15,7 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.Renderable;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.camera.tools.colorblob.histogram.HistoGramImageWindow;
+import org.ilite.vision.data.Configuration;
 
 //Based off of: https://github.com/Itseez/opencv/blob/master/samples/android/color-blob-detection/src/org/opencv/samples/colorblobdetect/ColorBlobDetectionActivity.java
 public class ColorBlobTrainer implements ICameraFrameUpdateListener {
@@ -62,8 +61,10 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // will
         // connect to a local webcam
 //        String ip = null;
-        String ip = "169.254.36.231";
-
+        String ip = Configuration.getCameraIP();
+        
+        sLog.debug(ip);
+        
         //if(InetAddress.getByName(ip).isReachable(5000)) {
             ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(null);
             

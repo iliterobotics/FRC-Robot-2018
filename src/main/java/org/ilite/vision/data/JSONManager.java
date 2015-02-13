@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 public class JSONManager {
     
-    public static Map<String, Object> read(File file) throws IOException, JSONException {
+    public static HashMap<String, Object> read(File file) throws IOException, JSONException {
         JSONObject root;
         
         FileInputStream stream = new FileInputStream(file);
@@ -31,7 +31,7 @@ public class JSONManager {
         dstream.close();
         stream.close();
         
-        Map<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         
         Iterator it = root.keys();
         
