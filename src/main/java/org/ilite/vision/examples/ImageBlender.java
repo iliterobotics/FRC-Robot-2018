@@ -39,6 +39,8 @@ public class ImageBlender extends JFrame implements VisionListener {
             
         });
         
+        sliderValue = slider.getValue();
+        
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(ip.getPanel(), BorderLayout.CENTER);

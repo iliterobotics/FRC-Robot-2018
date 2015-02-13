@@ -50,4 +50,8 @@ public class OverlaySlider {
     public static void main(String[] args) {
         new OverlaySlider();
     }
+
+    public float getValue() {
+        return slider.getValue()/100f;
+    }
 }
