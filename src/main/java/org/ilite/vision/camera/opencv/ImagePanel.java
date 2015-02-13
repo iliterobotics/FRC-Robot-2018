@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.api.system.IVisionSystem;
 import org.ilite.vision.api.system.VisionListener;
-import org.ilite.vision.api.system.VisionSystemAPI;
 
 public class ImagePanel implements VisionListener {
     private BufferedImage currentFrame;
@@ -15,7 +14,10 @@ public class ImagePanel implements VisionListener {
     private IVisionSystem system;
     
     public ImagePanel() {
-        system = VisionSystemAPI.getVisionSystem();
+        this(new NullVisionSystem());
+    }
+    public ImagePanel(IVisionSystem pSystem) {
+        system = pSystem;
         
         system.subscribe(this);
         
@@ -33,5 +35,11 @@ public class ImagePanel implements VisionListener {
     @Override
     public void onVisionDataRecieved(RobotVisionMsg message) {
         currentFrame = message.getRawImage();
+        panel.repaint();
+    }
+    
+    public void updateImage(BufferedImage pImage) {
+        currentFrame = pImage;
+        panel.repaint();
     }
 }
