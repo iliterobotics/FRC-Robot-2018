@@ -22,6 +22,7 @@ public class ImageBlender extends JFrame implements VisionListener {
 	private JPanel panel;
 	private OverlaySlider slider;
 	private float sliderValue;
+    private BufferedImage mFinalImage;
 	
 	public ImageBlender() throws IOException { 
         myImg = VisionSystemAPI.loadImage("images/NumberFour.png");  
@@ -52,15 +53,17 @@ public class ImageBlender extends JFrame implements VisionListener {
 	@Override
 	public void onVisionDataRecieved(RobotVisionMsg message) {
 		BufferedImage frameImage = message.getRawImage();
-		BufferedImage finalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
-		Graphics2D graphics = finalImage.createGraphics();   
-		
+		if(mFinalImage == null) {
+		mFinalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
+		}
+		Graphics2D graphics = mFinalImage.createGraphics();   
+		graphics.fillRect(0, 0, mFinalImage.getWidth(), mFinalImage.getHeight());
 		graphics.drawImage(frameImage, 0, 0,frameImage.getWidth(), frameImage.getHeight(), null);
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sliderValue));
 		graphics.drawImage(myImg, 0, 0, null);
 		graphics.dispose();
 
-		ip.updateImage(finalImage); 
+		ip.updateImage(mFinalImage); 
 	}
 
     public static void main(String[] args) throws IOException {
