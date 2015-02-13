@@ -9,7 +9,7 @@ import org.ilite.vision.api.system.VisionListener;
  * will do nothing 
  *
  */
-class NullVisionSystem implements IVisionSystem{
+class NullVisionSystem implements IVisionSystem {
 
     @Override
     public void subscribe(VisionListener pListener) {
