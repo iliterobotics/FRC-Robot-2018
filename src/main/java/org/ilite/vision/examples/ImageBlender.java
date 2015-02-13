@@ -17,6 +17,7 @@ public class ImageBlender extends JFrame implements VisionListener {
 
 	ImagePanel iP = new ImagePanel();
 	private BufferedImage myImg;
+    private BufferedImage mFinalImage;
 	
 	public ImageBlender() throws IOException { 
 
@@ -40,11 +41,12 @@ public class ImageBlender extends JFrame implements VisionListener {
 
 	@Override
 	public void onVisionDataRecieved(RobotVisionMsg message) {
-		System.out.println("Hello");  
 		BufferedImage frameImage = message.getRawImage();
-		BufferedImage finalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
-		Graphics2D graphics = finalImage.createGraphics();   
-		
+		if(mFinalImage == null) {
+		mFinalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
+		}
+		Graphics2D graphics = mFinalImage.createGraphics();   
+		graphics.fillRect(0, 0, mFinalImage.getWidth(), mFinalImage.getHeight());
 		graphics.drawImage(frameImage, 0, 0,frameImage.getWidth(), frameImage.getHeight(), null);
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
 		graphics.drawImage(myImg, 0, 0, null);
@@ -53,7 +55,7 @@ public class ImageBlender extends JFrame implements VisionListener {
 
 		
 		
-		iP.updateImage(finalImage); 
+		iP.updateImage(mFinalImage); 
 		
 
 	}
