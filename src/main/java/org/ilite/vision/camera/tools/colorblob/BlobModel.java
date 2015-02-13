@@ -1,9 +1,6 @@
 package org.ilite.vision.camera.tools.colorblob;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
 public class BlobModel {
     private String name;
     private double[] hsv;
@@ -14,23 +11,19 @@ public class BlobModel {
     public BlobModel() {
         hsv = new double[3];
     }
-    
-    @XmlElement
+
     public void setName(String name) {
         this.name = name;
     }
     
-    @XmlElement
     public void setAverageHue(double hue) {
         hsv[HUE] = hue;
     }
     
-    @XmlElement
     public void setAverageValue(double value) {
         hsv[VALUE] = value;
     }
     
-    @XmlElement
     public void setAverageSaturation(double saturation) {
         hsv[SATURATION] = saturation;
     }

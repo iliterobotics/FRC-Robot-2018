@@ -4,6 +4,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -13,9 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.xml.bind.JAXBException;
 
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
+import org.ilite.vision.data.JSONManager;
+import org.json.JSONException;
 
 public class SaveDialog extends JFrame {
     private BufferedImage image;
@@ -36,11 +41,17 @@ public class SaveDialog extends JFrame {
                 int result = fileChooser.showSaveDialog(SaveDialog.this);
                 
                 if(result == JFileChooser.APPROVE_OPTION) {
-                    //try {
-                        //XMLManager.write(fileChooser.getSelectedFile(), model);
-                    //} catch (JAXBException e1) {
-                        //e1.printStackTrace();
-                    //}
+                    Map<String, Object> objects = new HashMap<String, Object>();
+
+                    objects.put("average hue", model.getAverageHue());
+                    objects.put("average saturation", model.getAverageSaturation());
+                    objects.put("average value", model.getAverageValue());
+
+                    try {
+                        JSONManager.write(objects, fileChooser.getSelectedFile());
+                    } catch (JSONException | IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
             

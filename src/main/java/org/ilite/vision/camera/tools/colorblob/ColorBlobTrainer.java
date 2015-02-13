@@ -1,6 +1,10 @@
 package org.ilite.vision.camera.tools.colorblob;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.SwingUtilities;
 
@@ -50,7 +54,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         mHisto.show();
     }
 
-    public static void createAndShowGUI() {
+    public static void createAndShowGUI() throws UnknownHostException, IOException {
         OpenCVUtils.init();
 
         // null IP means connect to webcam
@@ -58,13 +62,16 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // will
         // connect to a local webcam
 //        String ip = null;
-        String ip = "169.254.36.239";
+        String ip = "169.254.36.231";
 
-        ICameraConnection aCameraConnection = CameraConnectionFactory
-                .getCameraConnection(ip);
-        ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
-        aTrainer.connectToCamera();
-        aTrainer.show();
+        //if(InetAddress.getByName(ip).isReachable(5000)) {
+            ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(null);
+            
+            ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
+            aTrainer.connectToCamera();
+            aTrainer.show();
+        //}
+        
     }
 
     public static void main(String[] args) {
@@ -76,7 +83,11 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
 
             @Override
             public void run() {
-                createAndShowGUI();
+                try {
+                    createAndShowGUI();
+                } catch (IOException e) {
+                    sLog.error("Invalid IP Address", e);
+                }
             }
         });
     }
