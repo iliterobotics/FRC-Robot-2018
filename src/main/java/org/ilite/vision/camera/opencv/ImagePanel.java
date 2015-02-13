@@ -12,6 +12,7 @@ public class ImagePanel implements VisionListener {
     private BufferedImage currentFrame;
     private JPanel panel;
     private IVisionSystem system;
+     
     
     public ImagePanel() {
         this(new NullVisionSystem());
@@ -42,4 +43,8 @@ public class ImagePanel implements VisionListener {
         currentFrame = pImage;
         panel.repaint();
     }
+    
+    public JPanel getPanel() {
+		return panel;
+	}
 }
