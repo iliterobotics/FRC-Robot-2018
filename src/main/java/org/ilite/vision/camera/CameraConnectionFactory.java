@@ -1,25 +1,41 @@
 package org.ilite.vision.camera;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.ilite.vision.camera.axis.AxisCameraConnection;
 
 public class CameraConnectionFactory {
 
-    private static ICameraConnection mConnection;
+    private static Map<String, ICameraConnection>mConnections = new ConcurrentHashMap<>();
 
     public static synchronized ICameraConnection getCameraConnection(String pIP) {
-
-        if (mConnection != null) {
-        } else if (pIP != null) {
-            mConnection = new AxisCameraConnection(pIP);
-        } else {
-            mConnection = new LocalCamera();
+        String key = pIP;
+        if(key == null) {
+            key = "LOCAL";
         }
-
-        return mConnection;
-
+        
+        ICameraConnection returnedConnection = mConnections.get(key);
+        
+        if(returnedConnection == null) {
+            
+            if(key.equals("LOCAL")) {
+                returnedConnection = new LocalCamera();
+            } else {
+                returnedConnection = new AxisCameraConnection(pIP);
+            }
+            mConnections.put(key, returnedConnection);
+            
+        }
+        
+        return returnedConnection;
     }
     
     public static void destroy() {
-        mConnection.destroy();
+        for(Entry<String, ICameraConnection>anEntry : mConnections.entrySet()) {
+            anEntry.getValue().destroy();
+        }
+        mConnections.clear();
     }
 }
