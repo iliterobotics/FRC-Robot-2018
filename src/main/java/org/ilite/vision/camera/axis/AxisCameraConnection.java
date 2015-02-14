@@ -8,11 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +19,6 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import org.ilite.vision.camera.AbstractCameraConnection;
-import org.ilite.vision.camera.ICameraConnection;
-import org.ilite.vision.camera.ICameraFrameUpdateListener;
 
 /**
  * 

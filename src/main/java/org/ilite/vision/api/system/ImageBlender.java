@@ -16,7 +16,6 @@ import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.camera.opencv.ImagePanel;
 import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
-import org.ilite.vision.data.Configuration;
 import org.ilite.vision.data.EStateKeys;
 
 /**

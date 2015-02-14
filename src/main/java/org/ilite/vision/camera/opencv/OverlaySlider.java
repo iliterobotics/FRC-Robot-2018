@@ -2,7 +2,7 @@ package org.ilite.vision.camera.opencv;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.swing.JFrame;
+
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
