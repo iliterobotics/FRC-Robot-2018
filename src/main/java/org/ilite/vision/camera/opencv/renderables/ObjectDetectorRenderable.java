@@ -77,7 +77,9 @@ public class ObjectDetectorRenderable implements IRenderable,
         // Do work to detect
         if (mBlobColorHsv != null) {
             process(OpenCVUtils.toMatrix(pImage));
+            if(mParentWindow != null) {
             mParentWindow.repaint();
+            }
         }
     }
 
@@ -105,6 +107,10 @@ public class ObjectDetectorRenderable implements IRenderable,
             }
         }
 
+    }
+    
+    public List<MatOfPoint> getContours() {
+        return mContours;
     }
 
     public void process(Mat rgbaImage) {
@@ -200,7 +206,8 @@ public class ObjectDetectorRenderable implements IRenderable,
         new SaveDialog(img, model);
     }
     
-    private void setHsvColor(Scalar hsvColor) {
+    public void setHsvColor(Scalar hsvColor) {
+        mBlobColorHsv = hsvColor;
         double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0]
                 - mColorRadius.val[0]
                 : 0;
