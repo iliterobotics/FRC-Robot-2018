@@ -1,4 +1,5 @@
 {
 "CameraIP": "169.254.36.231",
-"OverlayImagePath": "src/main/resources/images/NumberFour.png"
+"OverlayImagePath": "src/main/resources/images/NumberFour.png",
+"ALIGNED_CAMERA_IP": "169.254.240.22"
 }
