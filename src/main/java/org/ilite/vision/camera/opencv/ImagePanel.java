@@ -17,6 +17,7 @@ public class ImagePanel implements VisionListener {
     public ImagePanel() {
         this(new NullVisionSystem());
     }
+    
     public ImagePanel(IVisionSystem pSystem) {
         system = pSystem;
         
