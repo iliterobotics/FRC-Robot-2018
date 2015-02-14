@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.ilite.vision.api.ECameraType;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
@@ -61,7 +62,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // will
         // connect to a local webcam
 //        String ip = null;
-        String ip = Configuration.getCameraIP();
+        String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
         
         sLog.debug(ip);
         
