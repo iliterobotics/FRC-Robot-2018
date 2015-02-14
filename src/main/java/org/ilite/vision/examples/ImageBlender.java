@@ -43,7 +43,7 @@ public class ImageBlender extends JFrame implements VisionListener {
 	 */
 	private final BufferedImage mOverlayImage;
 	/**
-	 * The main content of this frame
+	 * The main content of  this frame
 	 */
 	private final JPanel mContentPanel = new JPanel(new BorderLayout());
 	/**
@@ -60,7 +60,10 @@ public class ImageBlender extends JFrame implements VisionListener {
      * Creates and shows this frame
      * @throws IOException
      *  Thrown if there was an issue loading the overlay Image
-     */
+     */ 
+    
+    
+    
 	public ImageBlender() throws IOException { 
 	    //TODO: Need to save the path of the image to the property file (JSON)
         mOverlayImage = VisionSystemAPI.loadImage(Configuration.getOverlayImagePath()); 
@@ -93,12 +96,16 @@ public class ImageBlender extends JFrame implements VisionListener {
 	        mFinalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
 	        mContentPanel.setPreferredSize(new Dimension(mFinalImage.getWidth(), mFinalImage.getHeight()));
 	        pack();
-	    }
+	    } 
+	    int screenWidth = frameImage.getWidth(); 
+	    int screenHeight = frameImage.getHeight();
+	    
 	    Graphics2D graphics = mFinalImage.createGraphics();   
 	    graphics.fillRect(0, 0, mFinalImage.getWidth(), mFinalImage.getHeight());
 	    graphics.drawImage(frameImage, 0, 0,frameImage.getWidth(), frameImage.getHeight(), null);
-	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,mAlphaValueSlider.getValue()));
-	    graphics.drawImage(mOverlayImage, 0, 0, null);
+	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,mAlphaValueSlider.getValue()));  
+	    
+	    graphics.drawImage(mOverlayImage, 0, 0,screenWidth,screenHeight, null);
 	    graphics.dispose();
 
 	    mImagePanel.updateImage(mFinalImage); 
