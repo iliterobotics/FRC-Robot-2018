@@ -17,7 +17,7 @@ import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
 import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.EStateKeys;
-import org.ilite.vision.data.Configurations;
+
 
 /**
  * A proof of concept to overlay one image on top of each other. This will register
@@ -78,6 +78,8 @@ public class ImageBlender extends JPanel implements VisionListener {
             
         });
         
+        mImagePanel.getPanel().setPreferredSize(new Dimension(800, 600));
+        
         add(mImagePanel.getPanel(), BorderLayout.CENTER);
         add(mAlphaValueSlider.getSlider(), BorderLayout.NORTH);
         setVisible(true);   
@@ -126,5 +128,6 @@ public class ImageBlender extends JPanel implements VisionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);  
         frame.pack();
+        
     }
 }

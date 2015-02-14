@@ -16,7 +16,7 @@ import org.ilite.vision.camera.opencv.Renderable;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.camera.tools.colorblob.histogram.HistoGramImageWindow;
 import org.ilite.vision.constants.ECameraType;
-import org.ilite.vision.data.Configurations;
+
 
 //Based off of: https://github.com/Itseez/opencv/blob/master/samples/android/color-blob-detection/src/org/opencv/samples/colorblobdetect/ColorBlobDetectionActivity.java
 /**
@@ -33,6 +33,18 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     private ICameraConnection mCamera;
     private Renderable renderable;
     private ObjectDetectorRenderable mObjectDetectorRenderable;
+    
+    public ColorBlobTrainer(final BufferedImage pImage) {
+        renderable = new Renderable();
+        mWindow.addRenderable(renderable);
+        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow);
+        mWindow.addRenderable(mObjectDetectorRenderable);
+        mObjectDetectorRenderable.frameAvail(pImage);
+        mWindow.getMouseRenderable().addSelectionListener(
+                mObjectDetectorRenderable);
+        frameAvail(pImage);
+        
+    }
 
     public ColorBlobTrainer(ICameraConnection pConnection) {
         mCamera = pConnection;

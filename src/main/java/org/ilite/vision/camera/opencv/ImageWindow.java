@@ -34,7 +34,7 @@ public class ImageWindow {
             super.paintComponent(g);
 
             if (mCurrentFrame != null) {
-                g.drawImage(mCurrentFrame, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(mCurrentFrame, 0, 0, mCurrentFrame.getWidth(), mCurrentFrame.getHeight(), null);
             }
 
             for (IRenderable renderables2 : mRenderables) {
@@ -64,7 +64,7 @@ public class ImageWindow {
 
         if (mCurrentFrame != null) {
             mImagePanel.setPreferredSize(new Dimension(
-                    mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
+                    pImage.getWidth(), pImage.getHeight()));
         }
 
         saveImageButton = new JButton("save current frame");

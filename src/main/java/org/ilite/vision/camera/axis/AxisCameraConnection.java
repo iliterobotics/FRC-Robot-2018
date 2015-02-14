@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.constants.ECameraConfig;
 
+
 /**
  * 
  * History: Base code pieced together from code found on java.sun.com forum
