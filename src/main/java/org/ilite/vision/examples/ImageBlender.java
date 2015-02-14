@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
+import org.ilite.vision.api.ECameraType;
 import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.api.system.VisionListener;
 import org.ilite.vision.api.system.VisionSystemAPI;
@@ -18,6 +19,7 @@ import org.ilite.vision.camera.opencv.ImagePanel;
 import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
 import org.ilite.vision.data.Configuration;
+import org.ilite.vision.data.EStateKeys;
 
 /**
  * A proof of concept to overlay one image on top of each other. This will register
@@ -66,7 +68,7 @@ public class ImageBlender extends JFrame implements VisionListener {
     
 	public ImageBlender() throws IOException { 
 	    //TODO: Need to save the path of the image to the property file (JSON)
-        mOverlayImage = VisionSystemAPI.loadImage(Configuration.getOverlayImagePath()); 
+        mOverlayImage = VisionSystemAPI.loadImage(EStateKeys.OVERLAY_IMAGE_PATH.getValue()); 
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
@@ -119,6 +121,6 @@ public class ImageBlender extends JFrame implements VisionListener {
 	 *     thrown if the overlay image could not be loaded
 	 */
     public static void main(String[] args) throws IOException {
-        VisionSystemAPI.getVisionSystem().subscribe(new ImageBlender());
+        VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(new ImageBlender());
     }
 }
