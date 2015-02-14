@@ -21,7 +21,14 @@ final class VisionSystem implements ICameraFrameUpdateListener, IVisionSystem {
         connection = CameraConnectionFactory.getCameraConnection(pIP);
         
         connection.addCameraFrameListener(this);
-        connection.start();
+        
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                connection.start();
+            }
+        }).start();
     }
     
     @Override

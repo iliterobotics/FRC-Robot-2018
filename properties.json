@@ -1,5 +1,10 @@
 {
-"CameraIP": "169.254.36.231",
 "OverlayImagePath": "src/main/resources/images/NumberFour.png",
-"ALIGNED_CAMERA_IP": "169.254.240.22"
+"IMAGES_FOLDER_PATH": "src/main/resources/images/",
+"CAM_RATE_MILLIS": 100,
+"ALIGNED_CAMERA_IP": "169.254.240.22",
+"START_SLEEP": 1000.0,
+"DEVICE": 0.0,
+"USERNAME": "root",
+"PASSWORD": "team1885",
 }

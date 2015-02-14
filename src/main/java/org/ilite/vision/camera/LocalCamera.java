@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.constants.ECameraConfig;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
 
@@ -22,7 +23,7 @@ public class LocalCamera extends AbstractCameraConnection {
     /**
      * The rate at which to pull frames from the camera, in milliseconds
      */
-    private static final long CAM_RATE_MILLIS = 100;
+    private static final long CAM_RATE_MILLIS = ECameraConfig.CAM_RATE_MILLIS.getValue();
 
     /**
      * Executor service to start a timer to start pulling frames of the camera
@@ -45,10 +46,10 @@ public class LocalCamera extends AbstractCameraConnection {
     public void start() {
 
         if (mCamera == null) {
-            int DEVICE = 0;
+            int DEVICE = (int) ECameraConfig.DEVICE.getValue();
             mCamera = new VideoCapture(DEVICE);
             try {
-                Thread.sleep(1000l);
+                Thread.sleep(ECameraConfig.START_SLEEP.getValue());
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }

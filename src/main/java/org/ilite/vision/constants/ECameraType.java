@@ -1,6 +1,6 @@
-package org.ilite.vision.api;
+package org.ilite.vision.constants;
 
-import org.ilite.vision.data.Configuration;
+import org.ilite.vision.data.Configurations;
 
 public enum ECameraType {
     ALIGNMENT_CAMERA("ALIGNED_CAMERA_IP"),
@@ -8,7 +8,7 @@ public enum ECameraType {
     LOCAL_CAMERA("LOCAL_CAMERA");
     
     private ECameraType(String pPropertyName) {
-        mCameraIP = Configuration.getValue(pPropertyName);
+        mCameraIP = (String) Configurations.getValue(pPropertyName);
     }
     
     public String getCameraIP() {

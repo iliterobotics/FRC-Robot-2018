@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.ilite.vision.api.ECameraType;
+import org.ilite.vision.constants.ECameraType;
 import org.opencv.core.Mat;
 
 public class VisionSystemAPI {

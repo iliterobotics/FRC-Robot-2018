@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.ilite.vision.api.ECameraType;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
@@ -16,9 +15,14 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.Renderable;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.camera.tools.colorblob.histogram.HistoGramImageWindow;
-import org.ilite.vision.data.Configuration;
+import org.ilite.vision.constants.ECameraType;
+import org.ilite.vision.data.Configurations;
 
 //Based off of: https://github.com/Itseez/opencv/blob/master/samples/android/color-blob-detection/src/org/opencv/samples/colorblobdetect/ColorBlobDetectionActivity.java
+/**
+ * @author Daniel
+ *
+ */
 public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     
     private static final Logger sLog = Logger.getLogger(ColorBlobTrainer.class);
@@ -80,7 +84,6 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
 
         sLog.debug("Starting the Color Blob Trainer");
        
-
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

@@ -19,6 +19,8 @@ import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.SaveDialog;
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
+import org.ilite.vision.constants.EStateKeys;
+import org.json.JSONArray;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -34,37 +36,45 @@ import org.opencv.imgproc.Imgproc;
  * the average color and then start tracking that color.
  * 
  */
-public class ObjectDetectorRenderable implements IRenderable,
-        ICameraFrameUpdateListener, ISelectionChangedListener {
-    // Lower and Upper bounds for range checking in HSV color space
-    private Scalar mLowerBound = new Scalar(0);
-    private Scalar mUpperBound = new Scalar(0);
-    // Minimum contour area in percent for contours filtering
-    private double mMinContourArea = 0.1;
-    // Color radius for range checking in HSV color space
-    private Scalar mColorRadius = new Scalar(25, 50, 50, 0);
-    private Mat mSpectrum = new Mat();
-    private List<MatOfPoint> mContours = new ArrayList<MatOfPoint>();
-    private Scalar mBlobColorHsv = null;
+public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdateListener, ISelectionChangedListener {
+    private static final Scalar CONTOUR_SCALAR = new Scalar(4, 4);
+    private Scalar mLowerBound, mUpperBound; // Bounds for range checking in HSV color space
+    private double mMinContourArea;          // Minimum contour area in percent for contours filtering
+    private Scalar mColorRadius;             // Color radius for range checking in HSV color space
+    private List<MatOfPoint> mContours;
+    private Scalar mBlobColorHsv;
     private BufferedImage mCurrentFrame;
-    Mat mPyrDownMat = new Mat();
-    Mat mHsvMat = new Mat();
-    Mat mMask = new Mat();
-    Mat mDilatedMask = new Mat();
-    Mat mHierarchy = new Mat();
-    private Object SYNC_OBJECT = new Object();
+    private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
+    private Object SYNC_OBJECT;
     private ImageWindow mParentWindow;
 
     public ObjectDetectorRenderable(ImageWindow pWindow) {
         mParentWindow = pWindow;
+        
+        mLowerBound = new Scalar(0);
+        mUpperBound = new Scalar(0);
+        mMinContourArea = 0.1;
+        mColorRadius = new Scalar(25, 50, 50, 0);
+        mSpectrum = new Mat();
+        mContours = new ArrayList<MatOfPoint>();
+        mBlobColorHsv = null;
+        mPyrDownMat = new Mat();
+        mHsvMat = new Mat();
+        mDilatedMask = new Mat();
+        mMask = new Mat();
+        mHierarchy = new Mat();
+        SYNC_OBJECT = new Object();
+        
         SwingUtilities.invokeLater(new Runnable() {
             
             @Override
             public void run() {
                 ObjectDetectRenderableControls.show(ObjectDetectorRenderable.this);
-                
             }
         });
+        
+        JSONArray blobData = (JSONArray) EStateKeys.COLOR_BLOB_DATA.getValue();
+        
     }
 
     @Override
@@ -119,7 +129,7 @@ public class ObjectDetectorRenderable implements IRenderable,
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
         Imgproc.findContours(mDilatedMask, contours, mHierarchy,
-                Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         // Find max contour area
         double maxArea = 0;
@@ -137,7 +147,7 @@ public class ObjectDetectorRenderable implements IRenderable,
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
             if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
-                Core.multiply(contour, new Scalar(4, 4), contour);
+                Core.multiply(contour, CONTOUR_SCALAR, contour);
                 mContours.add(contour);
             }
         }
@@ -193,6 +203,7 @@ public class ObjectDetectorRenderable implements IRenderable,
 
     private void openSaveDialog(BufferedImage img) {
         BlobModel model = new BlobModel();
+        model.setName("");
         model.setAverageHue(mBlobColorHsv.val[0]);
         model.setAverageSaturation(mBlobColorHsv.val[1]);
         model.setAverageValue(mBlobColorHsv.val[2]);
