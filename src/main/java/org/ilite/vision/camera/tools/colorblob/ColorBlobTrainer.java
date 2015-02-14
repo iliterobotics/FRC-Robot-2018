@@ -3,6 +3,10 @@ package org.ilite.vision.camera.tools.colorblob;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -28,6 +32,18 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     private ICameraConnection mCamera;
     private Renderable renderable;
     private ObjectDetectorRenderable mObjectDetectorRenderable;
+    
+    public ColorBlobTrainer(final BufferedImage pImage) {
+        renderable = new Renderable();
+        mWindow.addRenderable(renderable);
+        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow);
+        mWindow.addRenderable(mObjectDetectorRenderable);
+        mObjectDetectorRenderable.frameAvail(pImage);
+        mWindow.getMouseRenderable().addSelectionListener(
+                mObjectDetectorRenderable);
+        frameAvail(pImage);
+        
+    }
 
     public ColorBlobTrainer(ICameraConnection pConnection) {
         mCamera = pConnection;
