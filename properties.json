@@ -1,3 +1,4 @@
 {
-"CameraIP": "169.254.36.231"
+"CameraIP": "169.254.36.231",
+"OverlayImagePath": "src/main/resources/images/NumberFour.png"
 }
