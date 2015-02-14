@@ -2,6 +2,9 @@ package org.ilite.vision.api.system;
 
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.camera.CameraConnectionFactory;
@@ -12,6 +15,13 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 final class VisionSystem implements ICameraFrameUpdateListener, IVisionSystem {
     private LinkedHashSet<VisionListener> listeners;
     private ICameraConnection connection;
+    private static final ExecutorService sService = Executors.newCachedThreadPool(new ThreadFactory() {
+        
+        @Override
+        public Thread newThread(Runnable pR) {
+            return new Thread(pR, "Vision System Connection Thread");
+        }
+    });
     
     protected VisionSystem(String pIP) {
         
@@ -21,7 +31,13 @@ final class VisionSystem implements ICameraFrameUpdateListener, IVisionSystem {
         connection = CameraConnectionFactory.getCameraConnection(pIP);
         
         connection.addCameraFrameListener(this);
-        connection.start();
+        sService.submit(new Runnable() {
+            
+            @Override
+            public void run() {
+                connection.start();     
+            }
+        });
     }
     
     @Override
