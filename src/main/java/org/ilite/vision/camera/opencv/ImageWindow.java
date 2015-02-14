@@ -2,6 +2,7 @@ package org.ilite.vision.camera.opencv;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -9,9 +10,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,7 +26,7 @@ public class ImageWindow {
 
     private Set<IRenderable> mRenderables = new CopyOnWriteArraySet<IRenderable>();
     private JButton pauseButton;
-
+    private JButton saveImageButton;
     private JPanel mImagePanel = new JPanel() {
 
         protected void paintComponent(java.awt.Graphics g) {
@@ -62,6 +66,23 @@ public class ImageWindow {
                     mCurrentFrame.getWidth(), mCurrentFrame.getHeight()));
         }
 
+        saveImageButton = new JButton("save current frame");
+        saveImageButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File dir = new File("src/main/resources/images/");
+                File file = new File("src/main/resources/images/" + "image" + dir.listFiles().length + ".png");
+                
+                try {
+                    ImageIO.write(mCurrentFrame, "png", file);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            
+        });
+        
         pauseButton = new JButton("pause");
         pauseButton.addActionListener(new ActionListener() {
 
@@ -79,10 +100,15 @@ public class ImageWindow {
             }
         });
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(pauseButton);
+        buttonPanel.add(saveImageButton);
+        
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(pauseButton, BorderLayout.NORTH);
+        wrapper.add(buttonPanel, BorderLayout.NORTH);
         wrapper.add(mImagePanel, BorderLayout.CENTER);
-
+        
         mFrame.setContentPane(wrapper);
         mFrame.pack();
         mFrame.setResizable(false);

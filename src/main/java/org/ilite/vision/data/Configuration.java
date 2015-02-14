@@ -2,29 +2,34 @@ package org.ilite.vision.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.JSONException;
 
 
 public class Configuration {
-    private static final String CAMERA_IP;
-    
+    private static final Map<String, String>mKeyMap;
+
     static {
-        String temp = "";
-        
+
+        Map<String, String>tempMap = new HashMap<>();
+
         try {
-            HashMap<String, Object> map = JSONManager.read(new File("properties.json"));
-            
-            temp = (String) map.get("CameraIP");       
+            Map<String, Object> map = JSONManager.read(new File("properties.json"));
+
+            for(Entry<String, Object>anEntry : map.entrySet()) {
+                tempMap.put(anEntry.getKey(), (String)anEntry.getValue());
+            }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        
-        CAMERA_IP = temp;
+        mKeyMap = Collections.unmodifiableMap(tempMap);
     }
-    
-    public static String getCameraIP() {
-        return CAMERA_IP;
+
+    public static String getValue(String pKey) {
+        return mKeyMap.get(pKey);
     }
 }
