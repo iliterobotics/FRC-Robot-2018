@@ -17,6 +17,7 @@ import org.ilite.vision.api.system.VisionSystemAPI;
 import org.ilite.vision.camera.opencv.ImagePanel;
 import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
+import org.ilite.vision.data.Configuration;
 
 /**
  * A proof of concept to overlay one image on top of each other. This will register
@@ -61,9 +62,8 @@ public class ImageBlender extends JFrame implements VisionListener {
      *  Thrown if there was an issue loading the overlay Image
      */
 	public ImageBlender() throws IOException { 
-	    
 	    //TODO: Need to save the path of the image to the property file (JSON)
-        mOverlayImage = VisionSystemAPI.loadImage("images/NumberFour.png"); 
+        mOverlayImage = VisionSystemAPI.loadImage(Configuration.getOverlayImagePath()); 
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
