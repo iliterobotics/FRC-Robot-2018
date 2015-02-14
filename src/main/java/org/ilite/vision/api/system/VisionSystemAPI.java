@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.ilite.vision.api.ECameraType;
+import org.ilite.vision.constants.ECameraType;
 
 public class VisionSystemAPI {
 

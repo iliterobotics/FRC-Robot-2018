@@ -1,7 +1,9 @@
-package org.ilite.vision.data;
+package org.ilite.vision.constants;
+
+import org.ilite.vision.data.Configurations;
 
 public enum EStateKeys {
-    
+    COLOR_BLOB_DATA("Blob Config"),
     OVERLAY_IMAGE_PATH("OverlayImagePath");
     
     private EStateKeys(String pKeyName) {
@@ -10,8 +12,8 @@ public enum EStateKeys {
     
     private final String mKeyValue;
     
-    public String getValue() {
-        return Configuration.getValue(mKeyValue);
+    public Object getValue() {
+        return Configurations.getValue(mKeyValue);
     }
 
 }

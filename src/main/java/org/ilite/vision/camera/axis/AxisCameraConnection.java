@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import org.ilite.vision.camera.AbstractCameraConnection;
+import org.ilite.vision.constants.ECameraConfig;
+
 
 /**
  * 
@@ -31,40 +33,28 @@ import org.ilite.vision.camera.AbstractCameraConnection;
  * @author David E. Mireles, Ph.D.
  * @author Carl Gould
  */
-public class AxisCameraConnection extends AbstractCameraConnection implements
-        Runnable {
+public class AxisCameraConnection extends AbstractCameraConnection implements Runnable {
+    private String ipAddress;
+    private String mjpgURL;
+    private String username = ECameraConfig.USERNAME.getStringValue();
+    private String password = ECameraConfig.PASSWORD.getStringValue();
+    private String base64authorization = null;
+    private HttpURLConnection huc = null;
+    private Runnable updater;
+    private boolean connected = false;
+    private long[] frameTimes = new long[10]; //Used to calculate an average FPS
+    private MJPEGParser parser;
+    
     private static final ExecutorService sService = Executors
             .newSingleThreadExecutor(new ThreadFactory() {
-
                 @Override
                 public Thread newThread(Runnable pR) {
                     return new Thread(pR, "AxisCameraRunnable");
                 }
             });
 
-    private static final ScheduledExecutorService sScheduler = Executors
-            .newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService sScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    // public String mjpgURL =
-    // "http://your-ip-here/axis-cgi/mjpg/video.cgi?resolution=352x240";
-    // public String mjpgURL =
-    // "http://192.168.1.242/nphMotionJpeg?Resolution=640x480&Quality=Standard";
-    private String ipAddress;
-    public String mjpgURL;
-     String username = "root";
-     String password = "team1885";
-    String base64authorization = null;
-
-    private boolean connected = false;
-    HttpURLConnection huc = null;
-    Runnable updater;
-
-    /**
-     * Used to calculate an average FPS
-     */
-    long[] frameTimes = new long[10];
-
-    public MJPEGParser parser;
 
     /** Creates a new instance of AxisCamera */
     public AxisCameraConnection(String pIp) {
@@ -224,8 +214,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements
 
 class MJPEGParser {
 
-    private static final byte[] JPEG_START = new byte[] { (byte) 0xFF,
-            (byte) 0xD8 };
+    private static final byte[] JPEG_START = new byte[] { (byte) 0xFF, (byte) 0xD8 };
 
     private static final int INITIAL_BUFFER_SIZE = 4096;
 
@@ -353,7 +342,6 @@ class MJPEGParser {
         }
 
         if (found) {
-
             int segLength = cur - boundary.length - i;
 
             segment = new byte[segLength];
@@ -368,9 +356,7 @@ class MJPEGParser {
      */
 
     public byte[] getSegment() {
-
         return segment;
-
     }
 
     /**
@@ -391,29 +377,22 @@ class MJPEGParser {
      *         <code>len</code>consecutive bytes in <code>b2</code> starting at
      *         <code>b2Start</code>, <code>false</code> otherwise.
      */
+    protected boolean segmentsEqual(byte[] b1, int b1Start, byte[] b2, int b2Start, int len) {
 
-    protected boolean segmentsEqual(byte[] b1, int b1Start, byte[] b2,
-            int b2Start, int len) {
-
-        if (b1Start < 0 || b2Start < 0 || b1Start + len > b1.length
-                || b2Start + len > b2.length) {
+        if (b1Start < 0 || b2Start < 0 || b1Start + len > b1.length || b2Start + len > b2.length) {
 
             return false;
 
         } else {
-
             for (int i = 0; i < len; i++) {
-
                 if (b1[b1Start + i] != b2[b2Start + i]) {
 
                     return false;
 
                 }
-
             }
 
             return true;
-
         }
 
     }
@@ -423,10 +402,7 @@ class MJPEGParser {
      */
 
     protected boolean checkBoundary() {
-
-        return segmentsEqual(buf, cur - boundary.length, boundary, 0,
-                boundary.length);
-
+        return segmentsEqual(buf, cur - boundary.length, boundary, 0, boundary.length);
     }
 
     /**
@@ -434,9 +410,7 @@ class MJPEGParser {
      */
 
     public int getBufferSize() {
-
         return len;
-
     }
 
     /**
@@ -446,13 +420,10 @@ class MJPEGParser {
      * @param i
      *            the byte to append onto the internal byte buffer
      */
-
     protected void append(int i) {
-
         if (cur >= len) {
 
             // make buf bigger
-
             byte[] newBuf = new byte[len * 2];
 
             System.arraycopy(buf, 0, newBuf, 0, len);
@@ -464,6 +435,5 @@ class MJPEGParser {
         }
 
         buf[cur++] = (byte) i;
-
     }
 }
