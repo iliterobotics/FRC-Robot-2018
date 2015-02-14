@@ -77,6 +77,8 @@ public class ImageBlender extends JPanel implements VisionListener {
             
         });
         
+        mImagePanel.getPanel().setPreferredSize(new Dimension(800, 600));
+        
         add(mImagePanel.getPanel(), BorderLayout.CENTER);
         add(mAlphaValueSlider.getSlider(), BorderLayout.NORTH);
         setVisible(true);   
@@ -125,5 +127,6 @@ public class ImageBlender extends JPanel implements VisionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);  
         frame.pack();
+        
     }
 }

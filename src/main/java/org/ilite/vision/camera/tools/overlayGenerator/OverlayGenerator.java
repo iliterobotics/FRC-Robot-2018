@@ -1,12 +1,10 @@
 package org.ilite.vision.camera.tools.overlayGenerator;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,11 +24,9 @@ import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.camera.tools.colorblob.ColorBlobTrainer;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class OverlayGenerator {
@@ -155,7 +151,18 @@ public class OverlayGenerator {
             }
         }
         
-        ImageIO.write(OpenCVUtils.toBufferedImage(finalImage), "png", new File("src/main/resources/Overlay.png"));
+        BufferedImage anImage = new BufferedImage(finalImage.cols(), finalImage.rows(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D aGraphics = (Graphics2D)anImage.getGraphics();
+        aGraphics.setColor(new Color(255,255,255,0));
+        aGraphics.fillRect(0, 0, anImage.getWidth(), anImage.getHeight());
+        aGraphics.setColor(Color.GREEN);
+        aGraphics.setStroke(new BasicStroke(4));
+        for(GeneralPath aPath : paths) {
+            aGraphics.draw(aPath);;
+        }
+        aGraphics.dispose();
+        
+        ImageIO.write(anImage, "png", new File("src/main/resources/Overlay.png"));
         
         ImageWindow finalWindow = new ImageWindow(OpenCVUtils.toBufferedImage(finalImage));
         finalWindow.show();
