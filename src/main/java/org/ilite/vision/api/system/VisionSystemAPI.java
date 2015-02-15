@@ -33,6 +33,13 @@ public class VisionSystemAPI {
 		
 	}
 
+	public static ImageBlender getImageBlender(IVisionSystem system) throws IOException {
+	    ImageBlender b = new ImageBlender();
+	    system.subscribe(b);
+	    
+	    return b;
+	}
+	
 	public static IVisionSystem getVisionSystem(ECameraType pCameraType) {
 		System.out.println("IP:" + pCameraType.getCameraIP());
 		return INSTANCE_HOLDER.mCameraTypes.get(pCameraType);
