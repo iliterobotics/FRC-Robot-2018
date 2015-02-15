@@ -21,8 +21,6 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.SaveDialog;
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
 import org.ilite.vision.constants.BlobData;
-import org.ilite.vision.constants.Paths;
-import org.json.JSONArray;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -84,7 +82,6 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
             blobData = BlobData.getBlobData();
             
         } catch (Exception e) {
-            
             e.printStackTrace();
         }
         
@@ -94,14 +91,14 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     public void frameAvail(BufferedImage pImage) {
         synchronized (SYNC_OBJECT) {
             mCurrentFrame = pImage;
-
         }
 
         // Do work to detect
         if (mBlobColorHsv != null) {
             process(OpenCVUtils.toMatrix(pImage));
+            
             if(mParentWindow != null) {
-            mParentWindow.repaint();
+                mParentWindow.repaint();
             }
         }
     }
@@ -114,6 +111,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
             GeneralPath aPath = new GeneralPath();
             org.opencv.core.Point firstPoint = null;
+            
             for (org.opencv.core.Point aContourPoint : aMatOfPoint.toList()) {
                 if (firstPoint == null) {
                     firstPoint = aContourPoint;
@@ -155,9 +153,12 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         Iterator<MatOfPoint> each = contours.iterator();
         while (each.hasNext()) {
             MatOfPoint wrapper = each.next();
+            
             double area = Imgproc.contourArea(wrapper);
-            if (area > maxArea)
+            
+            if (area > maxArea) {
                 maxArea = area;
+            }
         }
 
         // Filter contours by area and resize to fit the original image size
