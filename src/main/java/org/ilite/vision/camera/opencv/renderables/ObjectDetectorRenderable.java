@@ -8,6 +8,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -19,7 +20,8 @@ import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.SaveDialog;
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
-import org.ilite.vision.constants.EStateKeys;
+import org.ilite.vision.constants.BlobData;
+import org.ilite.vision.constants.Paths;
 import org.json.JSONArray;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -73,7 +75,18 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
             }
         });
         
-        JSONArray blobData = (JSONArray) EStateKeys.COLOR_BLOB_DATA.getValue();
+        
+        LinkedHashSet<BlobModel> blobData = null;
+        
+        try {
+            
+            BlobData.readBlobData();
+            blobData = BlobData.getBlobData();
+            
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+        }
         
     }
 

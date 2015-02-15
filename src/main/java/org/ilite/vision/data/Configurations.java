@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.ilite.vision.constants.Constants;
+import org.ilite.vision.constants.Paths;
 import org.json.JSONException;
 
 
@@ -19,7 +19,7 @@ public class Configurations {
         Map<String, Object>tempMap = new HashMap<>();
 
         try {
-            Map<String, Object> map = JSONManager.read(new File(Constants.PROPERTIES_FILE_PATH.getValue()));
+            Map<String, Object> map = JSONManager.read(new File(Paths.PROPERTIES_FILE_PATH.getValue()));
 
             for(Entry<String, Object>anEntry : map.entrySet()) {
                 tempMap.put(anEntry.getKey(), anEntry.getValue());
