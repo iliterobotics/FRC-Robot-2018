@@ -26,8 +26,8 @@ public class VisionSystemAPI {
 	    }
 	}
 
-	public static BufferedImage loadImage(String FILEPATH)throws IOException {
-		BufferedImage myImage = ImageIO.read(new File(FILEPATH));
+	public static BufferedImage loadImage(String path)throws IOException {
+		BufferedImage myImage = ImageIO.read(new File(path));
  
 		return myImage;
 		
