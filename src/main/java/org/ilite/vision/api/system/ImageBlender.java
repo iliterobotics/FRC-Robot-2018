@@ -5,8 +5,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -15,7 +17,6 @@ import org.ilite.vision.api.messages.RobotVisionMsg;
 import org.ilite.vision.camera.opencv.ImagePanel;
 import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
-import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.Paths;
 
 
@@ -91,7 +92,11 @@ public class ImageBlender extends JPanel implements VisionListener {
 	@Override
 	public void onVisionDataRecieved(RobotVisionMsg message) {
 	    BufferedImage frameImage = message.getRawImage();
-	    if(mFinalImage == null) {
+	    redraw(frameImage); 
+	}
+
+    private void redraw(BufferedImage frameImage) {
+        if(mFinalImage == null) {
 	        mFinalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
 	        setPreferredSize(new Dimension(mFinalImage.getWidth(), mFinalImage.getHeight()));
 	       
@@ -107,8 +112,8 @@ public class ImageBlender extends JPanel implements VisionListener {
 	    graphics.drawImage(mOverlayImage, 0, 0,screenWidth,screenHeight, null);
 	    graphics.dispose();
 
-	    mImagePanel.updateImage(mFinalImage); 
-	}
+	    mImagePanel.updateImage(mFinalImage);
+    }
 
 	/**
 	 * Starts the Image Blender and registers it with the {@link VisionSystemAPI}
@@ -120,8 +125,12 @@ public class ImageBlender extends JPanel implements VisionListener {
     public static void main(String[] args) throws IOException {   
     	JFrame frame = new JFrame();  
     	ImageBlender blender = new ImageBlender();  
+    	
+    	File background = new File("src/main/resources/images/Screenshot1.jpg");
+    	BufferedImage backgroundImage = ImageIO.read(background);
+    	blender.redraw(backgroundImage);
     
-        VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(blender);    
+//        VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(blender);
         frame.setContentPane(blender);
          
         
