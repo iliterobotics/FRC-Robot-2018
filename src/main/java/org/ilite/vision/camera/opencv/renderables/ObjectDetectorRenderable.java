@@ -77,6 +77,10 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         
         blobData = null;
 
+        readBlobData();   
+    }
+
+    private void readBlobData() {
         try {
             
             BlobData.readBlobData();
@@ -85,7 +89,6 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
     }
 
     @Override
@@ -236,6 +239,9 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 }
                 else {
                     detectColorBlob();
+                    
+                    // Reload the file
+                    readBlobData();
                 }
                 
                 setHsvColor(mBlobColorHsv);
