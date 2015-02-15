@@ -1,6 +1,7 @@
 {
-"OverlayImagePath": "src/main/resources/images/OverlayHook.png",
+"OVERLAY_IMAGE_PATH": "src/main/resources/images/OverlayHook.png",
 "IMAGES_FOLDER_PATH": "src/main/resources/images/",
+"BLOB_CONFIG_PATH": "BlobConfig.json",
 "CAM_RATE_MILLIS": 100,
 "ALIGNED_CAMERA_IP": "169.254.240.22",
 "START_SLEEP": 1000.0,

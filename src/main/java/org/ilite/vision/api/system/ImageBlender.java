@@ -17,6 +17,7 @@ import org.ilite.vision.camera.opencv.OverlaySlider;
 import org.ilite.vision.camera.opencv.OverlaySlider.OverlaySliderListener;
 import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.Paths;
+import org.opencv.core.Core;
 
 
 /**
@@ -65,7 +66,7 @@ public class ImageBlender extends JPanel implements VisionListener {
     
 	public ImageBlender() throws IOException { 
 	    super(new BorderLayout());
-	    //TODO: Need to save the path of the image to the property file (JSON)
+
         mOverlayImage = VisionSystemAPI.loadImage((String) Paths.OVERLAY_IMAGE_PATH.getValue()); 
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
@@ -123,8 +124,7 @@ public class ImageBlender extends JPanel implements VisionListener {
     
         VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(blender);    
         frame.setContentPane(blender);
-         
-        
+          
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);  
         frame.pack();
