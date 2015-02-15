@@ -55,6 +55,7 @@ public class ImageBlender extends JPanel implements VisionListener {
 	 * onVisonDataReceived, once this starts to receive frames from the camera
 	 */
     private BufferedImage mFinalImage;
+    private BufferedImage mBackgroundImage;
 	
     /**
      * Creates and shows this frame
@@ -73,6 +74,10 @@ public class ImageBlender extends JPanel implements VisionListener {
 
             @Override
             public void onSliderChanged(float value) {
+                
+                if(mBackgroundImage != null) {
+                    redraw(mBackgroundImage);
+                }
                 //redraw the image panel so the new alpha can be applied
                 mImagePanel.getPanel().repaint();
             }
@@ -128,7 +133,7 @@ public class ImageBlender extends JPanel implements VisionListener {
     	
     	File background = new File("src/main/resources/images/Screenshot1.jpg");
     	BufferedImage backgroundImage = ImageIO.read(background);
-    	blender.redraw(backgroundImage);
+    	blender.setbackgroundImage(backgroundImage);
     
 //        VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(blender);
         frame.setContentPane(blender);
@@ -137,6 +142,12 @@ public class ImageBlender extends JPanel implements VisionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);  
         frame.pack();
+        
+    }
+
+    private void setbackgroundImage(BufferedImage pBackgroundImage) {
+        mBackgroundImage = pBackgroundImage;
+        redraw(mBackgroundImage);
         
     }
 }
