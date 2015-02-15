@@ -5,10 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -35,8 +33,6 @@ import org.ilite.vision.constants.Paths;
  * the image panel in the center
  */
 public class ImageBlender extends JPanel implements VisionListener {
-    
-    private static BufferedImage img;
     
     /**
      * The panel that will render the mFinalImage onto this frame. 
@@ -69,7 +65,7 @@ public class ImageBlender extends JPanel implements VisionListener {
     
 	public ImageBlender() throws IOException { 
 	    super(new BorderLayout());
-
+	    //TODO: Need to save the path of the image to the property file (JSON)
         mOverlayImage = VisionSystemAPI.loadImage((String) Paths.OVERLAY_IMAGE_PATH.getValue()); 
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
@@ -94,7 +90,7 @@ public class ImageBlender extends JPanel implements VisionListener {
 	 */
 	@Override
 	public void onVisionDataRecieved(RobotVisionMsg message) {
-	    BufferedImage frameImage = img;
+	    BufferedImage frameImage = message.getRawImage();
 	    if(mFinalImage == null) {
 	        mFinalImage = new BufferedImage(frameImage.getWidth(), frameImage.getHeight(), BufferedImage.TYPE_INT_RGB); 
 	        setPreferredSize(new Dimension(mFinalImage.getWidth(), mFinalImage.getHeight()));
@@ -122,13 +118,13 @@ public class ImageBlender extends JPanel implements VisionListener {
 	 *     thrown if the overlay image could not be loaded
 	 */
     public static void main(String[] args) throws IOException {   
-        img = ImageIO.read(new File("src/main/resources/images/Screenshot1.jpg"));
     	JFrame frame = new JFrame();  
     	ImageBlender blender = new ImageBlender();  
     
         VisionSystemAPI.getVisionSystem(ECameraType.LOCAL_CAMERA).subscribe(blender);    
         frame.setContentPane(blender);
-          
+         
+        
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);  
         frame.pack();
