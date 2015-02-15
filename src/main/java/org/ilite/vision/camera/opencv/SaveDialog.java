@@ -41,12 +41,13 @@ public class SaveDialog extends JFrame {
                 
                 Map<String, Object> objects = new HashMap<String, Object>();
 
+                objects.put("NAME", model.getName());
                 objects.put("AVERAGE_HUE", model.getAverageHue());
                 objects.put("AVERAGE_SATURATION", model.getAverageSaturation());
                 objects.put("AVERAGE_VALUE", model.getAverageValue());
 
                 try {
-                    JSONManager.write(objects, new File(Constants.BLOB_CONFIG_FILE_PATH.getValue()), model.getName());
+                    JSONManager.write(objects, new File(Constants.BLOB_CONFIG_FILE_PATH.getValue()));
                 } catch (JSONException | IOException e1) {                   
                     e1.printStackTrace();
                 }

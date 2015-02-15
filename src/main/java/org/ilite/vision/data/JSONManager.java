@@ -50,7 +50,7 @@ public class JSONManager {
         return map;
     }
     
-    public static void write(Map<String, Object> data, File file, String name) throws JSONException, IOException {
+    public static void write(Map<String, Object> data, File file) throws JSONException, IOException {
         JSONArray array = null;
         
         byte[] buffer = new byte[(int) file.length()];
@@ -65,10 +65,12 @@ public class JSONManager {
         if(br.readLine() != null) {
             String string = new String(buffer);
             JSONObject rootObject = new JSONObject(string);
-            Object object = rootObject.get("Name");
+            Object object = rootObject.get("Blob Data");
+            
             if(object instanceof JSONArray) {
                 array = (JSONArray)object;
-            } else {
+            } 
+            else {
                 array = new JSONArray();
             }
         }
@@ -96,7 +98,7 @@ public class JSONManager {
         
         FileWriter w = new FileWriter(file);
         
-        w.write("{\"" + name + "\":" + array.toString() + "}");
+        w.write("{\"" + "Blob Data" + "\":" + array.toString() + "}");
         
         w.close();
     }
