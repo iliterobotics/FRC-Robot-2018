@@ -7,9 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
@@ -39,10 +43,11 @@ public class ImageBlender extends JPanel implements VisionListener {
      * The panel that will render the mFinalImage onto this frame. 
      */
 	private final ImagePanel mImagePanel = new ImagePanel();
+	
 	/**
-	 * The image that is to be overlayed on top of the frame.
+	 * {@link List} containing all of the overlays
 	 */
-	private final BufferedImage mOverlayImage;
+	private final List<BufferedImage>mOverlays = new ArrayList<BufferedImage>();
 	/**
 	 * The main content of  this frame
 	 */
@@ -56,6 +61,9 @@ public class ImageBlender extends JPanel implements VisionListener {
 	 */
     private BufferedImage mFinalImage;
     private BufferedImage mBackgroundImage;
+
+    private JLabel mPercentageLabel;
+    private final DecimalFormat mFormat = new DecimalFormat("000");
 	
     /**
      * Creates and shows this frame
@@ -68,12 +76,15 @@ public class ImageBlender extends JPanel implements VisionListener {
 	public ImageBlender() throws IOException { 
 	    super(new BorderLayout());
 	    //TODO: Need to save the path of the image to the property file (JSON)
-        mOverlayImage = VisionSystemAPI.loadImage((String) Paths.OVERLAY_IMAGE_PATH.getValue()); 
+	    mOverlays.add(VisionSystemAPI.loadImage((String) Paths.OVERLAY_HOOK_IMAGE_PATH.getValue()));
+	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_IMAGE_PATH.getValue()));
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
             @Override
             public void onSliderChanged(float value) {
+                
+                mPercentageLabel.setText("ALPHA PERCENTAGE: " + mFormat.format(value*100) + "%");
                 
                 if(mBackgroundImage != null) {
                     redraw(mBackgroundImage);
@@ -87,7 +98,14 @@ public class ImageBlender extends JPanel implements VisionListener {
         mImagePanel.getPanel().setPreferredSize(new Dimension(800, 600));
         
         add(mImagePanel.getPanel(), BorderLayout.CENTER);
-        add(mAlphaValueSlider.getSlider(), BorderLayout.NORTH);
+        
+        JPanel controlPanel = new JPanel();
+        controlPanel.add(mAlphaValueSlider.getSlider());
+        
+        float alphaValue = mAlphaValueSlider.getValue();
+        mPercentageLabel = new JLabel("ALPHA PERCENTAGE: " + mFormat.format(alphaValue*100) + "%");
+        controlPanel.add(mPercentageLabel);
+        add(controlPanel, BorderLayout.NORTH);
         setVisible(true);   
 	}
 
@@ -114,7 +132,9 @@ public class ImageBlender extends JPanel implements VisionListener {
 	    graphics.drawImage(frameImage, 0, 0,frameImage.getWidth(), frameImage.getHeight(), null);
 	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,mAlphaValueSlider.getValue()));  
 	    
-	    graphics.drawImage(mOverlayImage, 0, 0,screenWidth,screenHeight, null);
+	    for(BufferedImage anOverlay : mOverlays) {
+	        graphics.drawImage(anOverlay, 0, 0,screenWidth,screenHeight, null);
+	    }
 	    graphics.dispose();
 
 	    mImagePanel.updateImage(mFinalImage);
