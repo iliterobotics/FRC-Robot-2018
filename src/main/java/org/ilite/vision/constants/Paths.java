@@ -4,7 +4,9 @@ import org.ilite.vision.data.Configurations;
 
 public enum Paths {
     IMAGES_FOLDER_PATH("IMAGES_FOLDER_PATH"),
-    BLOB_CONFIG_FILE_PATH("BLOB_CONFIG_PATH"),
+    IMAGES_NUMBER4_PATH("IMAGES_NUMBER4_PATH"),
+    SCREEN_SHOT1_PATH("SCREEN_SHOT1_PATH"),
+    BLOB_CONFIG_PATH("BLOB_CONFIG_PATH"),
     OVERLAY_IMAGE_PATH("OVERLAY_IMAGE_PATH");
 
     private String value;
