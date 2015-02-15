@@ -43,4 +43,10 @@ public class BlobModel {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public String toString() {
+        return "Name: " + name + "\nHSV: [" + hsv[0] + ", " + hsv[1] + ", " + hsv[2] + "]\n";
+    }
+    
 }

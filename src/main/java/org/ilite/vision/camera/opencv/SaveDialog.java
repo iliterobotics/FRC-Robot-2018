@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
-import org.ilite.vision.constants.Constants;
+import org.ilite.vision.constants.Paths;
 import org.ilite.vision.data.JSONManager;
 import org.json.JSONException;
 
@@ -47,7 +47,7 @@ public class SaveDialog extends JFrame {
                 objects.put("AVERAGE_VALUE", model.getAverageValue());
 
                 try {
-                    JSONManager.write(objects, new File(Constants.BLOB_CONFIG_FILE_PATH.getValue()));
+                    JSONManager.write(objects, new File(Paths.BLOB_CONFIG_FILE_PATH.getValue()), "Blob Data");
                 } catch (JSONException | IOException e1) {                   
                     e1.printStackTrace();
                 }

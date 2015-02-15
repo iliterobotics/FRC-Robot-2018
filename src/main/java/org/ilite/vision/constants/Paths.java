@@ -1,13 +1,14 @@
 package org.ilite.vision.constants;
 
-public enum Constants {
+public enum Paths {
     IMAGES_FOLDER_PATH("src/main/resources/images/"),
     PROPERTIES_FILE_PATH("properties.json"),
-    BLOB_CONFIG_FILE_PATH("BlobConfig.json");
+    BLOB_CONFIG_FILE_PATH("BlobConfig.json"),
+    OVERLAY_IMAGE_PATH("OverlayImagePath");
 
     private String value;
     
-    private Constants(String val) {
+    private Paths(String val) {
         value = val;
     }
     

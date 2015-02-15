@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
-import org.ilite.vision.constants.Constants;
+import org.ilite.vision.constants.Paths;
 
 public class ImageWindow {
 
@@ -72,8 +72,8 @@ public class ImageWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                File dir = new File(Constants.IMAGES_FOLDER_PATH.getValue());
-                File file = new File(Constants.IMAGES_FOLDER_PATH.getValue() + "image" + dir.listFiles().length + ".png");
+                File dir = new File(Paths.IMAGES_FOLDER_PATH.getValue());
+                File file = new File(Paths.IMAGES_FOLDER_PATH.getValue() + "image" + dir.listFiles().length + ".png");
                 
                 try {
                     ImageIO.write(mCurrentFrame, "png", file);
