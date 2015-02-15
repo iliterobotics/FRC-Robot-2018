@@ -47,7 +47,7 @@ public class SaveDialog extends JFrame {
                 objects.put("AVERAGE_VALUE", model.getAverageValue());
 
                 try {
-                    JSONManager.write(objects, new File(Paths.BLOB_CONFIG_FILE_PATH.getValue()), "Blob Data");
+                    JSONManager.write(objects, new File(Paths.BLOB_CONFIG_PATH.getValue()), "Blob Data");
                 } catch (JSONException | IOException e1) {                   
                     e1.printStackTrace();
                 }

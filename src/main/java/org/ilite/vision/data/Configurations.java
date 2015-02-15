@@ -19,7 +19,7 @@ public class Configurations {
         Map<String, Object>tempMap = new HashMap<>();
 
         try {
-            Map<String, Object> map = JSONManager.read(new File(Paths.PROPERTIES_FILE_PATH.getValue()));
+            Map<String, Object> map = JSONManager.read(new File("properties.json"));
 
             for(Entry<String, Object>anEntry : map.entrySet()) {
                 tempMap.put(anEntry.getKey(), anEntry.getValue());

@@ -6,12 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.ilite.vision.camera.opencv.OpenCVUtils;
-import org.opencv.core.Mat;
+import org.ilite.vision.api.system.ImageBlender;
 
 public class EdgeDetectWindow {
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File imageFile = new File("src/main/resources/images/Screenshot1.jpg");
 
         BufferedImage aRead;
@@ -20,7 +19,6 @@ public class EdgeDetectWindow {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
     }
 
 }

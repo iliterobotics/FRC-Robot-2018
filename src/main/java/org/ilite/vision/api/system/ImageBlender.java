@@ -76,8 +76,8 @@ public class ImageBlender extends JPanel implements VisionListener {
 	public ImageBlender() throws IOException { 
 	    super(new BorderLayout());
 	    //TODO: Need to save the path of the image to the property file (JSON)
-	    mOverlays.add(VisionSystemAPI.loadImage((String) Paths.OVERLAY_HOOK_IMAGE_PATH.getValue()));
-	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_IMAGE_PATH.getValue()));
+	    mOverlays.add(VisionSystemAPI.loadImage((String) Paths.OVERLAY_HOOK_PATH.getValue()));
+	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_PATH.getValue()));
         
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
