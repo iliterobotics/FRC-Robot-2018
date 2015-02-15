@@ -47,10 +47,11 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
     private Object SYNC_OBJECT;
     private ImageWindow mParentWindow;
-
+    private LinkedHashSet<BlobModel> blobData;
+    
     public ObjectDetectorRenderable(ImageWindow pWindow) {
         mParentWindow = pWindow;
-        
+  
         mLowerBound = new Scalar(0);
         mUpperBound = new Scalar(0);
         mMinContourArea = 0.1;
@@ -74,13 +75,13 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         });
         
         
-        LinkedHashSet<BlobModel> blobData = null;
-        
+        blobData = null;
+
         try {
             
             BlobData.readBlobData();
             blobData = BlobData.getBlobData();
-            
+       
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,8 +102,29 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 mParentWindow.repaint();
             }
         }
+        
+        
+        detectColorBlob();
     }
 
+    public void detectColorBlob() {
+        Iterator<BlobModel> iterator = blobData.iterator();
+        BlobModel m = null;
+        
+        while(iterator.hasNext()) {
+            m = iterator.next();
+        }
+        
+        if(m != null) {
+            mBlobColorHsv = Core.sumElems(new Mat());
+            mBlobColorHsv.val[0] = m.getAverageHue();
+            mBlobColorHsv.val[1] = m.getAverageSaturation();
+            mBlobColorHsv.val[2] = m.getAverageValue();
+        
+            setHsvColor(mBlobColorHsv);
+        }
+    }
+    
     @Override
     public void paint(Graphics pGraphics, BufferedImage pImage) {
 
@@ -206,9 +228,14 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 // Calculate average color of touched region
                 mBlobColorHsv = Core.sumElems(selectedRegionHsv);
 
-                int pointCount = selectedRect.width * selectedRect.height;
-                for (int i = 0; i < mBlobColorHsv.val.length; i++) {
-                    mBlobColorHsv.val[i] /= pointCount;
+                if(blobData == null || blobData.size() == 0) {
+                    int pointCount = selectedRect.width * selectedRect.height;
+                    for (int i = 0; i < mBlobColorHsv.val.length; i++) {
+                        mBlobColorHsv.val[i] /= pointCount;
+                    }
+                }
+                else {
+                    detectColorBlob();
                 }
                 
                 setHsvColor(mBlobColorHsv);
