@@ -37,12 +37,59 @@ import org.opencv.imgproc.Imgproc;
  * 
  */
 public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdateListener, ISelectionChangedListener {
+    
+    
+    private class DetectorColorValues {
+        private final Scalar mLowerBound;
+        private final Scalar mUpperBound;
+        private final Scalar mColorRadius; 
+        private final Scalar mBlobColorHsv;
+        private final Mat mSpectrum;
+        public DetectorColorValues(Scalar pLowerBound, Scalar pUpperBound,
+                Scalar pColorRadius, Scalar pBlobColorHsv, Mat pSpectrum) {
+            super();
+            mLowerBound = pLowerBound;
+            mUpperBound = pUpperBound;
+            mColorRadius = pColorRadius;
+            mBlobColorHsv = pBlobColorHsv;
+            mSpectrum = pSpectrum;
+        }
+        public Scalar getLowerBound() {
+            return mLowerBound;
+        }
+        public Scalar getUpperBound() {
+            return mUpperBound;
+        }
+        public Scalar getColorRadius() {
+            return mColorRadius;
+        }
+        public Scalar getBlobColorHsv() {
+            return mBlobColorHsv;
+        }
+        
+        public Mat getSpectrum() {
+            return mSpectrum;
+        }
+        
+        
+    }
     private static final Scalar CONTOUR_SCALAR = new Scalar(4, 4);
+    
+    //Take these values out completely
     private Scalar mLowerBound, mUpperBound; // Bounds for range checking in HSV color space
+    
     private double mMinContourArea;          // Minimum contour area in percent for contours filtering
+    
+    //Take this out completely 
     private Scalar mColorRadius;             // Color radius for range checking in HSV color space
+    
+    
     private List<MatOfPoint> mContours;
+    
+    //Take this out completely
     private Scalar mBlobColorHsv;
+    
+    
     private BufferedImage mCurrentFrame;
     private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
     private Object SYNC_OBJECT;
@@ -98,6 +145,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         }
 
         // Do work to detect
+        //This should check to see if this is not empty when this becomes a list
         if (mBlobColorHsv != null) {
             process(OpenCVUtils.toMatrix(pImage));
             
@@ -115,6 +163,9 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         BlobModel m = null;
         
         while(iterator.hasNext()) {
+            //Currently this is going to go to the very last blob data. Instead
+            //this should convert each element to a Scalar and should put this
+            //into the new list of mBlobColorHSV
             m = iterator.next();
         }
         
@@ -160,18 +211,24 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     }
 
     public void process(Mat rgbaImage) {
-        Imgproc.pyrDown(rgbaImage, mPyrDownMat);
-        Imgproc.pyrDown(mPyrDownMat, mPyrDownMat);
+        
 
-        Imgproc.cvtColor(mPyrDownMat, mHsvMat, Imgproc.COLOR_RGB2HSV_FULL);
+     //Move this to the top of the function. Basically we'll keep adding to this
+     List<MatOfPoint> contours = new ArrayList<MatOfPoint>();       
+        //Perform this on each of the DetctorColorValues
+            Imgproc.pyrDown(rgbaImage, mPyrDownMat);
+            Imgproc.pyrDown(mPyrDownMat, mPyrDownMat);
 
-        Core.inRange(mHsvMat, mLowerBound, mUpperBound, mMask);
-        Imgproc.dilate(mMask, mDilatedMask, new Mat());
+            Imgproc.cvtColor(mPyrDownMat, mHsvMat, Imgproc.COLOR_RGB2HSV_FULL);
 
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+            Core.inRange(mHsvMat, mLowerBound, mUpperBound, mMask);
+            Imgproc.dilate(mMask, mDilatedMask, new Mat());
+            
 
-        Imgproc.findContours(mDilatedMask, contours, mHierarchy,
-        Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+            Imgproc.findContours(mDilatedMask, contours, mHierarchy,
+            Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+       //End of loop
+
 
         // Find max contour area
         double maxArea = 0;
@@ -229,6 +286,9 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
                 // Calculate average color of touched region
+                
+                //So when this becomes a list, this should be replaced to clear
+                //out the list and then put a single element into it
                 mBlobColorHsv = Core.sumElems(selectedRegionHsv);
 
                 if(blobData == null || blobData.size() == 0) {
@@ -265,6 +325,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     }
     
     public void setHsvColor(Scalar hsvColor) {
+        //Instead of setting member variables, this method should return ObjectDetectorRenderable
         mBlobColorHsv = hsvColor;
         double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0]
                 - mColorRadius.val[0]
