@@ -25,7 +25,7 @@ This will compile the project and generate Eclipse project.
 <h1>To build a new jar</h1>
 gradle jar
 
-<h1>To run wit jar</h1>
+<h1>To run with jar</h1>
 Update the java library path to include a path to the opencv java library. 
 For example: opencv/build/java/x64/
 
