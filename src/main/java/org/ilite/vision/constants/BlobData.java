@@ -18,7 +18,7 @@ public class BlobData {
     
     public static void readBlobData() throws JSONException, IOException {
         
-        File file = new File(Paths.BLOB_CONFIG_FILE_PATH.getValue());
+        File file = new File(Paths.BLOB_CONFIG_PATH.getValue());
         
         byte[] buffer = new byte[(int) file.length()];
         

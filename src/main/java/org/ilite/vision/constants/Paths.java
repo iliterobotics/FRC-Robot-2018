@@ -1,16 +1,19 @@
 package org.ilite.vision.constants;
 
+import org.ilite.vision.data.Configurations;
+
 public enum Paths {
-    IMAGES_FOLDER_PATH("src/main/resources/images/"),
-    PROPERTIES_FILE_PATH("properties.json"),
-    BLOB_CONFIG_FILE_PATH("BlobConfig.json"),
-    OVERLAY_HOOK_IMAGE_PATH("src/main/resources/images/OverlayHook.png"), 
-    OVERLAY_TOTE_IMAGE_PATH("src/main/resources/images/OverlayTote.png");
+    IMAGES_FOLDER_PATH("IMAGES_FOLDER_PATH"),
+    IMAGES_NUMBER4_PATH("IMAGES_NUMBER4_PATH"),
+    SCREEN_SHOT1_PATH("SCREEN_SHOT1_PATH"),
+    BLOB_CONFIG_PATH("BLOB_CONFIG_PATH"),
+    OVERLAY_HOOK_PATH("OVERLAY_HOOK_PATH"),
+    OVERLAY_TOTE_PATH("OVERLAY_TOTE_PATH");
 
     private String value;
     
     private Paths(String val) {
-        value = val;
+        value = Configurations.getStringValue(val);
     }
     
     public String getValue() {
