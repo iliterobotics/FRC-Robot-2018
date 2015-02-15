@@ -4,7 +4,7 @@ public enum Paths {
     IMAGES_FOLDER_PATH("src/main/resources/images/"),
     PROPERTIES_FILE_PATH("properties.json"),
     BLOB_CONFIG_FILE_PATH("BlobConfig.json"),
-    OVERLAY_IMAGE_PATH("src/main/resources/Overlay.png");
+    OVERLAY_IMAGE_PATH("src/main/resources/images/OverlayHook.png");
 
     private String value;
     
