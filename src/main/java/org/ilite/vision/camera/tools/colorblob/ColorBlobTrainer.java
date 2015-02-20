@@ -83,7 +83,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         sLog.debug(ip);
         
         //if(InetAddress.getByName(ip).isReachable(5000)) {
-            ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(null);
+            ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(ip);
             
             ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
             aTrainer.connectToCamera();
