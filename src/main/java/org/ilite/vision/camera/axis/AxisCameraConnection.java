@@ -191,7 +191,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                 notifyListeners(aGrabImage);
 
             }
-        }, 5000, 500, TimeUnit.MILLISECONDS);
+        }, 1000, 5, TimeUnit.MILLISECONDS);
 
     }
 
