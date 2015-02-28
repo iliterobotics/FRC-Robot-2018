@@ -37,7 +37,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     public ColorBlobTrainer(final BufferedImage pImage) {
         renderable = new Renderable();
         mWindow.addRenderable(renderable);
-        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow);
+        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, true);
         mWindow.addRenderable(mObjectDetectorRenderable);
         mObjectDetectorRenderable.frameAvail(pImage);
         mWindow.getMouseRenderable().addSelectionListener(
@@ -53,7 +53,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         renderable = new Renderable();
         mWindow.addRenderable(renderable);
 
-        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow);
+        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, true);
         mWindow.addRenderable(mObjectDetectorRenderable);
         mCamera.addCameraFrameListener(mObjectDetectorRenderable);
         mWindow.getMouseRenderable().addSelectionListener(

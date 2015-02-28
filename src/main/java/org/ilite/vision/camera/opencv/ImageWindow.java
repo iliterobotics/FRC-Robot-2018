@@ -21,15 +21,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
+import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.constants.Paths;
 
 public class ImageWindow {
 
     private Set<IRenderable> mRenderables = new CopyOnWriteArraySet<IRenderable>();
     private JButton pauseButton;
+    private JButton generateOverlay;
+    private ObjectDetectorRenderable listener;
     private JButton saveImageButton;
     private JPanel mImagePanel = new JPanel() {
-
+        
         protected void paintComponent(java.awt.Graphics g) {
             super.paintComponent(g);
 
@@ -43,6 +46,10 @@ public class ImageWindow {
         }
     };
 
+    public boolean isPaused() {
+        return pauseButton.getText().equals("resume");
+    }
+    
     public void addRenderable(IRenderable pRenderable) {
         mRenderables.add(pRenderable);
 
@@ -67,6 +74,16 @@ public class ImageWindow {
                     pImage.getWidth(), pImage.getHeight()));
         }
 
+        generateOverlay = new JButton("generate overlay");
+        generateOverlay.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listener.onGenerateOverlayClicked();
+            }
+            
+        });
+        
         saveImageButton = new JButton("save current frame");
         saveImageButton.addActionListener(new ActionListener() {
 
@@ -89,7 +106,9 @@ public class ImageWindow {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-
+                
+                listener.onPauseClicked();
+                
                 if (pauseButton.getText().equals("pause")) {
                     pauseButton.setText("resume");
 
@@ -105,6 +124,7 @@ public class ImageWindow {
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(pauseButton);
         buttonPanel.add(saveImageButton);
+        buttonPanel.add(generateOverlay);
         
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.add(buttonPanel, BorderLayout.NORTH);
@@ -194,6 +214,14 @@ public class ImageWindow {
 
     public MouseRenderable getMouseRenderable() {
         return mMouseRenderable;
+    }
+    
+    public void setListener(ObjectDetectorRenderable listener) {
+        this.listener = listener;
+    }
+    
+    public ObjectDetectorRenderable getListener() {
+        return listener;
     }
 
     public void repaint() {
