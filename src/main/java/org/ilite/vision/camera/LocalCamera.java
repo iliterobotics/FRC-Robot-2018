@@ -49,7 +49,7 @@ public class LocalCamera extends AbstractCameraConnection {
             int DEVICE = (int) ECameraConfig.DEVICE.getValue();
             mCamera = new VideoCapture(DEVICE);
             try {
-                Thread.sleep(ECameraConfig.START_SLEEP.getValue());
+                Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }

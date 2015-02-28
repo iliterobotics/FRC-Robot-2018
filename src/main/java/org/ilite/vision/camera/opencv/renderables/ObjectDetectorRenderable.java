@@ -1,5 +1,6 @@
 package org.ilite.vision.camera.opencv.renderables;
 
+import org.ilite.vision.constants.Paths;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,10 +20,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-
+import javax.swing.JOptionPane;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
 import org.ilite.vision.camera.opencv.ISelectionChangedListener;
@@ -263,7 +263,8 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
         }
         
-        FileOutputStream stream = new FileOutputStream(new File("testimage.png"));
+        File file = new File(Paths.IMAGES_FOLDER_PATH + JOptionPane.showInputDialog("Overlay Name"));
+        FileOutputStream stream = new FileOutputStream(file);
         
         ImageIO.write(image, "png", stream);
         
