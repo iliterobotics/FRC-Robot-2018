@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
+import org.ilite.vision.constants.ECameraConfig;
+import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.Paths;
 
 public class ImageWindow {
@@ -33,6 +35,7 @@ public class ImageWindow {
     private JButton generateOverlay;
     private ObjectDetectorRenderable listener;
     private JButton saveImageButton;
+    
     private JPanel mImagePanel = new JPanel() {
         
         protected void paintComponent(java.awt.Graphics g) {
@@ -122,11 +125,16 @@ public class ImageWindow {
                     pauseButton.setText("resume");
                     isPaused = true;
 
-                    CameraConnectionFactory.getCameraConnection(null).pauseResume(true);
+                    CameraConnectionFactory.getCameraConnection(
+                            ECameraType.ALIGNMENT_CAMERA.getCameraIP())
+                            .pauseResume(true);
+                    
                 } else if (pauseButton.getText().equals("resume")) {
                     isPaused = false;
                     pauseButton.setText("pause");
-                    CameraConnectionFactory.getCameraConnection(null).pauseResume(false);
+                    CameraConnectionFactory.getCameraConnection(
+                            ECameraType.ALIGNMENT_CAMERA.getCameraIP())
+                            .pauseResume(false);
                 }
                 
                 generateOverlay.setEnabled(isPaused);

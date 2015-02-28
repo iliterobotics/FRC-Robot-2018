@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -41,9 +42,12 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private String base64authorization = null;
     private HttpURLConnection huc = null;
     private Runnable updater;
+    private boolean isPaused;
     private boolean connected = false;
     private long[] frameTimes = new long[10]; //Used to calculate an average FPS
     private MJPEGParser parser;
+    private Future<?> cameraFuture;
+    private int cameraDelay = (int) ECameraConfig.INITIAL_CAMERA_DELAY.getValue();
     
     private static final ExecutorService sService = Executors
             .newSingleThreadExecutor(new ThreadFactory() {
@@ -60,10 +64,11 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     public AxisCameraConnection(String pIp) {
         ipAddress = pIp;
         mjpgURL = "http://" + ipAddress + "/mjpg/video.mjpg";
+        
         // only use authorization if all informations are available
          if (username != null && password != null) {
-         base64authorization = encodeUsernameAndPasswordInBase64(username,
-         password);
+             base64authorization = encodeUsernameAndPasswordInBase64(username,
+                                                                     password);
          }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -102,6 +107,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
             String contentType = huc.getContentType();
             Pattern pattern = Pattern.compile("boundary=(.*)$");
             Matcher matcher = pattern.matcher(contentType);
+            
             try {
                 matcher.find();
                 boundary = matcher.group(1);
@@ -113,6 +119,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
             connected = true;
             System.out.println("CONNECTED");
             parser = new MJPEGParser(is, boundary);
+            
         } catch (IOException e) { // incase no connection exists wait and try
                                   // again, instead of printing the error
             try {
@@ -144,8 +151,9 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     NumberFormat decFormat = DecimalFormat.getNumberInstance();
 
     public void run() {
+        
         try {
-
+            
             parser.parse();
 
         } catch (IOException e) {
@@ -157,6 +165,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     }
 
     public BufferedImage grabImage() {
+        
         byte[] segment = parser.getSegment();
 
         if (segment == null) {
@@ -183,7 +192,12 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     public void start() {
         connect();
         sService.submit(this);
-        sScheduler.scheduleAtFixedRate(new Runnable() {
+        
+        executeCameraThread();
+    }
+
+    private void executeCameraThread() {
+        cameraFuture = sScheduler.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {
@@ -191,17 +205,26 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                 notifyListeners(aGrabImage);
 
             }
-        }, 1000, 5, TimeUnit.MILLISECONDS);
-
+        }, cameraDelay, 
+           (int) ECameraConfig.CAMERA_PERIOD.getValue(), 
+           TimeUnit.MILLISECONDS);
+        
+        cameraDelay = 0;
     }
 
     @Override
     public void destroy() {
         
     }
+    
     public void pauseResume(boolean pShouldPause) {
-        // TODO Auto-generated method stub
+        isPaused = pShouldPause;
         
+        cameraFuture.cancel(isPaused);
+        
+        if(!isPaused) {
+           executeCameraThread();
+        }
     }
 }
 
