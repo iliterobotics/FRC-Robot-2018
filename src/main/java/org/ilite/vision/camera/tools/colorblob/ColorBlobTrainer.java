@@ -77,8 +77,8 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // Put the IP address to connect to an MPEG-J camera, otherwise null
         // will
         // connect to a local webcam
-//        String ip = null;
-        String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
+        String ip = null;
+//        String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
         
         sLog.debug(ip);
         
