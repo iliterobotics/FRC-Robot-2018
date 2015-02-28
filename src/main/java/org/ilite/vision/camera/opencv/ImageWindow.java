@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
+import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.constants.ECameraConfig;
 import org.ilite.vision.constants.ECameraType;
@@ -124,17 +125,14 @@ public class ImageWindow {
                 if (pauseButton.getText().equals("pause")) {
                     pauseButton.setText("resume");
                     isPaused = true;
-
-                    CameraConnectionFactory.getCameraConnection(
-                            ECameraType.ALIGNMENT_CAMERA.getCameraIP())
-                            .pauseResume(true);
                     
                 } else if (pauseButton.getText().equals("resume")) {
                     isPaused = false;
                     pauseButton.setText("pause");
-                    CameraConnectionFactory.getCameraConnection(
-                            ECameraType.ALIGNMENT_CAMERA.getCameraIP())
-                            .pauseResume(false);
+                }
+                
+                if(mCameraConnection != null) {
+                    mCameraConnection.pauseResume(isPaused);
                 }
                 
                 generateOverlay.setEnabled(isPaused);
@@ -200,6 +198,7 @@ public class ImageWindow {
 
     private MouseRenderable mMouseRenderable;
     private JPanel mButtonPanel;
+    private ICameraConnection mCameraConnection;
 
     public void updateImage(BufferedImage pImage) {
 
@@ -265,6 +264,11 @@ public class ImageWindow {
                 }
             });
         }
+    }
+
+    public void setCameraConnection(ICameraConnection pCamera) {
+        mCameraConnection =pCamera;
+        
     }
 
 }

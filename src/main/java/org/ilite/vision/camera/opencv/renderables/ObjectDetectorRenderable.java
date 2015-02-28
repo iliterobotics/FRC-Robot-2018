@@ -1,6 +1,6 @@
 package org.ilite.vision.camera.opencv.renderables;
 
-import org.ilite.vision.constants.Paths;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,13 +16,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
+
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
 import org.ilite.vision.camera.opencv.ISelectionChangedListener;
@@ -31,6 +30,7 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.SaveDialog;
 import org.ilite.vision.camera.tools.colorblob.BlobModel;
 import org.ilite.vision.constants.BlobData;
+import org.ilite.vision.constants.Paths;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -46,6 +46,7 @@ import org.opencv.imgproc.Imgproc;
  * 
  */
 public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdateListener, ISelectionChangedListener {
+    private static final BasicStroke WIDE_STROKE = new BasicStroke(5);
     private Object SYNC_OBJECT;
     private ImageWindow mParentWindow;
     private BufferedImage mCurrentFrame;
@@ -238,6 +239,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         
         graphics.setColor(new Color(0, 0, 0, 0));
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.setStroke(WIDE_STROKE);
                 
         for(Entry<BlobModel, List<MatOfPoint>>anEntry : points.entrySet()) {
 
@@ -263,7 +265,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
         }
         
-        File file = new File(Paths.IMAGES_FOLDER_PATH + JOptionPane.showInputDialog("Overlay Name"));
+        File file = new File(Paths.IMAGES_FOLDER_PATH.getValue() + "/Overlay.png");
         FileOutputStream stream = new FileOutputStream(file);
         
         ImageIO.write(image, "png", stream);

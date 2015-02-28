@@ -80,7 +80,7 @@ public class ImageBlender extends JPanel implements VisionListener {
 //	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_PATH.getValue()));
         
 	    //TODO: Load in the correct path:
-	    mOverlays.add(VisionSystemAPI.loadImage("testimage.png"));
+	    mOverlays.add(VisionSystemAPI.loadImage(Paths.IMAGES_FOLDER_PATH.getValue() + "/Overlay.png"));
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
             @Override

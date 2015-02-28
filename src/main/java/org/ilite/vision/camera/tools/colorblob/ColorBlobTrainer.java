@@ -59,6 +59,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         mCamera.addCameraFrameListener(mObjectDetectorRenderable);
         mWindow.getMouseRenderable().addSelectionListener(
                 mObjectDetectorRenderable);
+        mWindow.setCameraConnection(mCamera);
 
     }
 
