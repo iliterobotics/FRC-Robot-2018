@@ -21,7 +21,7 @@ public class SobelEdgeFun {
         File imageFile = new File("src/main/resources/images/Screenshot1.jpg");
 
         BufferedImage aRead = ImageIO.read(imageFile);
-        ImageWindow origImage =new ImageWindow(aRead, "ORIGINAL", false);
+        ImageWindow origImage =new ImageWindow(aRead, "ORIGINAL");
         origImage.show();
         Mat aMatrix = OpenCVUtils.toMatrix(aRead);
         
@@ -44,7 +44,7 @@ public class SobelEdgeFun {
         Mat grad = new Mat();
         Core.addWeighted(gradabsx, .5, gradabsy, .5, 0, grad);
         
-        ImageWindow finalWindow  = new ImageWindow(OpenCVUtils.toBufferedImage(grad),"SOBEL",false);
+        ImageWindow finalWindow  = new ImageWindow(OpenCVUtils.toBufferedImage(grad),"SOBEL");
         
         
         

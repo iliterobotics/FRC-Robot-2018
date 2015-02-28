@@ -19,7 +19,7 @@ import org.opencv.imgproc.Imgproc;
 public class HistoGramImageWindow extends ImageWindow {
 
     public HistoGramImageWindow(BufferedImage pImage) {
-        super(null, "Histogram", false);
+        super(null, "Histogram");
     }
 
     @Override
