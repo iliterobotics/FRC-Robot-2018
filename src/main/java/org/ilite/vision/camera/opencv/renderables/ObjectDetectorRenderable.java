@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.imageio.ImageIO;
@@ -46,17 +49,13 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     private Object SYNC_OBJECT;
     private ImageWindow mParentWindow;
     private BufferedImage mCurrentFrame;
-    private final Set<BlobModel> blobData;
-    private List<MatOfPoint> mContours;
+    private Map<BlobModel, List<MatOfPoint>>mBlobContourMap = new ConcurrentHashMap<BlobModel, List<MatOfPoint>>();
 
     public ObjectDetectorRenderable(ImageWindow pWindow, boolean readData) {
         pWindow.setListener(this);
         
         mParentWindow = pWindow;
-        mContours = new ArrayList<MatOfPoint>();
         SYNC_OBJECT = new Object();
-
-        blobData = new CopyOnWriteArraySet<BlobModel>();
 
         if(readData) {
             readBlobData();
@@ -66,7 +65,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
             
             @Override
             public void actionPerformed(ActionEvent pE) {
-                blobData.clear();
+                mBlobContourMap.clear();
                 process(OpenCVUtils.toMatrix(mCurrentFrame));
             }
         });
@@ -77,7 +76,10 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         try {
             
             BlobData.readBlobData();
-            blobData.addAll(BlobData.getBlobData());
+            
+            for(BlobModel aModel : BlobData.getBlobData()) {
+                mBlobContourMap.put(aModel, new ArrayList<MatOfPoint>());
+            }
        
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +93,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         }
 
         // Do work to detect
-        if (!blobData.isEmpty()) {
+        if (!mBlobContourMap.isEmpty()) {
             process(OpenCVUtils.toMatrix(pImage));
             
             if(mParentWindow != null) {
@@ -103,38 +105,35 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     @Override
     public void paint(Graphics pGraphics, BufferedImage pImage) {
 
-        for (int i = 0; i < mContours.size(); i++) {
-            MatOfPoint aMatOfPoint = mContours.get(i);
+        for (Entry<BlobModel, List<MatOfPoint>>anEntry : mBlobContourMap.entrySet()) {
 
-            GeneralPath aPath = new GeneralPath();
-            org.opencv.core.Point firstPoint = null;
-            
-            for (org.opencv.core.Point aContourPoint : aMatOfPoint.toList()) {
-                if (firstPoint == null) {
-                    firstPoint = aContourPoint;
-                    aPath.moveTo(aContourPoint.x, aContourPoint.y);
-                } else {
-                    aPath.lineTo(aContourPoint.x, aContourPoint.y);
+            for(MatOfPoint aMatOfPoint : anEntry.getValue()) {
+
+                GeneralPath aPath = new GeneralPath();
+                org.opencv.core.Point firstPoint = null;
+
+                for (org.opencv.core.Point aContourPoint : aMatOfPoint.toList()) {
+                    if (firstPoint == null) {
+                        firstPoint = aContourPoint;
+                        aPath.moveTo(aContourPoint.x, aContourPoint.y);
+                    } else {
+                        aPath.lineTo(aContourPoint.x, aContourPoint.y);
+                    }
                 }
-            }
-            if (firstPoint != null) {
-                aPath.lineTo(firstPoint.x, firstPoint.y);
-                Graphics2D gd = (Graphics2D) pGraphics;
-                gd.setColor(Color.YELLOW);
-                gd.draw(aPath);
+                if (firstPoint != null) {
+                    aPath.lineTo(firstPoint.x, firstPoint.y);
+                    Graphics2D gd = (Graphics2D) pGraphics;
+                    gd.setColor(anEntry.getKey().getOverlayColor());
+                    gd.draw(aPath);
+                }
             }
         }
 
     }
-    
-    public List<MatOfPoint> getContours() {
-        return mContours;
-    }
 
     public void process(Mat rgbaImage) {
 
-        mContours.clear();
-        for(BlobModel aModel : blobData) {
+        for(BlobModel aModel : mBlobContourMap.keySet()) {
             Mat aPyrDownMat = aModel.getPyrDownMat();
             Mat aHsvMat = aModel.getHsvMat();
             Scalar mLowerBound = aModel.getLowerBound();
@@ -171,13 +170,15 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
             // Filter contours by area and resize to fit the original image size
             each = contours.iterator();
+            List<MatOfPoint>aContList = new ArrayList<MatOfPoint>();
             while (each.hasNext()) {
                 MatOfPoint contour = each.next();
                 if (Imgproc.contourArea(contour) > mMinContourArea * maxArea) {
                     Core.multiply(contour, BlobModel.CONTOUR_SCALAR, contour);
-                    mContours.add(contour);
+                    aContList.add(contour);
                 }
             }    
+            mBlobContourMap.put(aModel, aContList);
         }
     }
 
@@ -218,7 +219,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 
                 calculateHSV(selectedRect, hsvColor);
                 aModel.setHsvColor(hsvColor);
-                blobData.add(aModel);
+                mBlobContourMap.put(aModel, new ArrayList<MatOfPoint>());
                 frameAvail(mCurrentFrame);
 
                 openSaveDialog(OpenCVUtils.toBufferedImage(selectedRegionRgba),aModel);
@@ -228,7 +229,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
     }
 
-    private void constructImage(BufferedImage img, List<MatOfPoint> points) throws IOException {
+    private static void constructImage(BufferedImage img, Map<BlobModel, List<MatOfPoint>> points) throws IOException {
         BufferedImage image = new BufferedImage(img.getWidth(), 
                                                 img.getHeight(), 
                                                 BufferedImage.TYPE_INT_ARGB);
@@ -237,11 +238,12 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         
         graphics.setColor(new Color(0, 0, 0, 0));
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
-        graphics.setColor(Color.GREEN);
-        
-        List<GeneralPath>paths = new ArrayList<GeneralPath>();
-        for(MatOfPoint aPoint : points) {
-           
+                
+        for(Entry<BlobModel, List<MatOfPoint>>anEntry : points.entrySet()) {
+
+            graphics.setColor(anEntry.getKey().getOverlayColor());
+            
+            for(MatOfPoint aPoint : anEntry.getValue()) {
             GeneralPath aPath = new GeneralPath();
             org.opencv.core.Point firstPoint = null;
             for (org.opencv.core.Point aContourPoint : aPoint.toList()) {
@@ -255,9 +257,10 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
             if (firstPoint != null) {
                 aPath.lineTo(firstPoint.x, firstPoint.y);
             }
-            
+
             graphics.draw(aPath);
-            
+            }
+
         }
         
         FileOutputStream stream = new FileOutputStream(new File("testimage.png"));
@@ -277,7 +280,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     public void onGenerateOverlayClicked() {
         try {
             if(mParentWindow.isPaused()) {
-                constructImage(mCurrentFrame, mContours);
+                constructImage(mCurrentFrame, mBlobContourMap);
             }
         } catch (IOException e) {
             
@@ -294,7 +297,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     }
 
     public void addBlobModel(BlobModel pModel) {
-        blobData.add(pModel);
+       mBlobContourMap.put(pModel, new ArrayList<MatOfPoint>());
         
     }
 }

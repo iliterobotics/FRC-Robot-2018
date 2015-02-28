@@ -1,6 +1,7 @@
 package org.ilite.vision.camera.opencv;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -78,12 +80,12 @@ public class SaveDialog extends JFrame {
        
         buttonPanel.add(saveButton);
         buttonPanel.add(dropButton);
-        buttonPanel.setPreferredSize(new Dimension(image.getWidth(), saveButton.getPreferredSize().height + 5));
+//        buttonPanel.setPreferredSize(new Dimension(image.getWidth(), saveButton.getPreferredSize().height + 5));
         
         JLabel imageLabel = new JLabel(new ImageIcon(image));
         
         nameTextField = new JTextField("Name");
-        nameTextField.setPreferredSize(new Dimension(image.getWidth(), nameTextField.getPreferredSize().height));
+//        nameTextField.setPreferredSize(new Dimension(image.getWidth(), nameTextField.getPreferredSize().height));
         
         JPanel box = new JPanel();
         box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
@@ -91,6 +93,19 @@ public class SaveDialog extends JFrame {
         box.add(buildOutputLabel("Average Hue: ",model.getAverageHue()));
         box.add(buildOutputLabel("Average Saturation: ", model.getAverageSaturation()));
         box.add(buildOutputLabel("Average Value: ", model.getAverageSaturation()));
+        
+        final JButton overlayColor = new JButton("Overlay Color");
+        overlayColor.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent pE) {
+                Color aShowDialog = JColorChooser.showDialog(overlayColor, "Overlay Color", model.getOverlayColor());
+                model.setOverlayColor(aShowDialog);
+                overlayColor.setForeground(aShowDialog);
+            }
+        });
+        overlayColor.setForeground(model.getOverlayColor());
+        buttonPanel.add(overlayColor);
         
         
         JPanel contentPanel = new JPanel(new BorderLayout());

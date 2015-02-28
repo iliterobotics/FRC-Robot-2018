@@ -9,9 +9,17 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.constants.ECameraType;
 
 public class VisionSystemAPI {
+    
+    /**
+     * Log4j logger
+     */
+    private static final Logger sLogger = Logger.getLogger(VisionSystemAPI.class);
 
 	private static class INSTANCE_HOLDER {
 	    
@@ -41,8 +49,27 @@ public class VisionSystemAPI {
 	}
 	
 	public static IVisionSystem getVisionSystem(ECameraType pCameraType) {
-		System.out.println("IP:" + pCameraType.getCameraIP());
-		return INSTANCE_HOLDER.mCameraTypes.get(pCameraType);
+	    ECameraType aType = pCameraType;
+	    if(!OpenCVUtils.isIpReachable(aType.getCameraIP())) {
+	        aType = ECameraType.LOCAL_CAMERA;
+	        
+	        if(sLogger.isEnabledFor(Level.WARN)) {
+	            StringBuilder warnString = new StringBuilder();
+	            warnString.append("Unable to connect to camera type: ");
+	            warnString.append(pCameraType);
+	            warnString.append(", iP= ").append(pCameraType.getCameraIP());
+	            sLogger.warn(warnString);
+	        }
+	    }
+	    
+	    if(sLogger.isDebugEnabled()) {
+	        StringBuilder debugString = new StringBuilder();
+	        debugString.append("Loading vision system for type= ").append(aType);
+	        debugString.append(", IP= ").append(aType.getCameraIP());
+	        sLogger.debug(debugString);
+	    }
+	    
+		return INSTANCE_HOLDER.mCameraTypes.get(aType);
 	}
 
 }
