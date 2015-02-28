@@ -48,7 +48,6 @@ public class OverlayGenerator {
             @Override
             public void actionPerformed(ActionEvent pE) {
                 updateImage();
-                
             }
         });
         
@@ -104,7 +103,7 @@ public class OverlayGenerator {
         
         
         
-        ObjectDetectorRenderable aRenderable  = new ObjectDetectorRenderable(null);
+        ObjectDetectorRenderable aRenderable  = new ObjectDetectorRenderable(null, false);
         BlobModel aModel = new BlobModel();
         aModel.setHsvColor(averageColor);
         aRenderable.addBlobModel(aModel);

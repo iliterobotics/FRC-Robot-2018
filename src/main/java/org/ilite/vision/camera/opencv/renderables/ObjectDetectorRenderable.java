@@ -4,13 +4,19 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.imageio.ImageIO;
 
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
@@ -35,22 +41,24 @@ import org.opencv.imgproc.Imgproc;
  * 
  */
 public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdateListener, ISelectionChangedListener {
-
     private Object SYNC_OBJECT;
     private ImageWindow mParentWindow;
-
     private BufferedImage mCurrentFrame;
     private final Set<BlobModel> blobData;
     private List<MatOfPoint> mContours;
-    
-    public ObjectDetectorRenderable(ImageWindow pWindow) {
+
+    public ObjectDetectorRenderable(ImageWindow pWindow, boolean readData) {
+        pWindow.setListener(this);
+        
         mParentWindow = pWindow;
         mContours = new ArrayList<MatOfPoint>();
         SYNC_OBJECT = new Object();
 
         blobData = new CopyOnWriteArraySet<BlobModel>();
 
-        readBlobData();   
+        if(readData) {
+            readBlobData();
+        }   
     }
 
     private void readBlobData() {
@@ -159,8 +167,6 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 }
             }    
         }
-        
-        
     }
 
     @Override
@@ -210,6 +216,45 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
     }
 
+    private void constructImage(BufferedImage img, List<MatOfPoint> points) throws IOException {
+        BufferedImage image = new BufferedImage(img.getWidth(), 
+                                                img.getHeight(), 
+                                                BufferedImage.TYPE_INT_ARGB);
+        
+        Graphics2D graphics = (Graphics2D) image.getGraphics();
+        
+        graphics.setColor(new Color(0, 0, 0, 0));
+        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.setColor(Color.GREEN);
+        
+        List<GeneralPath>paths = new ArrayList<GeneralPath>();
+        for(MatOfPoint aPoint : points) {
+           
+            GeneralPath aPath = new GeneralPath();
+            org.opencv.core.Point firstPoint = null;
+            for (org.opencv.core.Point aContourPoint : aPoint.toList()) {
+                if (firstPoint == null) {
+                    firstPoint = aContourPoint;
+                    aPath.moveTo(aContourPoint.x, aContourPoint.y);
+                } else {
+                    aPath.lineTo(aContourPoint.x, aContourPoint.y);
+                }
+            }
+            if (firstPoint != null) {
+                aPath.lineTo(firstPoint.x, firstPoint.y);
+            }
+            
+            graphics.draw(aPath);
+            
+        }
+        
+        FileOutputStream stream = new FileOutputStream(new File("testimage.png"));
+        
+        ImageIO.write(image, "png", stream);
+        
+        graphics.dispose();
+    }
+    
     private void calculateHSV(Rect selectedRect, Scalar hsvColor) {
         int pointCount = selectedRect.width * selectedRect.height;
         for (int i = 0; i < hsvColor.val.length; i++) {
@@ -217,8 +262,22 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         }
     }
 
+    public void onGenerateOverlayClicked() {
+        try {
+            if(mParentWindow.isPaused()) {
+                constructImage(mCurrentFrame, mContours);
+            }
+        } catch (IOException e) {
+            
+            e.printStackTrace();
+        }
+    }
+    
+    public void onPauseClicked() {
+
+    }
+    
     private void openSaveDialog(BufferedImage img) {
-        
         new SaveDialog(img, blobData);
     }
 
