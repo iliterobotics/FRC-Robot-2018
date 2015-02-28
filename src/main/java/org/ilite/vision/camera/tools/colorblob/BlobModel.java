@@ -17,7 +17,6 @@ public class BlobModel {
     private Scalar mLowerBound, mUpperBound; // Bounds for range checking in HSV color space
     private double mMinContourArea;          // Minimum contour area in percent for contours filtering
     private Scalar mColorRadius;             // Color radius for range checking in HSV color space
-    private List<MatOfPoint> mContours;
     private Scalar mBlobColorHsv;
     private BufferedImage mCurrentFrame;
     private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
@@ -43,10 +42,6 @@ public class BlobModel {
 
     public Scalar getColorRadius() {
         return mColorRadius;
-    }
-
-    public List<MatOfPoint> getContours() {
-        return mContours;
     }
 
     public Scalar getBlobColorHsv() {
