@@ -1,17 +1,20 @@
 package org.ilite.vision.camera.opencv;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,12 +29,13 @@ import org.json.JSONException;
 
 public class SaveDialog extends JFrame {
     private BufferedImage image;
-    private Set<BlobModel> model;
+    private BlobModel model;
     private JTextField nameTextField;
+    private static final DecimalFormat sDecimalFormat = new DecimalFormat("000.00");
     
-    public SaveDialog(BufferedImage image, final Set<BlobModel> pBlobData) {
+    public SaveDialog(BufferedImage image, final BlobModel pModel) {
         this.image = image;
-        this.model = pBlobData;
+        this.model = pModel;
              
         JButton saveButton = new JButton("Save");
         
@@ -40,23 +44,22 @@ public class SaveDialog extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                for(BlobModel aModel : model) {
 
-                    aModel.setName(nameTextField.getText());
+                model.setName(nameTextField.getText());
                     
                     Map<String, Object> objects = new HashMap<String, Object>();
 
-                    objects.put("NAME", aModel.getName());
-                    objects.put("AVERAGE_HUE", aModel.getAverageHue());
-                    objects.put("AVERAGE_SATURATION", aModel.getAverageSaturation());
-                    objects.put("AVERAGE_VALUE", aModel.getAverageValue());
+                    objects.put("NAME", model.getName());
+                    objects.put("AVERAGE_HUE", model.getAverageHue());
+                    objects.put("AVERAGE_SATURATION", model.getAverageSaturation());
+                    objects.put("AVERAGE_VALUE", model.getAverageValue());
 
                     try {
                         JSONManager.write(objects, new File(Paths.BLOB_CONFIG_PATH.getValue()), "Blob Data");
                     } catch (JSONException | IOException e1) {                   
                         e1.printStackTrace();
                     }
-                }
+                
             }
         });
         
@@ -82,22 +85,27 @@ public class SaveDialog extends JFrame {
         nameTextField = new JTextField("Name");
         nameTextField.setPreferredSize(new Dimension(image.getWidth(), nameTextField.getPreferredSize().height));
         
-        Box box = Box.createVerticalBox();
+        JPanel box = new JPanel();
+        box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
         box.add(imageLabel);
+        box.add(buildOutputLabel("Average Hue: ",model.getAverageHue()));
+        box.add(buildOutputLabel("Average Saturation: ", model.getAverageSaturation()));
+        box.add(buildOutputLabel("Average Value: ", model.getAverageSaturation()));
         
-        for(BlobModel aModel : pBlobData) {
-            box.add(new JLabel("Average Hue: " + aModel.getAverageHue()));
-            box.add(new JLabel("Average Saturation: " + aModel.getAverageSaturation()));
-            box.add(new JLabel("Average Value: " + aModel.getAverageSaturation()));
-        }
-
-        box.add(nameTextField);
-        box.add(buttonPanel);
         
-        add(box);
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(nameTextField, BorderLayout.NORTH);
+        contentPanel.add(box, BorderLayout.CENTER);
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        setContentPane(contentPanel);
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pack();
         setVisible(true);
+    }
+    
+    private static JLabel buildOutputLabel(String pPreText, double pVal) {
+        return new JLabel(pPreText + sDecimalFormat.format(pVal));
     }
 }

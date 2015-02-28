@@ -17,8 +17,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
@@ -57,14 +59,18 @@ public class ImageWindow {
     }
     
     public ImageWindow(BufferedImage pImage) {
-        this(pImage, false);
+        this(pImage,"");
+    }
+    
+    public ImageWindow(BufferedImage pImage, String pTitle) {
+        this(pImage, pTitle, false,false);
     }
 
     public ImageWindow(BufferedImage pImage, boolean pShowPause) {
-        this(pImage, "", pShowPause);
+        this(pImage, "", pShowPause,false);
     }
 
-    public ImageWindow(BufferedImage pImage, String pWindowTitle, boolean pShowPause) {
+    public ImageWindow(BufferedImage pImage, String pWindowTitle, boolean pShowPause, boolean pShowGenOverlay) {
 
         mFrame = new JFrame(pWindowTitle);
         mCurrentFrame = pImage;
@@ -73,7 +79,6 @@ public class ImageWindow {
             mImagePanel.setPreferredSize(new Dimension(
                     pImage.getWidth(), pImage.getHeight()));
         }
-
         generateOverlay = new JButton("generate overlay");
         generateOverlay.addActionListener(new ActionListener() {
 
@@ -83,6 +88,8 @@ public class ImageWindow {
             }
             
         });
+        generateOverlay.setEnabled(false);
+        generateOverlay.setVisible(pShowGenOverlay);
         
         saveImageButton = new JButton("save current frame");
         saveImageButton.addActionListener(new ActionListener() {
@@ -107,27 +114,33 @@ public class ImageWindow {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 
+                boolean isPaused = false;
+                
                 listener.onPauseClicked();
                 
                 if (pauseButton.getText().equals("pause")) {
                     pauseButton.setText("resume");
+                    isPaused = true;
 
                     CameraConnectionFactory.getCameraConnection(null).pauseResume(true);
                 } else if (pauseButton.getText().equals("resume")) {
+                    isPaused = false;
                     pauseButton.setText("pause");
                     CameraConnectionFactory.getCameraConnection(null).pauseResume(false);
                 }
+                
+                generateOverlay.setEnabled(isPaused);
             }
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.add(pauseButton);
-        buttonPanel.add(saveImageButton);
-        buttonPanel.add(generateOverlay);
+        mButtonPanel = new JPanel();
+        mButtonPanel.setLayout(new FlowLayout());
+        mButtonPanel.add(pauseButton);
+        mButtonPanel.add(saveImageButton);
+        mButtonPanel.add(generateOverlay);
         
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(buttonPanel, BorderLayout.NORTH);
+        wrapper.add(mButtonPanel, BorderLayout.NORTH);
         wrapper.add(mImagePanel, BorderLayout.CENTER);
         
         mFrame.setContentPane(wrapper);
@@ -178,6 +191,7 @@ public class ImageWindow {
     private JFrame mFrame;
 
     private MouseRenderable mMouseRenderable;
+    private JPanel mButtonPanel;
 
     public void updateImage(BufferedImage pImage) {
 
@@ -226,6 +240,23 @@ public class ImageWindow {
 
     public void repaint() {
         mImagePanel.repaint();
+    }
+    
+    public void addComponentToButtonPanel(final JComponent pComponent) {
+        if(SwingUtilities.isEventDispatchThread()) {
+            mButtonPanel.add(pComponent);
+            mButtonPanel.revalidate();
+            mFrame.revalidate();
+          
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                
+                @Override
+                public void run() {
+                    addComponentToButtonPanel(pComponent);
+                }
+            });
+        }
     }
 
 }

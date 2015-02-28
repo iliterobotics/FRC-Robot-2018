@@ -28,10 +28,10 @@ public class CannyEdgeFun {
     public CannyEdgeFun(BufferedImage pImage) {
         mImage = pImage;
         
-        ImageWindow aWindow = new ImageWindow(mImage,"OrigImage",false);
+        ImageWindow aWindow = new ImageWindow(mImage,"OrigImage");
         aWindow.show();
         
-        mCanny = new ImageWindow(mImage, "Canny", false);
+        mCanny = new ImageWindow(mImage, "Canny");
         mCanny.show();
         mSlider.addChangeListener(new ChangeListener() {
             

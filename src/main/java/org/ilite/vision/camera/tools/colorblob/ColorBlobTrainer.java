@@ -28,7 +28,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     
     private static final Logger sLog = Logger.getLogger(ColorBlobTrainer.class);
 
-    private ImageWindow mWindow = new ImageWindow(null, "Raw Image",true);
+    private ImageWindow mWindow = new ImageWindow(null, "Raw Image",true,true);
     private HistoGramImageWindow mHisto = new HistoGramImageWindow(null);
 
     private ICameraConnection mCamera;
@@ -38,7 +38,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
     public ColorBlobTrainer(final BufferedImage pImage) {
         renderable = new Renderable();
         mWindow.addRenderable(renderable);
-        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, true);
+        mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, false);
         mWindow.addRenderable(mObjectDetectorRenderable);
         mObjectDetectorRenderable.frameAvail(pImage);
         mWindow.getMouseRenderable().addSelectionListener(

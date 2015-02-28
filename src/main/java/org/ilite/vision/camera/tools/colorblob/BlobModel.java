@@ -1,12 +1,8 @@
 package org.ilite.vision.camera.tools.colorblob;
 
-import java.awt.image.BufferedImage;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -168,10 +164,9 @@ public class BlobModel {
             debugString.append(", ").append(hsvColor.val[VALUE_IDX]);
             sLog.debug(debugString);;
         }
-        BlobModel aModel = new BlobModel();
-        aModel.setAverageHue(hsvColor.val[0]);
-        aModel.setAverageSaturation(hsvColor.val[1]);
-        aModel.setAverageValue(hsvColor.val[2]);
+        setAverageHue(hsvColor.val[0]);
+        setAverageSaturation(hsvColor.val[1]);
+        setAverageValue(hsvColor.val[2]);
         
         mBlobColorHsv = hsvColor;
         double minH = (hsvColor.val[0] >= mColorRadius.val[0]) ? hsvColor.val[0]

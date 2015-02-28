@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.IRenderable;
@@ -59,6 +61,16 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         if(readData) {
             readBlobData();
         }   
+        JButton clearBlobs = new JButton("clear blobs");
+        clearBlobs.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent pE) {
+                blobData.clear();
+                process(OpenCVUtils.toMatrix(mCurrentFrame));
+            }
+        });
+        mParentWindow.addComponentToButtonPanel(clearBlobs);
     }
 
     private void readBlobData() {
@@ -209,7 +221,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 blobData.add(aModel);
                 frameAvail(mCurrentFrame);
 
-                openSaveDialog(OpenCVUtils.toBufferedImage(selectedRegionRgba));
+                openSaveDialog(OpenCVUtils.toBufferedImage(selectedRegionRgba),aModel);
             }
 
         }
@@ -277,8 +289,8 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
 
     }
     
-    private void openSaveDialog(BufferedImage img) {
-        new SaveDialog(img, blobData);
+    private void openSaveDialog(BufferedImage img, BlobModel pModel) {
+        new SaveDialog(img, pModel);
     }
 
     public void addBlobModel(BlobModel pModel) {
