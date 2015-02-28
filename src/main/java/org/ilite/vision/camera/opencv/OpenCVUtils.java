@@ -4,6 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -126,6 +129,22 @@ public class OpenCVUtils {
                 4);
 
         return new Scalar(pointMatRgba.get(0, 0));
+    }
+    
+
+    
+    public static boolean isIpReachable(String targetIp) {
+        
+        boolean result = false;
+        try {
+            InetAddress target = InetAddress.getByName(targetIp);
+            result = target.isReachable(5000);  //timeout 5sec
+        } catch (UnknownHostException ex) {
+            System.out.println(ex.toString());
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+        return result;
     }
 
 }

@@ -1,5 +1,7 @@
 package org.ilite.vision.camera.tools.colorblob;
 
+import java.awt.Color;
+
 import org.apache.log4j.Logger;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -52,6 +54,7 @@ public class BlobModel {
      * The masks
      */
     private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
+    private Color mOverlayColor = Color.YELLOW;
 
     
     public double[] getHsv() {
@@ -206,6 +209,14 @@ public class BlobModel {
         }
 
         Imgproc.cvtColor(spectrumHsv, mSpectrum, Imgproc.COLOR_HSV2RGB_FULL, 4);
+    }
+
+    public Color getOverlayColor() {
+        return mOverlayColor;
+    }
+    
+    public void setOverlayColor(Color pOverlayColor) {
+        mOverlayColor = pOverlayColor;
     }
     
 }

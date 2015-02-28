@@ -81,7 +81,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         //        String ip = null;
         String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
 
-        if(!isIpReachable(ip)) {
+        if(!OpenCVUtils.isIpReachable(ip)) {
             ip = null;
         }
 
@@ -96,20 +96,6 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         aTrainer.connectToCamera();
         aTrainer.show();
 
-    }
-    
-    private static boolean isIpReachable(String targetIp) {
-        
-        boolean result = false;
-        try {
-            InetAddress target = InetAddress.getByName(targetIp);
-            result = target.isReachable(5000);  //timeout 5sec
-        } catch (UnknownHostException ex) {
-            System.out.println(ex.toString());
-        } catch (IOException ex) {
-            System.out.println(ex.toString());
-        }
-        return result;
     }
 
     public static void main(String[] args) {
