@@ -3,6 +3,7 @@ package org.ilite.vision.camera.tools.colorblob;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -11,22 +12,54 @@ import org.opencv.imgproc.Imgproc;
 
 
 public class BlobModel {
-    private String name;
-    private double[] hsv;
+    /**
+     * Log4j logger
+     */
+    private static final Logger sLog = Logger.getLogger(BlobModel.class);
+    /**
+     * The scale factor of the contours, used to scale up the
+     */
     public static final Scalar CONTOUR_SCALAR = new Scalar(4, 4);
-    private Scalar mLowerBound, mUpperBound; // Bounds for range checking in HSV color space
-    private double mMinContourArea;          // Minimum contour area in percent for contours filtering
-    private Scalar mColorRadius;             // Color radius for range checking in HSV color space
-    private List<MatOfPoint> mContours;
+    /**
+     * Indexes for array representations of the colors
+     */
+    private static final int HUE_IDX = 0;
+    private static final int SATURATION_IDX = 1;
+    private static final int VALUE_IDX = 2;
+    
+    /**
+     * The name of the object
+     */
+    private String mNameOfObject;
+    /**
+     * The average color, as HSV. The first element is hue, the second sat and
+     * the last is value
+     */
+    private double[] mHSVAverageColor;
+    /**
+     * {@link Scalar} representation of the lower color and the upper color
+     */
+    private Scalar mLowerBound, mUpperBound;
+    /**
+     * Minimum contour area in percent for contours filtering
+     */
+    private double mMinContourArea;
+    /**
+     * Color radius for range checking in HSV color space
+     */
+    private Scalar mColorRadius;
+    /**
+     * The average color of the blob
+     */
     private Scalar mBlobColorHsv;
-    private BufferedImage mCurrentFrame;
+    /**
+     * The masks
+     */
     private Mat mPyrDownMat, mHsvMat, mMask, mDilatedMask, mHierarchy, mSpectrum;
-    private static final int HUE = 0;
-    private static final int SATURATION = 1;
-    private static final int VALUE = 2;
+
     
     public double[] getHsv() {
-        return hsv;
+        return mHSVAverageColor;
     }
 
     public Scalar getLowerBound() {
@@ -45,16 +78,8 @@ public class BlobModel {
         return mColorRadius;
     }
 
-    public List<MatOfPoint> getContours() {
-        return mContours;
-    }
-
     public Scalar getBlobColorHsv() {
         return mBlobColorHsv;
-    }
-
-    public BufferedImage getCurrentFrame() {
-        return mCurrentFrame;
     }
 
     public Mat getPyrDownMat() {
@@ -82,7 +107,7 @@ public class BlobModel {
     }
 
     public BlobModel() {
-        hsv = new double[3];
+        mHSVAverageColor = new double[3];
         mLowerBound = new Scalar(0);
         mUpperBound = new Scalar(0);
         mMinContourArea = 0.1;
@@ -97,43 +122,52 @@ public class BlobModel {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mNameOfObject = name;
     }
     
     public void setAverageHue(double hue) {
-        hsv[HUE] = hue;
+        mHSVAverageColor[HUE_IDX] = hue;
     }
     
     public void setAverageValue(double value) {
-        hsv[VALUE] = value;
+        mHSVAverageColor[VALUE_IDX] = value;
     }
     
     public void setAverageSaturation(double saturation) {
-        hsv[SATURATION] = saturation;
+        mHSVAverageColor[SATURATION_IDX] = saturation;
     }
     
     public double getAverageHue() {
-        return hsv[HUE];
+        return mHSVAverageColor[HUE_IDX];
     }
 
     public double getAverageValue() {
-        return hsv[VALUE];
+        return mHSVAverageColor[VALUE_IDX];
     }
 
     public double getAverageSaturation() {
-        return hsv[SATURATION];
+        return mHSVAverageColor[SATURATION_IDX];
     }
     
     public String getName() {
-        return name;
+        return mNameOfObject;
     }
     
     @Override
     public String toString() {
-        return "Name: " + name + "\nHSV: [" + hsv[0] + ", " + hsv[1] + ", " + hsv[2] + "]\n";
+        return "Name: " + mNameOfObject + "\nHSV: [" + mHSVAverageColor[0] + ", " + mHSVAverageColor[1] + ", " + mHSVAverageColor[2] + "]\n";
     }
     
     public void setHsvColor(Scalar hsvColor) {
+        
+        if(sLog.isDebugEnabled()) {
+            StringBuilder debugString = new StringBuilder();
+            debugString.append("Setting the HSV color= {");
+            debugString.append(hsvColor.val[HUE_IDX]);
+            debugString.append(", ").append(hsvColor.val[SATURATION_IDX]);
+            debugString.append(", ").append(hsvColor.val[VALUE_IDX]);
+            sLog.debug(debugString);;
+        }
         BlobModel aModel = new BlobModel();
         aModel.setAverageHue(hsvColor.val[0]);
         aModel.setAverageSaturation(hsvColor.val[1]);
@@ -146,6 +180,8 @@ public class BlobModel {
         double maxH = (hsvColor.val[0] + mColorRadius.val[0] <= 255) ? hsvColor.val[0]
                 + mColorRadius.val[0]
                 : 255;
+                
+        
 
         mLowerBound.val[0] = minH;
         mUpperBound.val[0] = maxH;
@@ -158,6 +194,14 @@ public class BlobModel {
 
         mLowerBound.val[3] = 0;
         mUpperBound.val[3] = 255;
+        
+        if(sLog.isDebugEnabled()) {
+            StringBuilder debugString = new StringBuilder();
+            debugString.append("hue color range= {").append(mLowerBound.val[HUE_IDX]).append(", ").append(mUpperBound.val[HUE_IDX]).append("}");
+            debugString.append("sat color range= {").append(mLowerBound.val[SATURATION_IDX]).append(", ").append(mUpperBound.val[SATURATION_IDX]).append("}");
+            debugString.append("value color range= {").append(mLowerBound.val[VALUE_IDX]).append(", ").append(mUpperBound.val[VALUE_IDX]).append("}");
+            sLog.debug(debugString);
+        }
 
         Mat spectrumHsv = new Mat(1, (int) (maxH - minH), CvType.CV_8UC3);
 

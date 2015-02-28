@@ -2,6 +2,7 @@ package org.ilite.vision.camera.tools.colorblob;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.swing.SwingUtilities;
@@ -77,19 +78,38 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         // Put the IP address to connect to an MPEG-J camera, otherwise null
         // will
         // connect to a local webcam
-//        String ip = null;
+        //        String ip = null;
         String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
+
+        if(!isIpReachable(ip)) {
+            ip = null;
+        }
+
+        if(sLog.isDebugEnabled()) {
+            StringBuilder debugString = new StringBuilder();
+            debugString.append("Connecting to camera IP= ").append(ip);
+            sLog.debug(debugString);
+        }
+        ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(ip);
+
+        ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
+        aTrainer.connectToCamera();
+        aTrainer.show();
+
+    }
+    
+    private static boolean isIpReachable(String targetIp) {
         
-        sLog.debug(ip);
-        
-        //if(InetAddress.getByName(ip).isReachable(5000)) {
-            ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(ip);
-            
-            ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
-            aTrainer.connectToCamera();
-            aTrainer.show();
-        //}
-        
+        boolean result = false;
+        try {
+            InetAddress target = InetAddress.getByName(targetIp);
+            result = target.isReachable(5000);  //timeout 5sec
+        } catch (UnknownHostException ex) {
+            System.out.println(ex.toString());
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+        return result;
     }
 
     public static void main(String[] args) {
