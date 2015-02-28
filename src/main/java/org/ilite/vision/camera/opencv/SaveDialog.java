@@ -7,7 +7,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -24,12 +26,12 @@ import org.json.JSONException;
 
 public class SaveDialog extends JFrame {
     private BufferedImage image;
-    private BlobModel model;
+    private Set<BlobModel> model;
     private JTextField nameTextField;
     
-    public SaveDialog(BufferedImage image, final BlobModel pModel) {
+    public SaveDialog(BufferedImage image, final Set<BlobModel> pBlobData) {
         this.image = image;
-        this.model = pModel;
+        this.model = pBlobData;
              
         JButton saveButton = new JButton("Save");
         
@@ -37,19 +39,23 @@ public class SaveDialog extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                model.setName(nameTextField.getText());
                 
-                Map<String, Object> objects = new HashMap<String, Object>();
+                for(BlobModel aModel : model) {
 
-                objects.put("NAME", model.getName());
-                objects.put("AVERAGE_HUE", model.getAverageHue());
-                objects.put("AVERAGE_SATURATION", model.getAverageSaturation());
-                objects.put("AVERAGE_VALUE", model.getAverageValue());
+                    aModel.setName(nameTextField.getText());
+                    
+                    Map<String, Object> objects = new HashMap<String, Object>();
 
-                try {
-                    JSONManager.write(objects, new File(Paths.BLOB_CONFIG_PATH.getValue()), "Blob Data");
-                } catch (JSONException | IOException e1) {                   
-                    e1.printStackTrace();
+                    objects.put("NAME", aModel.getName());
+                    objects.put("AVERAGE_HUE", aModel.getAverageHue());
+                    objects.put("AVERAGE_SATURATION", aModel.getAverageSaturation());
+                    objects.put("AVERAGE_VALUE", aModel.getAverageValue());
+
+                    try {
+                        JSONManager.write(objects, new File(Paths.BLOB_CONFIG_PATH.getValue()), "Blob Data");
+                    } catch (JSONException | IOException e1) {                   
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -78,9 +84,13 @@ public class SaveDialog extends JFrame {
         
         Box box = Box.createVerticalBox();
         box.add(imageLabel);
-        box.add(new JLabel("Average Hue: " + pModel.getAverageHue()));
-        box.add(new JLabel("Average Saturation: " + pModel.getAverageSaturation()));
-        box.add(new JLabel("Average Value: " + pModel.getAverageSaturation()));
+        
+        for(BlobModel aModel : pBlobData) {
+            box.add(new JLabel("Average Hue: " + aModel.getAverageHue()));
+            box.add(new JLabel("Average Saturation: " + aModel.getAverageSaturation()));
+            box.add(new JLabel("Average Value: " + aModel.getAverageSaturation()));
+        }
+
         box.add(nameTextField);
         box.add(buttonPanel);
         

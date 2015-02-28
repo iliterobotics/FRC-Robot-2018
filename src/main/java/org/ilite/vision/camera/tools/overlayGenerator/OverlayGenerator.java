@@ -23,6 +23,7 @@ import javax.swing.event.ChangeListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
+import org.ilite.vision.camera.tools.colorblob.BlobModel;
 import org.ilite.vision.camera.tools.colorblob.ColorBlobTrainer;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -104,7 +105,9 @@ public class OverlayGenerator {
         
         
         ObjectDetectorRenderable aRenderable  = new ObjectDetectorRenderable(null);
-        aRenderable.setHsvColor(averageColor);
+        BlobModel aModel = new BlobModel();
+        aModel.setHsvColor(averageColor);
+        aRenderable.addBlobModel(aModel);
         aRenderable.frameAvail(aRead);
         List<MatOfPoint> aContours = aRenderable.getContours();
         
