@@ -41,10 +41,8 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private String password = ECameraConfig.PASSWORD.getStringValue();
     private String base64authorization = null;
     private HttpURLConnection huc = null;
-    private Runnable updater;
     private boolean isPaused;
     private boolean connected = false;
-    private long[] frameTimes = new long[10]; //Used to calculate an average FPS
     private MJPEGParser parser;
     private Future<?> cameraFuture;
     private int cameraDelay = (int) ECameraConfig.INITIAL_CAMERA_DELAY.getValue();
@@ -206,10 +204,9 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
 
             }
         }, cameraDelay, 
-           (int) ECameraConfig.CAMERA_PERIOD.getValue(), 
+           (int) ECameraConfig.CAM_RATE_MILLIS.getValue(), 
            TimeUnit.MILLISECONDS);
         
-        cameraDelay = 0;
     }
 
     @Override
