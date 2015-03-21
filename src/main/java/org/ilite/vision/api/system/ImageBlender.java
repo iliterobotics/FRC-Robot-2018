@@ -52,10 +52,6 @@ public class ImageBlender extends JPanel implements VisionListener {
 	 * The main content of  this frame
 	 */
 	/**
-	 * Container of a {@link JSlider} to adjust the alpha value for the blending
-	 */
-	private OverlaySlider mAlphaValueSlider= new OverlaySlider();
-	/**
 	 * The final image that is to be rendered. This will be created once in the 
 	 * onVisonDataReceived, once this starts to receive frames from the camera
 	 */
@@ -75,39 +71,11 @@ public class ImageBlender extends JPanel implements VisionListener {
     
 	public ImageBlender() throws IOException { 
 	    super(new BorderLayout());
-	    //TODO: Need to save the path of the image to the property file (JSON)
-//	    mOverlays.add(VisionSystemAPI.loadImage((String) Paths.OVERLAY_HOOK_PATH.getValue()));
-//	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_PATH.getValue()));
-        
-	    //TODO: Load in the correct path:
 	    mOverlays.add(VisionSystemAPI.loadImageAsResource("Overlay.png"));
-        mAlphaValueSlider.subscribe(new OverlaySliderListener() {
-
-            @Override
-            public void onSliderChanged(float value) {
-                
-                mPercentageLabel.setText("ALPHA PERCENTAGE: " + mFormat.format(value*100) + "%");
-                
-                if(mBackgroundImage != null) {
-                    redraw(mBackgroundImage);
-                }
-                //redraw the image panel so the new alpha can be applied
-                mImagePanel.getPanel().repaint();
-            }
-            
-        });
         
         mImagePanel.getPanel().setPreferredSize(new Dimension(800, 600));
         
         add(mImagePanel.getPanel(), BorderLayout.CENTER);
-        
-        JPanel controlPanel = new JPanel();
-        controlPanel.add(mAlphaValueSlider.getSlider());
-        
-        float alphaValue = mAlphaValueSlider.getValue();
-        mPercentageLabel = new JLabel("ALPHA PERCENTAGE: " + mFormat.format(alphaValue*100) + "%");
-        controlPanel.add(mPercentageLabel);
-        add(controlPanel, BorderLayout.SOUTH);
         setVisible(true);   
 	}
 
@@ -132,7 +100,7 @@ public class ImageBlender extends JPanel implements VisionListener {
 	    Graphics2D graphics = mFinalImage.createGraphics();   
 	    graphics.fillRect(0, 0, mFinalImage.getWidth(), mFinalImage.getHeight());
 	    graphics.drawImage(frameImage, 0, 0,frameImage.getWidth(), frameImage.getHeight(), null);
-	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,mAlphaValueSlider.getValue()));  
+	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,.5f));  
 	    
 	    for(BufferedImage anOverlay : mOverlays) {
 	        graphics.drawImage(anOverlay, 0, 0,screenWidth,screenHeight, null);
