@@ -40,6 +40,10 @@ public class VisionSystemAPI {
 		return myImage;
 		
 	}
+	
+	public static BufferedImage loadImageAsResource(String pResourceName) throws IOException  {
+	    return ImageIO.read(ClassLoader.getSystemResource(pResourceName));
+	}
 
 	public static ImageBlender getImageBlender(IVisionSystem system) throws IOException {
 	    ImageBlender b = new ImageBlender();

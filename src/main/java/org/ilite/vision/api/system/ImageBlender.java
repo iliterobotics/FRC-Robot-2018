@@ -80,7 +80,7 @@ public class ImageBlender extends JPanel implements VisionListener {
 //	    mOverlays.add(VisionSystemAPI.loadImage((String)Paths.OVERLAY_TOTE_PATH.getValue()));
         
 	    //TODO: Load in the correct path:
-	    mOverlays.add(VisionSystemAPI.loadImage(Paths.IMAGES_FOLDER_PATH.getValue() + "/Overlay.png"));
+	    mOverlays.add(VisionSystemAPI.loadImageAsResource("Overlay.png"));
         mAlphaValueSlider.subscribe(new OverlaySliderListener() {
 
             @Override
@@ -107,7 +107,7 @@ public class ImageBlender extends JPanel implements VisionListener {
         float alphaValue = mAlphaValueSlider.getValue();
         mPercentageLabel = new JLabel("ALPHA PERCENTAGE: " + mFormat.format(alphaValue*100) + "%");
         controlPanel.add(mPercentageLabel);
-        add(controlPanel, BorderLayout.NORTH);
+        add(controlPanel, BorderLayout.SOUTH);
         setVisible(true);   
 	}
 
