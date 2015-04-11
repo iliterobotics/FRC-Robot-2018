@@ -54,7 +54,8 @@ public class VisionSystemAPI {
 	
 	public static IVisionSystem getVisionSystem(ECameraType pCameraType) {
 	    ECameraType aType = pCameraType;
-	    if(!OpenCVUtils.isIpReachable(aType.getCameraIP())) {
+	    
+	    if(!OpenCVUtils.isAvailable(aType.getCameraIP())) {
 	        aType = ECameraType.LOCAL_CAMERA;
 	        
 	        if(sLogger.isEnabledFor(Level.WARN)) {

@@ -44,6 +44,10 @@ public class Configurations {
         return ((Integer) mKeyMap.get(key)).intValue();
     }
     
+    public static boolean getBooleanValue(String key) {
+        return ((Boolean) mKeyMap.get(key)).booleanValue();
+    }
+    
     public static String getStringValue(String key) {
         return (String) mKeyMap.get(key);
     }

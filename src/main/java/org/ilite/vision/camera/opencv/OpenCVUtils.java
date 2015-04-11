@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.ilite.vision.constants.ECameraConfig;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -133,18 +134,21 @@ public class OpenCVUtils {
     
 
     
-    public static boolean isIpReachable(String targetIp) {
+    public static boolean isAvailable(String targetIp) {
         
-        boolean result = false;
-        try {
-            InetAddress target = InetAddress.getByName(targetIp);
-            result = target.isReachable(5000);  //timeout 5sec
-        } catch (UnknownHostException ex) {
-            System.out.println(ex.toString());
-        } catch (IOException ex) {
-            System.out.println(ex.toString());
+        boolean result = true;
+        
+        if(ECameraConfig.USE_LOCAL_IF_NOT_AVAILABLE.getBooleanValue()) {
+            try {
+                InetAddress target = InetAddress.getByName(targetIp);
+                result = target.isReachable(5000);  //timeout 5sec
+            } catch (UnknownHostException ex) {
+                System.out.println(ex.toString());
+            } catch (IOException ex) {
+                System.out.println(ex.toString());
+            }
         }
-        return result;
+        
+        return result;        
     }
-
 }
