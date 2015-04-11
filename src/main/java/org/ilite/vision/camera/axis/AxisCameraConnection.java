@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.constants.ECameraConfig;
 
@@ -46,6 +48,8 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private MJPEGParser parser;
     private Future<?> cameraFuture;
     private int cameraDelay = (int) ECameraConfig.INITIAL_CAMERA_DELAY.getValue();
+    private static final Logger sLogger = 
+            Logger.getLogger(AxisCameraConnection.class);
     
     private static final ExecutorService sService = Executors
             .newSingleThreadExecutor(new ThreadFactory() {
@@ -71,6 +75,8 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
         ipAddress = pIp;
         mjpgURL = "http://" + ipAddress + "/mjpg/video.mjpg";
         
+        sLogger.debug("Created Axis Camera Connection with URL= " + mjpgURL);
+        
         // only use authorization if all informations are available
          if (username != null && password != null) {
              base64authorization = encodeUsernameAndPasswordInBase64(username,
@@ -95,6 +101,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
 
     public void connect() {
         try {
+            sLogger.debug("Starting Connect");
             URL u = new URL(mjpgURL);
             huc = (HttpURLConnection) u.openConnection();
 
@@ -118,39 +125,42 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                 matcher.find();
                 boundary = matcher.group(1);
             } catch (Exception e) {
-                e.printStackTrace();
+                sLogger.error("Exception while trying to use matcher/boundary", e);
             }
 
             InputStream is = huc.getInputStream();
             connected = true;
-            System.out.println("CONNECTED");
+            sLogger.debug("Currently connected");
             parser = new MJPEGParser(is, boundary);
             
         } catch (IOException e) { // incase no connection exists wait and try
                                   // again, instead of printing the error
+            sLogger.error("Caught an IOException while trying to connect, will retry",e);
             try {
                 huc.disconnect();
                 Thread.sleep(60);
             } catch (InterruptedException ie) {
                 huc.disconnect();
-                ie.printStackTrace();
+                sLogger.error("Sleep got interrupted");
                 // connect(); I don't want to reconnect if the thread is
                 // interrupted
             }
+            sLogger.debug("Retrying connection...");
             connect();
         } catch (Exception e) {
-            e.printStackTrace();
+            sLogger.error("Unexpected error in connect",e);
         }
     }
 
     public void disconnect() {
         try {
             if (connected) {
+                sLogger.debug("Disconnecting camera");
                 parser.setCanceled(true);
                 connected = false;
             }
         } catch (Exception e) {
-            ;
+            sLogger.error("Unexpected error in disconnect", e);
         }
     }
 
@@ -159,12 +169,11 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     public void run() {
         
         try {
-            
+            sLogger.debug("Staring parser");
             parser.parse();
 
         } catch (IOException e) {
-
-            e.printStackTrace();
+            sLogger.error("Exception in parser",e);
 
         }
 
@@ -172,9 +181,11 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
 
     public BufferedImage grabImage() {
         
+        sLogger.debug("Grabbing Image");
         byte[] segment = parser.getSegment();
 
         if (segment == null) {
+            sLogger.error("Failed to get a segment, returning null");
             return null;
         }
 
@@ -185,11 +196,12 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                 return ImageIO.read(new ByteArrayInputStream(segment));
 
             } catch (IOException e1) {
-
-                e1.printStackTrace();
+                sLogger.error("Failed to read the image, due to exception: ",e1);
 
             }
         }
+        
+        sLogger.error("Segment has no lengths, return null");
         return null;
 
     }
@@ -200,9 +212,11 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
             
             @Override
             public void run() {
+                sLogger.debug("Starting");
                 connect();
+                sLogger.debug("Beging Parser");
                 sService.submit(AxisCameraConnection.this);
-                
+                sLogger.debug("Executing camera thread");
                 executeCameraThread();
             }
         });
@@ -231,6 +245,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     
     public void pauseResume(boolean pShouldPause) {
         isPaused = pShouldPause;
+        sLogger.debug("Camera pause state is now: " + pShouldPause);
         
         cameraFuture.cancel(isPaused);
         
@@ -284,7 +299,8 @@ class MJPEGParser {
                 in.close();
 
             } catch (IOException e) {
-
+                
+                
             }
 
         }
