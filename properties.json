@@ -13,5 +13,5 @@
 "DEVICE": 0.0,
 "USERNAME": "root",
 "PASSWORD": "team1885",
-"USE_LOCAL_IF_NOT_AVAILABLE": true
+"USE_LOCAL_IF_NOT_AVAILABLE": false
 }
