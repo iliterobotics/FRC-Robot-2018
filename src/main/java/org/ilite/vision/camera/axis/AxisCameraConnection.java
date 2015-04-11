@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,19 +48,39 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private Future<?> cameraFuture;
     private Future<?> connectionFuture;
     private int cameraDelay = (int) ECameraConfig.INITIAL_CAMERA_DELAY.getValue();
+    
+    /**
+     * Log4j logger
+     */
     private static final Logger sLogger = 
             Logger.getLogger(AxisCameraConnection.class);
     
-    private static final ScheduledExecutorService connectionService = 
+    /**
+     * Executor service used to keep trying to connect on a regular interval, until
+     * the camera connects
+     */
+    private static final ScheduledExecutorService CONNECT_EXEC = 
             Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("Connection Thread"));
 
     
+    /**
+     * The executor that's used to run the Axis Camera's run method
+     */
     private static final ExecutorService AXIS_CAMERA_EXEC = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("Axis Camera Runnable"));
     
-    private static final ExecutorService sConnectExec = Executors.newSingleThreadExecutor(new NamedThreadFactory("Start EXEC"));
+    /**
+     * The executor that's used to offload the start method so that it doesn't 
+     * block the thread that calls it
+     */
+    private static final ExecutorService START_EXCE = Executors.newSingleThreadExecutor(new NamedThreadFactory("Start EXEC"));
 
-    private static final ScheduledExecutorService sScheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("RECONNECT_SCHEDULER"));
+    /**
+     * The executor that's responsible for pulling a camera frame at a regular 
+     * interval
+     */
+    private static final ScheduledExecutorService FRAME_PULLER_EXEC = 
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("Camera Frame Puller"));
 
 
     /** Creates a new instance of AxisCamera */
@@ -199,13 +218,13 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
 
     @Override
     public void start() {
-        sConnectExec.submit(new Runnable() {
+        START_EXCE.submit(new Runnable() {
             
             @Override
             public void run() {
                 sLogger.debug("Starting");
                 
-                connectionFuture = connectionService.scheduleAtFixedRate(new Runnable() {
+                connectionFuture = CONNECT_EXEC.scheduleAtFixedRate(new Runnable() {
                     
                     @Override
                     public void run() {
@@ -225,7 +244,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     }
 
     private void executeCameraThread() {
-        cameraFuture = sScheduler.scheduleAtFixedRate(new Runnable() {
+        cameraFuture = FRAME_PULLER_EXEC.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {

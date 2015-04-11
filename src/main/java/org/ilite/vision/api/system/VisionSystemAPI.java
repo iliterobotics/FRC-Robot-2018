@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.constants.ECameraConfig;
 import org.ilite.vision.constants.ECameraType;
 
 public class VisionSystemAPI {
@@ -55,7 +56,7 @@ public class VisionSystemAPI {
 	public static IVisionSystem getVisionSystem(ECameraType pCameraType) {
 	    ECameraType aType = pCameraType;
 	    
-	    if(!OpenCVUtils.isAvailable(aType.getCameraIP())) {
+	    if(ECameraConfig.USE_LOCAL_IF_NOT_AVAILABLE.getBooleanValue() && !OpenCVUtils.isAvailable(aType.getCameraIP())) {
 	        aType = ECameraType.LOCAL_CAMERA;
 	        
 	        if(sLogger.isEnabledFor(Level.WARN)) {
