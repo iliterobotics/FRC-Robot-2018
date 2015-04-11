@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.constants.ECameraConfig;
 
@@ -37,6 +36,7 @@ import org.ilite.vision.constants.ECameraConfig;
  * @author Carl Gould
  */
 public class AxisCameraConnection extends AbstractCameraConnection implements Runnable {
+    private static final ScheduledExecutorService connectionService = Executors.newSingleThreadScheduledExecutor();
     private String ipAddress;
     private String mjpgURL;
     private String username = ECameraConfig.USERNAME.getStringValue();
@@ -47,6 +47,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private boolean connected = false;
     private MJPEGParser parser;
     private Future<?> cameraFuture;
+    private Future<?> connectionFuture;
     private int cameraDelay = (int) ECameraConfig.INITIAL_CAMERA_DELAY.getValue();
     private static final Logger sLogger = 
             Logger.getLogger(AxisCameraConnection.class);
@@ -99,7 +100,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
         return "Basic " + encs;
     }
 
-    public void connect() {
+    private boolean connect() {
         try {
             sLogger.debug("Starting Connect");
             URL u = new URL(mjpgURL);
@@ -133,23 +134,20 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
             sLogger.debug("Currently connected");
             parser = new MJPEGParser(is, boundary);
             
+            return true;
+            
         } catch (IOException e) { // incase no connection exists wait and try
                                   // again, instead of printing the error
             sLogger.error("Caught an IOException while trying to connect, will retry",e);
-            try {
-                huc.disconnect();
-                Thread.sleep(60);
-            } catch (InterruptedException ie) {
-                huc.disconnect();
-                sLogger.error("Sleep got interrupted");
-                // connect(); I don't want to reconnect if the thread is
-                // interrupted
-            }
+
+            huc.disconnect();
+            
             sLogger.debug("Retrying connection...");
-            connect();
         } catch (Exception e) {
             sLogger.error("Unexpected error in connect",e);
         }
+        
+        return false;
     }
 
     public void disconnect() {
@@ -213,14 +211,24 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
             @Override
             public void run() {
                 sLogger.debug("Starting");
-                connect();
-                sLogger.debug("Beging Parser");
-                sService.submit(AxisCameraConnection.this);
-                sLogger.debug("Executing camera thread");
-                executeCameraThread();
+                
+                connectionFuture = connectionService.scheduleAtFixedRate(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        if(connect()) {
+                            connectionFuture.cancel(false);
+
+                            sLogger.debug("Beging Parser");
+                            sService.submit(AxisCameraConnection.this);
+                            sLogger.debug("Executing camera thread");
+                            executeCameraThread();
+                        }
+                    }
+                    
+                }, 1, 1, TimeUnit.SECONDS);
             }
         });
-
     }
 
     private void executeCameraThread() {
