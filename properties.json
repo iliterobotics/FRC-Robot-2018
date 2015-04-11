@@ -12,5 +12,6 @@
 "CAMERA_PERIOD": 5,
 "DEVICE": 0.0,
 "USERNAME": "root",
-"PASSWORD": "team1885"
+"PASSWORD": "team1885",
+"USE_LOCAL_IF_NOT_AVAILABLE": true
 }

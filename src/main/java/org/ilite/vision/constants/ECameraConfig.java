@@ -8,10 +8,16 @@ public enum ECameraConfig {
     INITIAL_CAMERA_DELAY(Configurations.getIntValue("INITIAL_CAMERA_DELAY")),
     DEVICE(Configurations.getLongValue("DEVICE")),
     USERNAME(Configurations.getStringValue("USERNAME")),
-    PASSWORD(Configurations.getStringValue("PASSWORD"));
+    PASSWORD(Configurations.getStringValue("PASSWORD")),
+    USE_LOCAL_IF_NOT_AVAILABLE(Configurations.getBooleanValue("USE_LOCAL_IF_NOT_AVAILABLE"));
     
     private long val;
     private String val2;
+    private boolean val3;
+    
+    private ECameraConfig(boolean b) {
+        this.val3 = b;
+    }
     
     private ECameraConfig(long v) {
         val = v;
@@ -21,6 +27,10 @@ public enum ECameraConfig {
         val2 = val;
     }
 
+    public boolean getBooleanValue() {
+        return val3;
+    }
+    
     public String getStringValue() {
         if(val2 == null) {
             return Long.toString(val);

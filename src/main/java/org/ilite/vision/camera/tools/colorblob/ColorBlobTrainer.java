@@ -2,7 +2,6 @@ package org.ilite.vision.camera.tools.colorblob;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.swing.SwingUtilities;
@@ -82,7 +81,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         //        String ip = null;
         String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
 
-        if(!OpenCVUtils.isIpReachable(ip)) {
+        if(!OpenCVUtils.isAvailable(ip)) {
             ip = null;
         }
 
@@ -91,6 +90,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
             debugString.append("Connecting to camera IP= ").append(ip);
             sLog.debug(debugString);
         }
+        
         ICameraConnection aCameraConnection = CameraConnectionFactory.getCameraConnection(ip);
 
         ColorBlobTrainer aTrainer = new ColorBlobTrainer(aCameraConnection);
