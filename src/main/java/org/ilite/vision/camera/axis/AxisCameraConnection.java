@@ -54,6 +54,14 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                     return new Thread(pR, "AxisCameraRunnable");
                 }
             });
+    
+    private static final ExecutorService sConnectExec = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        
+        @Override
+        public Thread newThread(Runnable pR) {
+            return new Thread(pR, "ConnectExec");
+        }
+    });
 
     private static final ScheduledExecutorService sScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -188,10 +196,17 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
 
     @Override
     public void start() {
-        connect();
-        sService.submit(this);
-        
-        executeCameraThread();
+        sConnectExec.submit(new Runnable() {
+            
+            @Override
+            public void run() {
+                connect();
+                sService.submit(AxisCameraConnection.this);
+                
+                executeCameraThread();
+            }
+        });
+
     }
 
     private void executeCameraThread() {
