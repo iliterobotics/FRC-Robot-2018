@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.ilite.util.thread.NamedThreadFactory;
 import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.constants.ECameraConfig;
 
@@ -36,7 +37,6 @@ import org.ilite.vision.constants.ECameraConfig;
  * @author Carl Gould
  */
 public class AxisCameraConnection extends AbstractCameraConnection implements Runnable {
-    private static final ScheduledExecutorService connectionService = Executors.newSingleThreadScheduledExecutor();
     private String ipAddress;
     private String mjpgURL;
     private String username = ECameraConfig.USERNAME.getStringValue();
@@ -52,23 +52,16 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
     private static final Logger sLogger = 
             Logger.getLogger(AxisCameraConnection.class);
     
-    private static final ExecutorService sService = Executors
-            .newSingleThreadExecutor(new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable pR) {
-                    return new Thread(pR, "AxisCameraRunnable");
-                }
-            });
-    
-    private static final ExecutorService sConnectExec = Executors.newSingleThreadExecutor(new ThreadFactory() {
-        
-        @Override
-        public Thread newThread(Runnable pR) {
-            return new Thread(pR, "ConnectExec");
-        }
-    });
+    private static final ScheduledExecutorService connectionService = 
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("Connection Thread"));
 
-    private static final ScheduledExecutorService sScheduler = Executors.newSingleThreadScheduledExecutor();
+    
+    private static final ExecutorService AXIS_CAMERA_EXEC = Executors
+            .newSingleThreadExecutor(new NamedThreadFactory("Axis Camera Runnable"));
+    
+    private static final ExecutorService sConnectExec = Executors.newSingleThreadExecutor(new NamedThreadFactory("Start EXEC"));
+
+    private static final ScheduledExecutorService sScheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("RECONNECT_SCHEDULER"));
 
 
     /** Creates a new instance of AxisCamera */
@@ -220,7 +213,7 @@ public class AxisCameraConnection extends AbstractCameraConnection implements Ru
                             connectionFuture.cancel(false);
 
                             sLogger.debug("Beging Parser");
-                            sService.submit(AxisCameraConnection.this);
+                            AXIS_CAMERA_EXEC.submit(AxisCameraConnection.this);
                             sLogger.debug("Executing camera thread");
                             executeCameraThread();
                         }
