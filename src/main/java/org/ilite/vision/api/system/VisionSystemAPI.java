@@ -75,7 +75,9 @@ public class VisionSystemAPI {
 	        sLogger.debug(debugString);
 	    }
 	    
-		return INSTANCE_HOLDER.mCameraTypes.get(aType);
+		IVisionSystem iVisionSystem = INSTANCE_HOLDER.mCameraTypes.get(aType);
+		iVisionSystem.start();
+		return iVisionSystem;
 	}
 
 }

@@ -9,6 +9,12 @@ import org.ilite.vision.api.messages.RobotVisionMsg;
  *
  */
 public interface IVisionSystem {
+	
+	/**
+	 * Method to start the camera processing. This should be called before processing can begin. 
+	 * Subsequent calls to this method will do nothing
+	 */
+	public void start();
 
     /**
      * Method to subscribe for vision updates
