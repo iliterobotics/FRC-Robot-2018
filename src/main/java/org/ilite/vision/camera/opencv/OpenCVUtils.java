@@ -154,8 +154,10 @@ public class OpenCVUtils {
             result = target.isReachable(5000);  //timeout 5sec
         } catch (UnknownHostException ex) {
             sLogger.error("Unable to reach IP: " + pTargetIP, ex);
+            result = false;
         } catch (IOException ex) {
             sLogger.error("IOException while trying to connect to: " + pTargetIP);
+            result = false;
         }
 
 
