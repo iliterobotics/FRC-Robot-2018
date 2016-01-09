@@ -16,4 +16,10 @@ public class CameraCalibrationData {
 	public Mat getDistCoeffs() {
 		return distCoeffs;
 	}
+	@Override
+	public String toString() {
+		return "CameraCalibrationData [cameraMatrix=" + cameraMatrix.dump()
+				+ ", distCoeffs=" + distCoeffs.dump() + "]";
+	}
+	
 }

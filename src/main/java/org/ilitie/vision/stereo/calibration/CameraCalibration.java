@@ -19,7 +19,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class CameraCalibration {
 
-	public static void calibrateCamera(int pBoardWith, int pBoardHeight, List<Mat> pTrainingImage) {
+	public static CameraCalibrationData calibrateCamera(int pBoardWith, int pBoardHeight, List<Mat> pTrainingImage) {
 		int board_w = pBoardWith;
 		int board_h = pBoardHeight;
 		Size board_sz = new Size(board_w, board_h);
@@ -68,10 +68,10 @@ public class CameraCalibration {
 				throw new IllegalStateException("Failed to find the chessboard");
 			}
 
-			calibrateAllImages(
+			return calibrateAllImages(
 					allObjects, imagePoints,imageSize);
 		}
-
+		return null;
 	}
 
 
@@ -90,8 +90,13 @@ public class CameraCalibration {
 	public static void main(String[] args) {
 		OpenCVUtils.init();
 
-		Mat chessImage = Highgui.imread("C:/Users/Christopher/gitrepos/FRC-Vision/chessboard2.png");
-		calibrateCamera(9, 6, Collections.singletonList(chessImage));
+		Mat chessSlant = Highgui.imread("C:/Users/Christopher/gitrepos/FRC-Vision/chessboard2.png");
+		Mat chessReg = Highgui.imread("C:/Users/Christopher/gitrepos/FRC-Vision/chessboard.png");
+		
+		List<Mat>allTraining = new ArrayList<Mat>();
+		allTraining.add(chessSlant);
+		allTraining.add(chessReg);
+		System.out.println(calibrateCamera(9, 6,allTraining));
 
 	}
 
