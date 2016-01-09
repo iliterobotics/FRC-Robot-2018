@@ -1,4 +1,4 @@
-package org.ilitie.vision.stereo.calibration;
+package org.ilite.vision.camera.calibration;
 
 import java.util.ArrayList;
 import java.util.Collections;
