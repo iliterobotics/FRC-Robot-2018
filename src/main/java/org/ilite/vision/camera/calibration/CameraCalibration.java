@@ -17,71 +17,87 @@ import org.opencv.core.TermCriteria;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
+/**
+ * Class that contains utility methods to calibrate the camera and calculate the 
+ * {@link CameraCalibrationData}
+ *
+ */
 public class CameraCalibration {
 
-	public static CameraCalibrationData calibrateCamera(int pBoardWith, int pBoardHeight, List<Mat> pTrainingImage) {
-		int board_w = pBoardWith;
-		int board_h = pBoardHeight;
+	/**
+	 * Calibrates the camera with a list of training images. These images should
+	 * be of the same size and should be off the chess board, but at various angles
+	 * and orientations
+	 * @param pNumInnerCornersX
+	 * 	The number of inner corners on the chess board, along the x direction
+	 * @param pNumInnerCornersY
+	 * The number of inner corners on the chess board, along the x direction
+	 * @param pTrainingImages
+	 * 	List containing all of the training images
+	 * @return
+	 * 	The {@link CameraCalibrationData} for the given training images
+	 */
+	public static CameraCalibrationData calibrateCamera(int pNumInnerCornersX, int pNumInnerCornersY, List<Mat> pTrainingImages) {
+		int board_w = pNumInnerCornersX;
+		int board_h = pNumInnerCornersY;
 		Size board_sz = new Size(board_w, board_h);
 		//Real location of the cornersin 3D
-		MatOfPoint3f obj = new MatOfPoint3f();
 		MatOfPoint2f corners = new MatOfPoint2f();
 		Size imageSize = null;
-
-		int board_n = board_w*board_h;
-		for (int j=0; j<board_n; j++)
-		{
-			obj.push_back(new MatOfPoint3f(new Point3((double)j/(double)board_w, (double)j%(double)board_w, 0.0d)));
-
-		}
-		List<Mat>allObjects = new ArrayList<Mat>();
-
 		List<Mat>imagePoints = new ArrayList<Mat>();
-		allObjects.add(obj);
-		for(Mat img : pTrainingImage) {
+
+		List<Mat>objs = new ArrayList<Mat>();
+		for(Mat img : pTrainingImages) {
 			Mat gray = new Mat();
 			imageSize = img.size();
 
+			int board_n = board_w*board_h;
+
+			MatOfPoint3f obj = new MatOfPoint3f();
+			for (int j=0; j<board_n; j++)
+			{
+				obj.push_back(new MatOfPoint3f(new Point3((double)j/(double)board_w, (double)j%(double)board_w, 0.0d)));
+
+			}
+			objs.add(obj);
+
 
 			Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
-
-
 			boolean findChessboardCorners = Calib3d.findChessboardCorners(gray, board_sz,corners,Calib3d.CALIB_CB_ADAPTIVE_THRESH | Calib3d.CALIB_CB_FILTER_QUADS);
 
 			if(findChessboardCorners) {
-
 				TermCriteria aCriteria = new TermCriteria(TermCriteria.EPS |
 						TermCriteria.MAX_ITER, 30,0.1);
 				Imgproc.cornerSubPix(gray, corners, new Size(11,11), new Size(-1,-1), aCriteria);
 				Calib3d.drawChessboardCorners(gray, board_sz, corners, true);
-				ImageWindow aWindow = new ImageWindow(OpenCVUtils.toBufferedImage(gray));
-				aWindow.show();
-
-
-
-
-				
-
 				imagePoints.add(corners);
+			} 
 
-			} else {
-				throw new IllegalStateException("Failed to find the chessboard");
-			}
-
-			return calibrateAllImages(
-					allObjects, imagePoints,imageSize);
 		}
-		return null;
+
+		return performCalibration(
+				objs, imagePoints,imageSize);
 	}
 
 
-	private static CameraCalibrationData calibrateAllImages(
-			List<Mat> allObjects, List<Mat> imagePoints, Size pImageSize) {
+	/**
+	 * Method to computes the {@link CameraCalibrationData} for the 
+	 * @param pObj The {@link Mat} that contains the expected position of the
+	 * grids.
+	 * @param pImagePoints
+	 * 	A list containing all of the points of the grids, for each training image
+	 * @param pImageSize
+	 * 	The size, in pixels, of each image
+	 * @return
+	 * 	The {@link CameraCalibrationData} for the given training images
+	 */
+	private static CameraCalibrationData performCalibration(
+			List<Mat> pObj, List<Mat> pImagePoints, Size pImageSize) {
 		Mat cameraMatrix = new Mat(3,3,CvType.CV_32FC1);
 		Mat distCoeffs = new Mat();
 		List<Mat> rvecs = new ArrayList<Mat>();
 		List<Mat> tvecs = new ArrayList<Mat>();
-		Calib3d.calibrateCamera(allObjects, imagePoints, pImageSize, cameraMatrix, distCoeffs, rvecs, tvecs);
+		Calib3d.calibrateCamera(pObj, pImagePoints, pImageSize, cameraMatrix, distCoeffs, rvecs, tvecs);
 
 		return new CameraCalibrationData(cameraMatrix, distCoeffs);
 	}
