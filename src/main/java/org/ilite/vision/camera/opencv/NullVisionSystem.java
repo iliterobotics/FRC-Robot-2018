@@ -10,6 +10,12 @@ import org.ilite.vision.api.system.VisionListener;
  *
  */
 class NullVisionSystem implements IVisionSystem {
+	
+	@Override
+	public void start() {
+		System.err.println("Attempting to start null camera!");
+		
+	}
 
     @Override
     public void subscribe(VisionListener pListener) {

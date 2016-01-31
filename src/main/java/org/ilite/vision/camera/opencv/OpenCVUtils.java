@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
 import org.ilite.vision.constants.ECameraConfig;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -22,18 +23,21 @@ import org.opencv.imgproc.Imgproc;
  * 
  */
 public class OpenCVUtils {
+    
+    private static final Logger sLogger = Logger.getLogger(OpenCVUtils.class);
 
     /**
      * Load the opencv library
      */
     static {
 
+        sLogger.debug("Loading OPENCV library: " + Core.NATIVE_LIBRARY_NAME);
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
     }
 
     public static void init() {
-        System.out.println("Init method");
+        sLogger.debug("Starting opencv...");
     }
 
     /**
@@ -134,21 +138,29 @@ public class OpenCVUtils {
     
 
     
-    public static boolean isAvailable(String targetIp) {
-        
+    /**
+     * Method to see if a passed in IP (for the camera) is pingable
+     * @param pTargetIP
+     *  The IP address of the target
+     * @return
+     *  true if the IP is pingable
+     */
+    public static boolean isAvailable(String pTargetIP) {
+
         boolean result = true;
         
-        if(ECameraConfig.USE_LOCAL_IF_NOT_AVAILABLE.getBooleanValue()) {
-            try {
-                InetAddress target = InetAddress.getByName(targetIp);
-                result = target.isReachable(5000);  //timeout 5sec
-            } catch (UnknownHostException ex) {
-                System.out.println(ex.toString());
-            } catch (IOException ex) {
-                System.out.println(ex.toString());
-            }
+        try {
+            InetAddress target = InetAddress.getByName(pTargetIP);
+            result = target.isReachable(5000);  //timeout 5sec
+        } catch (UnknownHostException ex) {
+            sLogger.error("Unable to reach IP: " + pTargetIP, ex);
+            result = false;
+        } catch (IOException ex) {
+            sLogger.error("IOException while trying to connect to: " + pTargetIP);
+            result = false;
         }
-        
+
+
         return result;        
     }
 }

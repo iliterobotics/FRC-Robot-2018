@@ -15,6 +15,7 @@ import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.camera.opencv.Renderable;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.camera.tools.colorblob.histogram.HistoGramImageWindow;
+import org.ilite.vision.constants.ECameraConfig;
 import org.ilite.vision.constants.ECameraType;
 
 
@@ -81,7 +82,7 @@ public class ColorBlobTrainer implements ICameraFrameUpdateListener {
         //        String ip = null;
         String ip = ECameraType.ALIGNMENT_CAMERA.getCameraIP();
 
-        if(!OpenCVUtils.isAvailable(ip)) {
+        if(ECameraConfig.USE_LOCAL_IF_NOT_AVAILABLE.getBooleanValue() && !OpenCVUtils.isAvailable(ip)) {
             ip = null;
         }
 
