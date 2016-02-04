@@ -1,70 +1,35 @@
 package com.fauge.robotics.towertracker;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.ilite.vision.camera.CameraConnectionFactory;
-import org.ilite.vision.camera.ICameraConnection;
-import org.ilite.vision.camera.ICameraFrameUpdateListener;
-import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
-import org.ilite.vision.constants.ECameraType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.highgui.Highgui;
+import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
-public class TowerTracker1885 implements ICameraFrameUpdateListener{
-	static {
+/**
+ * 
+ * @author Elijah Kaufman
+ * @version 1.0
+ * @description Uses opencv and network table 3.0 to detect the vision targets
+ *
+ */
+public class TowerTracker {
+
+	/**
+	 * static method to load opencv and networkTables
+	 */
+	static{ 
 		OpenCVUtils.init();
 	}
-	private ImageWindow mWindow = new ImageWindow(null, "Final Image");
-	private ImageWindow mThreshWindow = new ImageWindow(null, "Threshold");
-	private final ICameraConnection mConnection;
-	private int mFrameCounter = 0;
-
-	public TowerTracker1885(ICameraConnection cameraConnection) {
-		cameraConnection.addCameraFrameListener(this);
-		mConnection = cameraConnection;
-		
-	}
-
-	public static void main(String[] args) {
-		
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
-		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
-		aTracker.start();
-		
-	}
-
-	private void start() {
-		mWindow.show();
-		mThreshWindow.show();
-		mConnection.start();
-	}
-
-	@Override
-	public void frameAvail(BufferedImage pImage) {
-		Mat frame = OpenCVUtils.toMatrix(pImage);
-		mFrameCounter++;
-
-		System.out.println("FRAME: " + mFrameCounter);
-		if(mFrameCounter>=Integer.MAX_VALUE) {
-			mConnection.destroy();
-		} else {
-			processImage(frame);
-		}
-		
-	}
-	public static Mat matOriginal = new Mat();
-	public static Mat matHSV = new Mat(); 
-	public static Mat matThresh= new Mat();
-	public static Mat clusters = new Mat(); 
-	public static Mat matHeirarchy = new Mat();
 //	constants for the color rbg values
 	public static final Scalar 
 	RED = new Scalar(0, 0, 255),
@@ -72,10 +37,17 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	GREEN = new Scalar(0, 255, 0),
 	BLACK = new Scalar(0,0,0),
 	YELLOW = new Scalar(0, 255, 255),
-	WHITE = new Scalar(255,255,255),
 //	these are the threshold values in order 
 	LOWER_BOUNDS = new Scalar(58,0,109),
 	UPPER_BOUNDS = new Scalar(93,255,240);
+	
+//	the size for resing the image
+	public static final Size resize = new Size(320,240);
+	
+//	ignore these
+	public static VideoCapture videoCapture;
+	public static Mat matOriginal, matHSV, matThresh, clusters, matHeirarchy;
+	
 //	Constants for known variables
 //	the height to the top of the target in first stronghold is 97 inches	
 	public static final int TOP_TARGET_HEIGHT = 97;
@@ -86,17 +58,64 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static final double VERTICAL_FOV  = 51;
 	public static final double HORIZONTAL_FOV  = 67;
 	public static final double CAMERA_ANGLE = 10;
-	public  void processImage(Mat matOriginal){
+
+	
+	public static boolean shouldRun = true;
+
+	/**
+	 * 
+	 * @param args command line arguments
+	 * just the main loop for the program and the entry points
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		matOriginal = new Mat();
+		matHSV = new Mat();
+		matThresh = new Mat();
+		clusters = new Mat();
+		matHeirarchy = new Mat();
+//		main loop of the program
+		while(shouldRun){
+			try {
+//				opens up the camera stream and tries to load it
+				videoCapture = new VideoCapture();
+//				replaces the ##.## with your team number
+				videoCapture.open("http://10.18.85.12/mjpg/video.mjpg");
+				Thread.sleep(1000);
+//				Example
+//				cap.open("http://10.30.19.11/mjpg/video.mjpg");
+//				wait until it is opened
+				while(!videoCapture.isOpened()){}
+//				time to actually process the acquired images
+				processImage();
+			} catch (Exception e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+//		make sure the java process quits when the loop finishes
+		videoCapture.release();
+		System.exit(0);
+	}
+	/**
+	 * 
+	 * reads an image from a live image capture and outputs information to the SmartDashboard or a file
+	 */
+	public static void processImage(){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
 //		frame counter
+		int FrameCount = 0;
+		long before = System.currentTimeMillis();
+//		only run for the specified time
+		while(FrameCount < 100){
 			contours.clear();
+//			capture from the axis camera
+			videoCapture.read(matOriginal);
 //			captures from a static file for testing
 //			matOriginal = Imgcodecs.imread("someFile.png");
-			
-			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV_FULL);			
+			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV);			
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
-			mThreshWindow.updateImage(OpenCVUtils.toBufferedImage(matThresh));
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, 
 					Imgproc.CHAIN_APPROX_SIMPLE);
 //			make sure the contours that are detected are at least 20x20 
@@ -128,18 +147,31 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //				angle to target...would not rely on this
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				azimuth = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
+				azimuth = normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
 //				drawing info on target
 				Point center = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2);
 				Point centerw = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2 - 20);
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 			}
-			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
 //			output an image for debugging
-//			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
-			mWindow.updateImage(OpenCVUtils.toBufferedImage(matOriginal));
-
+			Highgui.imwrite("output.png", matOriginal);
+			FrameCount++;
+		}
+		shouldRun = false;
 	}
-
+	/**
+	 * @param angle a nonnormalized angle
+	 */
+	public static double normalize360(double angle){
+		while(angle >= 360.0)
+        {
+            angle -= 360.0;
+        }
+        while(angle < 0.0)
+        {
+            angle += 360.0;
+        }
+        return angle;
+	}
 }
