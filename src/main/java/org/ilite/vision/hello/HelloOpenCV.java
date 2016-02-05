@@ -30,9 +30,13 @@ public class HelloOpenCV {
 		//A window to display the camera field
 		final ImageWindow aWindow = new ImageWindow(null, "Camera Image");
 		
-		//A window to display the final output image after processing. 
-		final ImageWindow finalImageWindow  = new ImageWindow(null, "Final Image");
-		//Register a listener for frame updates. This will be notified everytime 
+		//A window to display the grayscaled output image after processing. 
+		final ImageWindow grayImageWindow  = new ImageWindow(null, "Grayscale Image");
+		//A window to display the blurred output image after processing.
+		final ImageWindow blurredImageWindow = new ImageWindow(null, "Blurred Image");
+		//A window to display an output image that highlights edges after processing.
+		final ImageWindow edgesImageWindow = new ImageWindow(null, "Edges Image");
+		//Register a listener for frame updates. This will be notified every time 
 		//there's a new image available for the camera
 		cameraConnection.addCameraFrameListener(new ICameraFrameUpdateListener() {
 			
@@ -40,31 +44,42 @@ public class HelloOpenCV {
 			public void frameAvail(BufferedImage pImage) {
 				aWindow.updateImage(pImage);
 				
-				//TODO: Pefrom pre-processing. Such as bluring. Note that all
+				//TODO: Perform pre-processing. Such as blurring. Note that all
 				//opencv methods use images stored in Mat, so you will need to 
 				//convert: 
 				Mat imageAsMat = OpenCVUtils.toMatrix(pImage);
 				
-				//It's often a good idea to create a copy of the output. This way.
+				//It's often a good idea to create copies of the outputs. This way.
 				//we can hold onto the original image 
-				Mat grayImage = new Mat();
+				Mat grayMat = new Mat();
+				Mat blurredMat = new Mat();
+				Mat edgesMat = new Mat();
 				//Most algorithms will require the image to be gray scale: 
-				Imgproc.cvtColor(imageAsMat, grayImage, Imgproc.COLOR_BGR2GRAY);
-				
+				Imgproc.cvtColor(imageAsMat, grayMat, Imgproc.COLOR_BGR2GRAY);
+				//Other algorithms will require the image to be blurred: 
+				Imgproc.GaussianBlur(imageAsMat, blurredMat, new Size(), 20.0);
+				//Finally, certain algorithms need to identify edges:
+				Imgproc.GaussianBlur(imageAsMat, edgesMat, new Size(), 5.0);
+				Imgproc.Canny(edgesMat, edgesMat, 5.0, 30.0);
 				//Perform some pre-processing. This will use convolution with 
 				//a 3x3 kernal matrix. To learn more about convolution, see:
 				//http://setosa.io/ev/image-kernels/
-				Imgproc.GaussianBlur(grayImage, grayImage, new Size(3,3),0);
+				Imgproc.GaussianBlur(grayMat, grayMat, new Size(3,3),0);
 				//The image window uses a Buffered image, so convert:
-				BufferedImage finalImage = OpenCVUtils.toBufferedImage(grayImage);
-				finalImageWindow.updateImage(finalImage);
-				
+				BufferedImage grayImage = OpenCVUtils.toBufferedImage(grayMat);
+				grayImageWindow.updateImage(grayImage);
+				BufferedImage blurredImage = OpenCVUtils.toBufferedImage(blurredMat);
+				blurredImageWindow.updateImage(blurredImage);
+				BufferedImage edgesImage = OpenCVUtils.toBufferedImage(edgesMat);
+				edgesImageWindow.updateImage(edgesImage);
 			}
 		});
 		
 		//Show the windows
 		aWindow.show();
-		finalImageWindow.show();
+		grayImageWindow.show();
+		blurredImageWindow.show();
+		edgesImageWindow.show();
 		//Start the camera:
 		cameraConnection.start();
 		
