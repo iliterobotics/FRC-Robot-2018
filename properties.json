@@ -7,11 +7,13 @@
 "OVERLAY_TOTE_PATH": "src/main/resources/images/OverlayTote.png",
 "BLOB_CONFIG_PATH": "BlobConfig.json",
 "CAM_RATE_MILLIS": 100,
-"ALIGNED_CAMERA_IP": "axis-camera.local",
+"ALIGNED_CAMERA_IP": "10.18.85.12",
 "INITIAL_CAMERA_DELAY": 1000,
 "CAMERA_PERIOD": 5,
 "DEVICE": 0.0,
 "USERNAME": "root",
 "PASSWORD": "team1885",
-"USE_LOCAL_IF_NOT_AVAILABLE": false
+"USE_LOCAL_IF_NOT_AVAILABLE": true
+"LOW_COLOR": [46,26,207]
+"HIGH_COLOR":[188,255,255]
 }
