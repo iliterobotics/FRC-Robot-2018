@@ -18,10 +18,13 @@ import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.camera.opencv.Renderable;
+import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.constants.ECameraType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class TowerTrackerConfig implements ICameraFrameUpdateListener{
@@ -56,6 +59,8 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 	
 	private final Mat matHSV = new Mat();
 	private final Mat matThresh = new Mat();
+	private ObjectDetectorRenderable mObjectDetectorRenderable;
+	private Renderable renderable;
 	
 	public TowerTrackerConfig(ICameraConnection cameraConnection) {
 		mCameraConnection = cameraConnection;
@@ -72,6 +77,12 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 		}
 		mControlFrame.setContentPane(configPanel);
 		mControlFrame.pack();
+		renderable = new Renderable();
+        mWindow.addRenderable(renderable);
+		mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, true);
+		mWindow.addRenderable(mObjectDetectorRenderable);
+		mWindow.getMouseRenderable().addSelectionListener(
+                mObjectDetectorRenderable);
 		
 	}
 	
@@ -124,8 +135,15 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 	@Override
 	public void frameAvail(BufferedImage pImage) {
 		mWindow.updateImage(pImage);
+		mObjectDetectorRenderable.frameAvail(pImage);
 		Mat matOriginal = OpenCVUtils.toMatrix(pImage);
-		Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV);	
+		
+		Mat gaussianImage = new Mat();
+		Imgproc.GaussianBlur(matOriginal, gaussianImage, new Size(5,5), 1);
+//		Imgproc.pyrDown(matOriginal, aPyrDownMat);
+//        Imgproc.pyrDown(aPyrDownMat, aPyrDownMat);
+		
+		Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV_FULL);	
 		Scalar lowBounds = 
 				new Scalar(mLowValues.get(COLOR_TYPES.HUE).getValue(), 
 						mLowValues.get(COLOR_TYPES.SAT).getValue(), 
@@ -135,8 +153,10 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 				new Scalar(mHighValues.get(COLOR_TYPES.HUE).getValue(), 
 						mHighValues.get(COLOR_TYPES.SAT).getValue(), 
 						mHighValues.get(COLOR_TYPES.VALUE).getValue());
-		
+//		Scalar LOWER_BOUNDS = new Scalar(45,233,233),
+//				UPPER_BOUNDS = new Scalar(93,255,240);
 		Core.inRange(matHSV, lowBounds, highBounds, matThresh);
+//		Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 		mOutput.updateImage(OpenCVUtils.toBufferedImage(matThresh));
 		
 	}
