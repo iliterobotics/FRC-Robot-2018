@@ -32,12 +32,16 @@ public class HelloOpenCV {
 		
 		//A window to display the grayscaled output image after processing. 
 		final ImageWindow grayImageWindow  = new ImageWindow(null, "Grayscale Image");
+		
 		//A window to display the blurred output image after processing.
 		final ImageWindow blurredImageWindow = new ImageWindow(null, "Blurred Image");
+		
 		//A window to display an output image that highlights edges after processing.
 		final ImageWindow edgesImageWindow = new ImageWindow(null, "Edges Image");
+		
 		//Register a listener for frame updates. This will be notified every time 
 		//there's a new image available for the camera
+		final ImageWindow cWindow = new ImageWindow(null);
 		cameraConnection.addCameraFrameListener(new ICameraFrameUpdateListener() {
 			
 			@Override
@@ -54,24 +58,35 @@ public class HelloOpenCV {
 				Mat grayMat = new Mat();
 				Mat blurredMat = new Mat();
 				Mat edgesMat = new Mat();
+				Mat cMat = new Mat();
 				//Most algorithms will require the image to be gray scale: 
 				Imgproc.cvtColor(imageAsMat, grayMat, Imgproc.COLOR_BGR2GRAY);
+				
 				//Other algorithms will require the image to be blurred: 
 				Imgproc.GaussianBlur(imageAsMat, blurredMat, new Size(), 20.0);
+				
 				//Finally, certain algorithms need to identify edges:
 				Imgproc.GaussianBlur(imageAsMat, edgesMat, new Size(), 5.0);
 				Imgproc.Canny(edgesMat, edgesMat, 5.0, 30.0);
+				
 				//Perform some pre-processing. This will use convolution with 
 				//a 3x3 kernal matrix. To learn more about convolution, see:
 				//http://setosa.io/ev/image-kernels/
 				Imgproc.GaussianBlur(grayMat, grayMat, new Size(3,3),0);
+				
 				//The image window uses a Buffered image, so convert:
 				BufferedImage grayImage = OpenCVUtils.toBufferedImage(grayMat);
 				grayImageWindow.updateImage(grayImage);
+				
 				BufferedImage blurredImage = OpenCVUtils.toBufferedImage(blurredMat);
 				blurredImageWindow.updateImage(blurredImage);
+				
 				BufferedImage edgesImage = OpenCVUtils.toBufferedImage(edgesMat);
 				edgesImageWindow.updateImage(edgesImage);
+				
+				Imgproc.cvtColor(imageAsMat, cMat, Imgproc.COLOR_BGR2Luv);
+				BufferedImage cImage = OpenCVUtils.toBufferedImage(cMat);
+				cWindow.updateImage(cImage);
 			}
 		});
 		
@@ -80,6 +95,7 @@ public class HelloOpenCV {
 		grayImageWindow.show();
 		blurredImageWindow.show();
 		edgesImageWindow.show();
+		cWindow.show();
 		//Start the camera:
 		cameraConnection.start();
 		
