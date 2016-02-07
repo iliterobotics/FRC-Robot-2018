@@ -27,7 +27,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-public class TowerTrackerConfig implements ICameraFrameUpdateListener{
+public class TowerTrackerConfig implements ICameraFrameUpdateListener, IHueAverageListener{
 	
 	enum COLOR_TYPES {
 		HUE(0,188),
@@ -80,6 +80,7 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 		renderable = new Renderable();
         mWindow.addRenderable(renderable);
 		mObjectDetectorRenderable = new ObjectDetectorRenderable(mWindow, true);
+		mObjectDetectorRenderable.addHueAverageListener(this);
 		mWindow.addRenderable(mObjectDetectorRenderable);
 		mWindow.getMouseRenderable().addSelectionListener(
                 mObjectDetectorRenderable);
@@ -107,7 +108,7 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 	}
 
 	public static void createAndShowGUI() {
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(null);
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		TowerTrackerConfig aconfig = new TowerTrackerConfig(cameraConnection);
 		aconfig.start();
 		
@@ -159,6 +160,28 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener{
 //		Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
 		mOutput.updateImage(OpenCVUtils.toBufferedImage(matThresh));
 		
+	}
+
+	@Override
+	public void averageColorChanged(Scalar avg) {
+		double[] low = avg.val;
+		double[] high = avg.val;
+		for (int i=0;i<low.length;i++)
+		{
+			low[i] -=10;
+		}
+		
+		for(COLOR_TYPES aType : COLOR_TYPES.values()) {
+			mLowValues.get(aType).setValue((int)low[aType.ordinal()]);
+		}
+		for (int i=0;i<high.length;i++)
+		{
+			high[i] +=10;
+		}
+		
+		for(COLOR_TYPES aType : COLOR_TYPES.values()) {
+			mHighValues.get(aType).setValue((int)high[aType.ordinal()]);
+		}
 	}
 
 }
