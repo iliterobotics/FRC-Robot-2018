@@ -108,8 +108,7 @@ public class TowerTrackerConfig implements ICameraFrameUpdateListener, IHueAvera
 	}
 
 	public static void createAndShowGUI() {
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(null);
-//				ECameraType.ALIGNMENT_CAMERA.getCameraIP());
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		TowerTrackerConfig aconfig = new TowerTrackerConfig(cameraConnection);
 		aconfig.start();
 		

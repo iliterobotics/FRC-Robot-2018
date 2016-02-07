@@ -7,13 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+import org.ilite.vision.api.system.VisionSystemAPI;
 import org.ilite.vision.constants.Paths;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 
 public class Configurations {
     private static final Map<String, Object> mKeyMap;
-
+    private static final Logger sLogger = Logger.getLogger(Configurations.class);
     static {
 
         Map<String, Object>tempMap = new HashMap<>();
@@ -54,5 +57,48 @@ public class Configurations {
     
     public static Object getValue(String pKey) {
         return mKeyMap.get(pKey);
+    }
+    
+    public static double []getDoubleArray(String pKey) {
+        double [] returnVal = null;
+        Object object = mKeyMap.get(pKey);
+        System.out.println(object.getClass() + "");
+        JSONArray val = (JSONArray)object;
+        returnVal = new double[val.length()];
+        try
+        {
+            for(int i = 0; i < returnVal.length; i++)
+            {
+                returnVal[i] = val.getDouble(i);
+            }
+
+            
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        
+        if(sLogger.isDebugEnabled()) {
+            for(int i = 0; i < returnVal.length; i++)
+            {
+                sLogger.debug(returnVal[i]);
+            }
+        }
+        
+        
+        //TODO: Get the value of the map and cast accordingly
+        return returnVal;
+    }
+    
+    public static void main(String[] args)
+    {
+//        for(Entry<String, Object>anObject : mKeyMap.entrySet()) {
+//            System.out.println(anObject.getKey() + " " + anObject.getValue());
+//        }
+//        
+//        double[] doubleArray = getDoubleArray("HIGH_COLOR");
+        getDoubleArray("HIGH_COLOR");
+
+        
     }
 }
