@@ -17,7 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -38,6 +40,8 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import com.fauge.robotics.towertracker.IHueAverageListener;
+
 /**
  * This component is based off of the code, located at:
  * https://github.com/Itseez/opencv In Itseez's code, he wrote a detector on
@@ -51,6 +55,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
     private ImageWindow mParentWindow;
     private BufferedImage mCurrentFrame;
     private Map<BlobModel, List<MatOfPoint>>mBlobContourMap = new ConcurrentHashMap<BlobModel, List<MatOfPoint>>();
+    private Set<IHueAverageListener> mHueAverageListeners = new CopyOnWriteArraySet<>();
 
     public ObjectDetectorRenderable(ImageWindow pWindow, boolean readData) {
         pWindow.setListener(this);
@@ -71,6 +76,7 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
             }
         });
         mParentWindow.addComponentToButtonPanel(clearBlobs);
+        
     }
 
     private void readBlobData() {
@@ -214,11 +220,12 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
                 Imgproc.cvtColor(selectedRegionRgba, selectedRegionHsv, Imgproc.COLOR_RGB2HSV_FULL);
 
                 BlobModel aModel = new BlobModel();
-
                 // Calculate average color of touched region
                 Scalar hsvColor = Core.sumElems(selectedRegionHsv);
                 
                 calculateHSV(selectedRect, hsvColor);
+                notifyHueListeners(hsvColor);
+                
                 aModel.setHsvColor(hsvColor);
                 mBlobContourMap.put(aModel, new ArrayList<MatOfPoint>());
                 frameAvail(mCurrentFrame);
@@ -277,6 +284,20 @@ public class ObjectDetectorRenderable implements IRenderable, ICameraFrameUpdate
         int pointCount = selectedRect.width * selectedRect.height;
         for (int i = 0; i < hsvColor.val.length; i++) {
             hsvColor.val[i] /= pointCount;
+        }
+    }
+    public void addHueAverageListener(IHueAverageListener pHueAverage)
+    {
+    	mHueAverageListeners.add(pHueAverage);
+    }
+    public void removeHueAverageListener(IHueAverageListener pHueAverage)
+    {
+    	mHueAverageListeners.remove(pHueAverage);
+    }
+    public void notifyHueListeners(Scalar avg)
+    {
+    	for (IHueAverageListener hueAverages2 : mHueAverageListeners) {
+        	hueAverages2.averageColorChanged(avg);
         }
     }
 
