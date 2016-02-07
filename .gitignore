@@ -28,3 +28,4 @@ hs_err_pid*
 .classpath
 libraries
 .settings/*
+.metadata/*
