@@ -10,6 +10,7 @@ import org.ilite.vision.camera.ICameraFrameUpdateListener;
 import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.constants.ECameraType;
+import org.ilite.vision.data.Configurations;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -34,8 +35,8 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	}
 
 	public static void main(String[] args) {
-		
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
+		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(null);
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
 		
@@ -72,10 +73,14 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	GREEN = new Scalar(0, 255, 0),
 	BLACK = new Scalar(0,0,0),
 	YELLOW = new Scalar(0, 255, 255),
-	WHITE = new Scalar(255,255,255),
-//	these are the threshold values in order 
-	LOWER_BOUNDS = new Scalar(58,0,109),
-	UPPER_BOUNDS = new Scalar(93,255,240);
+	WHITE = new Scalar(255,255,255);
+	
+	public static final Scalar LOWER_BOUNDS;
+	public static final Scalar UPPER_BOUNDS;
+	static{
+	    LOWER_BOUNDS = new Scalar(Configurations.getDoubleArray("LOW_COLOR"));
+	    UPPER_BOUNDS = new Scalar(Configurations.getDoubleArray("HIGH_COLOR"));
+	}
 //	Constants for known variables
 //	the height to the top of the target in first stronghold is 97 inches	
 	public static final int TOP_TARGET_HEIGHT = 97;
