@@ -95,6 +95,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static final double VERTICAL_FOV  = 51;
 	public static final double HORIZONTAL_FOV  = 67;
 	public static final double CAMERA_ANGLE = 10;
+	public static String alignment;
 	public  void processImage(Mat matOriginal){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
@@ -135,12 +136,13 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Rectangle rightHalf= new Rectangle(matOriginal.width()/2, 0, matOriginal.width()/2, matOriginal.height());
 				Double leftContourArea = leftHalf.intersection(contourRect).getWidth() * leftHalf.intersection(contourRect).getHeight();
 				Double rightContourArea = rightHalf.intersection(contourRect).getWidth() * rightHalf.intersection(contourRect).getHeight();
+				
 				if(leftContourArea.compareTo(rightContourArea) > 0){
-					System.out.println("Turn left");
+					alignment = ECameraAlignment.LEFT.getAlignment();
 				} else if(leftContourArea.compareTo(rightContourArea) < 0){
-					System.out.println("Turn right");
+					alignment = ECameraAlignment.RIGHT.getAlignment();
 				} else if(leftContourArea - rightContourArea <= 10 || leftContourArea - rightContourArea >= -10){
-					System.out.println("Centered");
+					alignment = ECameraAlignment.CENTER.getAlignment();
 				}
 				
 //				"fun" math brought to you by miss daisy (team 341)!
@@ -158,7 +160,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth));
+	                towers2.fire(new TowerMessage(distance,azimuth,alignment));
 	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
