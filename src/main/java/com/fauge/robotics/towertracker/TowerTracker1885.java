@@ -70,7 +70,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static Mat matThresh= new Mat();
 	public static Mat clusters = new Mat(); 
 	public static Mat matHeirarchy = new Mat();
-//	constants for the color rbg values
+//	constants for the color bgr values
 	public static final Scalar 
 	RED = new Scalar(0, 0, 255),
 	BLUE = new Scalar(255, 0, 0),
@@ -141,7 +141,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 					alignment = ECameraAlignment.LEFT.getAlignment();
 				} else if(leftContourArea.compareTo(rightContourArea) < 0){
 					alignment = ECameraAlignment.RIGHT.getAlignment();
-				} else if(leftContourArea - rightContourArea <= 10 || leftContourArea - rightContourArea >= -10){
+				} else if(Math.abs(leftContourArea - rightContourArea) <= 10){
 					alignment = ECameraAlignment.CENTER.getAlignment();
 				}
 				
