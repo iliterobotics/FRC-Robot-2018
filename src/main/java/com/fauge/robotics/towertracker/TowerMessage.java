@@ -6,7 +6,7 @@ public class TowerMessage
 
     public final double distance;
     public final double AoE;
-    public TowerMessage(double distance, double AoE){
+    public TowerMessage(double distance, double AoE, String alignment){
         this.distance = distance;
         this.AoE = AoE;
     }
