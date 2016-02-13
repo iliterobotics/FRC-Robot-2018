@@ -3,6 +3,8 @@ package com.fauge.robotics.towertracker;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
@@ -27,6 +29,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	private ImageWindow mThreshWindow = new ImageWindow(null, "Threshold");
 	private final ICameraConnection mConnection;
 	private int mFrameCounter = 0;
+	private Set<ITowerListener> mTowerListeners = new CopyOnWriteArraySet<>();
 
 	public TowerTracker1885(ICameraConnection cameraConnection) {
 		cameraConnection.addCameraFrameListener(this);
@@ -139,12 +142,19 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Point centerw = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2 - 20);
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				for (ITowerListener towers2 : mTowerListeners) {
+	                towers2.fire(new TowerMessage(distance,azimuth));
+	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
 //			output an image for debugging
 //			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
+			
 			mWindow.updateImage(OpenCVUtils.toBufferedImage(matOriginal));
 
 	}
 
+	public void addTowerListener(ITowerListener t){
+	    mTowerListeners.add(t);
+	}
 }
