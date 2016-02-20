@@ -28,6 +28,7 @@ import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
 import org.ilite.vision.constants.ECameraConfig;
 import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.Paths;
+import org.opencv.core.Mat;
 
 public class ImageWindow {
 
@@ -212,7 +213,13 @@ public class ImageWindow {
         mFrame.pack();
 
     }
+    public void updateImage(Mat mImage) {
 
+        BufferedImage bImage = OpenCVUtils.toBufferedImage(mImage);
+        updateImage(bImage);
+
+    }
+    
     public void show() {
         mFrame.setVisible(true);
     }

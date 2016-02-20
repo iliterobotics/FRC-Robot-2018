@@ -3,6 +3,7 @@ package com.fauge.robotics.towertracker;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.ilite.vision.camera.opencv.ImageWindow;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -104,6 +105,7 @@ public class TowerTracker {
 	public static void processImage(){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
+		final ImageWindow aWindow = new ImageWindow(null);
 //		frame counter
 		int FrameCount = 0;
 		long before = System.currentTimeMillis();
@@ -156,8 +158,12 @@ public class TowerTracker {
 			}
 //			output an image for debugging
 			Highgui.imwrite("output.png", matOriginal);
-			FrameCount++;
+			
+			aWindow.updateImage(matOriginal);
+			aWindow.show();
+			//FrameCount++;
 		}
+		
 		shouldRun = false;
 	}
 	/**

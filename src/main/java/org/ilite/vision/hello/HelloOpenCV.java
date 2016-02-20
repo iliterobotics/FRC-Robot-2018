@@ -100,5 +100,9 @@ public class HelloOpenCV {
 		cameraConnection.start();
 		
 	}
+	
+	
+	
+	
 
 }
