@@ -1,5 +1,6 @@
 package com.fauge.robotics.towertracker;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 
 	public static void main(String[] args) {
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(null);
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
 		
@@ -69,7 +70,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static Mat matThresh= new Mat();
 	public static Mat clusters = new Mat(); 
 	public static Mat matHeirarchy = new Mat();
-//	constants for the color rbg values
+//	constants for the color bgr values
 	public static final Scalar 
 	RED = new Scalar(0, 0, 255),
 	BLUE = new Scalar(255, 0, 0),
@@ -94,6 +95,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static final double VERTICAL_FOV  = 51;
 	public static final double HORIZONTAL_FOV  = 67;
 	public static final double CAMERA_ANGLE = 10;
+	public static String alignment;
 	public  void processImage(Mat matOriginal){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
@@ -128,6 +130,21 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //			if there is only 1 target, then we have found the target we want
 			if(contours.size() == 1){
 				Rect rec = Imgproc.boundingRect(contours.get(0));
+				
+				Rectangle contourRect = new Rectangle(rec.x, rec.y, rec.width, rec.height);
+				Rectangle leftHalf = new Rectangle(0, 0, matOriginal.width()/2, matOriginal.height());
+				Rectangle rightHalf= new Rectangle(matOriginal.width()/2, 0, matOriginal.width()/2, matOriginal.height());
+				Double leftContourArea = leftHalf.intersection(contourRect).getWidth() * leftHalf.intersection(contourRect).getHeight();
+				Double rightContourArea = rightHalf.intersection(contourRect).getWidth() * rightHalf.intersection(contourRect).getHeight();
+				
+				if(leftContourArea.compareTo(rightContourArea) > 0){
+					alignment = ECameraAlignment.LEFT.getAlignment();
+				} else if(leftContourArea.compareTo(rightContourArea) < 0){
+					alignment = ECameraAlignment.RIGHT.getAlignment();
+				} else if(Math.abs(leftContourArea - rightContourArea) <= 10){
+					alignment = ECameraAlignment.CENTER.getAlignment();
+				}
+				
 //				"fun" math brought to you by miss daisy (team 341)!
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
@@ -143,7 +160,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth));
+	                towers2.fire(new TowerMessage(distance,azimuth,alignment));
 	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);

@@ -1,7 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
 
 sourceCompatibility = 1.7
+mainClassName="org.ilite.vision.camera.tools.colorblob.ColorBlobTrainer"
+applicationDefaultJvmArgs =["-Djava.library.path=libraries/opencv/build/java/x64"]
 repositories {
 	mavenCentral()
 }
@@ -9,11 +12,7 @@ repositories {
 dependencies {
 	compile files("libraries/opencv/build/java/opencv-2410.jar")
 	compile 'log4j:log4j:1.2.17'
-    compile 'org.json:json:20090211'
-}
-
-tasks.withType(Test) {
-    systemProperty "java.library.path", "libraries/opencv/build/java/x64"
+        compile 'org.json:json:20090211'
 }
 
 jar {

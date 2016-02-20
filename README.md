@@ -35,4 +35,7 @@ This can be set as a runtime argument:
 <h1>Screenshot of overlay</h1>
 ![Alt text](https://github.com/iliterobotics/FRC-Vision/blob/master/src/main/resources/images/overlayScreenShot.png "Overlay Screenshot")
 
+<h1>OpenCV dll UpdateRequirement</h1>
+In order to connect to the axis camera, you need to copy opencv/sources/3rdparty/ffmgeg/opencv_ffmpeg_64.dll to c:\windows\system32\opencv_ffmpeg2410_64.dll. Link to this update can be found here: http://answers.opencv.org/question/44366/opencv-an-axis-camera-cannot-open-connection/
+
 
