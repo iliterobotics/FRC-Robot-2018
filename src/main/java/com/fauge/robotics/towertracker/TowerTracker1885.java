@@ -160,7 +160,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth,alignment));
+	                towers2.fire(new TowerMessage(distance,azimuth,alignment,OpenCVUtils.toBufferedImage(matOriginal)));
 	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
@@ -168,6 +168,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
 			
 			mWindow.updateImage(OpenCVUtils.toBufferedImage(matOriginal));
+			
 
 	}
 
