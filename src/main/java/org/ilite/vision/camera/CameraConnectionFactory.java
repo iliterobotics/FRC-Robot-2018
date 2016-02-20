@@ -21,9 +21,9 @@ public class CameraConnectionFactory {
         if(returnedConnection == null) {
             
             if(key.equals("LOCAL")) {
-                returnedConnection = new LocalCamera();
+                returnedConnection = new Camera();
             } else {
-                returnedConnection = new AxisCameraConnection(pIP);
+                returnedConnection = new Camera(pIP);
             }
             mConnections.put(key, returnedConnection);
             

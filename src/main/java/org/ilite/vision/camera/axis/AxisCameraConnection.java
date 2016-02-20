@@ -23,6 +23,8 @@ import org.ilite.util.thread.NamedThreadFactory;
 import org.ilite.vision.camera.AbstractCameraConnection;
 import org.ilite.vision.constants.ECameraConfig;
 
+import javafx.scene.Camera;
+
 
 /**
  * 
@@ -34,6 +36,7 @@ import org.ilite.vision.constants.ECameraConfig;
  * 
  * @author David E. Mireles, Ph.D.
  * @author Carl Gould
+ * @deprecated Please use {@link Camera} with the IP of the axis camera instead
  */
 public class AxisCameraConnection extends AbstractCameraConnection implements Runnable {
     private String ipAddress;

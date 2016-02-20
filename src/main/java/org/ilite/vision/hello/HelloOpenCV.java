@@ -25,7 +25,7 @@ public class HelloOpenCV {
 		//null, the this will just connect to the local camera, i.e. the webcamera 
 		//of the computer
 		ICameraConnection cameraConnection = 
-				CameraConnectionFactory.getCameraConnection(ECameraType.LOCAL_CAMERA.getCameraIP());
+				CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		
 		//A window to display the camera field
 		final ImageWindow aWindow = new ImageWindow(null, "Camera Image");
