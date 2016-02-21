@@ -160,15 +160,18 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth,alignment));
+	                towers2.fire(new TowerMessage(distance,azimuth,alignment,OpenCVUtils.toBufferedImage(matOriginal)));
 	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
 //			output an image for debugging
 //			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
+			Point topCenter = new Point(matOriginal.width() / 2, 0);
+			Point bottomCenter = new Point(matOriginal.width() / 2, matOriginal.height());
+			Core.line(matOriginal, topCenter, bottomCenter, BLACK);
 			
 			mWindow.updateImage(OpenCVUtils.toBufferedImage(matOriginal));
-
+			
 	}
 
 	public void addTowerListener(ITowerListener t){
