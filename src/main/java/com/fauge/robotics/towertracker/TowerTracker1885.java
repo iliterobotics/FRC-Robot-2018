@@ -24,7 +24,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class TowerTracker1885 implements ICameraFrameUpdateListener{
-	private static final int BOUNDING_RECT_SIZE = 23;
+	private static final int BOUNDING_RECT_SIZE = 20;
 	static {
 		OpenCVUtils.init();
 	}
@@ -44,6 +44,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	}
 
 	public static void main(String[] args) {
+		System.out.println(VERTICAL_FOV);
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
 		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.FIELD_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
@@ -97,8 +98,9 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static final int TOP_CAMERA_HEIGHT = 15;
 	
 //	camera details, can usually be found on the datasheets of the camera
-	public static final double VERTICAL_FOV  = 51;
+	
 	public static final double HORIZONTAL_FOV  = 67;
+	public static final double VERTICAL_FOV  = Math.toDegrees(2 * Math.atan(HORIZONTAL_FOV/2) * (4.0d/3.0d));
 	public static final double CAMERA_ANGLE = 30;
 	public static String alignment;
 	public static int multiplier;
