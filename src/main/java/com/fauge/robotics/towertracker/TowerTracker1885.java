@@ -8,6 +8,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.ICameraFrameUpdateListener;
@@ -24,7 +32,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class TowerTracker1885 implements ICameraFrameUpdateListener{
-	private static final int BOUNDING_RECT_SIZE = 20;
+	private static final int BOUNDING_RECT_SIZE = 18;
 	static {
 		OpenCVUtils.init();
 	}
@@ -44,11 +52,36 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	}
 
 	public static void main(String[] args) {
-		System.out.println(VERTICAL_FOV);
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
 		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				JFrame aFrame = new JFrame("FOV");
+				final JSlider aSLider = new JSlider(0, 360,(int)VERTICAL_FOV);
+				final JLabel valueLabel = new JLabel("Value= " + VERTICAL_FOV);
+				aSLider.addChangeListener(new  ChangeListener() {
+					
+					@Override
+					public void stateChanged(ChangeEvent e) {
+						VERTICAL_FOV = aSLider.getValue();
+						valueLabel.setText("Value= " + VERTICAL_FOV);
+					}
+				});
+				JPanel contentPanel = new JPanel();
+				contentPanel.add(aSLider);
+				contentPanel.add(valueLabel);
+				aFrame.setContentPane(contentPanel);
+				aFrame.pack();
+				aFrame.setVisible(true);
+				aFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			
+			}
+		});
 		
 	}
 
@@ -101,7 +134,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	 */
 	public static final double HORIZONTAL_FOV  = 67;
 	/**https://wpilib.screenstepslive.com/s/3120/m/8731/l/90361-identifying-and-processing-the-targets**/
-	public static final double VERTICAL_FOV  = 49;
+	public static double VERTICAL_FOV  = 49;
 	public static final double CAMERA_ANGLE = 30;
 	public static String alignment;
 	public static int multiplier;
@@ -200,6 +233,9 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //				"fun" math brought to you by miss daisy (team 341)!
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
+				
+				
+				System.out.println("CHRIS: y= " + " tan= " + y*VERTICAL_FOV/2.0 + CAMERA_ANGLE);
 				distance = (TOP_TARGET_HEIGHT_IN_INCHES - TOP_CAMERA_HEIGHT_IN_INCHES) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 //				angle to target...would not rely on this
