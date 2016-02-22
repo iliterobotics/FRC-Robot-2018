@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -23,6 +24,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class TowerTracker1885 implements ICameraFrameUpdateListener{
+	private static final int BOUNDING_RECT_SIZE = 23;
 	static {
 		OpenCVUtils.init();
 	}
@@ -92,12 +94,12 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //	the height to the top of the target in first stronghold is 97 inches	
 	public static final int TOP_TARGET_HEIGHT = 97;
 //	the physical height of the camera lens
-	public static final int TOP_CAMERA_HEIGHT = 32;
+	public static final int TOP_CAMERA_HEIGHT = 15;
 	
 //	camera details, can usually be found on the datasheets of the camera
 	public static final double VERTICAL_FOV  = 51;
 	public static final double HORIZONTAL_FOV  = 67;
-	public static final double CAMERA_ANGLE = 10;
+	public static final double CAMERA_ANGLE = 30;
 	public static String alignment;
 	public static int multiplier;
 	
@@ -121,29 +123,53 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 			
 			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV_FULL);			
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
+			Core.rectangle(matThresh, new Point(0,0),new Point(matThresh.width(), matThresh.height()/4), BLACK);
+			
 			mThreshWindow.updateImage(OpenCVUtils.toBufferedImage(matThresh));
 			Imgproc.findContours(matThresh, contours, matHeirarchy, Imgproc.RETR_EXTERNAL, 
 					Imgproc.CHAIN_APPROX_SIMPLE);
 //			make sure the contours that are detected are at least 20x20 
 //			pixels with an area of 400 and an aspect ration greater then 1
+			System.out.println("Found contours: " + contours.size());
+			List<Rect>widthToSmall = new ArrayList<>();
+			List<Rect>heightToSmall  = new ArrayList<>();
+			List<Rect>bothToSmall = new ArrayList<>();
+			List<Rect>aspectRatioToSmall = new ArrayList<>();
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
-					if(rec.height < 25 || rec.width < 25){
+					if(rec.height < BOUNDING_RECT_SIZE || rec.width < BOUNDING_RECT_SIZE){
+						
+						if(rec.width<BOUNDING_RECT_SIZE) {
+							
+							if(rec.height < BOUNDING_RECT_SIZE) {
+								bothToSmall.add(rec);
+							} else {
+								widthToSmall.add(rec);
+							}
+						} else {
+							heightToSmall.add(rec);
+						}
+						
+						
 						iterator.remove();
 					continue;
 					}
 					float aspect = (float)rec.width/(float)rec.height;
-					if(aspect < 1.0)
+					if(aspect < 1.0) {
+						aspectRatioToSmall.add(rec);
 						iterator.remove();
+					}
 				}
 				for(MatOfPoint mop : contours){
 					Rect rec = Imgproc.boundingRect(mop);
 					
 					Core.rectangle(matOriginal, rec.br(), rec.tl(), BLACK);
 			}
+			drawErrors(matOriginal, widthToSmall, heightToSmall, bothToSmall, aspectRatioToSmall);
 //			if there is only 1 target, then we have found the target we want
-			if(contours.size() == 1){
+				System.out.println("Found contours: " + contours.size());
+				if(contours.size() == 1){
 				Rect rec = Imgproc.boundingRect(contours.get(0));
 				
 				Rectangle contourRect = new Rectangle(rec.x, rec.y, rec.width, rec.height);
@@ -198,6 +224,27 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public void updateValueWindow(double pixelPerInch, double OffSet, String rectTopLeft, int rectWidth, int rectHeight){
 	    test.updateValue(pixelPerInch, OffSet, rectTopLeft, rectWidth, rectHeight);
 	    
+	}
+
+	private void drawErrors(Mat matOriginal2, List<Rect> widthToSmall, List<Rect> heightToSmall, List<Rect> bothToSmall,
+			List<Rect> aspectRatioToSmall) {
+		
+		for(Rect toSmall : widthToSmall) {
+			Core.rectangle(matOriginal2, toSmall.br(), toSmall.tl(), RED);
+		}
+		
+		for(Rect toHigh : heightToSmall) {
+			Core.rectangle(matOriginal2, toHigh.br(), toHigh.tl(), YELLOW);
+			Core.putText(matOriginal2, "Height: " +toHigh.height, toHigh.tl(), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
+		}
+		for(Rect both : bothToSmall) {
+			Core.rectangle(matOriginal2, both.br(), both.tl(), WHITE);
+		}
+		for(Rect aspect : aspectRatioToSmall) {
+			Core.rectangle(matOriginal2, aspect.br(), aspect.tl(),BLUE);
+		}
+		
+		
 	}
 
 	public void addTowerListener(ITowerListener t){
