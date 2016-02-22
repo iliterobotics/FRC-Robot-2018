@@ -100,7 +100,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //	camera details, can usually be found on the datasheets of the camera
 	
 	public static final double HORIZONTAL_FOV  = 67;
-	public static final double VERTICAL_FOV  = Math.toDegrees(2 * Math.atan(HORIZONTAL_FOV/2) * (4.0d/3.0d));
+	public static final double VERTICAL_FOV  = 36;
 	public static final double CAMERA_ANGLE = 30;
 	public static String alignment;
 	public static int multiplier;
