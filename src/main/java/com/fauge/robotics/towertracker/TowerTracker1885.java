@@ -91,16 +91,17 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	    LOWER_BOUNDS = new Scalar(Configurations.getDoubleArray("LOW_COLOR"));
 	    UPPER_BOUNDS = new Scalar(Configurations.getDoubleArray("HIGH_COLOR"));
 	}
-//	Constants for known variables
-//	the height to the top of the target in first stronghold is 97 inches	
-	public static final int TOP_TARGET_HEIGHT = 97;
-//	the physical height of the camera lens
-	public static final int TOP_CAMERA_HEIGHT = 15;
-	
-//	camera details, can usually be found on the datasheets of the camera
-	
+    /**the height to the top of the target in first stronghold is 97 inches**/
+	public static double TOP_TARGET_HEIGHT_IN_INCHES = 97;
+	/**the physical height of the camera lens**/
+	public static final double TOP_CAMERA_HEIGHT_IN_INCHES = 12.75;
+	/**
+	 * Horizontal field of view, in degrees. This was found from the axis camera
+	 * data sheet
+	 */
 	public static final double HORIZONTAL_FOV  = 67;
-	public static final double VERTICAL_FOV  = 36;
+	/**https://wpilib.screenstepslive.com/s/3120/m/8731/l/90361-identifying-and-processing-the-targets**/
+	public static final double VERTICAL_FOV  = 49;
 	public static final double CAMERA_ANGLE = 30;
 	public static String alignment;
 	public static int multiplier;
@@ -199,7 +200,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //				"fun" math brought to you by miss daisy (team 341)!
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
-				distance = (TOP_TARGET_HEIGHT - TOP_CAMERA_HEIGHT) / 
+				distance = (TOP_TARGET_HEIGHT_IN_INCHES - TOP_CAMERA_HEIGHT_IN_INCHES) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 //				angle to target...would not rely on this
 				targetX = rec.tl().x + rec.width / 2;
