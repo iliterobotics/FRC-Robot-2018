@@ -35,12 +35,15 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public TowerTracker1885(ICameraConnection cameraConnection) {
 		cameraConnection.addCameraFrameListener(this);
 		mConnection = cameraConnection;
+		test = new ValueWindow();
+		addTowerListener(test);
+		
 		
 	}
 
 	public static void main(String[] args) {
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.FIELD_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
 		
@@ -96,6 +99,18 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static final double HORIZONTAL_FOV  = 67;
 	public static final double CAMERA_ANGLE = 10;
 	public static String alignment;
+	public static int multiplier;
+	
+	public static double pixelPerInch;
+	/**
+	 * The width of the goal in inches.
+	 */
+	public static final double GOAL_WIDTH = 20.0;
+	public static double offSet;
+    private ValueWindow test;
+	
+	
+	
 	public  void processImage(Mat matOriginal){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		double x,y,targetX,targetY,distance,azimuth;
@@ -137,12 +152,20 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Double leftContourArea = leftHalf.intersection(contourRect).getWidth() * leftHalf.intersection(contourRect).getHeight();
 				Double rightContourArea = rightHalf.intersection(contourRect).getWidth() * rightHalf.intersection(contourRect).getHeight();
 				
+				pixelPerInch = rec.width / GOAL_WIDTH;
+				offSet = (Configurations.getIntValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
+				
+				this.updateValueWindow(pixelPerInch, offSet, "(" + rec.x + ", " +rec.y + ")", rec.width, rec.height);
+				
 				if(leftContourArea.compareTo(rightContourArea) > 0){
 					alignment = ECameraAlignment.LEFT.getAlignment();
+					multiplier = ECameraAlignment.LEFT.getMultiplier();
 				} else if(leftContourArea.compareTo(rightContourArea) < 0){
 					alignment = ECameraAlignment.RIGHT.getAlignment();
+					multiplier = ECameraAlignment.RIGHT.getMultiplier();
 				} else if(Math.abs(leftContourArea - rightContourArea) <= 10){
 					alignment = ECameraAlignment.CENTER.getAlignment();
+					multiplier = ECameraAlignment.CENTER.getMultiplier();
 				}
 				
 //				"fun" math brought to you by miss daisy (team 341)!
@@ -160,7 +183,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth,alignment));
+	                towers2.fire(new TowerMessage(distance,azimuth,alignment,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
 	            }
 			}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
@@ -168,7 +191,14 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
 			
 			mWindow.updateImage(OpenCVUtils.toBufferedImage(matOriginal));
+			
+			
 
+	}
+	
+	public void updateValueWindow(double pixelPerInch, double OffSet, String rectTopLeft, int rectWidth, int rectHeight){
+	    test.updateValue(pixelPerInch, OffSet, rectTopLeft, rectWidth, rectHeight);
+	    
 	}
 
 	public void addTowerListener(ITowerListener t){
