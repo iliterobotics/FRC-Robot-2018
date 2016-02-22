@@ -8,12 +8,18 @@ public class TowerMessage
     public final double distance;
     public final double AoE;
     public final String alignment;
-    public final BufferedImage frame;
-    public TowerMessage(double distance, double AoE, String alignment, BufferedImage frame){
+    public final BufferedImage bImage;
+    public final int xOffSet;
+
+     
+    public TowerMessage(double distance, double AoE, String alignment, BufferedImage bImage, int xOffSet){
         this.distance = distance;
         this.AoE = AoE;
         this.alignment = alignment;
-        this.frame = frame;
+        this.bImage = bImage;
+        this.xOffSet = xOffSet;
+      
     }
+
 
 }
