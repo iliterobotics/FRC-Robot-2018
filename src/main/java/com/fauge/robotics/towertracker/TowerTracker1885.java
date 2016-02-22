@@ -46,7 +46,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	public static void main(String[] args) {
 		System.out.println(VERTICAL_FOV);
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.FIELD_CAMERA.getCameraIP());
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
 		
