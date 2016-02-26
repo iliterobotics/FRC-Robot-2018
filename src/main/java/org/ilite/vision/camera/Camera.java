@@ -80,11 +80,6 @@ public class Camera extends AbstractCameraConnection {
                 mCamera = new VideoCapture();
                 cameraIP = "http://"+cameraIP+"/mjpg/video.mjpg";
                 mCamera.open(cameraIP);
-                try {
-                    Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
             }
 
             if (!mCamera.isOpened()) {
