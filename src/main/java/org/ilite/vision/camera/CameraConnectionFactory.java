@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.ilite.vision.camera.axis.AxisCameraConnection;
+import org.ilite.vision.camera.opencv.OpenCVUtils;
+import org.ilite.vision.constants.ECameraConfig;
 
 public class CameraConnectionFactory {
 
@@ -12,6 +13,11 @@ public class CameraConnectionFactory {
 
     public static synchronized ICameraConnection getCameraConnection(String pIP) {
         String key = pIP;
+        
+        if(ECameraConfig.USE_LOCAL_IF_NOT_AVAILABLE.getBooleanValue() && !OpenCVUtils.isAvailable(pIP)) {
+        	key = null;
+        } 
+        
         if(key == null) {
             key = "LOCAL";
         }
