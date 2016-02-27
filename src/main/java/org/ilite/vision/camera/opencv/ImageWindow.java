@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -25,8 +26,6 @@ import javax.swing.SwingUtilities;
 import org.ilite.vision.camera.CameraConnectionFactory;
 import org.ilite.vision.camera.ICameraConnection;
 import org.ilite.vision.camera.opencv.renderables.ObjectDetectorRenderable;
-import org.ilite.vision.constants.ECameraConfig;
-import org.ilite.vision.constants.ECameraType;
 import org.ilite.vision.constants.Paths;
 import org.opencv.core.Mat;
 
@@ -102,13 +101,18 @@ public class ImageWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 File dir = new File(Paths.IMAGES_FOLDER_PATH.getValue());
-                File file = new File(Paths.IMAGES_FOLDER_PATH.getValue() + "image" + dir.listFiles().length + ".png");
-                
-                try {
-                    ImageIO.write(mCurrentFrame, "png", file);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                JFileChooser aChooser = new JFileChooser(dir);
+                int showOpenDialog = aChooser.showOpenDialog(saveImageButton);
+                if (showOpenDialog == aChooser.APPROVE_OPTION ){
+                	File file = aChooser.getSelectedFile();
+                	try {
+                        ImageIO.write(mCurrentFrame, "png", file);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
+                
+                
             }
             
         });
