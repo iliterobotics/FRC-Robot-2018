@@ -14,6 +14,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 /**
@@ -162,5 +163,37 @@ public class OpenCVUtils {
 
 
         return result;        
+    }
+    
+    /**
+     * Method to take an image and translate it into the x and y position. 
+     * @param pDeltaX
+     * 	The amount, in x to move the image, in pixels
+     * @param pDelaY
+     * 	The amount, in y, to move the iamge, in pixels
+     * @param pOrigImg
+     * 	The image to return 
+     * @return
+     * 	The image have the translation has been applied
+     */
+    public static Mat translateMat(int pDeltaX, int pDelaY, Mat pOrigImg) {
+    	
+    	Mat returnMat = new Mat();
+    	
+    	//TODO: This is the transformation matrix. This should be: 
+    	//[ 1 0 tx]
+    	//[ 0 1 ty]
+    	//[ 0 0 1 ]
+    	//M should be size 3x3
+    	//data needs to be set. 
+    	//Hint: Mat.Zeros() will initialize a matrix with all 0s, for a given size
+    	Mat M  = null;
+    	//This should be the same size as the origImg. 
+    	//Hint: Mat has a method to get size
+		Size dsize = null;
+		Imgproc.warpAffine(pOrigImg, returnMat, M, dsize);
+    	
+    	return returnMat;
+    	
     }
 }
