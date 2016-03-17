@@ -79,6 +79,12 @@ public class Camera extends AbstractCameraConnection {
             else{
                 mCamera = new VideoCapture();
                 cameraIP = "http://"+cameraIP+"/mjpg/video.mjpg";
+                try {
+					Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                 mCamera.open(cameraIP);
             }
 
@@ -101,9 +107,17 @@ public class Camera extends AbstractCameraConnection {
         @Override
         public void run() {
             Mat currentFrame = new Mat();
+            long start = 0;
+            long end = 0;
+            do {
+             start = System.currentTimeMillis();
             mCamera.read(currentFrame);
+             end = System.currentTimeMillis();
             mLastFrame = OpenCVUtils.toBufferedImage(currentFrame);
+            } while(end - start < 10);
             notifyListeners(mLastFrame);
+            long updateRate = (cameraIP == null)?CAM_RATE_MILLIS : 5;
+            mScheduleAtFixedRate = CAMERA_EXEC.schedule(mCameraRunnable, updateRate, TimeUnit.MILLISECONDS);
         }
     };
     @Override
@@ -125,8 +139,9 @@ public class Camera extends AbstractCameraConnection {
         } else if(mScheduleAtFixedRate == null){
             
             long updateRate = (cameraIP == null)?CAM_RATE_MILLIS : 5;
-            mScheduleAtFixedRate = CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, updateRate,
-                    updateRate, TimeUnit.MILLISECONDS);
+//            mScheduleAtFixedRate = CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, updateRate,
+//                    updateRate, TimeUnit.MILLISECONDS);
+            mScheduleAtFixedRate = CAMERA_EXEC.schedule(mCameraRunnable, updateRate, TimeUnit.MILLISECONDS);
         }
 
     };

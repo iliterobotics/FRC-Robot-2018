@@ -53,7 +53,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 
 	public static void main(String[] args) {
 		//Put this in camera connection factory for the axis camera - ECameraType.ALIGNMENT_CAMERA.getCameraIP()
-		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.ALIGNMENT_CAMERA.getCameraIP());
+		ICameraConnection cameraConnection = CameraConnectionFactory.getCameraConnection(ECameraType.FIELD_CAMERA.getCameraIP());
 		TowerTracker1885 aTracker = new TowerTracker1885(cameraConnection);
 		aTracker.start();
 		
@@ -251,6 +251,12 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	                towers2.fire(new TowerMessage(distance,azimuth,alignment,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
 	            }
 			}
+				else{
+					for (ITowerListener towers2 : mTowerListeners) {
+		                towers2.fire(new TowerMessage(0,0,alignment,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+		            }
+
+				}
 			Core.putText(matOriginal, "Frame: " +mFrameCounter, new Point(100, 100), Core.FONT_HERSHEY_PLAIN, 1, YELLOW);
 //			output an image for debugging
 //			Highgui.imwrite("output-"+mFrameCounter+".png", matOriginal);
