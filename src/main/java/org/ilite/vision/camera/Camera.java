@@ -12,8 +12,27 @@ import org.ilite.vision.constants.ECameraConfig;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
 
-public class LocalCamera extends AbstractCameraConnection {
+public class Camera extends AbstractCameraConnection {
+
+    private String cameraIP;
     
+    /**
+     * Default Constructor that sets cameraIP to null and uses local camera
+     */
+    
+    public Camera(){
+        cameraIP = null;
+    }
+    /**
+     * Constructor that takes in a camera's IP address
+     * @param p_CameraIP
+     */
+    
+    public Camera(String p_CameraIP){
+        
+        cameraIP = p_CameraIP;
+        
+    }
 
     /**
      * The last buffered image
@@ -46,15 +65,28 @@ public class LocalCamera extends AbstractCameraConnection {
     public void start() {
 
         if (mCamera == null) {
-            int DEVICE = (int) ECameraConfig.DEVICE.getValue();
-            mCamera = new VideoCapture(DEVICE);
-            try {
-                Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
+            
+            if(cameraIP == null){
+                int DEVICE = (int) ECameraConfig.DEVICE.getValue();
+                mCamera = new VideoCapture(DEVICE);
+                try {
+                    Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                mCamera.open(DEVICE);
             }
-
-            mCamera.open(DEVICE);
+            else{
+                mCamera = new VideoCapture();
+                cameraIP = "http://"+cameraIP+"/mjpg/video.mjpg";
+                try {
+					Thread.sleep(ECameraConfig.INITIAL_CAMERA_DELAY.getValue());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                mCamera.open(cameraIP);
+            }
 
             if (!mCamera.isOpened()) {
                 throw new IllegalStateException("Unable to start the camera");
@@ -75,9 +107,17 @@ public class LocalCamera extends AbstractCameraConnection {
         @Override
         public void run() {
             Mat currentFrame = new Mat();
+            long start = 0;
+            long end = 0;
+            do {
+             start = System.currentTimeMillis();
             mCamera.read(currentFrame);
+             end = System.currentTimeMillis();
             mLastFrame = OpenCVUtils.toBufferedImage(currentFrame);
+            } while(end - start < 10);
             notifyListeners(mLastFrame);
+            long updateRate = (cameraIP == null)?CAM_RATE_MILLIS : 5;
+            mScheduleAtFixedRate = CAMERA_EXEC.schedule(mCameraRunnable, updateRate, TimeUnit.MILLISECONDS);
         }
     };
     @Override
@@ -97,9 +137,11 @@ public class LocalCamera extends AbstractCameraConnection {
             
 
         } else if(mScheduleAtFixedRate == null){
-
-            mScheduleAtFixedRate = CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, CAM_RATE_MILLIS,
-                    CAM_RATE_MILLIS, TimeUnit.MILLISECONDS);
+            
+            long updateRate = (cameraIP == null)?CAM_RATE_MILLIS : 5;
+//            mScheduleAtFixedRate = CAMERA_EXEC.scheduleAtFixedRate(mCameraRunnable, updateRate,
+//                    updateRate, TimeUnit.MILLISECONDS);
+            mScheduleAtFixedRate = CAMERA_EXEC.schedule(mCameraRunnable, updateRate, TimeUnit.MILLISECONDS);
         }
 
     };
