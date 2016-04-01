@@ -1,6 +1,8 @@
 package com.fauge.robotics.towertracker;
 
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,7 +45,8 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	private final ICameraConnection mConnection;
 	private int mFrameCounter = 0;
 	private Set<ITowerListener> mTowerListeners = new CopyOnWriteArraySet<>();
-
+	private static JToggleButton swapButton = new JToggleButton("SWAP");
+	private static boolean shouldSwap = false;
 	public TowerTracker1885(ICameraConnection cameraConnection) {
 		cameraConnection.addCameraFrameListener(this);
 		mConnection = cameraConnection;
@@ -59,7 +64,9 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			
-			@Override
+			
+
+            @Override
 			public void run() {
 				JFrame aFrame = new JFrame("FOV");
 				final JSlider aSLider = new JSlider(0, 360,(int)VERTICAL_FOV);
@@ -75,6 +82,9 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				JPanel contentPanel = new JPanel();
 				contentPanel.add(aSLider);
 				contentPanel.add(valueLabel);
+				
+
+				contentPanel.add(swapButton);
 				aFrame.setContentPane(contentPanel);
 				aFrame.pack();
 				aFrame.setVisible(true);
@@ -156,6 +166,10 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 			contours.clear();
 //			captures from a static file for testing
 //			matOriginal = Imgcodecs.imread("someFile.png");
+			
+			if(swapButton.isSelected()) {
+			    Core.flip(matOriginal, matOriginal, 0);
+			}
 			
 			Imgproc.cvtColor(matOriginal,matHSV,Imgproc.COLOR_BGR2HSV_FULL);			
 			Core.inRange(matHSV, LOWER_BOUNDS, UPPER_BOUNDS, matThresh);
@@ -291,7 +305,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 		
 		
 	}
-
+	
 	public void addTowerListener(ITowerListener t){
 	    mTowerListeners.add(t);
 	}
