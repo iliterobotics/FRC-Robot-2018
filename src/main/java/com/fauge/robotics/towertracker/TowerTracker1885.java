@@ -153,7 +153,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	
 	public  void processImage(Mat matOriginal){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,distance,azimuth;
+		double x,y,targetX,targetY,distance,azimuthX,azimuthY;
 //		frame counter
 			contours.clear();
 //			captures from a static file for testing
@@ -255,6 +255,9 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
 				
+				x = rec.br().x + rec.width/2;
+				x = -((2 * (x /matOriginal.height()))-1);
+				
 				
 				System.out.println("CHRIS: y= " + " tan= " + y*VERTICAL_FOV/2.0 + CAMERA_ANGLE);
 				distance = (TOP_TARGET_HEIGHT_IN_INCHES - TOP_CAMERA_HEIGHT_IN_INCHES) / 
@@ -262,19 +265,24 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 //				angle to target...would not rely on this
 				targetX = rec.tl().x + rec.width / 2;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				azimuth = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
+				azimuthX = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0);
+				
+				targetY = rec.tl().y + rec.height/2;
+				targetY = (2 * (targetY / matOriginal.height()))-1;
+				azimuthY = TowerTracker.normalize360(targetY*VERTICAL_FOV / 2.0);
+				
 //				drawing info on target
 				Point center = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2);
 				Point centerw = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2 - 20);
-				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
-				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				Core.putText(matOriginal, "dist= "+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				Core.putText(matOriginal, "xAz= "+(int)azimuthX + "yAz= " + (int)azimuthY, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+	                towers2.fire(new TowerMessage(distance,azimuthX,azimuthY,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
 	            }
 			}
 				else{
 					for (ITowerListener towers2 : mTowerListeners) {
-		                towers2.fire(new TowerMessage(0,0,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+		                towers2.fire(new TowerMessage(0,0,0,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
 		            }
 
 				}
