@@ -221,7 +221,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Double bottomContourArea = bottomHalf.intersection(contourRect).getHeight() * topHalf.intersection(contourRect).getWidth();
 				
 				pixelPerInch = rec.width / GOAL_WIDTH;
-				offSet = (Configurations.getIntValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
+				offSet = (Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
 				
 				this.updateValueWindow(pixelPerInch, offSet, "(" + rec.x + ", " +rec.y + ")", rec.width, rec.height);
 				
