@@ -95,7 +95,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 		
 	}
 
-	private void start() {
+	public void start() {
 		mWindow.show();
 		mThreshWindow.show();
 		mConnection.start();
