@@ -196,4 +196,18 @@ public class OpenCVUtils {
     	return returnMat;
     	
     }
+    
+    /**
+     * Flips the image 180 degrees
+     * @param pOrigImage
+     * 	The original image
+     * @return
+     * 	The same image, but rotated 180 degrees
+     */
+    public static Mat flipImage180(Mat pOrigImage) {
+    	Mat flippedMat = new Mat();
+    	
+    	Core.flip(pOrigImage, flippedMat, 0);
+    	return flippedMat;
+    }
 }
