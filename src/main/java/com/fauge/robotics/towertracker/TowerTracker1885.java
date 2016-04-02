@@ -221,7 +221,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Double bottomContourArea = bottomHalf.intersection(contourRect).getHeight() * topHalf.intersection(contourRect).getWidth();
 				
 				pixelPerInch = rec.width / GOAL_WIDTH;
-				offSet = (Configurations.getIntValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
+				offSet = (Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
 				
 				this.updateValueWindow(pixelPerInch, offSet, "(" + rec.x + ", " +rec.y + ")", rec.width, rec.height);
 				
@@ -263,9 +263,11 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				distance = (TOP_TARGET_HEIGHT_IN_INCHES - TOP_CAMERA_HEIGHT_IN_INCHES) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 //				angle to target...would not rely on this
-				targetX = rec.tl().x + rec.width / 2;
+				targetX = (rec.tl().x );// + rec.width / 2;
+				targetX -= 2*offSet;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
 				azimuthX = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0);
+				System.out.println("AZ= " + azimuthX);
 				
 				targetY = rec.tl().y + rec.height/2;
 				targetY = (2 * (targetY / matOriginal.height()))-1;
@@ -277,12 +279,12 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Core.putText(matOriginal, "dist= "+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				Core.putText(matOriginal, "xAz= "+(int)azimuthX + "yAz= " + (int)azimuthY, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuthX,azimuthY,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+	                towers2.fire(new TowerMessage(distance,azimuthX,azimuthY,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), (int)Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES")));
 	            }
 			}
 				else{
 					for (ITowerListener towers2 : mTowerListeners) {
-		                towers2.fire(new TowerMessage(0,0,0,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+		                towers2.fire(new TowerMessage(0,0,0,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), (int)Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES")));
 		            }
 
 				}

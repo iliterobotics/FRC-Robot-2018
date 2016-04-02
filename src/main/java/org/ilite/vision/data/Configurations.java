@@ -36,7 +36,7 @@ public class Configurations {
     }
 
     public static float getFloatValue(String key) {
-        return ((Float) mKeyMap.get(key)).floatValue();
+        return ((Double) mKeyMap.get(key)).floatValue();
     }
     
     public static long getLongValue(String key) {
