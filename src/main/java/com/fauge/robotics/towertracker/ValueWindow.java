@@ -54,8 +54,8 @@ public class ValueWindow implements ITowerListener
     public void fire(TowerMessage message)
     {
         mValueLabels.get(FIELDS.DISTANCE).setText(Double.toString(message.distance));
-        mValueLabels.get(FIELDS.AOE).setText(Double.toString(message.AoE));
-        mValueLabels.get(FIELDS.ALIGNMENT).setText(message.alignment);
+        mValueLabels.get(FIELDS.AOE).setText(Double.toString(message.aoe_X));
+        mValueLabels.get(FIELDS.ALIGNMENT).setText(message.alignmentX);
         mValueLabels.get(FIELDS.X_OFF_SET).setText(Integer.toString(message.xOffSet));
         
     }

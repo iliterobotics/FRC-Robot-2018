@@ -85,7 +85,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 		
 	}
 
-	private void start() {
+	public void start() {
 		mWindow.show();
 		mThreshWindow.show();
 		mConnection.start();
@@ -136,8 +136,10 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	/**https://wpilib.screenstepslive.com/s/3120/m/8731/l/90361-identifying-and-processing-the-targets**/
 	public static double VERTICAL_FOV  = 49;
 	public static final double CAMERA_ANGLE = 30;
-	public static String alignment;
-	public static int multiplier;
+	public static String alignmentX;
+	public static int multiplierX;
+	public static String alignmentY;
+    public static int multiplierY;
 	
 	public static double pixelPerInch;
 	/**
@@ -151,7 +153,7 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 	
 	public  void processImage(Mat matOriginal){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double x,y,targetX,targetY,distance,azimuth;
+		double x,y,targetX,targetY,distance,azimuthX,azimuthY;
 //		frame counter
 			contours.clear();
 //			captures from a static file for testing
@@ -211,49 +213,78 @@ public class TowerTracker1885 implements ICameraFrameUpdateListener{
 				Rectangle contourRect = new Rectangle(rec.x, rec.y, rec.width, rec.height);
 				Rectangle leftHalf = new Rectangle(0, 0, matOriginal.width()/2, matOriginal.height());
 				Rectangle rightHalf= new Rectangle(matOriginal.width()/2, 0, matOriginal.width()/2, matOriginal.height());
+				Rectangle topHalf = new Rectangle(0, 0, matOriginal.width(), matOriginal.height()/2);
+				Rectangle bottomHalf = new Rectangle(0, matOriginal.height()/2, matOriginal.width(), matOriginal.height()/2);
 				Double leftContourArea = leftHalf.intersection(contourRect).getWidth() * leftHalf.intersection(contourRect).getHeight();
 				Double rightContourArea = rightHalf.intersection(contourRect).getWidth() * rightHalf.intersection(contourRect).getHeight();
+				Double topContourArea = topHalf.intersection(contourRect).getHeight() * bottomHalf.intersection(contourRect).getWidth();
+				Double bottomContourArea = bottomHalf.intersection(contourRect).getHeight() * topHalf.intersection(contourRect).getWidth();
 				
 				pixelPerInch = rec.width / GOAL_WIDTH;
-				offSet = (Configurations.getIntValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
+				offSet = (Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES") * pixelPerInch);
 				
 				this.updateValueWindow(pixelPerInch, offSet, "(" + rec.x + ", " +rec.y + ")", rec.width, rec.height);
 				
+				
+				//Left and Right Rectangles
 				if(leftContourArea.compareTo(rightContourArea) > 0){
-					alignment = ECameraAlignment.LEFT.getAlignment();
-					multiplier = ECameraAlignment.LEFT.getMultiplier();
+					alignmentX = ECameraAlignment.LEFT.getAlignment();
+					multiplierX = ECameraAlignment.LEFT.getMultiplier();
 				} else if(leftContourArea.compareTo(rightContourArea) < 0){
-					alignment = ECameraAlignment.RIGHT.getAlignment();
-					multiplier = ECameraAlignment.RIGHT.getMultiplier();
+					alignmentX = ECameraAlignment.RIGHT.getAlignment();
+					multiplierX = ECameraAlignment.RIGHT.getMultiplier();
 				} else if(Math.abs(leftContourArea - rightContourArea) <= 10){
-					alignment = ECameraAlignment.CENTER.getAlignment();
-					multiplier = ECameraAlignment.CENTER.getMultiplier();
+					alignmentX = ECameraAlignment.CENTER.getAlignment();
+					multiplierX = ECameraAlignment.CENTER.getMultiplier();
+				}
+
+				
+				//Top and Bottom Rectangles
+				if(topContourArea.compareTo(bottomContourArea) > 0){
+				    alignmentY = ECameraAlignment.TOP.getAlignment();
+				    multiplierY = ECameraAlignment.TOP.getMultiplier();
+				} else if (topContourArea.compareTo(bottomContourArea) <0){
+				    alignmentY = ECameraAlignment.BOTTOM.getAlignment();
+				    multiplierY = ECameraAlignment.BOTTOM.getMultiplier();
+				} else if (Math.abs(topContourArea - bottomContourArea) <=10){
+				    alignmentY = ECameraAlignment.CENTER.getAlignment();
+				    multiplierY = ECameraAlignment.CENTER.getMultiplier();
 				}
 				
 //				"fun" math brought to you by miss daisy (team 341)!
 				y = rec.br().y + rec.height / 2;
 				y= -((2 * (y / matOriginal.height())) - 1);
 				
+				x = rec.br().x + rec.width/2;
+				x = -((2 * (x /matOriginal.height()))-1);
+				
 				
 				System.out.println("CHRIS: y= " + " tan= " + y*VERTICAL_FOV/2.0 + CAMERA_ANGLE);
 				distance = (TOP_TARGET_HEIGHT_IN_INCHES - TOP_CAMERA_HEIGHT_IN_INCHES) / 
 						Math.tan((y * VERTICAL_FOV / 2.0 + CAMERA_ANGLE) * Math.PI / 180);
 //				angle to target...would not rely on this
-				targetX = rec.tl().x + rec.width / 2;
+				targetX = (rec.tl().x );// + rec.width / 2;
+				targetX -= 2*offSet;
 				targetX = (2 * (targetX / matOriginal.width())) - 1;
-				azimuth = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0 + 0);
+				azimuthX = TowerTracker.normalize360(targetX*HORIZONTAL_FOV /2.0);
+				System.out.println("AZ= " + azimuthX);
+				
+				targetY = rec.tl().y + rec.height/2;
+				targetY = (2 * (targetY / matOriginal.height()))-1;
+				azimuthY = TowerTracker.normalize360(targetY*VERTICAL_FOV / 2.0);
+				
 //				drawing info on target
 				Point center = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2);
 				Point centerw = new Point(rec.br().x-rec.width / 2 - 15,rec.br().y - rec.height / 2 - 20);
-				Core.putText(matOriginal, ""+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
-				Core.putText(matOriginal, ""+(int)azimuth, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				Core.putText(matOriginal, "dist= "+(int)distance, center, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
+				Core.putText(matOriginal, "xAz= "+(int)azimuthX + "yAz= " + (int)azimuthY, centerw, Core.FONT_HERSHEY_PLAIN, 1, BLACK);
 				for (ITowerListener towers2 : mTowerListeners) {
-	                towers2.fire(new TowerMessage(distance,azimuth,alignment,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+	                towers2.fire(new TowerMessage(distance,azimuthX,azimuthY,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), (int)Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES")));
 	            }
 			}
 				else{
 					for (ITowerListener towers2 : mTowerListeners) {
-		                towers2.fire(new TowerMessage(0,0,alignment,OpenCVUtils.toBufferedImage(matOriginal), Configurations.getIntValue("CAMERA_X_OFFSET_INCHES")));
+		                towers2.fire(new TowerMessage(0,0,0,alignmentX,alignmentY,OpenCVUtils.toBufferedImage(matOriginal), (int)Configurations.getFloatValue("CAMERA_X_OFFSET_INCHES")));
 		            }
 
 				}

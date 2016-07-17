@@ -3,7 +3,9 @@ package com.fauge.robotics.towertracker;
 public enum ECameraAlignment {
 	LEFT("Turn Left", -1),
 	RIGHT("Turn Right", 1),
-	CENTER("Centered", 0);
+	CENTER("Centered", 0),
+	TOP("Move Up", 1),
+	BOTTOM("Move Down", -1);
 	
 	public String alignment;
 	public int multiplier;
