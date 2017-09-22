@@ -1,6 +1,6 @@
 # ILITE Robotics 2018 FRC Robot Code Development Repository
 
-##Deploying Code to the RoboRIO
+## Deploying Code to the RoboRIO
 
 1. Install the latest FRC Update Suite from here:
 > <http://www.ni.com/download/first-robotics-software-2015/5112/en/>
@@ -23,8 +23,9 @@
 
 5. Deploying to the RoboRIO through the command line
 > Open your terminal and navigate to your project directory, then build and deploy with the following command:
-  > Linux: `./gradlew build deploy`
-  > Windows: `gradlew build deploy`
+
+> Linux: `./gradlew build deploy`
+> Windows: `gradlew build deploy`
 
 6. Deploying to the RoboRIO through the Eclipse GUI 
 > Open the Gradle Task View by going to Window > Show View > Other... > Gradle > Gradle Tasks
