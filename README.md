@@ -24,6 +24,8 @@
 5. Deploying to the RoboRIO through the command line
 > Open your terminal and navigate to your project directory, then build and deploy with the following command:
 
+> The terminal can be opened with the <kbd>Shift</kbd> + Right-Click on Windows.
+
 > Linux: `./gradlew build deploy`
 > Windows: `gradlew build deploy`
 
