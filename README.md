@@ -24,10 +24,13 @@
 5. Deploying to the RoboRIO through the command line
 > Open your terminal and navigate to your project directory, then build and deploy with the following command:
 
-> The terminal can be opened with the <kbd>Shift</kbd> + Right-Click on Windows.
+> The terminal can be opened with the <kbd>Shift</kbd> + Right-Click on Windows and <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd> on Ubuntu.
 
 > Linux: `./gradlew build deploy`
 > Windows: `gradlew build deploy`
+
+> The `--offline` argument can be used at competition when internet is not available.
+> If you're having weird issues you can try cleaning the project and refreshing the dependencies with `gradlew clean cleanEclipse --refresh-dependencies`
 
 6. Deploying to the RoboRIO through the Eclipse GUI 
 > Open the Gradle Task View by going to Window > Show View > Other... > Gradle > Gradle Tasks
