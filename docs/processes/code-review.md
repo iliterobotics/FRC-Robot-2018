@@ -1,5 +1,5 @@
 # Code Review Process
-## Step 1: Reivew Logical Flow
+## Step 1: Revew Logical Flow
 Make sure that the logic of the code is sound and that all flow makes sense and uses the appropriate data for 
 preforming certain operations
 ## Step 2: Math/Operations
