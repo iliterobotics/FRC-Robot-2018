@@ -1,0 +1,69 @@
+plugins {
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jaci.openrio.gradle.GradleRIO" version "2017.10.24b" apply false
+}
+
+def TEAM = 1885
+def ROBOT_CLASS = "frc.team1885.robot.Robot"
+
+project(':robotcode') {
+	
+	apply plugin: 'eclipse'
+	apply plugin: 'java'
+	apply plugin: 'jaci.openrio.gradle.GradleRIO'
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	
+	// Define my targets (RoboRIO) and artifacts (deployable files)
+	// This is added by GradleRIO's backing project EmbeddedTools.
+	deploy {
+		targets {
+			target("roborio", jaci.openrio.gradle.frc.RoboRIO) {
+				team = 1885
+			}
+		}
+		artifacts {
+			artifact('frcJava', jaci.openrio.gradle.frc.FRCJavaArtifact) {
+				targets << "roborio"
+			}
+		}
+	}
+	
+	// Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
+	// and NavX.
+	dependencies {
+		compile wpilib()
+		//compile ctre()
+		//compile navx()
+	}
+	
+	// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+	// in order to make them all available at runtime. Also adding the manifest so WPILib
+	// knows where to look for our Robot Class.
+	jar {
+		from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+		manifest jaci.openrio.gradle.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
+	}
+
+	task wrapper(type: Wrapper) {
+		gradleVersion = '4.2.1'
+	}
+	
+}
+
+project(':displaycode') {
+
+  apply plugin: 'eclipse'
+  apply plugin: 'java'
+  apply plugin: 'jaci.openrio.gradle.GradleRIO'
+
+  repositories {
+		
+  }
+  
+  dependencies {
+    compile wpilib()
+  }
+}
