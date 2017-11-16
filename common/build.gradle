@@ -1,0 +1,12 @@
+
+apply plugin: 'jaci.openrio.gradle.GradleRIO'
+
+wpi {
+	opencvVersion = "3.1.0"
+}
+dependencies {
+  compile wpilib()
+  compile navx()
+  compile 'com.google.code.gson:gson:2.8.2'
+  compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER  
+}
