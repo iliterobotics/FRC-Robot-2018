@@ -8,7 +8,8 @@ FRC-Robot-2018/
    display/ - Our configuration and output display lives here.  It may incorporate Shufflboard at some point.
    visionRIO/ - Our vision code start out being specific to how the RoboRIO will process images and distill them to targeting info.
 ```
-Note that we will do vision processing on the RIO.  If you disagree, then get this 'simple' version of vision working (from processing all the way through integration into robot code and driver inputs) early.  We'll then discuss other options.
+> Note that we will do vision processing on the RIO.  If you disagree, then get this 'simple' version of vision working (from processing all the way through integration into robot code and driver inputs) early.  We'll then discuss other options.
+
 ---
 ## General Mantra for Data Structures & Network Communications
 1. The first step to applying neural nets to our robot is to collect data, even when we aren't using it directly.  Once we realize how we can apply neural nets, we will have a great set of training data if we've already collected it all!  Therefore:
