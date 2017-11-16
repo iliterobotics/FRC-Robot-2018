@@ -1,4 +1,4 @@
-# ILITE Robotics 2018 FRC Robot Code Development Repository
+# ILITE Robotics 2018 FRC Robot Code
 
 ## Project Structure
 ```
