@@ -14,7 +14,7 @@ FRC-Robot-2018/
 ## General Mantra for Data Structures & Network Communications
 1. The first step to applying neural nets to our robot is to collect data, even when we aren't using it directly.  Once we realize how we can apply neural nets, we will have a great set of training data if we've already collected it all!  Therefore:
    * All Joystick inputs, sensory data, and outputs (including Talon, Pneumatic and custom outputs like LED's) will be managed via the Codex framework.
-   * Local state variables may be put into a Codex framework if you feel it is worth capturing.  Hint: it probably is, but since Codexes add a O(1) overhead, we shouldn't use them everywhere with absolution.
+   * Local state variables may be put into a Codex framework if you feel it is worth capturing.  Hint: it probably is, but only AFTER we have a better understanding of the states we want to capture.  That way we aren't constantly changing the enumerations so quickly.
 1. Critical configuration data will use NetworkTables. Generally this is most custom data from the driver's station to the robot.  
    * Since 2015, the NetworkTables protocol has been the only network comms that have worked 99% of the time (albeit a bit bandwidth-heavy).
    * NetworkTables had some issues with stale cache data in the past, but v4.0 may have addressed this.
