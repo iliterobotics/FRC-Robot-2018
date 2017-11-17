@@ -89,11 +89,13 @@ public class Robot extends SampleRobot {
   public void autonomous() {
     System.out.println("AUTONOMOUS");
     setRunningModules();
+    
     long start = 0;
     while(isEnabled() && isAutonomous()) {
       start = System.nanoTime();
       
       if(mNavxReady.get()) {
+		if(!updateCommandQueue()) break; //Break out of auto if there are no available commands
         updateRunningModules();
       } else {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
