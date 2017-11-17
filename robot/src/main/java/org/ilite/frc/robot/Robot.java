@@ -1,9 +1,12 @@
 package org.ilite.frc.robot;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.modules.Module;
 import org.ilite.frc.robot.types.ELogitech310;
@@ -50,6 +53,8 @@ public class Robot extends SampleRobot {
   private boolean mLastBtn2 = false;
   
   private List<Module> mRunningModules;
+  private Queue<Command> mCommandQueue;
+  private Command mCurrentCommand;
 
   public Robot() {
   }
@@ -62,6 +67,7 @@ public class Robot extends SampleRobot {
     mPDP = new PowerDistributionPanel();
     
     mRunningModules = new ArrayList<>();
+    mCommandQueue = new LinkedList<>();
     
     new Thread(() -> {
       while(mAHRS.isCalibrating()) {
@@ -172,6 +178,22 @@ public class Robot extends SampleRobot {
   
   private void updateRunningModules() {
 	  for(Module m : mRunningModules) m.update();
+  }
+  
+  /**
+   * 
+   * @return Whether there is another available autonomous command to execute
+   */
+  private boolean updateCommandQueue() {
+	  //Grab the next command
+	  mCurrentCommand = mCommandQueue.peek();
+	  if(mCurrentCommand != null){
+		mCurrentCommand.initialize();
+		//If this command is finished executing
+		if(mCurrentCommand.update()) mCommandQueue.poll(); //Discard the command and initialize the next one
+	    if(mCommandQueue.peek() != null) return true;
+	  }
+	  return false;
   }
   
   public void test() {
