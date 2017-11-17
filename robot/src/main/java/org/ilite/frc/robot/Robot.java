@@ -1,15 +1,16 @@
 package org.ilite.frc.robot;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.robot.config.SystemSettings;
+import org.ilite.frc.robot.modules.Module;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
 import org.ilite.frc.robot.types.EPowerDistPanel;
 
 import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.codex.CodexSender;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -47,6 +48,8 @@ public class Robot extends SampleRobot {
   
   private boolean mLastTrigger = false;
   private boolean mLastBtn2 = false;
+  
+  private List<Module> mRunningModules;
 
   public Robot() {
   }
@@ -57,6 +60,8 @@ public class Robot extends SampleRobot {
     mDriverJoystick = new Joystick(0);
     mOperatorJoystick = new Joystick(1);
     mPDP = new PowerDistributionPanel();
+    
+    mRunningModules = new ArrayList<>();
     
     new Thread(() -> {
       while(mAHRS.isCalibrating()) {
@@ -77,12 +82,13 @@ public class Robot extends SampleRobot {
 
   public void autonomous() {
     System.out.println("AUTONOMOUS");
+    setRunningModules();
     long start = 0;
     while(isEnabled() && isAutonomous()) {
       start = System.nanoTime();
       
       if(mNavxReady.get()) {
-        
+        updateRunningModules();
       } else {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
       }
@@ -93,6 +99,7 @@ public class Robot extends SampleRobot {
 
   public void operatorControl() {
     System.out.println("TELEOP");
+    setRunningModules();
     long start = 0;
     Logger.setLevel(ELevel.DEBUG);
     
@@ -100,6 +107,7 @@ public class Robot extends SampleRobot {
       start = System.nanoTime();
       
       time();
+      updateRunningModules();
 //      Utils.print(mNavxData);
       pauseUntilTheNextCycle(start);
     }
@@ -150,6 +158,22 @@ public class Robot extends SampleRobot {
     }
   }
 
+  private void initializeRunningModules() {
+	  for(Module m : mRunningModules) {
+		  m.initialize();
+	  }
+  }
+  
+  private void setRunningModules(Module...modules) {
+	 mRunningModules.clear();
+	 for(Module m : mRunningModules) mRunningModules.add(m);
+	 initializeRunningModules();
+  }
+  
+  private void updateRunningModules() {
+	  for(Module m : mRunningModules) m.update();
+  }
+  
   public void test() {
     System.out.println("TEST");
   }
