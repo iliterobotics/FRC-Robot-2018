@@ -72,7 +72,7 @@ public class Robot extends SampleRobot {
 
   public Robot() {
     mRobotStartUS = System.nanoTime();
-    Logger.setLevel(ELevel.DEBUG);
+    Logger.setLevel(ELevel.WARN);
   }
 
   public void robotInit() {
@@ -184,6 +184,7 @@ public class Robot extends SampleRobot {
       // then the total loop time increases.
       mLog.warn("Increased period to " + CONTROL_LOOP_PERIOD_MS + "ms");
     }
+    edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
     try {
       Thread.sleep(sleepTime);
     } catch (InterruptedException e) {
