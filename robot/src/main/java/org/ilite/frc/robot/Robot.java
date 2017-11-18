@@ -1,15 +1,19 @@
 package org.ilite.frc.robot;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.math.AverageLong;
+import org.ilite.frc.robot.modules.Module;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
 import org.ilite.frc.robot.types.EPowerDistPanel;
@@ -28,7 +32,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.TalonSRX;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -69,6 +72,10 @@ public class Robot extends SampleRobot {
   private boolean mLastTrigger = false;
   private boolean mLastBtn2 = false;
   private final AverageLong timeAverage = new AverageLong(100);
+  
+  private List<Module> mRunningModules;
+  private Queue<Command> mCommandQueue;
+  private Command mCurrentCommand;
 
   public Robot() {
     mRobotStartUS = System.nanoTime();
@@ -93,6 +100,9 @@ public class Robot extends SampleRobot {
       schedule(new CANTalonReader(mTalons[i], mData.talons[i]));
     }
     
+    mRunningModules = new ArrayList<>();
+    mCommandQueue = new LinkedList<>();
+
     mExecutor.execute(() -> {
       while(mAHRS.isCalibrating()) {
         pauseForOneLoop();
@@ -131,6 +141,8 @@ public class Robot extends SampleRobot {
 
   public void autonomous() {
     mLog.info("AUTONOMOUS");
+    setRunningModules();
+    
     long start = 0;
     while(isEnabled() && isAutonomous()) {
       mCurrentTimeNanos = System.nanoTime() - mRobotStartUS;
@@ -138,7 +150,8 @@ public class Robot extends SampleRobot {
       mapSensors();
       
       if(mNavxReady.get()) {
-        
+		if(!updateCommandQueue()) break; //Break out of auto if there are no available commands
+        updateRunningModules();
       } else {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
       }
@@ -152,6 +165,7 @@ public class Robot extends SampleRobot {
     timeAverage.addRolloverListener(() -> {
       mLog.debug("Over 100 cycles, action took  " + (timeAverage.getAverage() / 1000) + "us per cycle");
     });
+    setRunningModules();
     long start = 0;
     
     while(isEnabled() && isOperatorControl()) {
@@ -161,6 +175,7 @@ public class Robot extends SampleRobot {
       for(int i = 0; i < mTalons.length; i++) {
         mCodexSender.send(mData.talons[i]);
       }
+      updateRunningModules();
       pauseUntilTheNextCycle(start);
     }
   }
@@ -207,6 +222,38 @@ public class Robot extends SampleRobot {
     timeAverage.add(System.nanoTime() - start);
   }
 
+  private void initializeRunningModules() {
+	  for(Module m : mRunningModules) {
+		  m.initialize();
+	  }
+  }
+  
+  private void setRunningModules(Module...modules) {
+	 mRunningModules.clear();
+	 for(Module m : mRunningModules) mRunningModules.add(m);
+	 initializeRunningModules();
+  }
+  
+  private void updateRunningModules() {
+	  for(Module m : mRunningModules) m.update();
+  }
+  
+  /**
+   * 
+   * @return Whether there is another available autonomous command to execute
+   */
+  private boolean updateCommandQueue() {
+	  //Grab the next command
+	  mCurrentCommand = mCommandQueue.peek();
+	  if(mCurrentCommand != null){
+		mCurrentCommand.initialize();
+		//If this command is finished executing
+		if(mCurrentCommand.update()) mCommandQueue.poll(); //Discard the command and initialize the next one
+	    if(mCommandQueue.peek() != null) return true;
+	  }
+	  return false;
+  }
+  
   public void test() {
     mLog.info("TEST");
   }
