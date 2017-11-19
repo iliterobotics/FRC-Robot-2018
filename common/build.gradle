@@ -7,6 +7,7 @@ wpi {
 dependencies {
   compile wpilib()
   compile navx()
+  compile ctre()
   compile 'com.google.code.gson:gson:2.8.2'
   compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER  
 }

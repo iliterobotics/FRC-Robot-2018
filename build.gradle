@@ -19,10 +19,11 @@ allprojects {
 // Setup the configuration for all sub-projects. This is a shortcut for manually applying the configuration
 // in each subproject individually.
 subprojects {
-    apply plugin: "java"
+  apply plugin: "java"
 	repositories {
 	  mavenCentral() // tilesFX & Medusa (gauges)
 	  jcenter() // fontawesomeFX
+	  mavenLocal()
 	}
 }
 
