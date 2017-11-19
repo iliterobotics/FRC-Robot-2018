@@ -23,7 +23,10 @@ subprojects {
 	repositories {
 	  mavenCentral() // tilesFX & Medusa (gauges)
 	  jcenter() // fontawesomeFX
-	  mavenLocal()
+	  mavenLocal()   
+	  flatDir {
+       dirs '../lib'
+    }
 	}
 }
 

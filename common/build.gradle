@@ -10,4 +10,8 @@ dependencies {
   compile ctre()
   compile 'com.google.code.gson:gson:2.8.2'
   compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER  
+  
+  // Poofs library and its dependencies
+  compile name: 'json-simple-1.1.1'
+  compile name: 'poofs.2017'
 }
