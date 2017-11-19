@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.config.SystemSettings;
+import org.ilite.frc.robot.math.AverageDouble;
 import org.ilite.frc.robot.math.AverageLong;
 import org.ilite.frc.robot.modules.Module;
 import org.ilite.frc.robot.types.ELogitech310;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -67,11 +69,11 @@ public class Robot extends SampleRobot {
   
   private CodexSender mCodexSender = new CodexSender();
 
-  private static long CONTROL_LOOP_PERIOD_MS = 20;
+  private static long INPUT_LOOP_PERIOD_MS = 20;
   
   private boolean mLastTrigger = false;
   private boolean mLastBtn2 = false;
-  private final AverageLong timeAverage = new AverageLong(100);
+  private final AverageDouble timeAverage = new AverageDouble(100);
   
   private List<Module> mRunningModules;
   private Queue<Command> mCommandQueue;
@@ -121,20 +123,20 @@ public class Robot extends SampleRobot {
     
     pauseForOneLoop();
     
-    schedule(() -> {
-      // This particular task is just to read the PDP for posterity.  We aren't
-      // using it at the moment since we have the CANTalon class.
-      EPowerDistPanel.map(mData.pdp, mPDP);
-      mData.pdp.meta().setTimeNanos(mCurrentTimeNanos);
-      mCodexSender.send(mData.pdp);
-    });
+//    schedule(() -> {
+//      // This particular task is just to read the PDP for posterity.  We aren't
+//      // using it at the moment since we have the CANTalon class.
+//      EPowerDistPanel.map(mData.pdp, mPDP);
+//      mData.pdp.meta().setTimeNanos(mCurrentTimeNanos);
+//      mCodexSender.send(mData.pdp);
+//    });
   }
   
   private void schedule(Runnable pTask) {
     mScheduledTasks.scheduleAtFixedRate(
       pTask, 
-      (long)(CONTROL_LOOP_PERIOD_MS * Math.random()), 
-      CONTROL_LOOP_PERIOD_MS, 
+      (long)(INPUT_LOOP_PERIOD_MS * Math.random()), 
+      INPUT_LOOP_PERIOD_MS, 
       TimeUnit.MILLISECONDS
     );
   }
@@ -163,7 +165,7 @@ public class Robot extends SampleRobot {
   public void operatorControl() {
     mLog.info("TELEOP");
     timeAverage.addRolloverListener(() -> {
-      mLog.debug("Over 100 cycles, action took  " + (timeAverage.getAverage() / 1000) + "us per cycle");
+      mLog.debug("Over 100 cycles, action took  " + (timeAverage.getAverage() * 1000d * 1000d) + "us per cycle");
     });
     setRunningModules();
     long start = 0;
@@ -172,9 +174,7 @@ public class Robot extends SampleRobot {
       start = System.nanoTime();
       
       time();
-      for(int i = 0; i < mTalons.length; i++) {
-        mCodexSender.send(mData.talons[i]);
-      }
+      
       updateRunningModules();
       pauseUntilTheNextCycle(start);
     }
@@ -190,14 +190,14 @@ public class Robot extends SampleRobot {
   }
   
   private void pauseUntilTheNextCycle(long pCycleStart) {
-    long sleepTime = Math.max(CONTROL_LOOP_PERIOD_MS - (System.nanoTime()-pCycleStart)/1000000, 1);
+    long sleepTime = Math.max(INPUT_LOOP_PERIOD_MS - (System.nanoTime()-pCycleStart)/1000000, 1);
     if(sleepTime <= 1) {
-      CONTROL_LOOP_PERIOD_MS++;
+      INPUT_LOOP_PERIOD_MS++;
       // When this happens, it's often because the control loop thread is being used to read
       // many sensors at once.  Sensors need a period of time to do the sensing, which means
       // that a thread is in the WAIT state for a while.  If it spends too much time waiting,
       // then the total loop time increases.
-      mLog.warn("Increased period to " + CONTROL_LOOP_PERIOD_MS + "ms");
+      mLog.warn("Increased period to " + INPUT_LOOP_PERIOD_MS + "ms");
     }
     edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
     try {
@@ -209,17 +209,20 @@ public class Robot extends SampleRobot {
   
   private void pauseForOneLoop() {
     try {
-      Thread.sleep(CONTROL_LOOP_PERIOD_MS);
+      Thread.sleep(INPUT_LOOP_PERIOD_MS);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
   }
   
   private final void time() {
-    long start = System.nanoTime();
     mapInputs();
     mapSensors();
-    timeAverage.add(System.nanoTime() - start);
+    double start = Timer.getFPGATimestamp();
+    for(int i = 0; i < mTalons.length; i++) {
+      mCodexSender.send(mData.talons[i]);
+    }
+    timeAverage.add(Timer.getFPGATimestamp() - start);
   }
 
   private void initializeRunningModules() {
@@ -235,7 +238,10 @@ public class Robot extends SampleRobot {
   }
   
   private void updateRunningModules() {
-	  for(Module m : mRunningModules) m.update();
+    double now = Timer.getFPGATimestamp();
+	  for(Module m : mRunningModules) {
+	    m.update(now);
+	  }
   }
   
   /**
