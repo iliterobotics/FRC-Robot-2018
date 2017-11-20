@@ -2,7 +2,9 @@ package org.ilite.frclog.display;
 
 import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.types.ELogitech310;
+import org.ilite.frc.robot.types.ENavX;
 import org.ilite.frc.robot.types.EPowerDistPanel;
+import org.ilite.frc.robot.types.ETalonSRX;
 
 import com.flybotix.hfr.codex.CodexReceiver;
 import com.flybotix.hfr.io.Protocols;
@@ -32,6 +34,8 @@ public class DisplayApplication  extends Application{
     IReceiveProtocol receiver = Protocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
     new CodexReceiver<>(EPowerDistPanel.class, receiver).addListener(codex -> System.out.println(codex));
     new CodexReceiver<>(ELogitech310.class, receiver).addListener(codex -> System.out.println(codex));
+    new CodexReceiver<>(ETalonSRX.class, receiver).addListener(codex -> System.out.println(codex));
+    new CodexReceiver<>(ENavX.class, receiver).addListener(codex -> System.out.println(codex));
 //    launch(pArgs);
   }
 }

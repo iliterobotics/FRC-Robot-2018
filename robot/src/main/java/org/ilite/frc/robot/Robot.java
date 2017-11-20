@@ -40,7 +40,7 @@ public class Robot extends SampleRobot {
   
   private CodexSender mCodexSender = new CodexSender();
 
-  private static long INPUT_LOOP_PERIOD_MS = 20;
+  private static long INPUT_LOOP_PERIOD_MS = 200;
   
   private boolean mLastTrigger = false;
   private boolean mLastBtn2 = false;
@@ -52,7 +52,7 @@ public class Robot extends SampleRobot {
 
   public Robot() {
     mControlLoop = new ControlLoop(mData, mHardware);
-    Logger.setLevel(ELevel.WARN);
+    Logger.setLevel(ELevel.DEBUG);
   }
 
   public void robotInit() {
@@ -81,8 +81,8 @@ public class Robot extends SampleRobot {
     mExecutor.execute(() -> {
       mCodexSender.initConnection(
           SystemSettings.CODEX_DATA_PROTOCOL, 
-          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
+          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOST);
     });
     
@@ -159,14 +159,19 @@ public class Robot extends SampleRobot {
     
     for(int i = 0; i < mData.talons.size(); i++) {
       ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
-      mData.talons.get(i).encode();
+      mCodexSender.send(mData.talons.get(i));
     }
+    ELogitech310.map(mData.driver, mHardware.getDriverJoystick());
     EPowerDistPanel.map(mData.pdp, mHardware.getPDP());
     ENavX.map(mData.navx, mHardware.getNavX(), 0);
     mapInputs();
-    mData.navx.encode();
-    mData.driver.encode();
-    mData.pdp.encode();
+//    mData.navx.encode();
+//    mData.driver.encode();
+//    mData.pdp.encode();
+//    mLog.info("Sending navx");
+    mCodexSender.send(mData.navx);
+    mCodexSender.send(mData.driver);
+    mCodexSender.send(mData.pdp);
     
     
     timeAverage.addNumber(Timer.getFPGATimestamp() - start);
