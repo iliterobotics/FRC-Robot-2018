@@ -57,7 +57,24 @@ FRC-Robot-2018/
    1. Scroll to `deploy` and double-click
 ---
 ## Commiting Code to Github
-[Stephen TBD]
+1. The first thing you should do before pushing ANY code to a code repository is fetch the latest code using `git fetch`
+   * If you want to fetch the latest version of the code and merge it into your version, use `git pull`
+   * `git pull` is basically the equivalent of `git fetch` then `git merge`
+1. Ask yourself whether you should be committing your code directly to `master`
+   * If you haven't tested your code yet, put it on a branch labeled `experimental/<feature-name>`
+      * When this code has been tested it will be moved to a `feature/` branch
+   * Code regarding competition-specific changes should be put on a branch labeled `competition/<current-competition-name>`
+      * This code will be merged into `master` after the competition and tagged with the competition name
+   * Code that has been tested but not approved for the use on the robot should be labeled `feature/feature-name`
+   * Code tested and approved for use on the robot can be merged from its `experimental/` or `feature/` branch into master
+   * Branches can be be made using `git checkout -b <branch-name>`. This will also switch to the new branch.
+   * If you want to change the branch you're working on, use `git checkout <branch-name>`
+1. After you've resolved any conflicts between your code and the latest code, you can commit your code
+   * `git commit -m "Message here"` will commit your code, storing in the local repository on your computer
+1. Pushing code
+   * Branches are pushed using `git push origin <branch-name>`
+   * For example, pushing `master` would be done using `git push origin master`
+   * You may need to set the upstream branch using `--set-upstream`
 ---
 ## Basic Linux Commands
 [Jesse/Chris/(or really anyone who wants to chip in) TBD]
