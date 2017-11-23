@@ -1,6 +1,6 @@
 package org.ilite.frc.robot.config;
 
-import com.flybotix.hfr.io.Protocols.EProtocol;
+import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
 public class SystemSettings extends ConstantsBase {

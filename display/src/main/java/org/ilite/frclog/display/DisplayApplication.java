@@ -7,7 +7,7 @@ import org.ilite.frc.robot.types.EPowerDistPanel;
 import org.ilite.frc.robot.types.ETalonSRX;
 
 import com.flybotix.hfr.codex.CodexReceiver;
-import com.flybotix.hfr.io.Protocols;
+import com.flybotix.hfr.io.MessageProtocols;
 import com.flybotix.hfr.io.receiver.IReceiveProtocol;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
@@ -31,7 +31,7 @@ public class DisplayApplication  extends Application{
   
   public static void main(String[] pArgs) {
     Logger.setLevel(ELevel.DEBUG);
-    IReceiveProtocol receiver = Protocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
+    IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
     new CodexReceiver<>(EPowerDistPanel.class, receiver).addListener(codex -> System.out.println(codex));
     new CodexReceiver<>(ELogitech310.class, receiver).addListener(codex -> System.out.println(codex));
     new CodexReceiver<>(ETalonSRX.class, receiver).addListener(codex -> System.out.println(codex));

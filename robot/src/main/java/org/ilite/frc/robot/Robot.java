@@ -16,6 +16,7 @@ import org.ilite.frc.robot.types.ETalonSRX;
 import com.ctre.CANTalon;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexSender;
+import com.flybotix.hfr.io.CodexNetworkTables;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -45,6 +47,8 @@ public class Robot extends SampleRobot {
   private boolean mLastTrigger = false;
   private boolean mLastBtn2 = false;
   private final MovingAverage timeAverage = new MovingAverage(100);
+  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
+  NetworkTable codextable = null;
   
   private final ControlLoop mControlLoop;
   private Queue<Command> mCommandQueue = new LinkedList<>();
@@ -85,6 +89,14 @@ public class Robot extends SampleRobot {
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOST);
     });
+    
+    NetworkTable.setTeam(1885);
+    NetworkTable.setClientMode();
+    NetworkTable.initialize();
+    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+    nt.registerCodex(ELogitech310.class);
+    nt.registerCodex(ENavX.class);
+    nt.registerCodex(EPowerDistPanel.class);
     
     
     
@@ -159,7 +171,7 @@ public class Robot extends SampleRobot {
     
     for(int i = 0; i < mData.talons.size(); i++) {
       ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
-      mCodexSender.send(mData.talons.get(i));
+//      mCodexSender.send(mData.talons.get(i));
     }
     ELogitech310.map(mData.driver, mHardware.getDriverJoystick());
     EPowerDistPanel.map(mData.pdp, mHardware.getPDP());
@@ -169,10 +181,13 @@ public class Robot extends SampleRobot {
 //    mData.driver.encode();
 //    mData.pdp.encode();
 //    mLog.info("Sending navx");
-    mCodexSender.send(mData.navx);
-    mCodexSender.send(mData.driver);
-    mCodexSender.send(mData.pdp);
+//    mCodexSender.send(mData.navx);
+//    mCodexSender.send(mData.driver);
+//    mCodexSender.send(mData.pdp);
     
+    nt.send(mData.navx);
+    nt.send(mData.driver);
+    nt.send(mData.pdp);
     
     timeAverage.addNumber(Timer.getFPGATimestamp() - start);
     count++;
