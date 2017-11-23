@@ -38,12 +38,7 @@ public class DisplayApplication  extends Application{
   
   public static void main(String[] pArgs) {
     Logger.setLevel(ELevel.DEBUG);
-//    IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
-//    new CodexReceiver<>(EPowerDistPanel.class, receiver).addListener(codex -> System.out.println(codex));
-//    new CodexReceiver<>(ELogitech310.class, receiver).addListener(codex -> System.out.println(codex));
-//    new CodexReceiver<>(ETalonSRX.class, receiver).addListener(codex -> System.out.println(codex));
-//    new CodexReceiver<>(ENavX.class, receiver).addListener(codex -> System.out.println(codex));
-//    launch(pArgs);
+    launch(pArgs);
     
     final NetworkTable nt = NetworkTable.getTable(ELogitech310.class.getSimpleName().toUpperCase());
     // valueChanged(ITable source, String key, Object value, boolean isNew);
@@ -51,7 +46,7 @@ public class DisplayApplication  extends Application{
     new Timer().scheduleAtFixedRate(new TimerTask() {
       public void run() {
         StringBuilder sb = new StringBuilder();
-        for(ELogitech310 e : ELogitech310.values()) {
+        for(ELogitech310 e : ELogitech310.values()) { 
           nt.getNumber(e.name(), 0d);
         }
       }
