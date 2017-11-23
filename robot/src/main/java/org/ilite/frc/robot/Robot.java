@@ -90,10 +90,10 @@ public class Robot extends SampleRobot {
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOST);
     });
     
-    NetworkTable.setTeam(1885);
-    NetworkTable.setClientMode();
-    NetworkTable.initialize();
     NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+//    NetworkTable.setClientMode();
+//    NetworkTable.setIPAddress("172.22.11.1");
+    NetworkTable.initialize();
     nt.registerCodex(ELogitech310.class);
     nt.registerCodex(ENavX.class);
     nt.registerCodex(EPowerDistPanel.class);
