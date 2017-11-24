@@ -27,9 +27,9 @@ public enum EPowerDistPanel implements CodexOf<Double> {
   
   public static void map(Codex<Double, EPowerDistPanel> pCodex, PowerDistributionPanel pPDP) {
     pCodex.reset();
-//    for(int i = 0; i < 16; i++) {
-//      pCodex.set(i, pPDP.getCurrent(i));
-//    }
+    for(int i = 0; i < 16; i++) {
+      pCodex.set(i, pPDP.getCurrent(i));
+    }
     pCodex.set(VOLTAGE, pPDP.getVoltage());
     pCodex.set(TEMPERATURE, pPDP.getTemperature());
   }

@@ -1,8 +1,21 @@
+import org.gradle.plugins.ide.eclipse.model.AccessRule
 apply plugin: 'jaci.openrio.gradle.GradleRIO'
+
+eclipse {
+    classpath {
+        file {
+            whenMerged {
+                def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+                jre.accessRules.add(new AccessRule('0', 'javafx/**'))
+            }
+        }
+    }
+}
 
 dependencies {
   compile wpilib()
   compile 'com.google.code.gson:gson:2.8.2'
   compile project(':common')
   compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER  
+  compile name: 'eu.hansolo.fx.horizon-1.0'
 }

@@ -10,6 +10,7 @@ import org.ilite.frc.robot.types.EPowerDistPanel;
 import org.ilite.frc.robot.types.ESupportedTypes;
 import org.ilite.frc.robot.types.ETalonSRX;
 
+import com.flybotix.hfr.cache.CodexElementInstance;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.codex.CodexReceiver;
 import com.flybotix.hfr.io.MessageProtocols;
@@ -50,6 +51,7 @@ public class RobotDataStream {
   }
   
   private RobotDataStream() {
+    mTable = NetworkTable.getTable("Generic Config Data");
     IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
     registerEnum(EPowerDistPanel.class, receiver);
     registerEnum(ELogitech310.class, receiver);
@@ -61,14 +63,14 @@ public class RobotDataStream {
     int hash = EnumUtils.hashOf(pEnum);
     CodexReceiver<V, E> r = new CodexReceiver<>(pEnum, pReceiver);
     mReceivers.put(hash, r);
-    mTable = NetworkTable.getTable("Generic Config Data");
+    RobotDataElementCache.inst().registerEnum(pEnum);
   }
   
   /**
    * Adds a basic listener to a value
    * @return current value of the data
    */
-  public <V, E extends Enum<E> & CodexOf<V>> V addListenerToData(E pData, IUpdate<V> pListener) {
+  public <V, E extends Enum<E> & CodexOf<V>> CodexElementInstance<V,E> addListenerToData(E pData, IUpdate<CodexElementInstance<V,E>> pListener) {
     int hash = EnumUtils.hashOf(pData);
     @SuppressWarnings("unchecked")
     CodexReceiver<V, E> receiver = (CodexReceiver<V,E>)mReceivers.get(hash);

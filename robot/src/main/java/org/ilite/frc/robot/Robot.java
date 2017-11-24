@@ -56,7 +56,7 @@ public class Robot extends SampleRobot {
 
   public Robot() {
     mControlLoop = new ControlLoop(mData, mHardware);
-    Logger.setLevel(ELevel.DEBUG);
+    Logger.setLevel(ELevel.WARN);
   }
 
   public void robotInit() {
@@ -88,15 +88,16 @@ public class Robot extends SampleRobot {
           SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOST);
+      mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
     });
     
-    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+//    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
 //    NetworkTable.setClientMode();
 //    NetworkTable.setIPAddress("172.22.11.1");
-    NetworkTable.initialize();
-    nt.registerCodex(ELogitech310.class);
-    nt.registerCodex(ENavX.class);
-    nt.registerCodex(EPowerDistPanel.class);
+//    NetworkTable.initialize();
+//    nt.registerCodex(ELogitech310.class);
+//    nt.registerCodex(ENavX.class);
+//    nt.registerCodex(EPowerDistPanel.class);
     
     
     
@@ -135,7 +136,7 @@ public class Robot extends SampleRobot {
     
     while(isEnabled() && isOperatorControl()) {
       start = System.nanoTime();
-      mapInputs();
+//      mapInputs();
       
       time();
       pauseUntilTheNextCycle(start);
@@ -173,7 +174,6 @@ public class Robot extends SampleRobot {
       ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
 //      mCodexSender.send(mData.talons.get(i));
     }
-    ELogitech310.map(mData.driver, mHardware.getDriverJoystick());
     EPowerDistPanel.map(mData.pdp, mHardware.getPDP());
     ENavX.map(mData.navx, mHardware.getNavX(), 0);
     mapInputs();
@@ -182,12 +182,12 @@ public class Robot extends SampleRobot {
 //    mData.pdp.encode();
 //    mLog.info("Sending navx");
 //    mCodexSender.send(mData.navx);
-//    mCodexSender.send(mData.driver);
-//    mCodexSender.send(mData.pdp);
+    mCodexSender.send(mData.driver);
+    mCodexSender.send(mData.pdp);
     
-    nt.send(mData.navx);
-    nt.send(mData.driver);
-    nt.send(mData.pdp);
+//    nt.send(mData.navx);
+//    nt.send(mData.driver);
+//    nt.send(mData.pdp);
     
     timeAverage.addNumber(Timer.getFPGATimestamp() - start);
     count++;

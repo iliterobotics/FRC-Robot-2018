@@ -41,4 +41,9 @@ public class DisplayConfig {
   public static final Color ERROR_COLOR = Color.RED;
   
   public static final String ICON_FONT_AWESOME_TILE_SIZE = "50";
+  
+  
+  public static final Color GRAPH_POS_COLOR = Color.BLUE;
+  public static final Color GRAPH_NEG_COLOR = Color.RED;
+  
 }
