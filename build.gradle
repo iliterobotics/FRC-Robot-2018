@@ -21,7 +21,7 @@ allprojects {
 subprojects {
   apply plugin: "java"
 	repositories {
-	  mavenCentral() // tilesFX & Medusa (gauges)
+	  mavenCentral() // HFR, tilesFX & Medusa (gauges)
 	  jcenter() // fontawesomeFX
 	  mavenLocal()   
 	  flatDir {

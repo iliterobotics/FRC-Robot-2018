@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.modules.ControlLoop;
+import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
 import org.ilite.frc.robot.types.EPowerDistPanel;
@@ -16,6 +18,7 @@ import org.ilite.frc.robot.types.ETalonSRX;
 import com.ctre.CANTalon;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexSender;
+import com.flybotix.hfr.io.CodexNetworkTables;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -27,10 +30,11 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
-  private long mCurrentTimeNanos = 0;
+  private double mCurrentTimeNanos = 0;
   
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
     
@@ -40,42 +44,42 @@ public class Robot extends SampleRobot {
   
   private CodexSender mCodexSender = new CodexSender();
 
-  private static long INPUT_LOOP_PERIOD_MS = 200;
+  private static long INPUT_LOOP_PERIOD_MS = 20;
   
-  private boolean mLastTrigger = false;
-  private boolean mLastBtn2 = false;
   private final MovingAverage timeAverage = new MovingAverage(100);
+  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
+  NetworkTable codextable = null;
   
   private final ControlLoop mControlLoop;
   private Queue<Command> mCommandQueue = new LinkedList<>();
   private Command mCurrentCommand;
+  
+  // Temporary...
+  private final DriveTrain dt;
+  private final DriverControlSplitArcade stick;
 
   public Robot() {
     mControlLoop = new ControlLoop(mData, mHardware);
-    Logger.setLevel(ELevel.DEBUG);
+    dt = new DriveTrain(mData);
+    stick = new DriverControlSplitArcade(mData, dt);
+    Logger.setLevel(ELevel.WARN);
   }
 
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-    CANTalon[] talons = new CANTalon[4];
-    
-    for(int i = 0; i < talons.length; i++) {
-      talons[i] = new CANTalon(i + 1);
       
-      //TODO - modify codexes to allow a key input as an option to the 'thisEnum' method.
-//      talons[i] = Codex.of.thisEnum(ETalonSRX.class, i+1, true);
-//      CodexMetadata<ETalonSRX> meta = new CodexMetadata<>(ETalonSRX.class, 0, 0, i+1);
-//      talons[i].setMetadata(meta);
-      
-    }
-
     mHardware.init(
         mExecutor,
         new Joystick(0), 
         new Joystick(1), 
         new PowerDistributionPanel(), 
-        new AHRS(SerialPort.Port.kMXP), 
-        talons
+        new AHRS(SerialPort.Port.kMXP)
+        // Sensors
+        // Custom hw
+        // Spike relays
+        // etc
+        
+        // Talons TBD ... they're somewhat picky.
     );
     
     mExecutor.execute(() -> {
@@ -84,7 +88,14 @@ public class Robot extends SampleRobot {
           SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOST);
+      mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
     });
+    
+    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+    NetworkTable.initialize();
+    nt.registerCodex(ELogitech310.class);
+    nt.registerCodex(ENavX.class);
+    nt.registerCodex(EPowerDistPanel.class);
     
     
     
@@ -117,22 +128,30 @@ public class Robot extends SampleRobot {
   private int count = 0;
   public void operatorControl() {
     mLog.info("TELEOP");
-    mControlLoop.setRunningModules();
-    mControlLoop.start();
+//    mControlLoop.setRunningModules();
+//    mControlLoop.start();
     long start = 0;
     
     while(isEnabled() && isOperatorControl()) {
       start = System.nanoTime();
       mapInputs();
+      dt.update(mCurrentTimeNanos);
       
-      time();
+//      time();
       pauseUntilTheNextCycle(start);
     }
   }
   
+  /**
+   * 1. Map joysticks to codexes
+   * 2. Perform any input filtering (such as split the split arcade re-map and squaring of the turn)
+   */
   private void mapInputs() {
-    mData.driver.meta().setTimeNanos(mCurrentTimeNanos);
-    ELogitech310.map(mData.driver, mHardware.getDriverJoystick(), null, false);
+    mData.driverinput.meta().setTimeNanos((long)mCurrentTimeNanos);
+    ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
+    nt.send(mData.driverinput);
+    
+    stick.update();
   }
   
   private void pauseUntilTheNextCycle(long pCycleStart) {
@@ -150,29 +169,31 @@ public class Robot extends SampleRobot {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+    mCurrentTimeNanos = Timer.getFPGATimestamp() * 1e9;
   }
   
   private final void time() {
-    mapInputs();
     double start = Timer.getFPGATimestamp();
-    
     
     for(int i = 0; i < mData.talons.size(); i++) {
       ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
-      mCodexSender.send(mData.talons.get(i));
+//      mCodexSender.send(mData.talons.get(i));
     }
-    ELogitech310.map(mData.driver, mHardware.getDriverJoystick());
     EPowerDistPanel.map(mData.pdp, mHardware.getPDP());
+    mData.pdp.meta().setTimeNanos((long)mCurrentTimeNanos);
     ENavX.map(mData.navx, mHardware.getNavX(), 0);
     mapInputs();
 //    mData.navx.encode();
 //    mData.driver.encode();
 //    mData.pdp.encode();
 //    mLog.info("Sending navx");
-    mCodexSender.send(mData.navx);
-    mCodexSender.send(mData.driver);
+//    mCodexSender.send(mData.navx);
+    mCodexSender.send(mData.driverinput);
     mCodexSender.send(mData.pdp);
     
+//    nt.send(mData.navx);
+//    nt.send(mData.driver);
+//    nt.send(mData.pdp);
     
     timeAverage.addNumber(Timer.getFPGATimestamp() - start);
     count++;
@@ -223,7 +244,7 @@ public class Robot extends SampleRobot {
       } else {
         mCodex.reset();
       }
-      mCodex.meta().setTimeNanos(mCurrentTimeNanos);
+      mCodex.meta().setTimeNanos((long)mCurrentTimeNanos);
     }
   }
 }

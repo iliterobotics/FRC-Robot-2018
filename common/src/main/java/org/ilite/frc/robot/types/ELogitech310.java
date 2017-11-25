@@ -28,7 +28,9 @@ public enum ELogitech310 implements CodexOf<Double>{
 	LEFT_Y_AXIS,
   RIGHT_X_AXIS,
   RIGHT_Y_AXIS,
-	TRIGGER_AXIS,
+	COMBINED_TRIGGER_AXIS,
+	LEFT_TRIGGER_AXIS,
+	RIGHT_TRIGGER_AXIS,
   RUMBLE;
 	
 	public static void map(Codex<Double, ELogitech310> pCodex, Joystick pJoystick) {
@@ -44,13 +46,15 @@ public enum ELogitech310 implements CodexOf<Double>{
     if(pHandleDeadband) {
       pCodex.set(LEFT_X_AXIS, DriverInputUtils.handleDeadband(pJoystick, 0));
       pCodex.set(LEFT_Y_AXIS, DriverInputUtils.handleDeadband(pJoystick, 1));
-      pCodex.set(TRIGGER_AXIS, DriverInputUtils.handleDeadbandOfDifference(pJoystick, 2, 3));
+      pCodex.set(COMBINED_TRIGGER_AXIS, DriverInputUtils.handleDeadbandOfDifference(pJoystick, 2, 3));
       pCodex.set(RIGHT_X_AXIS, DriverInputUtils.handleDeadband(pJoystick, 4));
       pCodex.set(RIGHT_Y_AXIS, DriverInputUtils.handleDeadband(pJoystick, 5));
     } else {
       pCodex.set(LEFT_X_AXIS, pJoystick.getRawAxis(0));
       pCodex.set(LEFT_Y_AXIS, pJoystick.getRawAxis(1));
-      pCodex.set(TRIGGER_AXIS, pJoystick.getRawAxis(2) - pJoystick.getRawAxis(3));
+      pCodex.set(LEFT_TRIGGER_AXIS, pJoystick.getRawAxis(2));
+      pCodex.set(RIGHT_TRIGGER_AXIS, pJoystick.getRawAxis(3));
+      pCodex.set(COMBINED_TRIGGER_AXIS, pJoystick.getRawAxis(2) - pJoystick.getRawAxis(3));
       pCodex.set(RIGHT_X_AXIS, pJoystick.getRawAxis(4));
       pCodex.set(RIGHT_Y_AXIS, pJoystick.getRawAxis(5));
     }
