@@ -42,37 +42,37 @@ public class DisplayApplication  extends Application{
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-
-    GridPane root = new GridPane();
-    Scene scene = new Scene(root, 1920, 800);
+//
+//    GridPane root = new GridPane();
+//    Scene scene = new Scene(root, 1920, 800);
     
-    for(ELogitech310 e : ELogitech310.values()) {
-      List<Data<Long>> items = FXCollections.observableArrayList(new Data<Long>(0l, 1d), new Data<Long>(1l, 1d));
-      Series<Long> series = new Series<>(items);
-      HorizonChart<Long> chart = new HorizonChart<>(1, series);
-      chart.setPrefSize(800, 80);
-      chart.setBorder(bottomBorder);
-      chart.setPositiveColors(Color.web("#FEE090"), Color.web("#FDAE61"));
-//      public Data(final String NAME, final T X, final double Y, final Color COLOR)
-      RobotDataStream.inst().addListenerToData(e, value -> {
-        if(value.value != null) {
-          series.getItems().add(new Data<>("", value.time, value.value));
-          series.refresh();
-        }
-      });
-      Label l = new Label(e.name());
-      l.setTextAlignment(TextAlignment.RIGHT);
-      root.add(l, 0, e.ordinal());
-      root.add(chart, 1, e.ordinal());
-    }
-    
-    primaryStage.setTitle("Hello World!");
-    primaryStage.setScene(scene);
-    primaryStage.show();
+//    for(ELogitech310 e : ELogitech310.values()) {
+//      List<Data<Long>> items = FXCollections.observableArrayList(new Data<Long>(0l, 1d), new Data<Long>(1l, 1d));
+//      Series<Long> series = new Series<>(items);
+//      HorizonChart<Long> chart = new HorizonChart<>(1, series);
+//      chart.setPrefSize(800, 80);
+//      chart.setBorder(bottomBorder);
+//      chart.setPositiveColors(Color.web("#FEE090"), Color.web("#FDAE61"));
+////      public Data(final String NAME, final T X, final double Y, final Color COLOR)
+//      RobotDataStream.inst().addListenerToData(e, value -> {
+//        if(value.value != null) {
+//          series.getItems().add(new Data<>("", value.time, value.value));
+//          series.refresh();
+//        }
+//      });
+//      Label l = new Label(e.name());
+//      l.setTextAlignment(TextAlignment.RIGHT);
+//      root.add(l, 0, e.ordinal());
+//      root.add(chart, 1, e.ordinal());
+//    }
+//    
+//    primaryStage.setTitle("Hello World!");
+//    primaryStage.setScene(scene);
+//    primaryStage.show();
   }
   
   public static void main(String[] pArgs) {
-    Logger.setLevel(ELevel.INFO);
+    Logger.setLevel(ELevel.DEBUG);
     RobotDataStream.inst();
     launch(pArgs);
 //    Logger.setLevel(ELevel.INFO);
