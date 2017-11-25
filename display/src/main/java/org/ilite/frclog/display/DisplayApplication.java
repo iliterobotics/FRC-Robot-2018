@@ -28,8 +28,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class DisplayApplication  extends Application{
-  private static final double UPDATE_RATE_HZ = 25;
-  private static final long UPDATE_PERIOD_MS = (long)(1000d/UPDATE_RATE_HZ);
 
   // Just a bottom border to separate the charts visually
   Border bottomBorder = new Border(new BorderStroke(Color.TRANSPARENT, Color.TRANSPARENT, Color.BLACK, Color.TRANSPARENT,
@@ -77,18 +75,5 @@ public class DisplayApplication  extends Application{
     launch(pArgs);
 //    Logger.setLevel(ELevel.INFO);
     
-    
-    
-//    final NetworkTable nt = NetworkTable.getTable(ELogitech310.class.getSimpleName().toUpperCase());
-    // valueChanged(ITable source, String key, Object value, boolean isNew);
-    
-//    new Timer().scheduleAtFixedRate(new TimerTask() {
-//      public void run() {
-//        StringBuilder sb = new StringBuilder();
-//        for(ELogitech310 e : ELogitech310.values()) { 
-//          nt.getNumber(e.name(), 0d);
-//        }
-//      }
-//    }, UPDATE_PERIOD_MS, UPDATE_PERIOD_MS);
   }
 }

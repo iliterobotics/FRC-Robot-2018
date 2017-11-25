@@ -74,6 +74,12 @@ public class Robot extends SampleRobot {
         new Joystick(1), 
         new PowerDistributionPanel(), 
         new AHRS(SerialPort.Port.kMXP)
+        // Sensors
+        // Custom hw
+        // Spike relays
+        // etc
+        
+        // Talons TBD ... they're somewhat picky.
     );
     
     mExecutor.execute(() -> {
@@ -85,13 +91,11 @@ public class Robot extends SampleRobot {
       mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
     });
     
-//    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
-//    NetworkTable.setClientMode();
-//    NetworkTable.setIPAddress("172.22.11.1");
-//    NetworkTable.initialize();
-//    nt.registerCodex(ELogitech310.class);
-//    nt.registerCodex(ENavX.class);
-//    nt.registerCodex(EPowerDistPanel.class);
+    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+    NetworkTable.initialize();
+    nt.registerCodex(ELogitech310.class);
+    nt.registerCodex(ENavX.class);
+    nt.registerCodex(EPowerDistPanel.class);
     
     
     
@@ -145,6 +149,7 @@ public class Robot extends SampleRobot {
   private void mapInputs() {
     mData.driverinput.meta().setTimeNanos((long)mCurrentTimeNanos);
     ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
+    nt.send(mData.driverinput);
     
     stick.update();
   }
@@ -168,9 +173,7 @@ public class Robot extends SampleRobot {
   }
   
   private final void time() {
-    mapInputs();
     double start = Timer.getFPGATimestamp();
-    
     
     for(int i = 0; i < mData.talons.size(); i++) {
       ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
