@@ -16,7 +16,7 @@ public enum ENavX implements CodexOf<Double> {
   Y_ACCEL,
   Z_ACCEL;
   
-  public static void map(Codex<Double, ENavX> pCodex, AHRS pNavX, long pTimestampNanos) {
+  public static void map(Codex<Double, ENavX> pCodex, AHRS pNavX) {
     pCodex.set(YAW, (double)pNavX.getYaw());
     pCodex.set(X_DISPLACEMENT, (double)pNavX.getDisplacementX());
     pCodex.set(Y_DISPLACEMENT, (double)pNavX.getDisplacementY());
@@ -27,7 +27,6 @@ public enum ENavX implements CodexOf<Double> {
     pCodex.set(X_ACCEL, (double)pNavX.getWorldLinearAccelX());
     pCodex.set(Y_ACCEL, (double)pNavX.getWorldLinearAccelY());
     pCodex.set(Z_ACCEL, (double)pNavX.getWorldLinearAccelZ());
-    pCodex.meta().setTimeNanos(pTimestampNanos);
   }
   
 }

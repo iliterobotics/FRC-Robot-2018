@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.management.openmbean.OpenMBeanOperationInfoSupport;
 
 import org.ilite.frc.robot.config.SystemSettings;
+import org.ilite.frc.robot.types.EDriveTrain;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
 import org.ilite.frc.robot.types.EPowerDistPanel;
@@ -74,6 +75,7 @@ public class RobotDataStream {
     registerEnum(ELogitech310.class, receiver);
     registerEnum(ETalonSRX.class, receiver);
     registerEnum(ENavX.class, receiver);
+    registerEnum(EDriveTrain.class, receiver);
   }
   
   private Map<Integer, BufferedWriter> mFilePaths = new HashMap<>();
@@ -94,7 +96,6 @@ public class RobotDataStream {
         }
         if(cache.isEmpty()) {
         } else {
-          System.out.println("file write");
           BufferedWriter writer = mFilePaths.get(hash);
           cache.stream().map(codex->codex.toCSV()).forEach(csv -> {
             try {

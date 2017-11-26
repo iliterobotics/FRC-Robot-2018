@@ -14,7 +14,8 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
-  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
+//  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
+  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";
   public static int     ROBOT_CODEX_DATA_SENDER_PORT = 7778;
   
   // =============================================================================
@@ -30,7 +31,7 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 3.98;
   public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
-  public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 72.0; // in V/sec
+  public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
 
   // =============================================================================
@@ -38,6 +39,8 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
+  public static int     JOYSTICK_PORT_DRIVER = 0;
+  public static int     JOYSTICK_PORT_OPERATOR = 1;
 
   // =============================================================================
   // Controller Mapping

@@ -70,7 +70,7 @@ public class DisplayApplication  extends Application{
   }
   
   public static void main(String[] pArgs) {
-    Logger.setLevel(ELevel.DEBUG);
+    Logger.setLevel(ELevel.INFO);
     RobotDataStream.inst();
     launch(pArgs);
 //    Logger.setLevel(ELevel.INFO);

@@ -10,35 +10,29 @@ import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.modules.ControlLoop;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
+import org.ilite.frc.robot.types.EDriveTrain;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
-import org.ilite.frc.robot.types.EPowerDistPanel;
-import org.ilite.frc.robot.types.ETalonSRX;
 
-import com.ctre.CANTalon;
-import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexSender;
-import com.flybotix.hfr.io.CodexNetworkTables;
+import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.kauailabs.navx.frc.AHRS;
-import com.team254.lib.util.MovingAverage;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
-  private double mCurrentTimeNanos = 0;
+  private double mCurrentTime = 0;
   
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
-    
-
+  private final java.util.Timer mTimer = new java.util.Timer("Robot Alarms and Delays");
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
   
@@ -46,9 +40,7 @@ public class Robot extends SampleRobot {
 
   private static long INPUT_LOOP_PERIOD_MS = 20;
   
-  private final MovingAverage timeAverage = new MovingAverage(100);
-  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
-  NetworkTable codextable = null;
+//  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
   
   private final ControlLoop mControlLoop;
   private Queue<Command> mCommandQueue = new LinkedList<>();
@@ -56,12 +48,12 @@ public class Robot extends SampleRobot {
   
   // Temporary...
   private final DriveTrain dt;
-  private final DriverControlSplitArcade stick;
+  private final DriverControlSplitArcade drivetraincontrol;
 
   public Robot() {
     mControlLoop = new ControlLoop(mData, mHardware);
     dt = new DriveTrain(mData);
-    stick = new DriverControlSplitArcade(mData, dt);
+    drivetraincontrol = new DriverControlSplitArcade(mData, dt);
     Logger.setLevel(ELevel.WARN);
   }
 
@@ -70,8 +62,8 @@ public class Robot extends SampleRobot {
       
     mHardware.init(
         mExecutor,
-        new Joystick(0), 
-        new Joystick(1), 
+        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
+        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
         new AHRS(SerialPort.Port.kMXP)
         // Sensors
@@ -91,14 +83,15 @@ public class Robot extends SampleRobot {
       mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
     });
     
-    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
-    NetworkTable.initialize();
-    nt.registerCodex(ELogitech310.class);
-    nt.registerCodex(ENavX.class);
-    nt.registerCodex(EPowerDistPanel.class);
+//    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
+//    NetworkTable.initialize();
+//    nt.registerCodex(ELogitech310.class);
+//    nt.registerCodex(ENavX.class);
+//    nt.registerCodex(EPowerDistPanel.class);
     
     
-    
+// TODO - monitoring current is time-instensive (due to waits) so re-enabled this once
+// Codex thread safety is resolved
 //    schedule(() -> {
 //      // This particular task is just to read the PDP for posterity.  We aren't
 //      // using it at the moment since we have the CANTalon class.
@@ -113,7 +106,6 @@ public class Robot extends SampleRobot {
     mControlLoop.setRunningModules();
     mControlLoop.start();
     
-    long start = 0;
     while(isEnabled() && isAutonomous()) {
       if(mHardware.isNavXReady()) {
         if(!updateCommandQueue()) break; //Break out of auto if there are no available commands
@@ -121,24 +113,27 @@ public class Robot extends SampleRobot {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
       }
       
-      pauseUntilTheNextCycle(start);
+      pauseUntilTheNextCycle(mCurrentTime);
     }
   }
 
-  private int count = 0;
   public void operatorControl() {
     mLog.info("TELEOP");
-//    mControlLoop.setRunningModules();
-//    mControlLoop.start();
-    long start = 0;
+    mControlLoop.setRunningModules();
+    mControlLoop.start();
     
     while(isEnabled() && isOperatorControl()) {
-      start = System.nanoTime();
+      mCurrentTime = Timer.getFPGATimestamp();
+      mData.resetAll(mCurrentTime);
       mapInputs();
-      dt.update(mCurrentTimeNanos);
+      dt.update(mCurrentTime);
+      mCodexSender.send(mData.driverinput);
+      mCodexSender.send(mData.drivetrain);
       
-//      time();
-      pauseUntilTheNextCycle(start);
+      ENavX.map(mData.navx, mHardware.getNavX());
+      mCodexSender.send(mData.navx);
+      
+      pauseUntilTheNextCycle(mCurrentTime);
     }
   }
   
@@ -147,15 +142,22 @@ public class Robot extends SampleRobot {
    * 2. Perform any input filtering (such as split the split arcade re-map and squaring of the turn)
    */
   private void mapInputs() {
-    mData.driverinput.meta().setTimeNanos((long)mCurrentTimeNanos);
     ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
-    nt.send(mData.driverinput);
+//    nt.send(mData.driverinput);
     
-    stick.update();
+    // Any input processing goes here, such as 'split arcade driver'
+    drivetraincontrol.update();
+    
+    // Any further input-to-direct-hardware processing goes here
+    // Such as using a button to reset the gyros
   }
   
-  private void pauseUntilTheNextCycle(long pCycleStart) {
-    long sleepTime = Math.max(INPUT_LOOP_PERIOD_MS - (System.nanoTime()-pCycleStart)/1000000, 1);
+  private void pauseUntilTheNextCycle(double pCyleStartTime) {
+    double now = Timer.getFPGATimestamp();
+    long sleepTime = INPUT_LOOP_PERIOD_MS;
+    if(isEnabled()) {
+      sleepTime = (long) Math.max(INPUT_LOOP_PERIOD_MS - (pCyleStartTime-now)/1e3d, 1);
+    }
     if(sleepTime <= 1) {
       INPUT_LOOP_PERIOD_MS++;
       // When this happens, it's often because the control loop thread is being used to read
@@ -169,40 +171,8 @@ public class Robot extends SampleRobot {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-    mCurrentTimeNanos = Timer.getFPGATimestamp() * 1e9;
   }
   
-  private final void time() {
-    double start = Timer.getFPGATimestamp();
-    
-    for(int i = 0; i < mData.talons.size(); i++) {
-      ETalonSRX.map(mData.talons.get(i), mHardware.getTalon(i));
-//      mCodexSender.send(mData.talons.get(i));
-    }
-    EPowerDistPanel.map(mData.pdp, mHardware.getPDP());
-    mData.pdp.meta().setTimeNanos((long)mCurrentTimeNanos);
-    ENavX.map(mData.navx, mHardware.getNavX(), 0);
-    mapInputs();
-//    mData.navx.encode();
-//    mData.driver.encode();
-//    mData.pdp.encode();
-//    mLog.info("Sending navx");
-//    mCodexSender.send(mData.navx);
-    mCodexSender.send(mData.driverinput);
-    mCodexSender.send(mData.pdp);
-    
-//    nt.send(mData.navx);
-//    nt.send(mData.driver);
-//    nt.send(mData.pdp);
-    
-    timeAverage.addNumber(Timer.getFPGATimestamp() - start);
-    count++;
-    if(count > 100) {
-      count = 0; 
-      mLog.warn("Over 100 cycles, action took  " + Utils.df.format(timeAverage.getAverage() * 1000d * 1000d) + "us per cycle");
-    }
-  }
-
   /**
    * 
    * @return Whether there is another available autonomous command to execute
@@ -226,25 +196,5 @@ public class Robot extends SampleRobot {
   public void disabled() {
     mLog.info("DISABLED");
     mControlLoop.stop();
-  }
-  
-  private class CANTalonReader implements Runnable{
-    private final CANTalon mCANTalon;
-    private final Codex<Double, ETalonSRX> mCodex;
-    private CANTalonReader(CANTalon pTalon, Codex<Double, ETalonSRX> pCodex) {
-      mCANTalon = pTalon;
-      mCodex = pCodex;
-    }
-  
-
-    @Override
-    public void run() {
-      if(isEnabled()) {
-        ETalonSRX.map(mCodex, mCANTalon);
-      } else {
-        mCodex.reset();
-      }
-      mCodex.meta().setTimeNanos((long)mCurrentTimeNanos);
-    }
   }
 }
