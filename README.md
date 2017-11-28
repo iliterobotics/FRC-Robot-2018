@@ -34,9 +34,18 @@ FRC-Robot-2018/
    * This installs the mDNS handler needed for the computer to communicate with the RoboRIO.  
    * NOTE - you will need to create an NI account.  Who knows why they force this step...  If you don't feel comfortable making one, ask around - someone already has this installer.
 > <http://www.ni.com/download/first-robotics-software-2015/5112/en/>
+1. Install the Java JDK 8, update 151 or greater.
+   * This is **NOT** the JRE.  Google "Java SE Development Kit 8".
+   * If you have JDK 6 or 7 installed, should you _uninstall_ it first.
+   * If you have an older version of JDK 8, you should update it.  Java usually installs an update executable.  On Windows, search the start menu for 'Java update'.  On linux, do apt-get or yum -u.  On Mac ...
 1. Setting up Eclipse
    * Go to www.eclipse.org and install the latest "Eclipse for Java Developers".
    * Go to www.git-scm.org and install the Git Bash terminal.  If you want help from your mentors in getting out of a mess with Git, they'll need this tool.  This terminal is also a 'Linux-lite' terminal - many standard unix commands work.  Thus it is far superior to the command prompt for platform-independent code development in Windows.
+   * Launch Eclipse.  Go to Help --> Install New Software...
+       * In the "Work With" drop-down, select 'All available sites'
+       * In the filter box, type 'fx'
+       * Select e(fx)clipse - IDE, then Next/Next/SignLifeAway/Finish.  Go get coffee, the install takes about 10 minutes.
+       * This is so the warning about 'restricted' api's & javafx don't show up in Eclipse.  It's not an issue since we're using the Oracle JVM on our installations, right?
 1. Cloning the Development Branch
    * Use `git clone` to clone this URL:
    * <https://github.com/iliterobotics/FRC-Robot-2018.git>
