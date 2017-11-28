@@ -48,13 +48,13 @@ public class Robot extends SampleRobot {
   private Command mCurrentCommand;
   
   // Temporary...
-//  private final DriveTrain dt;
-//  private final DriverControlSplitArcade drivetraincontrol;
+  private final DriveTrain dt;
+  private final DriverControlSplitArcade drivetraincontrol;
 
   public Robot() {
     mControlLoop = new ControlLoop(mData, mHardware);
-//    dt = new DriveTrain(mData);
-//    drivetraincontrol = new DriverControlSplitArcade(mData, dt);
+    dt = new DriveTrain(mData);
+    drivetraincontrol = new DriverControlSplitArcade(mData, dt);
     Logger.setLevel(ELevel.WARN);
   }
 
@@ -127,12 +127,12 @@ public class Robot extends SampleRobot {
       mCurrentTime = Timer.getFPGATimestamp();
       mData.resetAll(mCurrentTime);
       mapInputs();
-//      dt.update(mCurrentTime);
+      dt.update(mCurrentTime);
       mCodexSender.send(mData.driverinput);
       mCodexSender.send(mData.drivetrain);
       
 
-      Utils.time(() -> EPowerDistPanel.map(mData.pdp, mHardware.getPDP()), "PDP Read of 16 channels");
+//      Utils.time(() -> EPowerDistPanel.map(mData.pdp, mHardware.getPDP()), "PDP Read of 16 channels");
       
       ENavX.map(mData.navx, mHardware.getNavX());
       mCodexSender.send(mData.navx);
@@ -150,7 +150,7 @@ public class Robot extends SampleRobot {
 //    nt.send(mData.driverinput);
     
     // Any input processing goes here, such as 'split arcade driver'
-//    drivetraincontrol.update();
+    drivetraincontrol.update();
     
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros

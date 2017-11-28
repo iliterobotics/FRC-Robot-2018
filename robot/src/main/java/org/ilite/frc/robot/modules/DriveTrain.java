@@ -13,6 +13,7 @@ import org.ilite.frc.robot.types.ELogitech310;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
+import com.ctre.CANTalon.StatusFrameRate;
 import com.ctre.CANTalon.TalonControlMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -40,10 +41,14 @@ public class DriveTrain implements IModule {
 		gearShifter = new Solenoid(SystemSettings.DRIVETRAIN_SHIFT_SOLENOID_ID);
 		
 		mLeftMaster = createTalon(SystemSettings.TALON_ADDR_DT_LEFT_MASTER, FeedbackDevice.QuadEncoder);
+		mLeftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
 		mLeftFollow = createTalon(SystemSettings.TALON_ADDR_DT_LEFT_FOLLOW_1, SystemSettings.TALON_ADDR_DT_LEFT_MASTER);
+		mLeftFollow.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
     
     mRightMaster = createTalon(SystemSettings.TALON_ADDR_DT_RIGHT_MASTER, FeedbackDevice.QuadEncoder);
+    mRightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
     mRightFollow = createTalon(SystemSettings.TALON_ADDR_DT_RIGHT_FOLLOW_1, SystemSettings.TALON_ADDR_DT_RIGHT_MASTER);
+    mRightFollow.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
 		
 	}
 
@@ -109,9 +114,9 @@ public class DriveTrain implements IModule {
     
     set(TALON_VBUS, (mLeftMaster.getBusVoltage() + mRightMaster.getBusVoltage())/2);
 
-    mLeftMaster.set(get(DESIRED_LEFT_POWER) * -1);
-    mRightMaster.set(get(DESIRED_RIGHT_POWER));
-    gearShifter.set(data.drivetrain. isSet(IS_SHIFT));
+//    mLeftMaster.set(get(DESIRED_LEFT_POWER) * -1);
+//    mRightMaster.set(get(DESIRED_RIGHT_POWER));
+//    gearShifter.set(data.drivetrain. isSet(IS_SHIFT));
     if(data.driverinput.isSet(ELogitech310.BACK)) {
       resetEncoders();
     }
