@@ -19,6 +19,11 @@ public class SystemSettings extends ConstantsBase {
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
 //  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
+  public static String[]  DRIVER_STATION_CODEX_DATA_RECEIVER_HOSTS = new String[]{
+      "10.18.85.10",
+      "172.22.11.1",
+  };
+  
   public static int     ROBOT_CODEX_DATA_SENDER_PORT = 7778;
   
   // =============================================================================
