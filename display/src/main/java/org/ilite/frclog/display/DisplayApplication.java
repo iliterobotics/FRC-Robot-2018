@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -41,8 +42,8 @@ public class DisplayApplication  extends Application{
   @Override
   public void start(Stage primaryStage) throws Exception {
 //
-//    GridPane root = new GridPane();
-//    Scene scene = new Scene(root, 1920, 800);
+    GridPane root = new GridPane();
+    Scene scene = new Scene(root, 1920, 800);
     
 //    for(ELogitech310 e : ELogitech310.values()) {
 //      List<Data<Long>> items = FXCollections.observableArrayList(new Data<Long>(0l, 1d), new Data<Long>(1l, 1d));
@@ -63,10 +64,17 @@ public class DisplayApplication  extends Application{
 //      root.add(l, 0, e.ordinal());
 //      root.add(chart, 1, e.ordinal());
 //    }
+    
+    Button resetlogs = new Button("Reset Logs");
+    resetlogs.setOnMouseReleased(event -> {
+      RobotDataStream.inst().resetLogs();
+    });
+    
+    root.add(resetlogs, 0, 0);
 //    
-//    primaryStage.setTitle("Hello World!");
-//    primaryStage.setScene(scene);
-//    primaryStage.show();
+    primaryStage.setTitle("Hello World!");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public static void main(String[] pArgs) {
