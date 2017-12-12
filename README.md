@@ -76,6 +76,7 @@ FRC-Robot-2018/
       * This code will be merged into `master` after the competition and tagged with the competition name
    * Code that has been tested but not approved for the use on the robot should be labeled `feature/feature-name`
    * Code tested and approved for use on the robot can be merged from its `experimental/` or `feature/` branch into master
+   * A good example of this process can be found [here](https://github.com/iliterobotics/FRC-Robot-2017/network)
    * Branches can be be made using `git checkout -b <branch-name>`. This will also switch to the new branch.
    * If you want to change the branch you're working on, use `git checkout <branch-name>`
 1. After you've resolved any conflicts between your code and the latest code, you can commit your code
