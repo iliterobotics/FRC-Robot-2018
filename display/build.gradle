@@ -14,8 +14,11 @@ eclipse {
 
 dependencies {
   compile wpilib()
+  compile 'org.controlsfx:controlsfx:9.0.0'
   compile 'com.google.code.gson:gson:2.8.2'
   compile project(':common')
   compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER  
   compile name: 'eu.hansolo.fx.horizon-1.0'
+  compile 'eu.hansolo:tilesfx:1.5.2'
+  compile 'org.jfree:jfreechart-fx:1.0.0'
 }

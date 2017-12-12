@@ -25,15 +25,30 @@ public class RobotDataElementCache {
   private final Map<Integer, CodexReceiver<?,?>> mReceivers = new HashMap<>();
   private final Map<Integer, CodexElementHistory<?, ?>> mCache = new HashMap<>();
   
-  <V, E extends Enum<E> & CodexOf<V>> void registerEnum(Class<E> pEnum) {
+  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum(Class<E> pEnum) {
     for(E e : EnumSet.allOf(pEnum)) {
       CodexElementHistory<V,E> history = new CodexElementHistory<>(e, mMaxHistoryPoints);
       mCache.put(hashOf(e), history);
     }
   }
   
-  public <V, E extends Enum<E> & CodexOf<V>> List<V> getHistoryOf(E pElement) {
-    return null;
+  public <V, E extends Enum<E> & CodexOf<V>> void clearHistoryFor(Class<E> pEnum) {
+    for(E e : EnumSet.allOf(pEnum)) {
+      mCache.remove(hashOf(e));
+    }
+  }
+  
+  public <V, E extends Enum<E> & CodexOf<V>> Map<E, CodexElementHistory<V,E>> getHistoryOf(Class<E> pEnum) {
+    Map<E, CodexElementHistory<V,E>> result = new HashMap<>();
+    for(E e : EnumSet.allOf(pEnum)) {
+      result.put(e, getHistoryOf(e));
+    }
+    return result;
+  }
+  
+  public <V, E extends Enum<E> & CodexOf<V>> CodexElementHistory<V,E> getHistoryOf(E pElement) {
+    if(!mCache.containsKey(hashOf(pElement))) return null;
+    return (CodexElementHistory<V,E>)mCache.get(hashOf(pElement));
   }
   
   private static <V, E extends Enum<E> & CodexOf<V>> int hashOf(E pEnum) {

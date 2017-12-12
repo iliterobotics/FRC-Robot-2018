@@ -1,20 +1,24 @@
 package org.ilite.frclog.data;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Stream;
 
 import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.types.EDriveTrain;
@@ -24,6 +28,7 @@ import org.ilite.frc.robot.types.EPowerDistPanel;
 import org.ilite.frc.robot.types.ESupportedTypes;
 import org.ilite.frc.robot.types.ETalonSRX;
 
+import com.flybotix.hfr.cache.CodexElementHistory;
 import com.flybotix.hfr.cache.CodexElementInstance;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -31,6 +36,7 @@ import com.flybotix.hfr.codex.CodexReceiver;
 import com.flybotix.hfr.io.MessageProtocols;
 import com.flybotix.hfr.io.receiver.IReceiveProtocol;
 import com.flybotix.hfr.util.lang.EnumUtils;
+import com.flybotix.hfr.util.lang.IConverter;
 import com.flybotix.hfr.util.lang.IUpdate;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -51,6 +57,8 @@ public class RobotDataStream {
       .withZone( ZoneId.systemDefault() );
   
   private final Map<Integer, CodexReceiver<?,?>> mReceivers = new HashMap<>();
+  
+  private final Map<Integer, String> mCodexClasses = new HashMap<>();
   
   public void sendDataToRobot(String pData, ESupportedTypes pType, String pValue) {
     if(pValue == null) { 
@@ -84,8 +92,46 @@ public class RobotDataStream {
     registerEnum(ENavX.class, receiver);
     registerEnum(EDriveTrain.class, receiver);
   }
+  
+  /**
+   * Loads a codex history from a CSV file.
+   * @param pEnum the enumeration that backs the codex
+   * @param pFile location of the CSV
+   * @param pConverter A converter that converts from a string to a codex element
+   */
+  public <V, E extends Enum<E> & CodexOf<V>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile, final IConverter<String, V> pConverter) {
+    if(!mCodexClasses.containsKey(pEnum)) return;
+    
+    RobotDataElementCache.inst().clearHistoryFor(pEnum);
+    RobotDataElementCache.inst().registerEnum(pEnum);
+    
+    try (Stream<String> stream = Files.lines(pFile)) {
+      stream
+        .map(line -> new Codex<V,E>(pEnum).fillFromCSV(line, pConverter))
+        .forEach(codex -> {
+          Map<E, CodexElementHistory<V,E>> map = RobotDataElementCache.inst().getHistoryOf(pEnum);
+          for(E e : EnumSet.allOf(pEnum)) {
+            map.get(e).add(codex.meta().timestamp(), codex.get(e));
+          }
+        });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * Loads a codex of doubles from file
+   * @param pEnum enumeration that backs the codex
+   * @param pFile location of the csv file
+   */
+  public <E extends Enum<E> & CodexOf<Double>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile) {
+    loadCodexHistoryFromFile(pEnum, pFile, str -> str == null ? null : Double.parseDouble(str));
+  }
 
 
+  /**
+   * Stops output to the current logs, creates new logs at a new location, and starts output to the new logs.
+   */
   public void resetLogs() {
     System.out.println("Resetting logs.");
     createNewFolder();
@@ -105,13 +151,30 @@ public class RobotDataStream {
     }
   }
   
+  public List<Class<Enum<?>>> getRegisteredCodexes() {
+    List<Class<Enum<?>>> result = new ArrayList<>();
+    for(String clazzname : mCodexClasses.values()) {
+      try {
+        Class<Enum<?>> clazz = (Class<Enum<?>>) RobotDataStream.class.getClassLoader().loadClass(clazzname);
+        result.add(clazz);
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * Creates a new folder for the logs.
+   */
   private final void createNewFolder() {
     mCurrentFolder = DATE_FORMAT.format(Instant.now());
     new File(mCurrentFolder).mkdirs();
   }
   
-  private <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
+  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
     final int hash = EnumUtils.hashOf(pEnum);
+    mCodexClasses.put(hash, pEnum.getCanonicalName());
     CodexReceiver<V, E> r = new CodexReceiver<>(pEnum, pReceiver);
     mReceivers.put(hash, r);
     RobotDataElementCache.inst().registerEnum(pEnum);

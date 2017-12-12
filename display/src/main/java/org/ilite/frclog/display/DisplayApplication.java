@@ -1,23 +1,18 @@
 package org.ilite.frclog.display;
 
-import java.util.List;
+import java.io.File;
 
-import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frclog.data.RobotDataStream;
 
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
 
-import eu.hansolo.fx.horizon.Data;
-import eu.hansolo.fx.horizon.HorizonChart;
-import eu.hansolo.fx.horizon.Series;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -25,7 +20,8 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class DisplayApplication  extends Application{
@@ -65,12 +61,35 @@ public class DisplayApplication  extends Application{
 //      root.add(chart, 1, e.ordinal());
 //    }
     
+    ComboBox<Class<Enum<?>>> combo = new ComboBox<>(FXCollections.observableArrayList(RobotDataStream.inst().getRegisteredCodexes()));
+    combo.setOnAction(event -> {
+      
+    });
+    
+    
     Button resetlogs = new Button("Reset Logs");
     resetlogs.setOnMouseReleased(event -> {
       RobotDataStream.inst().resetLogs();
     });
     
+    Button loadLogs = new Button("Choose Log to Import");
+    loadLogs.setOnMouseReleased(event -> {
+      FileChooser fileChooser = new FileChooser();
+      fileChooser.setTitle("Open Resource File");
+      fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
+      File selectedFile = fileChooser.showOpenDialog(primaryStage);
+      
+      
+      
+//      if (selectedFile != null) {
+//        primaryStage.display(selectedFile);
+//      }
+    });
+    
     root.add(resetlogs, 0, 0);
+
+    root.add(combo, 2, 2);
+    root.add(loadLogs, 2, 2);
 //    
     primaryStage.setTitle("Hello World!");
     primaryStage.setScene(scene);
@@ -78,7 +97,7 @@ public class DisplayApplication  extends Application{
   }
   
   public static void main(String[] pArgs) {
-    Logger.setLevel(ELevel.INFO);
+    Logger.setLevel(ELevel.DEBUG);
     RobotDataStream.inst();
     launch(pArgs);
 //    Logger.setLevel(ELevel.INFO);
