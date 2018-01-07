@@ -13,7 +13,7 @@ public enum ETalonSRX implements CodexOf<Double>{
   public static void map(Codex<Double, ETalonSRX> pCodex, CANTalon pTalon) {
     pCodex.set(BUS_VOLTAGE, pTalon.getBusVoltage());
     pCodex.set(OUTPUT_CURRENT, pTalon.getOutputCurrent());
-    pCodex.set(OUTPUT_VOLTAGE, pTalon.getOutputVoltage());
+    //pCodex.set(OUTPUT_VOLTAGE, pTalon.getOutputVoltage());
 //    pCodex.set(RAW_GET, pTalon.get());
   }
 }
