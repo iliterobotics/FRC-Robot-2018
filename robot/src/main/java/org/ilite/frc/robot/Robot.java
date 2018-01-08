@@ -1,22 +1,21 @@
 package org.ilite.frc.robot;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.modules.ControlLoop;
+import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
-import org.ilite.frc.robot.types.EDriveTrain;
+import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.types.ELogitech310;
 import org.ilite.frc.robot.types.ENavX;
-import org.ilite.frc.robot.types.EPowerDistPanel;
 
 import com.flybotix.hfr.codex.CodexSender;
-import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -43,7 +42,9 @@ public class Robot extends SampleRobot {
   
 //  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
   
-  private final ControlLoop mControlLoop;
+  private final ControlLoopManager mControlLoop;
+  
+  private List<IModule> mRunningModules = new LinkedList<>();
   private Queue<Command> mCommandQueue = new LinkedList<>();
   private Command mCurrentCommand;
   
@@ -52,7 +53,7 @@ public class Robot extends SampleRobot {
   private final DriverControlSplitArcade drivetraincontrol;
 
   public Robot() {
-    mControlLoop = new ControlLoop(mData, mHardware);
+    mControlLoop = new ControlLoopManager(mData, mHardware);
     dt = new DriveTrain(mData);
     drivetraincontrol = new DriverControlSplitArcade(mData, dt);
     Logger.setLevel(ELevel.WARN);
@@ -104,12 +105,14 @@ public class Robot extends SampleRobot {
 
   public void autonomous() {
     mLog.info("AUTONOMOUS");
-    mControlLoop.setRunningModules();
+	setRunningModules();
+    mControlLoop.setRunningControlLoops();
     mControlLoop.start();
     
     while(isEnabled() && isAutonomous()) {
       if(mHardware.isNavXReady()) {
         if(!updateCommandQueue()) break; //Break out of auto if there are no available commands
+        updateRunningModules();
       } else {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
       }
@@ -120,20 +123,19 @@ public class Robot extends SampleRobot {
 
   public void operatorControl() {
     mLog.info("TELEOP");
-    mControlLoop.setRunningModules();
+	setRunningModules();
+	mControlLoop.setRunningControlLoops();
     mControlLoop.start();
     
     while(isEnabled() && isOperatorControl()) {
       mCurrentTime = Timer.getFPGATimestamp();
       mData.resetAll(mCurrentTime);
       mapInputs();
-      dt.update(mCurrentTime);
+      
+      updateRunningModules();
+      
       mCodexSender.send(mData.driverinput);
       mCodexSender.send(mData.drivetrain);
-      
-
-//      Utils.time(() -> EPowerDistPanel.map(mData.pdp, mHardware.getPDP()), "PDP Read of 16 channels");
-      
       ENavX.map(mData.navx, mHardware.getNavX());
       mCodexSender.send(mData.navx);
       
@@ -191,6 +193,22 @@ public class Robot extends SampleRobot {
 	    if(mCommandQueue.peek() != null) return true;
 	  }
 	  return false;
+  }
+  
+  private void updateRunningModules() {
+	  for(IModule m : mRunningModules) m.update(Timer.getFPGATimestamp());
+  }
+  
+  private void setRunningModules(IModule...modules) {
+	  mRunningModules.clear();
+	  for(IModule m : modules) mRunningModules.add(m);
+	  initializeRunningModules();
+  }
+  
+  private void initializeRunningModules() {
+	  for(IModule m : mRunningModules) {
+		  m.initialize(Timer.getFPGATimestamp());
+	  }
   }
   
   public void test() {

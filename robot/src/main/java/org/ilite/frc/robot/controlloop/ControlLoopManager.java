@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.modules;
+package org.ilite.frc.robot.controlloop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.config.SystemSettings;
+import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.types.ENavX;
 
 import com.flybotix.hfr.util.log.ILog;
@@ -19,27 +20,27 @@ import edu.wpi.first.wpilibj.Timer;
  * a set time.  Tune SystemSettings.CONTROL_LOOP_PERIOD to the desired,
  * but monitor CPU usage.
  */
-public class ControlLoop implements Runnable{
-  private ILog mLog = Logger.createLog(ControlLoop.class);
+public class ControlLoopManager implements Runnable{
+  private ILog mLog = Logger.createLog(ControlLoopManager.class);
   private final Notifier mWpiNotifier;
   private final Object mTaskLock = new Object();
   private boolean mIsRunning = false;
-  private final List<IModule> mModules = new ArrayList<>();
+  private final List<IControlLoop> mControlLoops = new ArrayList<>();
   
   private final Data mData;
   private final Hardware mHardware;
   
   private double mLatestTime = 0d;
   
-  public ControlLoop(Data pRobotData, Hardware pRobotHardware) {
+  public ControlLoopManager(Data pRobotData, Hardware pRobotHardware) {
     mWpiNotifier = new Notifier(this);
     mHardware = pRobotHardware;
     mData = pRobotData;
   }
   
-  public synchronized void setRunningModules(IModule... pModules) {
-    boolean restart = mIsRunning;
-    
+  public synchronized void setRunningControlLoops(IControlLoop... pControlLoops) {
+    mControlLoops.clear();
+    for(IControlLoop c : pControlLoops) mControlLoops.add(c);
   }
   
   public synchronized void start() {
@@ -47,9 +48,7 @@ public class ControlLoop implements Runnable{
       mLog.info("Starting control loop");
       synchronized(mTaskLock) {
         mLatestTime = Timer.getFPGATimestamp();
-        for(IModule module : mModules) {
-          module.initialize(mLatestTime);
-        }
+        for(IControlLoop c : mControlLoops) c.initialize(mLatestTime);
         mIsRunning = true;
       }
       mWpiNotifier.startPeriodic(SystemSettings.CONTROL_LOOP_PERIOD);
@@ -63,9 +62,7 @@ public class ControlLoop implements Runnable{
       synchronized(mTaskLock) {
         mIsRunning = false;
         mLatestTime = Timer.getFPGATimestamp();
-        for(IModule module : mModules) {
-          module.shutdown(mLatestTime);
-        }
+    	for(IControlLoop c : mControlLoops) c.shutdown(mLatestTime);
       }
     }
   }
@@ -77,8 +74,8 @@ public class ControlLoop implements Runnable{
         if(mIsRunning) {
           mLatestTime = Timer.getFPGATimestamp();
           mapSensors();
-          for(IModule module : mModules) {
-            module.update(mLatestTime);
+          for(IControlLoop c : mControlLoops) {
+            c.loop(mLatestTime);
           }
         }
       } catch (Throwable t) {
@@ -88,7 +85,7 @@ public class ControlLoop implements Runnable{
   }
   
   private void mapSensors() {
-    //TODO change tiemstamp to mLatestTime
+    //TODO change timestamp to mLatestTime
     ENavX.map(mData.navx, mHardware.getNavX());
   }
 }
