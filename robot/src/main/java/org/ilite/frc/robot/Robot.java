@@ -110,8 +110,9 @@ public class Robot extends SampleRobot {
     mControlLoop.start();
     
     while(isEnabled() && isAutonomous()) {
+    	updateCommandQueue(true);
       if(mHardware.isNavXReady()) {
-        if(!updateCommandQueue()) break; //Break out of auto if there are no available commands
+        updateCommandQueue(false);
         updateRunningModules();
       } else {
         mLog.warn("NavX data is not ready, skipping auton for 1 cycle");
@@ -123,6 +124,7 @@ public class Robot extends SampleRobot {
 
   public void operatorControl() {
     mLog.info("TELEOP");
+    // Remember that DriverControl classes don't go here. They aren't Modules.
 	setRunningModules();
 	mControlLoop.setRunningControlLoops();
     mControlLoop.start();
@@ -146,6 +148,7 @@ public class Robot extends SampleRobot {
   /**
    * 1. Map joysticks to codexes
    * 2. Perform any input filtering (such as split the split arcade re-map and squaring of the turn)
+   * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputs() {
     ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
@@ -158,6 +161,10 @@ public class Robot extends SampleRobot {
     // Such as using a button to reset the gyros
   }
   
+  /**
+   * Pauses for 20 ms. If sensor reads are taking too long, increases delay period to accommodate.
+   * @param pCyleStartTime The current time from the onboard FPGA
+   */
   private void pauseUntilTheNextCycle(double pCyleStartTime) {
     double now = Timer.getFPGATimestamp();
     long sleepTime = INPUT_LOOP_PERIOD_MS;
@@ -183,28 +190,41 @@ public class Robot extends SampleRobot {
    * 
    * @return Whether there is another available autonomous command to execute
    */
-  private boolean updateCommandQueue() {
+  private boolean updateCommandQueue(boolean firstRun) {
 	  //Grab the next command
 	  mCurrentCommand = mCommandQueue.peek();
-	  if(mCurrentCommand != null){
-		mCurrentCommand.initialize();
+	  if(mCurrentCommand != null) {
+		if(firstRun) mCurrentCommand.initialize();
 		//If this command is finished executing
 		if(mCurrentCommand.update()) mCommandQueue.poll(); //Discard the command and initialize the next one
-	    if(mCommandQueue.peek() != null) return true;
+	    if(mCommandQueue.peek() != null) {
+	    	mCommandQueue.peek().initialize();
+	    	return true;
+	    }
 	  }
 	  return false;
   }
   
+  /**
+   * Updates every module in the robot's list of running modules
+   */
   private void updateRunningModules() {
 	  for(IModule m : mRunningModules) m.update(Timer.getFPGATimestamp());
   }
   
+  /**
+   * Clears the list of running modules and sets new ones
+   * @param modules An arbitrary amount of modules to set to run
+   */
   private void setRunningModules(IModule...modules) {
 	  mRunningModules.clear();
 	  for(IModule m : modules) mRunningModules.add(m);
 	  initializeRunningModules();
   }
   
+  /**
+   * Calls the initialization method of every running modules
+   */
   private void initializeRunningModules() {
 	  for(IModule m : mRunningModules) {
 		  m.initialize(Timer.getFPGATimestamp());
