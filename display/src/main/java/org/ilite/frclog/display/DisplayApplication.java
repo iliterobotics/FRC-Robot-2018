@@ -2,6 +2,7 @@ package org.ilite.frclog.display;
 
 import java.io.File;
 
+import org.ilite.frclog.data.RobotDataElementCache;
 import org.ilite.frclog.data.RobotDataStream;
 
 import com.flybotix.hfr.util.log.ELevel;
@@ -10,15 +11,18 @@ import com.flybotix.hfr.util.log.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -34,11 +38,12 @@ public class DisplayApplication  extends Application{
 
   // Color definitions for positive colors
   Color[] positiveColors = { Color.web("#FEE090"), Color.web("#FDAE61"), Color.web("#F46D43"), Color.web("#D73027") };
+  Class<?> mSelectedCodexToLoad = null;
 
   @Override
   public void start(Stage primaryStage) throws Exception {
 //
-    GridPane root = new GridPane();
+    BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 1920, 800);
     
 //    for(ELogitech310 e : ELogitech310.values()) {
@@ -62,38 +67,43 @@ public class DisplayApplication  extends Application{
 //    }
     
     ComboBox<Class<Enum<?>>> combo = new ComboBox<>(FXCollections.observableArrayList(RobotDataStream.inst().getRegisteredCodexes()));
+    Button resetlogs = new Button("Reset Logs");
+    Button loadLogs = new Button("Choose Log to Import");
+    HBox graphconfig = new HBox(25d, resetlogs, combo, loadLogs);
+    graphconfig.setAlignment(Pos.CENTER);
+        
     combo.setOnAction(event -> {
-      
+      mSelectedCodexToLoad = combo.getSelectionModel().getSelectedItem();
+      loadLogs.setDisable(mSelectedCodexToLoad == null);
     });
     
     
-    Button resetlogs = new Button("Reset Logs");
-    resetlogs.setOnMouseReleased(event -> {
+    resetlogs.setOnAction(event -> {
       RobotDataStream.inst().resetLogs();
     });
-    
-    Button loadLogs = new Button("Choose Log to Import");
-    loadLogs.setOnMouseReleased(event -> {
+
+    loadLogs.setDisable(mSelectedCodexToLoad == null);
+    loadLogs.setOnAction(event -> {
       FileChooser fileChooser = new FileChooser();
-      fileChooser.setTitle("Open Resource File");
+      fileChooser.setTitle("Open Data Log File");
       fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
       File selectedFile = fileChooser.showOpenDialog(primaryStage);
       
+      if(selectedFile != null && mSelectedCodexToLoad != null) {
+//        RobotDataStream.inst().loadUnsafeCodexHistoryFromFile(mSelectedCodexToLoad, selectedFile.toPath());
+        loadChart();
+      }
       
-      
-//      if (selectedFile != null) {
-//        primaryStage.display(selectedFile);
-//      }
     });
     
-    root.add(resetlogs, 0, 0);
-
-    root.add(combo, 2, 2);
-    root.add(loadLogs, 2, 2);
-//    
+    root.setBottom(graphconfig);
     primaryStage.setTitle("Hello World!");
     primaryStage.setScene(scene);
     primaryStage.show();
+  }
+  
+  private void loadChart() {
+    
   }
   
   public static void main(String[] pArgs) {

@@ -1,6 +1,5 @@
 package org.ilite.frclog.data;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import org.ilite.frc.robot.config.SystemSettings;
@@ -51,6 +52,8 @@ public class RobotDataStream {
   private final Timer t = new Timer("File writer");
   private String mCurrentFolder = "";
   
+  private final Executor mFileLoadExecutor = Executors.newSingleThreadExecutor();
+  
   private static final DateTimeFormatter DATE_FORMAT = 
     DateTimeFormatter.ofPattern( "uuuuMMMdd-hhmma" )
       .withLocale( Locale.US )
@@ -83,6 +86,9 @@ public class RobotDataStream {
   }
   
   private RobotDataStream() {
+  }
+  
+  public void registerEnums() {
     mTable = NetworkTable.getTable("Generic Config Data");
     createNewFolder();
     IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
@@ -100,23 +106,28 @@ public class RobotDataStream {
    * @param pConverter A converter that converts from a string to a codex element
    */
   public <V, E extends Enum<E> & CodexOf<V>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile, final IConverter<String, V> pConverter) {
-    if(!mCodexClasses.containsKey(pEnum)) return;
+    final int hash = EnumUtils.hashOf(pEnum);
+    if(!mCodexClasses.containsKey(hash)) {
+      initEnum(pEnum);
+    }
     
     RobotDataElementCache.inst().clearHistoryFor(pEnum);
-    RobotDataElementCache.inst().registerEnum(pEnum);
     
-    try (Stream<String> stream = Files.lines(pFile)) {
-      stream
-        .map(line -> new Codex<V,E>(pEnum).fillFromCSV(line, pConverter))
-        .forEach(codex -> {
-          Map<E, CodexElementHistory<V,E>> map = RobotDataElementCache.inst().getHistoryOf(pEnum);
-          for(E e : EnumSet.allOf(pEnum)) {
-            map.get(e).add(codex.meta().timestamp(), codex.get(e));
-          }
-        });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    mFileLoadExecutor.execute(() -> {
+      try (Stream<String> stream = Files.lines(pFile)) {
+        stream
+          .skip(2)
+          .map(line -> new Codex<V,E>(pEnum).fillFromCSV(line, pConverter))
+          .forEach(codex -> {
+            Map<E, CodexElementHistory<V,E>> map = RobotDataElementCache.inst().getHistoryOf(pEnum);
+            for(E e : EnumSet.allOf(pEnum)) {
+              map.get(e).add(codex.meta().timestamp(), codex.get(e));
+            }
+          });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
   
   /**
@@ -127,6 +138,18 @@ public class RobotDataStream {
   public <E extends Enum<E> & CodexOf<Double>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile) {
     loadCodexHistoryFromFile(pEnum, pFile, str -> str == null ? null : Double.parseDouble(str));
   }
+  
+  /**
+   * Loads a codex of doubles from file
+   * @param pEnum enumeration that backs the codex
+   * @param pFile location of the csv file
+   */
+  public <E extends Enum<E> & CodexOf<Double>> void loadUnsafeCodexHistoryFromFile(Class<E> pEnum, Path pFile) {
+    Class<E> clazz = (Class<E>) pEnum;
+    loadCodexHistoryFromFile(clazz, pFile, str -> str == null || str.equals(EMPTY) ? null : Double.parseDouble(str));
+  }
+  
+  private static final String EMPTY = "";
 
 
   /**
@@ -172,12 +195,19 @@ public class RobotDataStream {
     new File(mCurrentFolder).mkdirs();
   }
   
-  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
+  private <V, E extends Enum<E> & CodexOf<V>> void initEnum(Class<E> pEnum) {
     final int hash = EnumUtils.hashOf(pEnum);
     mCodexClasses.put(hash, pEnum.getCanonicalName());
+    RobotDataElementCache.inst().registerEnum(pEnum);
+  }
+  
+  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
+    final int hash = EnumUtils.hashOf(pEnum);
+    initEnum(pEnum);
+//    mCodexClasses.put(hash, pEnum.getCanonicalName());
     CodexReceiver<V, E> r = new CodexReceiver<>(pEnum, pReceiver);
     mReceivers.put(hash, r);
-    RobotDataElementCache.inst().registerEnum(pEnum);
+//    RobotDataElementCache.inst().registerEnum(pEnum);
     
     mCSVCache.put(hash, new ArrayList<>());
     r.addListener(codex -> {
