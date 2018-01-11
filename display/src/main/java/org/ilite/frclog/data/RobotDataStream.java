@@ -39,7 +39,10 @@ import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.lang.IConverter;
 import com.flybotix.hfr.util.lang.IUpdate;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 
 /**
  */
@@ -64,26 +67,26 @@ public class RobotDataStream {
     if(pValue == null) { 
       return;
     }
+    NetworkTableEntry entry = mTable.getEntry(pData);
     switch(pType) {
     case BOOLEAN:
-      mTable.putBoolean(pData, Boolean.parseBoolean(pValue));
+      entry.setBoolean(Boolean.parseBoolean(pValue));
       break;
     case DOUBLE:
     case INTEGER:
     case LONG:
-      mTable.putNumber(pData, Double.parseDouble(pValue));
+      entry.setNumber(Double.parseDouble(pValue));
       break;
     case STRING:
     case UNSUPPORTED:
     default:
-      mTable.putString(pData, pValue);
-      System.out.println("Putting string " + pData + " " + pValue);
+      entry.setString(pValue);
       break;
     }
   }
   
   private RobotDataStream() {
-    mTable = NetworkTable.getTable("Generic Config Data");
+    mTable = NetworkTableInstance.getDefault().getTable("Generic Config Data");
     createNewFolder();
     IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
     registerEnum(EPowerDistPanel.class, receiver);
