@@ -1,12 +1,18 @@
 package org.ilite.frc.display.auton;
 
+import java.util.List;
+
+import org.ilite.frc.common.types.ECross;
+import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.common.types.ESupportedTypes;
 import org.ilite.frc.display.frclog.data.RobotDataStream;
 
+import com.flybotix.hfr.util.lang.EnumUtils;
+
 import javafx.application.Application;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -26,33 +32,48 @@ public class AutonConfigDisplay extends Application {
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 1920, 800);
-
-    Property<String> startPosition = new SimpleStringProperty();
-    Property<String> doWhatWithCube = new SimpleStringProperty();
-    Property<String> allowFieldCrossing = new SimpleStringProperty();
     
-    startPosition.addListener((obs,old,mew) -> RobotDataStream.inst().sendDataToRobot("Position", ESupportedTypes.INTEGER, mew));
-    doWhatWithCube.addListener((obs,old,mew) -> RobotDataStream.inst().sendDataToRobot("Position", ESupportedTypes.INTEGER, mew));
-    allowFieldCrossing.addListener((obs,old,mew) -> RobotDataStream.inst().sendDataToRobot("Position", ESupportedTypes.INTEGER, mew));
+    HBox h = new HBox(
+        labeledDropdown(ECubeAction.class),
+        labeledDropdown(EStartingPosition.class),
+        labeledDropdown(ECross.class)
+    );
     
-    root.setCenter(new HBox(
-        labeledDropdown("Start Position", startPosition, "Left", "Middle", "Right"),
-        labeledDropdown("Place the Cube Here", doWhatWithCube, "Switch", "Scale", "Exchange", "Don't Place"),
-        labeledDropdown("Allow Field Cross", allowFieldCrossing, "Don't Allow", "Carpet", "Platform")
-    ));
+    h.setSpacing(10d);
+    root.setCenter(h);
+    BorderPane.setAlignment(h, Pos.CENTER);
   
     primaryStage.setTitle("Hello World!");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
   
-  private VBox labeledDropdown(String pLabel, Property<String> pTargetValue, String... pValues) {
-    Label label = new Label(pLabel);
+  private static <E extends Enum<E>> VBox labeledDropdown(Class<E> pEnumeration) {
+    List<E> enums = EnumUtils.getEnums(pEnumeration, true);
+    Label label = new Label(toPrettyCase(pEnumeration.getSimpleName().substring(1)));
     label.setTextAlignment(TextAlignment.CENTER);
-    ComboBox<String> combo = new ComboBox<>(FXCollections.observableArrayList(pValues));
-    combo.setOnAction(event -> pTargetValue.setValue(combo.getSelectionModel().getSelectedItem()));
-    combo.setValue(pValues[0]);
+    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
+    combo.setOnAction(
+        event -> 
+        RobotDataStream.inst().sendDataToRobot(
+            pEnumeration.getSimpleName(), 
+            ESupportedTypes.INTEGER, 
+            Integer.toString(combo.getSelectionModel().getSelectedItem().ordinal()))
+    );
+    combo.setValue(enums.get(0));
     VBox result = new VBox(label, combo);
     return result;
+  }
+  
+  private static String toPrettyCase(String pInput) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(Character.toUpperCase(pInput.charAt(0)));
+    for(int i = 1; i < pInput.length(); i++) {
+      if(Character.isUpperCase(pInput.charAt(i))) {
+        sb.append(' ');
+      }
+      sb.append(pInput.charAt(i));
+    }
+    return sb.toString();
   }
 }
