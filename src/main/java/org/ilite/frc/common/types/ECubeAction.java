@@ -5,4 +5,6 @@ public enum ECubeAction {
 	SWITCH,
 	EXCHANGE,
 	NONE;
+	
+	
 }

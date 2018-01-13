@@ -4,128 +4,146 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ilite.frc.robot.modules.DriveTrain;
-import edu.wpi.first.wpilibj.command.Command;
+import org.ilite.frc.robot.commands.ICommand;
 import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
+
 import org.ilite.frc.common.types.*;
 
-public class GetAutonomous {
-	private List<Command> commands;
+public class GetAutonomous implements ICommand{
+	
+	private List<ICommand> commands;
+	private List<ECubeAction> cubeActionPrefs;
 	private EStartingPosition startingPos;
 	private ECubeAction cubeAction;
 	private ECross crossType;
 	private boolean doComplexAutonomous;
-
-	public List<Command> getAutonomous(DriveTrain driveTrain) {
-		commands = new ArrayList<Command>();
+	
+	@Override
+	public void initialize() {
+		update();
+	}
+	
+	@Override
+	public boolean update() {
+		
+		return true;
+	}
+	
+	public List<ICommand> getAutonomous(DriveTrain driveTrain) {
+		commands = new ArrayList<ICommand>();
 		commands.clear();
 		
 		MatchData.OwnedSide scaleSide = getScaleData();
 		MatchData.OwnedSide switchSide = getSwitchData();
 
 		if (doComplexAutonomous) {
-
-			switch (cubeAction) {
-			case SWITCH:
-				doSwitch(scaleSide, switchSide);
-				break;
-			case SCALE:
-				doScale(scaleSide, switchSide);
-				break;
-			case EXCHANGE:
-				doExchange();
-				break;
-			case NONE: 
-				//drive foward?
-				break;
+			for(ECubeAction action : cubeActionPrefs) {
+				if(action == ECubeAction.SCALE)
+				{
+					if(!onSideScale(scaleSide)) {
+						cubeActionPrefs.remove(action);
+					}
+					
+				}
+				else if (action == ECubeAction.SWITCH) {
+					if(!onSideSwitch(switchSide))
+					{
+						cubeActionPrefs.remove(action);
+					}
+				}
+				else if(action == ECubeAction.EXCHANGE)
+				{
+					if(!onSideExchange())
+					{
+						cubeActionPrefs.remove(action);
+					}
+				}
+			}
+			
+			if(!cubeActionPrefs.isEmpty()) {
+				ECubeAction prefAction = cubeActionPrefs.get(0);
+				switch(prefAction) {
+				case SCALE:
+					doScale();
+					break;
+				case SWITCH:
+					doSwitch();
+					break;
+				case EXCHANGE:
+					doExchange();
+					break;
+				default:
+				}
 			}
 
 		} else {
 			// Drive foward
 		}
+		
+		return commands;
 
 	}
-
-	public void doScale(MatchData.OwnedSide scaleSide, MatchData.OwnedSide switchSide) {
-
-		if (startingPos == EStartingPosition.LEFT && scaleSide == MatchData.OwnedSide.LEFT) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else if (startingPos == EStartingPosition.RIGHT && scaleSide == MatchData.OwnedSide.RIGHT) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else if (startingPos == EStartingPosition.MIDDLE || switchSide == scaleSide) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else {// ignore driver preference.
-				doSwitch(scaleSide, switchSide);
-		}
+	public void doScale() {
+	switch(startingPos) {
+	case LEFT:
+		break;
+	case MIDDLE:
+		break;
+	case RIGHT:
+		break;
 	}
-
-	public void doSwitch(MatchData.OwnedSide scaleSide, MatchData.OwnedSide switchSide) {// Switch autonomous routine.
-
-		if (startingPos == EStartingPosition.LEFT && switchSide == MatchData.OwnedSide.LEFT) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else if (startingPos == EStartingPosition.RIGHT && switchSide == MatchData.OwnedSide.RIGHT) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else if (startingPos == EStartingPosition.MIDDLE || switchSide == scaleSide) {
-			switch (crossType) {
-			case CARPET:
-				break;
-			case PLATFORM:
-				break;
-			case NONE:
-				break;
-			}
-		} else {// ignore driver preference.
-			doScale(scaleSide, switchSide);
-		}
 	}
-
-	public void doExchange() {// Exchange autonomous routine.
-		switch (startingPos) {
+	
+	public void doSwitch() {
+		switch(startingPos) {
 		case LEFT:
-
 			break;
 		case MIDDLE:
-
 			break;
 		case RIGHT:
-
 			break;
 		}
 	}
+	public void doExchange() {
+		switch(startingPos) {
+		case LEFT:
+			break;
+		case MIDDLE:
+			break;
+		}
+	}
+	public boolean onSideScale(OwnedSide scaleSide) {
+		if(scaleSide == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
+			return false;
+		}
+		else if (scaleSide == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT)
+		{
+			return false;
+		}
+		return true;
+	}
+	public boolean onSideSwitch(OwnedSide switchSide) {
+		if(switchSide == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
+			return false;
+		}
+		else if (switchSide == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean onSideExchange()
+	{
+		if(startingPos == EStartingPosition.RIGHT)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	
 
 	public MatchData.OwnedSide getSwitchData() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR);
