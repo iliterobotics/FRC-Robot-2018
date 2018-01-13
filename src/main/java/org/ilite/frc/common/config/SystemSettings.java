@@ -29,11 +29,12 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static int     TALON_ADDR_DT_LEFT_MASTER = 2;
-  public static int     TALON_ADDR_DT_LEFT_FOLLOW_1 = 4;
-  public static int     TALON_ADDR_DT_RIGHT_MASTER = 3;
-  public static int     TALON_ADDR_DT_RIGHT_FOLLOW_1 = 1;
-
+    public static  int DRIVETRAIN_TALONID_LEFT1 = 1;
+	public static  int DRIVETRAIN_TALONID_LEFT2 = 2;
+	public static  int DRIVETRAIN_TALONID_RIGHT1 = 3;
+	public static  int DRIVETRAIN_TALONID_RIGHT2 = 4;
+	public static  int DRIVETRAIN_TALONID_RIGHT3 = 5;
+	public static  int DRIVETRAIN_TALONID_LEFT3 = 4;
   // =============================================================================
   // Drive Train Constants
   // =============================================================================

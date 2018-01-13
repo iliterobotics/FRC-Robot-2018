@@ -77,13 +77,13 @@ public class Robot extends SampleRobot {
     );
     
 //    mExecutor.execute(() -> {
-      mCodexSender.initConnection(
+      /*mCodexSender.initConnection(
           SystemSettings.CODEX_DATA_PROTOCOL, 
           SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
           SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOSTS);
       mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
-//    });
+//    });*/
     
 //    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
 //    NetworkTable.initialize();
