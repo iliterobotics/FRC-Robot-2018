@@ -1,14 +1,9 @@
 package org.ilite.frc.robot.modules;
 
-import static org.ilite.frc.robot.types.EDriveTrain.DESIRED_LEFT_POWER;
-import static org.ilite.frc.robot.types.EDriveTrain.DESIRED_RIGHT_POWER;
-import static org.ilite.frc.robot.types.EDriveTrain.TIME_SECONDS;
-import static org.ilite.frc.robot.types.EDriveTrain.VOLTAGE_RAMP_RATE;
-
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.types.EDriveTrain;
-import org.ilite.frc.robot.types.ELogitech310;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -51,7 +46,7 @@ public class DriveTrain implements IModule {
 
 	public void setShift(boolean shift) {
 //		set(IS_SHIFT, shift ? 1d : null);
-		set(VOLTAGE_RAMP_RATE, shift ? 
+		set(EDriveTrain.VOLTAGE_RAMP_RATE, shift ? 
 		    SystemSettings.DRIVETRAIN_HIGH_GEAR_RAMP_RATE : 
 		    SystemSettings.DRIVETRAIN_DEFAULT_RAMP_RATE);
     
@@ -61,8 +56,8 @@ public class DriveTrain implements IModule {
 	}
 
 	public void setPower(double left, double right) {
-    set(DESIRED_LEFT_POWER, left);
-    set(DESIRED_RIGHT_POWER, right);
+    set(EDriveTrain.DESIRED_LEFT_POWER, left);
+    set(EDriveTrain.DESIRED_RIGHT_POWER, right);
 	}
 
 	public double getCurrentFeedback(){
@@ -74,7 +69,7 @@ public class DriveTrain implements IModule {
   public void initialize(double pNow) {
 //    mLeftMaster.setControlMode(TalonControlMode.PercentVbus.value);
 //    mRightMaster.setControlMode(TalonControlMode.PercentVbus.value);
-    set(VOLTAGE_RAMP_RATE, SystemSettings.DRIVETRAIN_DEFAULT_RAMP_RATE);
+    set(EDriveTrain.VOLTAGE_RAMP_RATE, SystemSettings.DRIVETRAIN_DEFAULT_RAMP_RATE);
     setShift(false);
     resetEncoders();
   }
@@ -93,7 +88,7 @@ public class DriveTrain implements IModule {
   @Override
   public void update(double pNow) {
     data.drivetrain.meta().setTimestamp(pNow);
-    set(TIME_SECONDS, Timer.getFPGATimestamp());
+    set(EDriveTrain.TIME_SECONDS, Timer.getFPGATimestamp());
 //    set(LEFT_POSITION_ROT, (double)mLeftMaster.getEncPosition());
 //    set(RIGHT_POSITION_ROT,(double)mRightMaster.getEncPosition());
 //    set(LEFT_VELOCITY_RPM, (double)mLeftMaster.getEncVelocity());

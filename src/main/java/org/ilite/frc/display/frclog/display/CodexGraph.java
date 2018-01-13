@@ -1,6 +1,6 @@
-package org.ilite.frclog.display;
+package org.ilite.frc.display.frclog.display;
 
-import org.ilite.frclog.data.RobotDataElementCache;
+import org.ilite.frc.display.frclog.data.RobotDataElementCache;
 import org.jfree.data.xy.XYSeries;
 
 import com.flybotix.hfr.cache.CodexElementHistory;

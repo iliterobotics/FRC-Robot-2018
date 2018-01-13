@@ -1,6 +1,5 @@
-package org.ilite.frclog.data;
+package org.ilite.frc.display.frclog.data;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +19,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Stream;
 
-import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.types.EDriveTrain;
-import org.ilite.frc.robot.types.ELogitech310;
-import org.ilite.frc.robot.types.ENavX;
-import org.ilite.frc.robot.types.EPowerDistPanel;
-import org.ilite.frc.robot.types.ESupportedTypes;
-import org.ilite.frc.robot.types.ETalonSRX;
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.ENavX;
+import org.ilite.frc.common.types.EPowerDistPanel;
+import org.ilite.frc.common.types.ESupportedTypes;
+import org.ilite.frc.common.types.ETalonSRX;
 
 import com.flybotix.hfr.cache.CodexElementHistory;
 import com.flybotix.hfr.cache.CodexElementInstance;

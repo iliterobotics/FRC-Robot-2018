@@ -1,10 +1,10 @@
-package org.ilite.frclog.display;
+package org.ilite.frc.display.frclog.display;
 
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.ilite.frc.robot.types.ELogitech310;
+import org.ilite.frc.common.types.ELogitech310;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.tables.IRemote;

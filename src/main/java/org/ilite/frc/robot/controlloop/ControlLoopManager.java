@@ -3,11 +3,10 @@ package org.ilite.frc.robot.controlloop;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.ENavX;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
-import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.modules.IModule;
-import org.ilite.frc.robot.types.ENavX;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;

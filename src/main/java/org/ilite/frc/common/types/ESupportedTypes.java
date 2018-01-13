@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.types;
+package org.ilite.frc.common.types;
 
 public enum ESupportedTypes  {
   LONG(Long.class),

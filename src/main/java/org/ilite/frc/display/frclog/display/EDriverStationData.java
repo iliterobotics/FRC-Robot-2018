@@ -1,4 +1,4 @@
-package org.ilite.frclog.display;
+package org.ilite.frc.display.frclog.display;
 
 public enum EDriverStationData {
   BATTERY_VOLTAGE,

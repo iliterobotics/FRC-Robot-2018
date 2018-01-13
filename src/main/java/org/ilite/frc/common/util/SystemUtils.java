@@ -1,4 +1,4 @@
-package org.ilite.frc.common;
+package org.ilite.frc.common.util;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

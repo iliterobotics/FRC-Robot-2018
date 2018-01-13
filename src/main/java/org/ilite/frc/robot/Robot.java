@@ -6,14 +6,14 @@ import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.ENavX;
 import org.ilite.frc.robot.commands.Command;
-import org.ilite.frc.robot.config.SystemSettings;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.IModule;
-import org.ilite.frc.robot.types.ELogitech310;
-import org.ilite.frc.robot.types.ENavX;
 
 import com.flybotix.hfr.codex.CodexSender;
 import com.flybotix.hfr.util.log.ELevel;

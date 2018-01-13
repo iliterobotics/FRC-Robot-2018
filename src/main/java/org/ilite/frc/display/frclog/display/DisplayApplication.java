@@ -1,8 +1,8 @@
-package org.ilite.frclog.display;
+package org.ilite.frc.display.frclog.display;
 
 import java.io.File;
 
-import org.ilite.frclog.data.RobotDataStream;
+import org.ilite.frc.display.frclog.data.RobotDataStream;
 
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;

@@ -1,8 +1,8 @@
-package org.ilite.frc.robot.config;
+package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
-import org.ilite.frc.robot.types.ELogitech310;
+import org.ilite.frc.common.types.ELogitech310;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;

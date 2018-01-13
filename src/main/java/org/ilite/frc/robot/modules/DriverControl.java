@@ -1,6 +1,6 @@
 package org.ilite.frc.robot.modules;
 
-import org.ilite.frc.robot.config.SystemSettings;
+import org.ilite.frc.common.config.SystemSettings;
 
 public abstract class DriverControl {
 

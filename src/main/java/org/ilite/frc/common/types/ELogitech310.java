@@ -1,6 +1,6 @@
-package org.ilite.frc.robot.types;
+package org.ilite.frc.common.types;
 
-import org.ilite.frc.robot.input.DriverInputUtils;
+import org.ilite.frc.common.input.DriverInputUtils;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;

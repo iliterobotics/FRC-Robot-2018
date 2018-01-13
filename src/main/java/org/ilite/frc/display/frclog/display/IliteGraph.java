@@ -1,4 +1,4 @@
-package org.ilite.frclog.display;
+package org.ilite.frc.display.frclog.display;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,12 +3,12 @@ package org.ilite.frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.types.EDriveTrain;
-import org.ilite.frc.robot.types.ELogitech310;
-import org.ilite.frc.robot.types.ENavX;
-import org.ilite.frc.robot.types.EPowerDistPanel;
-import org.ilite.frc.robot.types.ETalonSRX;
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.ENavX;
+import org.ilite.frc.common.types.EPowerDistPanel;
+import org.ilite.frc.common.types.ETalonSRX;
 
 import com.flybotix.hfr.codex.Codex;
 

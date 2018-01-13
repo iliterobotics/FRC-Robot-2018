@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.types;
+package org.ilite.frc.common.types;
 
 import com.ctre.CANTalon;
 import com.flybotix.hfr.codex.Codex;

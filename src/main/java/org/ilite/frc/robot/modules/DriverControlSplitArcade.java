@@ -1,9 +1,9 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.config.SystemSettings;
-import org.ilite.frc.robot.types.EDriveTrain;
-import org.ilite.frc.robot.types.ELogitech310;
 
 public class DriverControlSplitArcade extends DriverControl{
 	

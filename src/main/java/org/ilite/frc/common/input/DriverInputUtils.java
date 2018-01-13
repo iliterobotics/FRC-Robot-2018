@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.input;
+package org.ilite.frc.common.input;
 
 import edu.wpi.first.wpilibj.Joystick;
 
