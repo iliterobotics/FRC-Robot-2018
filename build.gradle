@@ -1,33 +1,64 @@
-// Note 'apply false' for each plugin. This ensures they aren't applied to the root project (here), 
-// but it makes the plugins available for subprojects.
 plugins {
-    // GradleRIO is used for code intended to go on robots, which is why it's only applied to the 'robot' project.
-    id "jaci.openrio.gradle.GradleRIO" version "2018.01.07" apply false
-
-    // EmbeddedTools is the backing library for GradleRIO, and includes everything that's non-frc specific, which
-    // is why we use it for our coprocessor project.
-    id "jaci.gradle.EmbeddedTools" version "2017.11.09" apply false
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jaci.openrio.gradle.GradleRIO" version "2018.01.11"
 }
 
-// Using the 'idea' plugin allows us to use IntelliJ IDEA. IntelliJ works out-of-the-box with multiproject builds
-// and so it's very, very easy to integrate with GradleRIO and EmbeddedTools.
-// We need to apply 'idea' to all projects, including the root project (here).
-allprojects {
-    apply plugin: "eclipse"
-}
+def TEAM = 1885
+def ROBOT_CLASS = "org.ilite.frc.robot.Robot"
 
-// Setup the configuration for all sub-projects. This is a shortcut for manually applying the configuration
-// in each subproject individually.
-subprojects {
-  apply plugin: "java"
-	repositories {
-	  mavenCentral() // HFR, tilesFX & Medusa (gauges)
-	  jcenter() // fontawesomeFX
-	  mavenLocal()   
-	  flatDir {
-       dirs '../lib'
+// Define my targets (RoboRIO) and artifacts (deployable files)
+// This is added by GradleRIO's backing project EmbeddedTools.
+deploy {
+    targets {
+        target("roborio", jaci.openrio.gradle.frc.RoboRIO) {
+            team = TEAM
+        }
     }
+    artifacts {
+        artifact('frcJava', jaci.openrio.gradle.frc.FRCJavaArtifact) {
+            targets << "roborio"
+        }
+    }
+}
+
+// Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
+// and NavX.
+dependencies {
+	compile wpilib()
+	compile ctre()
+	compile navx()
+	compile openrio.powerup.matchData()
+	compile 'com.google.code.gson:gson:2.8.2'
+	compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	compile pathfinder()
+	  
+	compile name: 'eu.hansolo.fx.horizon-1.0'
+	compile 'eu.hansolo:tilesfx:1.5.2'
+	compile 'org.jfree:jfreechart-fx:1.0.0'
+	compile 'org.controlsfx:controlsfx:9.0.0'
+	
+	// Poofs library and its dependencies
+	compile name: 'json-simple-1.1.1'
+	compile name: 'poofs.2017'
+}
+
+repositories {
+	mavenCentral() // HFR, tilesFX & Medusa (gauges)
+	jcenter() // fontawesomeFX
+	mavenLocal()   
+	flatDir {
+		dirs './lib'
 	}
+}
+
+// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+// in order to make them all available at runtime. Also adding the manifest so WPILib
+// knows where to look for our Robot Class.
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest jaci.openrio.gradle.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
 }
 
 task wrapper(type: Wrapper) {
