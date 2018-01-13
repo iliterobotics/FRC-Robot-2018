@@ -32,6 +32,7 @@ dependencies {
 	compile openrio.powerup.matchData()
 	compile 'com.google.code.gson:gson:2.8.2'
 	compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	compile pathfinder()
 	  
 	compile name: 'eu.hansolo.fx.horizon-1.0'
 	compile 'eu.hansolo:tilesfx:1.5.2'
