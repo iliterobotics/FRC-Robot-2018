@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.ilite.vision.camera.opencv.OpenCVUtils;
 import org.ilite.vision.constants.ECameraConfig;
 import org.opencv.core.Mat;
-import org.opencv.highgui.VideoCapture;
+import org.opencv.videoio.VideoCapture;
 
 public class Camera extends AbstractCameraConnection {
 

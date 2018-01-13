@@ -66,7 +66,7 @@ public class HistoGramImageWindow extends ImageWindow {
 
         // Draw lines for histogram points
         for (int i = 0; i < (int) pHistSize.get(0, 0)[0]; i++) {
-            Core.line(
+        	Imgproc.line(
                     pHistImage,
                     new org.opencv.core.Point(i, pHistImage.rows()),
                     new org.opencv.core.Point(i, pHistImage.rows()
