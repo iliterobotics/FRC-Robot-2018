@@ -33,6 +33,10 @@ public class SystemSettings extends ConstantsBase {
   public static int     TALON_ADDR_DT_LEFT_FOLLOW_1 = 4;
   public static int     TALON_ADDR_DT_RIGHT_MASTER = 3;
   public static int     TALON_ADDR_DT_RIGHT_FOLLOW_1 = 1;
+  public static int     TALON_ADDR_INTAKE_FRONT_LEFT = 5;
+  public static int     TALON_ADDR_INTAKE_FRONT_RIGHT = 6;
+  public static int     TALON_ADDR_INTAKE_BACK_RIGHT = 7;
+  public static int     TALON_ADDR_INTAKE_BACK_LEFT = 8;
 
   // =============================================================================
   // Drive Train Constants
@@ -55,6 +59,8 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static ELogitech310  DRIVER_MAP_THROTTLE_AXIS = ELogitech310.LEFT_Y_AXIS;
   public static ELogitech310  DRIVER_MAP_TURN_AXIS = ELogitech310.COMBINED_TRIGGER_AXIS;
+  public static ELogitech310  DRIVER_MAP_INTAKE_BUTTON = ELogitech310.A_BTN;
+  public static ELogitech310  DRIVER_MAP_OUTTAKE_BUTTON = ELogitech310.B_BTN;
   
   @Override
   public String getFileLocation() {
