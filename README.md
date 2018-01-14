@@ -87,8 +87,8 @@ FRC-Robot-2018/
    * You may need to set the upstream branch using `--set-upstream`
 ---
 ## Basic Linux Commands
-   * cd <directory path> :change directory  
-   * ls -a :list all files 
-   * rm <filename> : remove files 
-   * mkdir <name> : create folder. 
-   * cp <filename> <location> : copy files over
+   * `cd <directory path>` Change directory
+   * `ls -a` Lists all files
+   * `rm <filename>` Removes files
+   * `mkdir <name>` Create folder
+   * `cp <filename> <location>` Copy files over
