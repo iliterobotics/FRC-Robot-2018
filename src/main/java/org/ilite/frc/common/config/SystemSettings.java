@@ -7,6 +7,9 @@ import org.ilite.frc.common.types.ELogitech310;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+
 public class SystemSettings extends ConstantsBase {
   
   public static double CONTROL_LOOP_PERIOD = 0.005; // seconds
@@ -15,6 +18,7 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Comms
   // =============================================================================
+  public static NetworkTable AUTON_TABLE;
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";

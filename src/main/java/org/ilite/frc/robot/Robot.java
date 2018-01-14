@@ -27,6 +27,9 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
   private double mCurrentTime = 0;
@@ -35,6 +38,7 @@ public class Robot extends SampleRobot {
   private final java.util.Timer mTimer = new java.util.Timer("Robot Alarms and Delays");
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
+  
   
   private CodexSender mCodexSender = new CodexSender();
 
@@ -52,10 +56,12 @@ public class Robot extends SampleRobot {
   private final DriveTrain dt;
   private final DriverControlSplitArcade drivetraincontrol;
 
+
   public Robot() {
     mControlLoop = new ControlLoopManager(mData, mHardware);
     dt = new DriveTrain(mData);
     drivetraincontrol = new DriverControlSplitArcade(mData, dt);
+    SystemSettings.AUTON_TABLE = NetworkTableInstance.getDefault().getTable("AUTON_TABLE");
     Logger.setLevel(ELevel.WARN);
   }
 
@@ -104,6 +110,7 @@ public class Robot extends SampleRobot {
   }
 
   public void autonomous() {
+	GetAutonomous getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
     mLog.info("AUTONOMOUS");
 	setRunningModules();
     mControlLoop.setRunningControlLoops();
@@ -123,6 +130,7 @@ public class Robot extends SampleRobot {
   }
 
   public void operatorControl() {
+	 
     mLog.info("TELEOP");
     // Remember that DriverControl classes don't go here. They aren't Modules.
 	setRunningModules();
