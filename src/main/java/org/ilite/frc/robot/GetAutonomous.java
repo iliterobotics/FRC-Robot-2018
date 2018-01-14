@@ -14,8 +14,7 @@ public class GetAutonomous implements ICommand{
 	
 	private List<ICommand> commands;
 	private List<ECubeAction> cubeActionPrefs;
-	private EStartingPosition startingPos;
-	private ECubeAction cubeAction;
+	private EStartingPosition startingPos; 
 	private ECross crossType;
 	private boolean doComplexAutonomous;
 	
@@ -34,27 +33,28 @@ public class GetAutonomous implements ICommand{
 		commands = new ArrayList<ICommand>();
 		commands.clear();
 		
-		MatchData.OwnedSide scaleSide = getScaleData();
-		MatchData.OwnedSide switchSide = getSwitchData();
+		OwnedSide scaleSide = getScaleData();
+		OwnedSide switchSide = getSwitchData();
 
 		if (doComplexAutonomous) {
+			
 			for(ECubeAction action : cubeActionPrefs) {
 				if(action == ECubeAction.SCALE)
 				{
-					if(!onSideScale(scaleSide)) {
+					if(!onMySide(scaleSide)) {
 						cubeActionPrefs.remove(action);
 					}
 					
 				}
 				else if (action == ECubeAction.SWITCH) {
-					if(!onSideSwitch(switchSide))
+					if(!onMySide(switchSide))
 					{
 						cubeActionPrefs.remove(action);
 					}
 				}
 				else if(action == ECubeAction.EXCHANGE)
 				{
-					if(!onSideExchange())
+					if(!onMySideExchange())
 					{
 						cubeActionPrefs.remove(action);
 					}
@@ -74,6 +74,7 @@ public class GetAutonomous implements ICommand{
 					doExchange();
 					break;
 				default:
+					break;
 				}
 			}
 
@@ -84,6 +85,7 @@ public class GetAutonomous implements ICommand{
 		return commands;
 
 	}
+	
 	public void doScale() {
 	switch(startingPos) {
 	case LEFT:
@@ -113,28 +115,17 @@ public class GetAutonomous implements ICommand{
 			break;
 		}
 	}
-	public boolean onSideScale(OwnedSide scaleSide) {
-		if(scaleSide == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
+	public boolean onMySide(OwnedSide side) {
+		if(side == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
 			return false;
 		}
-		else if (scaleSide == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT)
-		{
-			return false;
-		}
-		return true;
-	}
-	public boolean onSideSwitch(OwnedSide switchSide) {
-		if(switchSide == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
-			return false;
-		}
-		else if (switchSide == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT)
-		{
+		else if(side == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT) {
 			return false;
 		}
 		return true;
 	}
 	
-	public boolean onSideExchange()
+	public boolean onMySideExchange()
 	{
 		if(startingPos == EStartingPosition.RIGHT)
 		{
@@ -145,11 +136,11 @@ public class GetAutonomous implements ICommand{
 	
 	
 
-	public MatchData.OwnedSide getSwitchData() {
+	public OwnedSide getSwitchData() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR);
 	}
 
-	public MatchData.OwnedSide getScaleData() {
+	public OwnedSide getScaleData() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 
 	}
