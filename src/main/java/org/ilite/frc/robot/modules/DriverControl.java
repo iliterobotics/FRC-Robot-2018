@@ -1,5 +1,7 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.common.config.SystemSettings;
+
 import edu.wpi.first.wpilibj.Joystick;
 //import edu.wpi.first.wpilibj.Talon;
 
@@ -12,22 +14,23 @@ public class DriverControl implements IModule{
 	public DriverControl(DriveTrain dt)
 	{
 		this.dt = dt;
-		gamepad = new Joystick(RobotMap.CONTROLLER_ID);
+		gamepad = new Joystick(SystemSettings.CONTROLLER_ID);
 	}
 	
 	@Override
-	public void init() {
+	public void initialize(double pNow) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public boolean update() {
-		double throttle = gamepad.getRawAxis(RobotMap.GAMEPAD_LEFT_Y);
-		double rotate = gamepad.getRawAxis(RobotMap.GAMEPAD_RIGHT_X);
+	public boolean update(double pNow) {
+		double rotate = gamepad.getRawAxis(SystemSettings.GAMEPAD_LEFT_Y);
+		double throttle = gamepad.getRawAxis(SystemSettings.GAMEPAD_RIGHT_X);
 		double l = throttle - rotate;
 		double r = throttle + rotate;
 		dt.set(l, r);
+		System.out.printf("Input Left: %s Input Right: %s\n", l, r);
 		return false;
 	}
 

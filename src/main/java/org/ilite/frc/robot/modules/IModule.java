@@ -10,6 +10,6 @@ public interface IModule {
   	 */
 	//public abstract void update(double pNow);
 	public abstract void shutdown(double pNow);
-	void init();
-	boolean update();
+	void initialize(double pNow);
+	boolean update(double pNow);
 }

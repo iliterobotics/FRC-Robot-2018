@@ -6,7 +6,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
-//import org.usfirst.frc.team1885.robot.RobotMap;
+//import org.usfirst.frc.team1885.robot.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -25,39 +25,41 @@ public class DriveTrain implements IModule {
   //private final ILog mLog = Logger.createLog(DriveTrain.class);
 
 	//private Solenoid gearShifter;
-	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
+	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
 	
 	public DriveTrain()
 	{
-		leftMaster = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_LEFT1);
-		rightMaster = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_RIGHT1);
-		leftFollower = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_LEFT2);
-		rightFollower = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_RIGHT2);
-		leftFollower2 = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_LEFT3);
-		rightFollower2 = new TalonSRX(RobotMap.DRIVETRAIN_TALONID_RIGHT3);
+		leftMaster = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT1);
+		rightMaster = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT1);
+		leftFollower = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT2);
+		rightFollower = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT2);
+		//leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
+		//rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
 		rightFollower.follow(rightMaster);
-		rightFollower2.follow(rightMaster);
+		//rightFollower2.follow(rightMaster);
+		//leftFollower2.follow(leftMaster);
 		leftFollower.follow(leftMaster);
-		leftFollower.follow(leftMaster);
-		controlMode = ControlMode.Velocity;
+		controlMode = ControlMode.PercentOutput;
 
 
 		}
 	@Override
-	public void init() {
-		
+	public void initialize(double pNow) {
+		leftMaster.set(controlMode, desiredLeft);
+		rightMaster.set(controlMode, desiredRight);
 		
 	}
 
 	@Override
-	public boolean update() {
+	public boolean update(double pNow) {
 		//updateSpeed(desiredLeft, desiredRight);
 		leftMaster.set(controlMode, desiredLeft);
 		rightMaster.set(controlMode, desiredRight);
+		System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
 		return false;
-	}
+	}	
 	
 	/*private void updateSpeed(double l, double r)
 	{
@@ -72,13 +74,46 @@ public class DriveTrain implements IModule {
 	
 	@Override
 	public void shutdown(double pNow) {
-		// TODO Auto-generated method stub
+		leftMaster.neutralOutput();
+		rightMaster.neutralOutput();
 		
 	}
 	
 	public void changeModes(ControlMode controlMode)
 	{
+		if(this.controlMode == controlMode)
+		{
+			return;	
+		}
 		this.controlMode = controlMode;
+		
+		switch(controlMode)
+		{
+		case Velocity:
+			break;
+		case PercentOutput:
+			desiredLeft = 0;
+			desiredRight = 0;
+			break;
+		case Current:	
+			break;
+		case Disabled:
+			break;
+		case Follower:
+			break;
+		case MotionMagic:
+			break;
+		case MotionMagicArc:
+			break;
+		case MotionProfile:
+			break;
+		case MotionProfileArc:
+			break;
+		case Position:
+			break;
+		default:
+			break;
+		}
 	}
 	
 }

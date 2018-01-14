@@ -10,19 +10,10 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.ENavX;
 import org.ilite.frc.robot.commands.Command;
-<<<<<<< HEAD:robot/src/main/java/org/ilite/frc/robot/Robot.java
-import org.ilite.frc.robot.config.SystemSettings;
-=======
->>>>>>> experimental/drivetrain:src/main/java/org/ilite/frc/robot/Robot.java
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.DriverControlSplitArcade;
+import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
-<<<<<<< HEAD:robot/src/main/java/org/ilite/frc/robot/Robot.java
-import org.ilite.frc.robot.types.ELogitech310;
-import org.ilite.frc.robot.types.ENavX;
-=======
->>>>>>> experimental/drivetrain:src/main/java/org/ilite/frc/robot/Robot.java
 
 import com.flybotix.hfr.codex.CodexSender;
 import com.flybotix.hfr.util.log.ELevel;
@@ -43,7 +34,7 @@ public class Robot extends SampleRobot {
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
   private final java.util.Timer mTimer = new java.util.Timer("Robot Alarms and Delays");
   private final Hardware mHardware = new Hardware();
-  private final Data mData = new Data();
+  //private final Data mData = new Data();
   
   private CodexSender mCodexSender = new CodexSender();
 
@@ -51,7 +42,7 @@ public class Robot extends SampleRobot {
   
 //  private final CodexNetworkTables nt = CodexNetworkTables.getInstance();
   
-  private final ControlLoopManager mControlLoop;
+//  private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
   private Queue<Command> mCommandQueue = new LinkedList<>();
@@ -59,31 +50,31 @@ public class Robot extends SampleRobot {
   
   // Temporary...
   private final DriveTrain dt;
-  private final DriverControlSplitArcade drivetraincontrol;
+  private final DriverControl drivetraincontrol;
 
   public Robot() {
-    mControlLoop = new ControlLoopManager(mData, mHardware);
-    dt = new DriveTrain(mData);
-    drivetraincontrol = new DriverControlSplitArcade(mData, dt);
+//    mControlLoop = new ControlLoopManager(mData, mHardware);
+    dt = new DriveTrain();
+    drivetraincontrol = new DriverControl(dt);
     Logger.setLevel(ELevel.WARN);
   }
 
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
       
-    mHardware.init(
-        mExecutor,
-        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
-        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-        new PowerDistributionPanel(), 
-        new AHRS(SerialPort.Port.kMXP)
-        // Sensors
-        // Custom hw
-        // Spike relays
-        // etc
-        
-        // Talons TBD ... they're somewhat picky.
-    );
+//    mHardware.init(
+//        mExecutor,
+//        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
+//        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
+//        new PowerDistributionPanel(), 
+//        new AHRS(SerialPort.Port.kMXP)
+//        // Sensors
+//        // Custom hw
+//        // Spike relays
+//        // etc
+//        
+//        // Talons TBD ... they're somewhat picky.
+//    );
     
 //    mExecutor.execute(() -> {
       /*mCodexSender.initConnection(
@@ -115,8 +106,8 @@ public class Robot extends SampleRobot {
   public void autonomous() {
     mLog.info("AUTONOMOUS");
 	setRunningModules();
-    mControlLoop.setRunningControlLoops();
-    mControlLoop.start();
+    //mControlLoop.setRunningControlLoops();
+    //mControlLoop.start();
     
     while(isEnabled() && isAutonomous()) {
     	updateCommandQueue(true);
@@ -134,21 +125,21 @@ public class Robot extends SampleRobot {
   public void operatorControl() {
     mLog.info("TELEOP");
     // Remember that DriverControl classes don't go here. They aren't Modules.
-	setRunningModules();
-	mControlLoop.setRunningControlLoops();
-    mControlLoop.start();
+	setRunningModules(dt);
+//	mControlLoop.setRunningControlLoops();
+//    mControlLoop.start();
     
     while(isEnabled() && isOperatorControl()) {
       mCurrentTime = Timer.getFPGATimestamp();
-      mData.resetAll(mCurrentTime);
+//      mData.resetAll(mCurrentTime);
       mapInputs();
       
       updateRunningModules();
       
-      mCodexSender.send(mData.driverinput);
-      mCodexSender.send(mData.drivetrain);
-      ENavX.map(mData.navx, mHardware.getNavX());
-      mCodexSender.send(mData.navx);
+//      mCodexSender.send(mData.driverinput);
+//      mCodexSender.send(mData.drivetrain);
+//      ENavX.map(mData.navx, mHardware.getNavX());
+//      mCodexSender.send(mData.navx);
       
       pauseUntilTheNextCycle(mCurrentTime);
     }
@@ -160,11 +151,11 @@ public class Robot extends SampleRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputs() {
-    ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
+//    ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
 //    nt.send(mData.driverinput);
     
     // Any input processing goes here, such as 'split arcade driver'
-    drivetraincontrol.update();
+    drivetraincontrol.update(Timer.getFPGATimestamp());
     
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
@@ -246,6 +237,6 @@ public class Robot extends SampleRobot {
 
   public void disabled() {
     mLog.info("DISABLED");
-    mControlLoop.stop();
+//    mControlLoop.stop();
   }
 }
