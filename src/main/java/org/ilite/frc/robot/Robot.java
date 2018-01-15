@@ -1,12 +1,12 @@
 package org.ilite.frc.robot;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.ENavX;
 import org.ilite.frc.robot.commands.Command;
@@ -14,24 +14,33 @@ import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.vision.GripPipeline;
+import org.ilite.frc.robot.vision.Processing;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import com.flybotix.hfr.codex.CodexSender;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.vision.VisionThread;
 
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
   private double mCurrentTime = 0;
   
-  private final Executor mExecutor = Executors.newFixedThreadPool(1);
+  private final Executor mExecutor = Executors.newFixedThreadPool(2);
   private final java.util.Timer mTimer = new java.util.Timer("Robot Alarms and Delays");
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
@@ -48,6 +57,8 @@ public class Robot extends SampleRobot {
   private Queue<Command> mCommandQueue = new LinkedList<>();
   private Command mCurrentCommand;
   
+  private VisionThread visionThread;
+  
   // Temporary...
   private final DriveTrain dt;
   private final DriverControlSplitArcade drivetraincontrol;
@@ -58,31 +69,47 @@ public class Robot extends SampleRobot {
     drivetraincontrol = new DriverControlSplitArcade(mData, dt);
     Logger.setLevel(ELevel.WARN);
   }
-
+  
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-      
-    mHardware.init(
-        mExecutor,
-        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
-        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-        new PowerDistributionPanel(), 
-        new AHRS(SerialPort.Port.kMXP)
-        // Sensors
-        // Custom hw
-        // Spike relays
-        // etc
-        
-        // Talons TBD ... they're somewhat picky.
-    );
+    
+    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    camera.setFPS(30);
+//    camera.setResolution(320, 240);
+    GripPipeline pipeline = new GripPipeline();
+    Processing processing = new Processing(camera);
+    visionThread = new VisionThread(camera, pipeline, processing);
+    visionThread.start();
+//    while(visionThread.isAlive()) System.out.println("Vision started");
+    
+//    trackingCamera.setBrightness(0);
+//    trackingCamera.setExposureManual(0);
+//    trackingCamera.setFPS(0);
+//    trackingCamera.setPixelFormat(PixelFormat.kBGR);
+//    trackingCamera.setResolution(0, 0);
+//    trackingCamera.setWhiteBalanceManual(0);
+    
+//    mHardware.init(
+//        mExecutor,
+//        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
+//        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
+//        new PowerDistributionPanel(), 
+//        new AHRS(SerialPort.Port.kMXP)
+//        // Sensors
+//        // Custom hw
+//        // Spike relays
+//        // etc
+//        
+//        // Talons TBD ... they're somewhat picky.
+//    );
     
 //    mExecutor.execute(() -> {
-      mCodexSender.initConnection(
-          SystemSettings.CODEX_DATA_PROTOCOL, 
-          SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
-          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
-          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOSTS);
-      mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
+//      mCodexSender.initConnection(
+//          SystemSettings.CODEX_DATA_PROTOCOL, 
+//          SystemSettings.ROBOT_CODEX_DATA_SENDER_PORT, 
+//          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, 
+//          SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_HOSTS);
+//      mLog.info("Finished initializing protocol " + SystemSettings.CODEX_DATA_PROTOCOL);
 //    });
     
 //    NetworkTable.setUpdateRate(INPUT_LOOP_PERIOD_MS);
