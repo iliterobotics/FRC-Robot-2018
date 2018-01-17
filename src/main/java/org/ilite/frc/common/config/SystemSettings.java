@@ -7,6 +7,10 @@ import org.ilite.frc.common.types.ELogitech310;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Trajectory.Config;
+import jaci.pathfinder.Trajectory.FitMethod;
+
 public class SystemSettings extends ConstantsBase {
   
   public static double CONTROL_LOOP_PERIOD = 0.005; // seconds
@@ -55,7 +59,26 @@ public class SystemSettings extends ConstantsBase {
   public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-
+  public static int		DRIVETRAIN_ENC_TICKS_PER_TURN = 0;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 0;
+  public static double	DRIVETRAIN_ANGLE_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_VELOCITY_kD = 0;
+  public static double	DRIVETRAIN_kA = 0;
+  public static double	DRIVETRAIN_kV = 0;
+  
+  // =============================================================================
+  // Motion Profiling Constants
+  // =============================================================================
+  public static String 	MP_WRITE_DIRECTORY = "";
+  public static FitMethod 	MP_FIT_METHOD = FitMethod.HERMITE_QUINTIC;
+  public static int		MP_SAMPLES = Config.SAMPLES_HIGH;
+  public static double 	MP_DELTA_TIME = 0;
+  public static double 	MP_MAX_VEL = 0;
+  public static double 	MP_MAX_ACC = 0;
+  public static double 	MP_MAX_JERK = 0;
+  
   // =============================================================================
   // Input Constants
   // =============================================================================
