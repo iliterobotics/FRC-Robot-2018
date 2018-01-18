@@ -111,7 +111,7 @@ public class Robot extends SampleRobot {
     
     while(isEnabled() && isAutonomous()) {
     	updateCommandQueue(true);
-      if(mHardware.isNavXReady()) {
+      if(mHardware.isGyroReady()) {
         updateCommandQueue(false);
         updateRunningModules();
       } else {
