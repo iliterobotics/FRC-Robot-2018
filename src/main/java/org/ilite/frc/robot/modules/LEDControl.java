@@ -1,12 +1,17 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.robot.Hardware;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
+
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class LEDControl implements IModule {
 
-	private CANifier cCanifier;
+	private CANifier mCanifier;
 	public enum LEDColor {
 		PURPLE(255, 0, 255), 
 		RED(255, 0, 0), 
@@ -27,20 +32,38 @@ public class LEDControl implements IModule {
 			this.b = b;
 		}
 	}
+	
+	public enum Conditions
+	{
+		
+		final float colorOutput;
+		Conditions(float colorOutput)
+		{
+			this.colorOutput = colorOutput;
+		}
+	}
+	
+	public LEDControl(Hardware pHardware)
+	{
+		mCanifier = pHardware.getCanifier();
+	}
 	public void initialize(double pNow) {
 		
-		cCanifier.setLEDOutput(0, CANifier.LEDChannel.LEDChannelA);
+		mCanifier.setLEDOutput(0, CANifier.LEDChannel.LEDChannelA);
+		mCanifier.setLEDOutput(0, CANifier.LEDChannel.LEDChannelB);
+		mCanifier.setLEDOutput(0, CANifier.LEDChannel.LEDChannelC);
 	}
 
 	@Override
 	public void update(double pNow) {
-		while( )
-		{
-			cCanifier.setLEDOutput(, LEDChannel.LEDChannelA );
-		}
+		SmartDashboard.putNumber("time", Timer.getFPGATimestamp());
 	}
+	
 
-	public float rgbCreator(
+	public float colorCreator(int r, int g, int b)
+	{
+		return 0;
+	}
 	@Override
 	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub

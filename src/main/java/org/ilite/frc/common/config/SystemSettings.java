@@ -34,6 +34,12 @@ public class SystemSettings extends ConstantsBase {
   public static int     TALON_ADDR_DT_RIGHT_MASTER = 3;
   public static int     TALON_ADDR_DT_RIGHT_FOLLOW_1 = 1;
 
+  
+  // =============================================================================
+  // CANifier Constants
+  // =============================================================================
+  public static int 	CANIFIER_DEVICE_ID = 1;
+
   // =============================================================================
   // Drive Train Constants
   // =============================================================================

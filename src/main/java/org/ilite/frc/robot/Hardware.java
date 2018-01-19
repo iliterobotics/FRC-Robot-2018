@@ -1,6 +1,7 @@
 package org.ilite.frc.robot;
 
 import java.util.concurrent.Executor;
+import com.ctre.phoenix.CANifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ctre.CANTalon;
@@ -20,6 +21,7 @@ public class Hardware {
   private AHRS mAHRS;
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private CANTalon[] mTalons;
+  private CANifier mCanifier;
   
   Hardware() {
     
@@ -31,6 +33,7 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       AHRS pAHRS,
+      CANifier pCanifier,
       CANTalon... pTalons
   ) {
     mDriverJoystick = pDriverJoystick;
@@ -38,7 +41,7 @@ public class Hardware {
     mPDP = pPDP;
     mAHRS = pAHRS;
     mTalons = pTalons;
-
+    mCanifier = pCanifier;
     pInitializationPool.execute(() -> {
       while(mAHRS.isCalibrating()) {
         try {
@@ -76,6 +79,11 @@ public class Hardware {
     return mTalons;
   }
   
+  public CANifier getCanifier()
+  {
+	  return mCanifier;
+  }
+  
   /**
    * Returns a talon by it's (presumably address).
    * @param pAddress
@@ -84,4 +92,7 @@ public class Hardware {
   public CANTalon getTalon(int pAddress) {
     return mTalons[pAddress];
   }
+  
+
 }
+

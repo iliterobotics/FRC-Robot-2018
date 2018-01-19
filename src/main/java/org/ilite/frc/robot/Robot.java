@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-
+import com.ctre.phoenix.CANifier;
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
   private double mCurrentTime = 0;
@@ -67,7 +67,8 @@ public class Robot extends SampleRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new AHRS(SerialPort.Port.kMXP)
+        new AHRS(SerialPort.Port.kMXP),
+        new CANifier(SystemSettings.CANIFIER_DEVICE_ID)
         // Sensors
         // Custom hw
         // Spike relays
@@ -130,6 +131,13 @@ public class Robot extends SampleRobot {
     mControlLoop.start();
     
     while(isEnabled() && isOperatorControl()) {
+    	
+    	if(mHardware.getDriverJoystick().getRawButton(1))
+    	{
+    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelA);
+    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelB);
+    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelC);
+    	}
       mCurrentTime = Timer.getFPGATimestamp();
       mData.resetAll(mCurrentTime);
       mapInputs();
