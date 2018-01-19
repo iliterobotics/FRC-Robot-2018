@@ -16,7 +16,13 @@ import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.common.types.ECubeAction;
 
-import org.ilite.frc.common.types.*;
+import javax.swing.JOptionPane;
+
+//Java8
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+
 
 public class GetAutonomous implements ICommand {
 	private NetworkTable autonTable;
@@ -29,9 +35,12 @@ public class GetAutonomous implements ICommand {
 	private EStartingPosition startingPos;
 	private ECross crossType;
 	private boolean doComplexAutonomous;
+	private OwnedSide scaleSide;
+	private OwnedSide switchSide;
 
 	public GetAutonomous(NetworkTable autonTable) {
 		this.autonTable = autonTable;
+		doComplexAutonomous = true;
 	}
 
 	@Override
@@ -51,35 +60,18 @@ public class GetAutonomous implements ICommand {
 		}
 		return true;
 	}
-
+	
 	public List<ICommand> getAutonomous(DriveTrain driveTrain) {
 		commands = new ArrayList<ICommand>();
 		commands.clear();
-
-		OwnedSide scaleSide = getScaleData();
-		OwnedSide switchSide = getSwitchData();
-
+		
+		
+		List<ECubeAction> mCubeActionPrefs = cubeActionPrefs.stream().filter(cA -> mySide(cA)).collect(Collectors.toList());
+		JOptionPane.showMessageDialog(null, "Cube Action Prefs List:" + mCubeActionPrefs);
 		if (doComplexAutonomous) {
-
-			for (ECubeAction action : cubeActionPrefs) {
-				if (action == ECubeAction.SCALE) {
-					if (!onMySide(scaleSide)) {
-						cubeActionPrefs.remove(action);
-					}
-
-				} else if (action == ECubeAction.SWITCH) {
-					if (!onMySide(switchSide)) {
-						cubeActionPrefs.remove(action);
-					}
-				} else if (action == ECubeAction.EXCHANGE) {
-					if (!onMySideExchange()) {
-						cubeActionPrefs.remove(action);
-					}
-				}
-			}
-
-			if (!cubeActionPrefs.isEmpty()) {
-				ECubeAction prefAction = cubeActionPrefs.get(0);
+			
+			if (!mCubeActionPrefs.isEmpty()) {
+				ECubeAction prefAction = mCubeActionPrefs.get(0);
 				switch (prefAction) {
 				case SCALE:
 					doScale();
@@ -104,6 +96,7 @@ public class GetAutonomous implements ICommand {
 	}
 
 	public void doScale() {
+		JOptionPane.showMessageDialog(null, "Scale was chosen");
 		switch (startingPos) {
 		case LEFT:
 			break;
@@ -115,6 +108,7 @@ public class GetAutonomous implements ICommand {
 	}
 
 	public void doSwitch() {
+		JOptionPane.showMessageDialog(null, "Switch was chosen");
 		switch (startingPos) {
 		case LEFT:
 			break;
@@ -126,6 +120,7 @@ public class GetAutonomous implements ICommand {
 	}
 
 	public void doExchange() {
+		JOptionPane.showMessageDialog(null, "Exchange was chosen");
 		switch (startingPos) {
 		case LEFT:
 			break;
@@ -172,5 +167,23 @@ public class GetAutonomous implements ICommand {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 
 	}
-
+	
+	public boolean mySide(ECubeAction c) {
+		if(c == ECubeAction.EXCHANGE) {
+			return onMySideExchange();
+		}
+		else if(c == ECubeAction.SWITCH) {
+			return onMySide(switchSide);
+		}
+		return onMySide(scaleSide);
+	}
+	
+	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos, OwnedSide pSwitchSide, OwnedSide pScaleSide) {
+	cubeActionPrefs = pActions;
+	crossType = pCross;
+	startingPos = pPos;
+	switchSide = pSwitchSide;
+	scaleSide = pScaleSide;
+	}
+	
 }

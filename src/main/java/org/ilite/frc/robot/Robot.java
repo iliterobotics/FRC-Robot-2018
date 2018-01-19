@@ -111,6 +111,7 @@ public class Robot extends SampleRobot {
 
   public void autonomous() {
 	GetAutonomous getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+	getAutonomous.initialize();
     mLog.info("AUTONOMOUS");
 	setRunningModules();
     mControlLoop.setRunningControlLoops();
