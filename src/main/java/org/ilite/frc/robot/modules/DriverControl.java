@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.Joystick;
 public class DriverControl implements IModule{
 
 	
-	private Joystick gamepad;
-	private DriveTrain dt;
+	private Joystick mGamepad;
+	private DriveTrain m_dt;
 		
-	public DriverControl(DriveTrain dt)
+	public DriverControl(DriveTrain p_dt)
 	{
-		this.dt = dt;
-		gamepad = new Joystick(SystemSettings.CONTROLLER_ID);
+		this.m_dt = p_dt;
+		mGamepad = new Joystick(SystemSettings.kCONTROLLER_ID);
 	}
 	
 	@Override
@@ -25,11 +25,11 @@ public class DriverControl implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		double rotate = gamepad.getRawAxis(SystemSettings.GAMEPAD_LEFT_Y);
-		double throttle = gamepad.getRawAxis(SystemSettings.GAMEPAD_RIGHT_X);
+		double rotate = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_LEFT_Y);
+		double throttle = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_RIGHT_X);
 		double l = throttle - rotate;
 		double r = throttle + rotate;
-		dt.set(l, r);
+		m_dt.set(l, r);
 		System.out.printf("Input Left: %s Input Right: %s\n", l, r);
 		return false;
 	}

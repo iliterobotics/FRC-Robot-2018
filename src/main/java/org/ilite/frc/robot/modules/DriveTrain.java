@@ -31,10 +31,11 @@ public class DriveTrain implements IModule {
 	
 	public DriveTrain()
 	{
-		leftMaster = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT1);
-		rightMaster = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT1);
-		leftFollower = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT2);
-		rightFollower = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT2);
+		//leftMaster = new TalonSRX(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
+		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
+		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
+		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
+		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
 		//leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
 		//rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
 		rightFollower.follow(rightMaster);
@@ -81,12 +82,6 @@ public class DriveTrain implements IModule {
 	
 	public void changeModes(ControlMode controlMode)
 	{
-		if(this.controlMode == controlMode)
-		{
-			return;	
-		}
-		this.controlMode = controlMode;
-		
 		switch(controlMode)
 		{
 		case Velocity:

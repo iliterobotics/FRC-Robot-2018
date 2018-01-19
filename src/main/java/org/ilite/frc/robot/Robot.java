@@ -102,6 +102,11 @@ public class Robot extends SampleRobot {
 //      mCodexSender.send(mData.pdp);
 //    });
   }
+  
+  public void teleInit()
+  {
+	  
+  }
 
   public void autonomous() {
     mLog.info("AUTONOMOUS");
