@@ -8,7 +8,6 @@ import org.ilite.frc.robot.commands.ICommand;
 import openrio.powerup.MatchData;
 import openrio.powerup.MatchData.OwnedSide;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
@@ -19,27 +18,26 @@ import org.ilite.frc.common.types.ECubeAction;
 import javax.swing.JOptionPane;
 
 //Java8
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
 
 public class GetAutonomous implements ICommand {
-	private NetworkTable autonTable;
-	private NetworkTableEntry posEntry;
-	private NetworkTableEntry crossEntry;
-	private NetworkTableEntry cubeActionPrefsEntry;
+	private NetworkTable nAutonTable;
+	private NetworkTableEntry nPosEntry;
+	private NetworkTableEntry nCrossEntry;
+	private NetworkTableEntry nCubeActionPrefsEntry;
 
-	private List<ICommand> commands;
-	private List<ECubeAction> cubeActionPrefs;
-	private EStartingPosition startingPos;
-	private ECross crossType;
+	private List<ICommand> mCommands;
+	private List<ECubeAction> mCubeActionPrefs;
+	private EStartingPosition mStartingPos;
+	private ECross mCrossType;
 	private boolean doComplexAutonomous;
-	private OwnedSide scaleSide;
-	private OwnedSide switchSide;
+	private OwnedSide mScaleSide;
+	private OwnedSide mSwitchSide;
 
-	public GetAutonomous(NetworkTable autonTable) {
-		this.autonTable = autonTable;
+	public GetAutonomous(NetworkTable pAutonTable) {
+		this.nAutonTable = pAutonTable;
 		doComplexAutonomous = true;
 	}
 
@@ -52,21 +50,21 @@ public class GetAutonomous implements ICommand {
 	@Override
 	public boolean update() {
 		try {
-			posEntry = autonTable.getEntry("position");
-			crossEntry = autonTable.getEntry("cross");
-			cubeActionPrefsEntry = autonTable.getEntry("cubeActionList");
+			nPosEntry = nAutonTable.getEntry("position");
+			nCrossEntry = nAutonTable.getEntry("cross");
+			nCubeActionPrefsEntry = nAutonTable.getEntry("cubeActionList");
 		} catch (Exception e) {
 
 		}
 		return true;
 	}
 	
-	public List<ICommand> getAutonomous(DriveTrain driveTrain) {
-		commands = new ArrayList<ICommand>();
-		commands.clear();
+	public List<ICommand> getAutonomous(DriveTrain pDriveTrain) {
+		mCommands = new ArrayList<ICommand>();
+		mCommands.clear();
 		
 		
-		List<ECubeAction> mCubeActionPrefs = cubeActionPrefs.stream().filter(cA -> mySide(cA)).collect(Collectors.toList());
+		mCubeActionPrefs = mCubeActionPrefs.stream().filter(cA -> mySide(cA)).collect(Collectors.toList());
 		JOptionPane.showMessageDialog(null, "Cube Action Prefs List:" + mCubeActionPrefs);
 		if (doComplexAutonomous) {
 			
@@ -91,13 +89,13 @@ public class GetAutonomous implements ICommand {
 			// Drive foward
 		}
 
-		return commands;
+		return mCommands;
 
 	}
 
 	public void doScale() {
 		JOptionPane.showMessageDialog(null, "Scale was chosen");
-		switch (startingPos) {
+		switch (mStartingPos) {
 		case LEFT:
 			break;
 		case MIDDLE:
@@ -109,7 +107,7 @@ public class GetAutonomous implements ICommand {
 
 	public void doSwitch() {
 		JOptionPane.showMessageDialog(null, "Switch was chosen");
-		switch (startingPos) {
+		switch (mStartingPos) {
 		case LEFT:
 			break;
 		case MIDDLE:
@@ -121,7 +119,7 @@ public class GetAutonomous implements ICommand {
 
 	public void doExchange() {
 		JOptionPane.showMessageDialog(null, "Exchange was chosen");
-		switch (startingPos) {
+		switch (mStartingPos) {
 		case LEFT:
 			break;
 		case MIDDLE:
@@ -130,31 +128,31 @@ public class GetAutonomous implements ICommand {
 	}
 
 	public boolean onMySide(OwnedSide side) {
-		if (side == OwnedSide.LEFT && startingPos == EStartingPosition.RIGHT) {
+		if (side == OwnedSide.LEFT && mStartingPos == EStartingPosition.RIGHT) {
 			return false;
-		} else if (side == OwnedSide.RIGHT && startingPos == EStartingPosition.LEFT) {
+		} else if (side == OwnedSide.RIGHT && mStartingPos == EStartingPosition.LEFT) {
 			return false;
 		}
 		return true;
 	}
 
 	public boolean onMySideExchange() {
-		if (startingPos == EStartingPosition.RIGHT) {
+		if (mStartingPos == EStartingPosition.RIGHT) {
 			return false;
 		}
 		return true;
 	}
 
 	public void parseEntries() {
-		int posNum = posEntry.getNumber(new Integer(-1)).intValue();
-		int crossNum = crossEntry.getNumber(new Integer(-1)).intValue();
+		int posNum = nPosEntry.getNumber(new Integer(-1)).intValue();
+		int crossNum = nCrossEntry.getNumber(new Integer(-1)).intValue();
 		Integer[] defaultArray = { -1 };
-		Number[] cubeArray = cubeActionPrefsEntry.getNumberArray(defaultArray);
+		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
-		startingPos = EStartingPosition.intToEnum(posNum);
-		crossType = ECross.intToEnum(crossNum);
+		mStartingPos = EStartingPosition.intToEnum(posNum);
+		mCrossType = ECross.intToEnum(crossNum);
 		for (Number n : cubeArray) {
-			cubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
+			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 		}
 
 	}
@@ -173,17 +171,17 @@ public class GetAutonomous implements ICommand {
 			return onMySideExchange();
 		}
 		else if(c == ECubeAction.SWITCH) {
-			return onMySide(switchSide);
+			return onMySide(mSwitchSide);
 		}
-		return onMySide(scaleSide);
+		return onMySide(mScaleSide);
 	}
 	
 	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos, OwnedSide pSwitchSide, OwnedSide pScaleSide) {
-	cubeActionPrefs = pActions;
-	crossType = pCross;
-	startingPos = pPos;
-	switchSide = pSwitchSide;
-	scaleSide = pScaleSide;
+	mCubeActionPrefs = pActions;
+	mCrossType = pCross;
+	mStartingPos = pPos;
+	mSwitchSide = pSwitchSide;
+	mScaleSide = pScaleSide;
 	}
 	
 }
