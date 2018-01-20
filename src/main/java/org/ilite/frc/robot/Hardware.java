@@ -11,6 +11,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 public class Hardware {
   private ILog mLog = Logger.createLog(Hardware.class);
 
@@ -20,6 +21,7 @@ public class Hardware {
   private AHRS mAHRS;
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private CANTalon[] mTalons;
+  private PigeonIMU mPigeon;
   
   Hardware() {
     
@@ -31,12 +33,14 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       AHRS pAHRS,
+      PigeonIMU pPigeon,
       CANTalon... pTalons
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mAHRS = pAHRS;
+    mPigeon = pPigeon;
     mTalons = pTalons;
 
     pInitializationPool.execute(() -> {
@@ -72,6 +76,11 @@ public class Hardware {
     return mAHRS;
   }
   
+  public PigeonIMU getPigeon()
+  {
+	  return mPigeon;
+  }
+  
   public CANTalon[] getTalons() {
     return mTalons;
   }
@@ -84,4 +93,7 @@ public class Hardware {
   public CANTalon getTalon(int pAddress) {
     return mTalons[pAddress];
   }
+
+
+
 }

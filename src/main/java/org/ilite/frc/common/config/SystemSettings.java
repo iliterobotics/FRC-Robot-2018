@@ -41,7 +41,11 @@ public class SystemSettings extends ConstantsBase {
   public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-
+  
+  // =============================================================================
+  // Pigeon
+  // =============================================================================  
+  public static int PIGEON_DEVICE_ID = 5;
   // =============================================================================
   // Input Constants
   // =============================================================================

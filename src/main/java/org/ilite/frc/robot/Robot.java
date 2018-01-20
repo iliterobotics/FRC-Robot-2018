@@ -26,7 +26,8 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.sensors.PigeonIMU;
 public class Robot extends SampleRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
   private double mCurrentTime = 0;
@@ -67,8 +68,8 @@ public class Robot extends SampleRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new AHRS(SerialPort.Port.kMXP)
-        // Sensors
+        new AHRS(SerialPort.Port.kMXP),
+        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
         // Custom hw
         // Spike relays
         // etc
@@ -140,7 +141,10 @@ public class Robot extends SampleRobot {
       mCodexSender.send(mData.drivetrain);
       ENavX.map(mData.navx, mHardware.getNavX());
       mCodexSender.send(mData.navx);
-      
+      if(mHardware.getDriverJoystick().getRawButton(1))
+      {
+    	  System.out.println(mHardware.getPigeon().getFusedHeading());
+      }
       pauseUntilTheNextCycle(mCurrentTime);
     }
   }
