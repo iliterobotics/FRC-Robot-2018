@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.config;
+package org.ilite.frc.common.input;
 
 
 /**

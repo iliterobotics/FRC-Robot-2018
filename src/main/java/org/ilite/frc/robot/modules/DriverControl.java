@@ -1,38 +1,52 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.input.EInputScale;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.robot.Data;
 
-public abstract class DriverControl {
+import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.Talon;
 
-	public static final boolean HIGH_GEAR = true;
-	public static final boolean LOW_GEAR = false;
+public class DriverControl implements IModule{
+
 	
-
-	protected final DriveTrain driveTrain;
-	
-	public DriverControl(DriveTrain driveTrain) {
-		this.driveTrain = driveTrain;
-	}
-
-	public void setSpeeds(double left, double right){
+	private Joystick mGamepad;
+	private DriveTrain m_dt;
+	private Data mData;
 		
-		if(Math.abs(left - right) < SystemSettings.INPUT_DEADBAND_F310_JOYSTICK ){
-			left = right = (left + right) / 2;
-		}
-		if(Math.abs(left) < SystemSettings.INPUT_DEADBAND_F310_JOYSTICK){
-			left = 0;
-		}
-		if(Math.abs(right) < SystemSettings.INPUT_DEADBAND_F310_JOYSTICK){
-			right = 0;
-		}
-		driveTrain.setPower(left, right);
+	public DriverControl(DriveTrain p_dt, Data pData)
+	{
+		this.m_dt = p_dt;
+		mGamepad = new Joystick(SystemSettings.kCONTROLLER_ID);
+		mData = pData;
 	}
 	
-	
-	public abstract void updateDriveTrain();
-	
-	public void update(){
-		updateDriveTrain();
+	@Override
+	public void initialize(double pNow) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean update(double pNow) {
+//		double rotate = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_LEFT_Y);
+//		double throttle = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_RIGHT_X);
+		double rotate = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
+		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
+		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
+		double l = throttle - rotate;
+		double r = throttle + rotate;
+		m_dt.setPower(l, r);
+		System.out.printf("Input Left: %s Input Right: %s\n", l, r);
+		return false;
+	}
+
+	@Override
+	public void shutdown(double pNow) {
+		// TODO Auto-generated method stub
+		
 	}
 	
+
 }
