@@ -67,10 +67,14 @@ public class DriveTrain implements IModule {
 	
 	}*/
 	
-	public void set(double l, double r)
+	public void set(ControlMode pMode, double l, double r)
 	{
 		desiredLeft = l;
 		desiredRight = r;
+	}
+	
+	public void setPower(double l, double r) {
+		set(ControlMode.PercentOutput, l, r);
 	}
 	
 	@Override

@@ -35,17 +35,17 @@ public class Hardware {
     mPDP = pPDP;
     mAHRS = pAHRS;
 
-    pInitializationPool.execute(() -> {
-      while(mAHRS.isCalibrating()) {
-        try {
-          Thread.sleep(20);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-      }
-      mNavxReady.set(true);
-      mLog.info(System.currentTimeMillis() + " NAVX Calibrated");
-    });
+//    pInitializationPool.execute(() -> {
+//      while(mAHRS.isCalibrating()) {
+//        try {
+//          Thread.sleep(20);
+//        } catch (InterruptedException e) {
+//          Thread.currentThread().interrupt();
+//        }
+//      }
+//      mNavxReady.set(true);
+//      mLog.info(System.currentTimeMillis() + " NAVX Calibrated");
+//    });
   }
   
   public Joystick getDriverJoystick() { 
