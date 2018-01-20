@@ -35,18 +35,7 @@ public class SystemSettings extends ConstantsBase {
 	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 3;
 	//public static  int DRIVETRAIN_TALONID_RIGHT3 = 5;
 	//public static  int DRIVETRAIN_TALONID_LEFT3 = 4;
-	public static  int kGAMEPAD_X_BUTTON = 3;
-	public static  int kGAMEPAD_Y_BUTTON = 4;
-	public static  int kGAMEPAD_A_BUTTON = 1;
-	public static  int kGAMEPAD_B_BUTTON = 2;
-	public static  int kGAMEPAD_LEFT_X = 0;
-	public static  int kGAMEPAD_RIGHT_Y = 5;
-	public static  int kGAMEPAD_LEFT_Y = 1;
-	public static  int kGAMEPAD_RIGHT_X = 4;
-	public static  int kGAMEPAD_LEFT_TRIGGER = 2;
-	public static  int kGAMEPAD_RIGHT_TRIGGER = 3;
-	public static  double kJOYSTICK_DEADZONE = 0.05;
-	public static  double kTRIGGER_DEADZONE = 0.5;
+	
 	public  static int kCONTROLLER_ID = 0;
   // =============================================================================
   // Drive Train Constants

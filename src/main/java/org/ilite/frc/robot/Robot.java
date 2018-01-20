@@ -178,8 +178,8 @@ public class Robot extends IterativeRobot {
     mLog.info("TEST");
   }
 
-  public void disabled() {
+  public void disabledPeriodic() {
     mLog.info("DISABLED");
-//    mControlLoop.stop();
+    //mControlLoop.stop();
   }
 }
