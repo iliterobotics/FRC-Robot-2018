@@ -19,10 +19,10 @@ public class Intake implements IModule{
 	public Intake(Elevator elevator)
 	{
 		this.elevator = elevator;
-		frontLeftIn = new TalonSRX(SystemSettings.TALON_ADDR_INTAKE_FRONT_LEFT);
-		backLeftIn = new TalonSRX(SystemSettings.TALON_ADDR_INTAKE_BACK_LEFT);
-		frontRightIn = new TalonSRX(SystemSettings.TALON_ADDR_INTAKE_FRONT_RIGHT);
-		backRightIn = new TalonSRX(SystemSettings.TALON_ADDR_INTAKE_BACK_RIGHT);
+		frontLeftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
+		backLeftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_BACK_LEFT);
+		frontRightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
+		backRightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_BACK_RIGHT);
 		intakeOut = false;
 		cubeIn = false;
 	}
@@ -35,7 +35,7 @@ public class Intake implements IModule{
 	}
 
 	@Override
-	public void update(double pNow) {
+	public boolean update(double pNow) {
 		
 		/*if (intakeOut)
 			cubeIn = sensorValue;
@@ -51,6 +51,7 @@ public class Intake implements IModule{
 		
 		if ( elevator.intakeSafeRetract() )
 			retractIntake();
+		return true;
 	}
 	
 	public void spinIn()

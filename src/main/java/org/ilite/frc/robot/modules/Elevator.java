@@ -13,8 +13,8 @@ public class Elevator implements IModule{
 
 	public Elevator()
 	{
-		leftElevator = new TalonSRX(SystemSettings.TALON_ADDR_LEFT_ELEVATOR);
-		rightElevator = new TalonSRX(SystemSettings.TALON_ADDR_RIGHT_ELEVATOR);
+		leftElevator = new TalonSRX(SystemSettings.ELEVATOR_TALONID_LEFT);
+		rightElevator = new TalonSRX(SystemSettings.ELEVATOR_TALONID_RIGHT);
 	}
 	
 	@Override
@@ -23,12 +23,13 @@ public class Elevator implements IModule{
 	}
 
 	@Override
-	public void update(double pNow) {
+	public boolean update(double pNow) {
 		intakeSafeRetract();
 		intakeSafeExtend();
 		
 		leftElevator.set( ControlMode.PercentOutput, power );
 		rightElevator.set( ControlMode.PercentOutput, -power );
+		return true;
 	}
 
 
