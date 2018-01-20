@@ -17,4 +17,9 @@ public class Pigeon {
 	{
 		return mPigeon.getFusedHeading();
 	}
+	
+	public void zeroAngle()
+	{
+		
+	}
 }
