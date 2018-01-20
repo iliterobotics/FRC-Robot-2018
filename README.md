@@ -5,7 +5,7 @@
 FRC-Robot-2018/
    common/ - This contains all of the types used in communications, on the display(s), in vision, and on the robot.
    robot/ - Our robot code lives here.  It depends on the common and visionRIO projects.
-   display/ - Our configuration and output display lives here.  It may incorporate Shufflboard at some point.
+   display/ - Our configuration and output display lives here.  It may incorporate Shuffleboard at some point.
    visionRIO/ - Our vision code start out being specific to how the RoboRIO will process images and distill them to targeting info.
 ```
 > Note that we will do vision processing on the RIO.  If you disagree, then get this 'simple' version of vision working (from processing all the way through integration into robot code and driver inputs) early.  We'll then discuss other options.
@@ -87,4 +87,8 @@ FRC-Robot-2018/
    * You may need to set the upstream branch using `--set-upstream`
 ---
 ## Basic Linux Commands
-[Jesse/Chris/(or really anyone who wants to chip in) TBD]
+   * `cd <directory path>` Change directory
+   * `ls -a` Lists all files
+   * `rm <filename>` Removes files
+   * `mkdir <name>` Create folder
+   * `cp <filename> <location>` Copy files over
