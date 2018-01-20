@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
   private final DriverControl drivetraincontrol;
 
   public Robot() {
-	mControlLoop = new ControlLoopManager(mData, mHardware);
+	mControlLoop = new ControlLoopManager();
 	drivetraincontrol = new DriverControl(mData);
 	dt = new DriveTrain(drivetraincontrol);
 	Logger.setLevel(ELevel.INFO);
