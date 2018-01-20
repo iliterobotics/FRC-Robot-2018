@@ -41,24 +41,24 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 	
 	@Override
 	public void copyPipelineOutputs(GripPipeline pipeline) {
-//		startTime = System.currentTimeMillis();
-//		pipeline.findContoursOutput();
-//		
-//		double x, y = 0;
-//		contours = pipeline.filterContoursOutput;
-//    	Rect target = new Rect();
-//    	
-//		if(!contours.isEmpty()) {
-//			for(MatOfPoint contour : contours) {
-//				target = Imgproc.boundingRect(contour);
-//				x = target.x + (target.width / 2);
-//				y =  target.y + (target.height / 2);
-//				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) x -= target.width / 4;
-//				synchronized(imgLock) {
-//            		centerList.add(new Point(x, y));
-//        		}
-//			}
-//    	}
+		startTime = System.currentTimeMillis();
+		pipeline.findContoursOutput();
+		
+		double x, y = 0;
+		contours = pipeline.filterContoursOutput;
+    	Rect target = new Rect();
+    	
+		if(!contours.isEmpty()) {
+			for(MatOfPoint contour : contours) {
+				target = Imgproc.boundingRect(contour);
+				x = target.x + (target.width / 2);
+				y =  target.y + (target.height / 2);
+				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) x -= target.width / 4;
+				synchronized(imgLock) {
+            		centerList.add(new Point(x, y));
+        		}
+			}
+    	}
 		
 		cameraSink.grabFrame(currentFrame);
 		paintTarget(currentFrame);
