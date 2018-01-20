@@ -79,7 +79,11 @@ public class Robot extends SampleRobot {
     GripPipeline pipeline = new GripPipeline();
     Processing processing = new Processing(camera);
     visionThread = new VisionThread(camera, pipeline, processing);
-    visionThread.start();
+    try {
+    	visionThread.start();
+    } catch (Exception e) {
+    	System.err.println("Vision Thread Error");
+    }
 //    while(visionThread.isAlive()) System.out.println("Vision started");
     
 //    trackingCamera.setBrightness(0);

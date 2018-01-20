@@ -56,6 +56,11 @@ public class SystemSettings extends ConstantsBase {
   public static ELogitech310  DRIVER_MAP_THROTTLE_AXIS = ELogitech310.LEFT_Y_AXIS;
   public static ELogitech310  DRIVER_MAP_TURN_AXIS = ELogitech310.COMBINED_TRIGGER_AXIS;
   
+  // =============================================================================
+  // Vision Constants
+  // =============================================================================
+  public static int		VISION_TWO_CUBE_WIDTH = 50;
+  
   @Override
   public String getFileLocation() {
     return "~/constants.txt";
