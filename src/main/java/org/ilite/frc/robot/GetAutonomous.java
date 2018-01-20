@@ -20,8 +20,6 @@ import javax.swing.JOptionPane;
 //Java8
 import java.util.stream.Collectors;
 
-
-
 public class GetAutonomous implements ICommand {
 	private NetworkTable nAutonTable;
 	private NetworkTableEntry nPosEntry;
@@ -58,16 +56,18 @@ public class GetAutonomous implements ICommand {
 		}
 		return true;
 	}
-	
+
 	public List<ICommand> getAutonomous(DriveTrain pDriveTrain) {
 		mCommands = new ArrayList<ICommand>();
 		mCommands.clear();
 		
-		
-		mCubeActionPrefs = mCubeActionPrefs.stream().filter(cA -> mySide(cA)).collect(Collectors.toList());
+		mCubeActionPrefs = mCubeActionPrefs
+				.stream()
+				.filter(cA -> mySide(cA))
+				.collect(Collectors.toList());
 		JOptionPane.showMessageDialog(null, "Cube Action Prefs List:" + mCubeActionPrefs);
 		if (doComplexAutonomous) {
-			
+
 			if (!mCubeActionPrefs.isEmpty()) {
 				ECubeAction prefAction = mCubeActionPrefs.get(0);
 				switch (prefAction) {
@@ -80,13 +80,17 @@ public class GetAutonomous implements ICommand {
 				case EXCHANGE:
 					doExchange();
 					break;
-				default:
+				case NONE:
+					crossAutoLine();
 					break;
 				}
 			}
-
+			else {
+				crossAutoLine();
+			}
+			
 		} else {
-			// Drive foward
+			// Drive forward > minimum necessary autonomous for ranking point.
 		}
 
 		return mCommands;
@@ -116,10 +120,11 @@ public class GetAutonomous implements ICommand {
 			break;
 		}
 	}
-
+	
+	@SuppressWarnings("all")
 	public void doExchange() {
 		JOptionPane.showMessageDialog(null, "Exchange was chosen");
-		switch (mStartingPos) {
+		switch (mStartingPos) {	
 		case LEFT:
 			break;
 		case MIDDLE:
@@ -165,23 +170,34 @@ public class GetAutonomous implements ICommand {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 
 	}
-	
+
 	public boolean mySide(ECubeAction c) {
-		if(c == ECubeAction.EXCHANGE) {
+		if (c == ECubeAction.EXCHANGE) {
 			return onMySideExchange();
-		}
-		else if(c == ECubeAction.SWITCH) {
+		} else if (c == ECubeAction.SWITCH) {
 			return onMySide(mSwitchSide);
 		}
 		return onMySide(mScaleSide);
 	}
 	
-	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos, OwnedSide pSwitchSide, OwnedSide pScaleSide) {
-	mCubeActionPrefs = pActions;
-	mCrossType = pCross;
-	mStartingPos = pPos;
-	mSwitchSide = pSwitchSide;
-	mScaleSide = pScaleSide;
+	public void crossAutoLine() {
+		switch(mStartingPos) {
+		case LEFT:
+			break;
+		case MIDDLE:
+			break;
+		case RIGHT:
+			break;
+		}
 	}
-	
+
+	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos,
+			OwnedSide pSwitchSide, OwnedSide pScaleSide) {
+		mCubeActionPrefs = pActions;
+		mCrossType = pCross;
+		mStartingPos = pPos;
+		mSwitchSide = pSwitchSide;
+		mScaleSide = pScaleSide;
+	}
+
 }
