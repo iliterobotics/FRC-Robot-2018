@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.robot.commands.Command;
+import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
@@ -34,8 +34,8 @@ public class Robot extends IterativeRobot {
   private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<Command> mCommandQueue = new LinkedList<>();
-  private Command mCurrentCommand;
+  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private ICommand mCurrentCommand;
   
   // Temporary...
   private final DriveTrain dt;

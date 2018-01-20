@@ -1,6 +1,6 @@
 package org.ilite.frc.robot.commands;
 
-public interface Command {
+public interface ICommand {
 	void initialize();
 	boolean update();
 	void shutdown();
