@@ -12,6 +12,8 @@ import org.ilite.frc.robot.commands.Command;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.common.sensors.Pigeon;
+
 
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -41,6 +43,7 @@ public class Robot extends IterativeRobot {
   // Temporary...
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
+  private Pigeon pidgey;
 
   public Robot() {
 //    mControlLoop = new ControlLoopManager(mData, mHardware);
@@ -65,15 +68,17 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
-    
+
+       pidgey = new Pigeon(mHardware);
+
     
   }
 
   public void autonomousInit() {
     System.out.println("Default autonomousInit() method... Overload me!");
+    mLog.info("AUTONOMOUS");
   }
   public void autonomousPeriodic() {
-    mLog.info("AUTONOMOUS");
 	setRunningModules();
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
@@ -86,12 +91,14 @@ public class Robot extends IterativeRobot {
   
   public void teleopInit()
   {
+	  mLog.info("TELEOP");
 	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
+	  pidgey.zeroAll();
+	  
   }
 
   public void teleopPeriodic() {
-    mLog.info("TELEOP");
     // Remember that DriverControl classes don't go here. They aren't Modules.
 	
 //	mControlLoop.setRunningControlLoops();
@@ -169,8 +176,11 @@ public class Robot extends IterativeRobot {
     mLog.info("TEST");
   }
 
+  public void disabledInit()
+  {
+	    mLog.info("DISABLED");	  
+  }
   public void disabledPeriodic() {
-    mLog.info("DISABLED");
     //mControlLoop.stop();
   }
 }
