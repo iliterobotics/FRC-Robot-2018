@@ -58,15 +58,15 @@ public class Intake implements IModule{
 		if ( !intakeOut && elevator.intakeSafeExtend() )
 		{
 			extendIntake();
+		}
+		else if ( intakeOut )
+		{
 			if ( cubeIn )
 			{
 				setPower(0);
 			}
 			setPower(1);
 		}
-		
-
-		
 	}
 	public void spinOut()
 	{

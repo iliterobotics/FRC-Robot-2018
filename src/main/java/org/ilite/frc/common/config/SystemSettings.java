@@ -37,6 +37,8 @@ public class SystemSettings extends ConstantsBase {
   public static int     TALON_ADDR_INTAKE_FRONT_RIGHT = 6;
   public static int     TALON_ADDR_INTAKE_BACK_RIGHT = 7;
   public static int     TALON_ADDR_INTAKE_BACK_LEFT = 8;
+  public static int     TALON_ADDR_LEFT_ELEVATOR = 9;
+  public static int     TALON_ADDR_RIGHT_ELEVATOR = 10;
 
   // =============================================================================
   // Drive Train Constants
