@@ -21,6 +21,9 @@ import javax.swing.JOptionPane;
 //Java8
 import java.util.stream.Collectors;
 
+
+//TODO: Remove JOptionPanes, swing import, and testing methods.
+
 public class GetAutonomous implements ICommand {
 	//Network Table instance variables.
 	private NetworkTable nAutonTable;
