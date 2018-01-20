@@ -1,7 +1,8 @@
 package org.ilite.frc.robot;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.commands.ICommand;
@@ -26,7 +27,7 @@ public class GetAutonomous implements ICommand {
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
 
-	private List<ICommand> mCommands;
+	private Queue<ICommand> mCommands;
 	private List<ECubeAction> mCubeActionPrefs;
 	private EStartingPosition mStartingPos;
 	private ECross mCrossType;
@@ -56,9 +57,14 @@ public class GetAutonomous implements ICommand {
 		}
 		return true;
 	}
+	
+	@Override
+	public void shutdown() {
+		
+	}
 
-	public List<ICommand> getAutonomous(DriveTrain pDriveTrain) {
-		mCommands = new ArrayList<ICommand>();
+	public Queue<ICommand> getAutonomous() {
+		mCommands = new LinkedList<ICommand>();
 		mCommands.clear();
 		
 		mCubeActionPrefs = mCubeActionPrefs
@@ -192,7 +198,7 @@ public class GetAutonomous implements ICommand {
 	}
 
 	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos,
-			OwnedSide pSwitchSide, OwnedSide pScaleSide) {
+		OwnedSide pSwitchSide, OwnedSide pScaleSide) {
 		mCubeActionPrefs = pActions;
 		mCrossType = pCross;
 		mStartingPos = pPos;

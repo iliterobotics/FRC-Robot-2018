@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.robot.commands.Command;
+import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
 
+import edu.wpi.first.networktables.NetworkTableInstance; 
+
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
   private double mCurrentTime = 0;
@@ -33,15 +35,19 @@ public class Robot extends IterativeRobot {
 //  private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<Command> mCommandQueue = new LinkedList<>();
-  private Command mCurrentCommand;
+  private final GetAutonomous getAutonomous;
+  private Queue<ICommand> mCommandQueue;
+  private ICommand mCurrentCommand;
   
   // Temporary...
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
+  
 
   public Robot() {
 //    mControlLoop = new ControlLoopManager(mData, mHardware);
+	SystemSettings.AUTON_TABLE = NetworkTableInstance.getDefault().getTable("AUTON_TABLE");
+	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
     dt = new DriveTrain();
     drivetraincontrol = new DriverControl(dt, mData);
     Logger.setLevel(ELevel.INFO);
@@ -69,6 +75,7 @@ public class Robot extends IterativeRobot {
 
   public void autonomousInit() {
     System.out.println("Default autonomousInit() method... Overload me!");
+    mCommandQueue = getAutonomous.getAutonomous();
   }
   public void autonomousPeriodic() {
     mLog.info("AUTONOMOUS");
