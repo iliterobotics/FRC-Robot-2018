@@ -13,7 +13,7 @@ import jaci.pathfinder.Trajectory.FitMethod;
 
 public class SystemSettings extends ConstantsBase {
   
-  public static double CONTROL_LOOP_PERIOD = 0.005; // seconds
+  public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
   
   // =============================================================================
@@ -33,25 +33,14 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-    public static  int DRIVETRAIN_TALONID_LEFT1 = 4;
-	public static  int DRIVETRAIN_TALONID_LEFT2 = 2;
-	public static  int DRIVETRAIN_TALONID_RIGHT1 = 1;
-	public static  int DRIVETRAIN_TALONID_RIGHT2 = 3;
+    public static  int kDRIVETRAIN_TALONID_LEFT1 = 4;
+	public static  int kDRIVETRAIN_TALONID_LEFT2 = 2;
+	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 1;
+	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 3;
 	//public static  int DRIVETRAIN_TALONID_RIGHT3 = 5;
 	//public static  int DRIVETRAIN_TALONID_LEFT3 = 4;
-	public static  int GAMEPAD_X_BUTTON = 3;
-	public static  int GAMEPAD_Y_BUTTON = 4;
-	public static  int GAMEPAD_A_BUTTON = 1;
-	public static  int GAMEPAD_B_BUTTON = 2;
-	public static  int GAMEPAD_LEFT_X = 0;
-	public static  int GAMEPAD_RIGHT_Y = 5;
-	public static  int GAMEPAD_LEFT_Y = 1;
-	public static  int GAMEPAD_RIGHT_X = 4;
-	public static  int GAMEPAD_LEFT_TRIGGER = 2;
-	public static  int GAMEPAD_RIGHT_TRIGGER = 3;
-	public static  double JOYSTICK_DEADZONE = 0.05;
-	public static  double TRIGGER_DEADZONE = 0.5;
-	public  static int CONTROLLER_ID = 0;
+	
+	public  static int kCONTROLLER_ID = 0;
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
