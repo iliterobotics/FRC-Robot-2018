@@ -3,7 +3,6 @@ package org.ilite.frc.robot;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.ctre.CANTalon;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.kauailabs.navx.frc.AHRS;
@@ -18,9 +17,7 @@ public class Hardware {
   private Joystick mDriverJoystick;
   private Joystick mOperatorJoystick;
   private PowerDistributionPanel mPDP;
-  private AHRS mAHRS;
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
-  private CANTalon[] mTalons;
   private PigeonIMU mPigeon;
   
   Hardware() {
@@ -32,28 +29,24 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      AHRS pAHRS,
-      PigeonIMU pPigeon,
-      CANTalon... pTalons
+      PigeonIMU pPigeon
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
-    mAHRS = pAHRS;
     mPigeon = pPigeon;
-    mTalons = pTalons;
 
-    pInitializationPool.execute(() -> {
-      while(mAHRS.isCalibrating()) {
-        try {
-          Thread.sleep(20);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-      }
-      mNavxReady.set(true);
-      mLog.info(System.currentTimeMillis() + " NAVX Calibrated");
-    });
+//    pInitializationPool.execute(() -> {
+//      while(mAHRS.isCalibrating()) {
+//        try {
+//          Thread.sleep(20);
+//        } catch (InterruptedException e) {
+//          Thread.currentThread().interrupt();
+//        }
+//      }
+//      mNavxReady.set(true);
+//      mLog.info(System.currentTimeMillis() + " NAVX Calibrated");
+//    });
   }
   
   public Joystick getDriverJoystick() { 
@@ -68,32 +61,9 @@ public class Hardware {
     return mPDP;
   }
   
-  public boolean isNavXReady() {
-    return mNavxReady.get();
-  }
-  
-  public AHRS getNavX() {
-    return mAHRS;
-  }
-  
   public PigeonIMU getPigeon()
   {
 	  return mPigeon;
   }
-  
-  public CANTalon[] getTalons() {
-    return mTalons;
-  }
-  
-  /**
-   * Returns a talon by it's (presumably address).
-   * @param pAddress
-   * @return
-   */
-  public CANTalon getTalon(int pAddress) {
-    return mTalons[pAddress];
-  }
-
-
 
 }
