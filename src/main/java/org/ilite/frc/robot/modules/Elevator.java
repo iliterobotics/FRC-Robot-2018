@@ -49,7 +49,6 @@ public class Elevator implements IModule{
 	}
 	public boolean intakeSafeRetract()
 	{
-
 			return true;
 	}
 	

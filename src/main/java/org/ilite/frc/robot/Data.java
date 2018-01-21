@@ -15,7 +15,7 @@ import com.flybotix.hfr.codex.Codex;
 public class Data {
   //TODO - make driver[] an array, where driver[0] = current and driver[1] = last
   public final Codex<Double, ELogitech310> driverinput = new Codex<>(ELogitech310.class);
-  public final Codex<Double, ELogitech310> operator = Codex.of.thisEnum(ELogitech310.class);
+  public final Codex<Double, ELogitech310> operator = new Codex<>(ELogitech310.class);
   public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
   public final Codex<Double, ENavX> navx = Codex.of.thisEnum(ENavX.class);
   public final Codex<Double, EDriveTrain> drivetrain = new Codex<>(EDriveTrain.class);

@@ -7,10 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Intake implements IModule{
 	
-	private final TalonSRX frontLeftIn;
-	private final TalonSRX frontRightIn;
-	private final TalonSRX backLeftIn;
-	private final TalonSRX backRightIn;
+	private final TalonSRX leftIn;
+	private final TalonSRX rightIn;
 	private double power;
 	private boolean cubeIn;
 	private boolean intakeOut;
@@ -19,10 +17,8 @@ public class Intake implements IModule{
 	public Intake(Elevator elevator)
 	{
 		this.elevator = elevator;
-		frontLeftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
-		backLeftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_BACK_LEFT);
-		frontRightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		backRightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_BACK_RIGHT);
+		leftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
+		rightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		intakeOut = false;
 		cubeIn = false;
 	}
@@ -43,35 +39,36 @@ public class Intake implements IModule{
 		
 		if ( elevator.isDown() )
 		{
-			frontLeftIn.set( ControlMode.PercentOutput, power );
-			frontRightIn.set( ControlMode.PercentOutput, -power );
+			leftIn.set( ControlMode.PercentOutput, power );
+			rightIn.set( ControlMode.PercentOutput, -power );
 		}
-		backRightIn.set( ControlMode.PercentOutput, -power );
-		backLeftIn.set( ControlMode.PercentOutput, power );
 		
-		if ( elevator.intakeSafeRetract() )
-			retractIntake();
+		//if ( elevator.intakeSafeRetract() )
+		//	retractIntake();
+		
+		System.out.printf("Intake extended: %s Intake Power: %s\n", intakeOut, power);
 		return true;
 	}
 	
-	public void spinIn()
+	public void spinIn(double pIntakePower)
 	{
-		if ( !intakeOut && elevator.intakeSafeExtend() )
+		/*if ( !intakeOut && elevator.intakeSafeExtend() )
 		{
 			extendIntake();
 		}
-		else if ( intakeOut )
+		*/
+		if ( intakeOut )
 		{
 			if ( cubeIn )
 			{
 				setPower(0);
 			}
-			setPower(1);
+			setPower(pIntakePower);
 		}
 	}
-	public void spinOut()
+	public void spinOut(double pIntakePower)
 	{
-		setPower(-1);
+		setPower(pIntakePower);
 	}
 	public void setPower(double power)
 	{
