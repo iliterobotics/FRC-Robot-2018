@@ -14,6 +14,7 @@ import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.LEDControl;
 
 import com.flybotix.hfr.codex.CodexSender;
 import com.flybotix.hfr.util.log.ELevel;
@@ -51,7 +52,7 @@ public class Robot extends SampleRobot {
   // Temporary...
   private final DriveTrain dt;
   private final DriverControlSplitArcade drivetraincontrol;
-
+  private LEDControl controller;
   public Robot() {
     mControlLoop = new ControlLoopManager(mData, mHardware);
     dt = new DriveTrain(mData);
@@ -61,7 +62,6 @@ public class Robot extends SampleRobot {
 
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-      
     mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
@@ -77,6 +77,7 @@ public class Robot extends SampleRobot {
         // Talons TBD ... they're somewhat picky.
     );
     
+    controller = new LEDControl(mHardware);
 //    mExecutor.execute(() -> {
       mCodexSender.initConnection(
           SystemSettings.CODEX_DATA_PROTOCOL, 
@@ -131,14 +132,14 @@ public class Robot extends SampleRobot {
     mControlLoop.start();
     
     while(isEnabled() && isOperatorControl()) {
-    	
     	if(mHardware.getDriverJoystick().getRawButton(1))
     	{
-    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelA);
-    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelB);
-    		mHardware.getCanifier().setLEDOutput(1, CANifier.LEDChannel.LEDChannelC);
+    		controller.setLED(0.5, 0.2, 0.1);
+
     	}
-      mCurrentTime = Timer.getFPGATimestamp();
+    	else
+    		controller.turnOffLED();
+    	mCurrentTime = Timer.getFPGATimestamp();
       mData.resetAll(mCurrentTime);
       mapInputs();
       
