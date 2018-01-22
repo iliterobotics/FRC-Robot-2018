@@ -76,7 +76,7 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
 	mLog.info("AUTONOMOUS");
     System.out.println("Default autonomousInit() method... Overload me!");
-    mCommandQueue = getAutonomous.getAutonomous();
+    mCommandQueue = getAutonomous.getAutonomousCommands();
   }
   public void autonomousPeriodic() {
 	setRunningModules();

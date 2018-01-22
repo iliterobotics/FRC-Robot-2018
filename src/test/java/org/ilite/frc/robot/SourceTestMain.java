@@ -16,7 +16,7 @@ public class SourceTestMain {
 		cList.add(ECubeAction.SWITCH);
 		cList.add(ECubeAction.SCALE);
 		getAutonomous.testReceiveData(cList, null, EStartingPosition.RIGHT, OwnedSide.RIGHT, OwnedSide.RIGHT);
-		getAutonomous.getAutonomous();
+		getAutonomous.getAutonomousCommands();
 	
 	}
 

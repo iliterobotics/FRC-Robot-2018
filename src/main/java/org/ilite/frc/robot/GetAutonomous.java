@@ -1,38 +1,28 @@
 package org.ilite.frc.robot;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.commands.ICommand;
-import openrio.powerup.MatchData;
-import openrio.powerup.MatchData.OwnedSide;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-
-import org.ilite.frc.common.types.ECross;
-import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.common.types.ECubeAction;
-
-import javax.swing.JOptionPane;
-
 //Java8
 import java.util.stream.Collectors;
 
+import org.ilite.frc.common.types.ECross;
+import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.robot.commands.ICommand;
 
-//TODO: Remove JOptionPanes, swing import, and testing methods.
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
 
-public class GetAutonomous implements ICommand {
+
+public class GetAutonomous {
 	//Network Table instance variables.
 	private NetworkTable nAutonTable;
 	private NetworkTableEntry nPosEntry;
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
-	
-	
-	private Queue<ICommand> mCommands;//Commands queue to be returned by getAutonomous(...)
 	
 	//Decision variables to be set by networktable entries.
 	private List<ECubeAction> mCubeActionPrefs;
@@ -44,6 +34,9 @@ public class GetAutonomous implements ICommand {
 	private OwnedSide mScaleSide;
 	private OwnedSide mSwitchSide;
 	
+	//Used for turning.  Starting on left side = 1, starting on right side = -1;  Unknown or middle = 0
+	private int mTurnScalar = 0;
+	
 	/**
 	 * 
 	 * @param pAutonTable - Autonomous network table to be passed in from Robot.java
@@ -51,84 +44,63 @@ public class GetAutonomous implements ICommand {
 	public GetAutonomous(NetworkTable pAutonTable) {
 		this.nAutonTable = pAutonTable;
 		doComplexAutonomous = true;
-	}
-	
-	@Override
-	public void initialize() {
-		update();
-		parseEntries();
-	}
-	
-	/**
-	 * Updates the decision matrix variables from NetworkTable entries.
-	 */
-	@Override
-	public boolean update() {
-		try {
-			nPosEntry = nAutonTable.getEntry("position");
-			nCrossEntry = nAutonTable.getEntry("cross");
-			nCubeActionPrefsEntry = nAutonTable.getEntry("cubeActionList");
-		} catch (Exception e) {
-		
-		}
-		return true;
-	}
-	
-	@Override
-	public void shutdown() {
-		
+    try {
+      nPosEntry = nAutonTable.getEntry("position");
+      nCrossEntry = nAutonTable.getEntry("cross");
+      nCubeActionPrefsEntry = nAutonTable.getEntry("cubeActionList");
+    } catch (Exception e) {
+    
+    }
+    mScaleSide = getScaleOwnedSide();
+    mSwitchSide = getSwitchOwnedSide();
 	}
 	
 	/**
 	 * "Main" method that returns a Command Queue to robot Java.
 	 * @return Command Queue of autonomous commands.
 	 */
-	public Queue<ICommand> getAutonomous() {
-		mCommands = new LinkedList<ICommand>();
-		mCommands.clear();
+	public Queue<ICommand> getAutonomousCommands() {
+    parseEntries();
+    Queue<ICommand> commands = new LinkedList<ICommand>();
 		
-		mCubeActionPrefs = mCubeActionPrefs
-				.stream()
-				.filter(cA -> mySide(cA))
-				.collect(Collectors.toList());
-		
-		JOptionPane.showMessageDialog(null, "Cube Action Prefs List:" + mCubeActionPrefs);
+		mCubeActionPrefs = getCubeActionsOnMySide();
 		
 		if (doComplexAutonomous) {
 
 			if (!mCubeActionPrefs.isEmpty()) {
 				ECubeAction prefAction = mCubeActionPrefs.get(0);//Does most preferred driver selection.
+				System.out.println("Autonomous chose: " + prefAction.toString());
 				switch (prefAction) {
 				case SCALE:
-					doScale();
+				  commands.addAll(doScale());
 					break;
 				case SWITCH:
-					doSwitch();
+				  commands.addAll(doSwitch());
 					break;
 				case EXCHANGE:
-					doExchange();
+				  commands.addAll(doExchange());
 					break;
 				case NONE:
-					crossAutoLine();
+				  commands.addAll(crossAutoLine());
 					break;
 				}
 			}
 			else {
-				crossAutoLine();//Default
+			  commands.addAll(crossAutoLine());//Default
 			}
 			
 		} else {
 			// Drive forward > minimum necessary autonomous for ranking point.
 		}
 
-		return mCommands;
+		return commands;
 
 	}
 	/**
 	 * Do scale autonomous; switch based on starting position.
 	 */
-	public void doScale() {
-		JOptionPane.showMessageDialog(null, "Scale was chosen");
+	public Queue<ICommand> doScale() {
+	  //TODO replace with turning scalar
 		switch (mStartingPos) {
 		case LEFT:
 			break;
@@ -137,13 +109,15 @@ public class GetAutonomous implements ICommand {
 		case RIGHT:
 			break;
 		}
+		
+		return new LinkedList<ICommand>();
 	}
 	
 	/**
 	 * Do switch autonomous; switch based on starting position.
 	 */
-	public void doSwitch() {
-		JOptionPane.showMessageDialog(null, "Switch was chosen");
+	public Queue<ICommand> doSwitch() {
+    //TODO replace with turning scalar
 		switch (mStartingPos) {
 		case LEFT:
 			break;
@@ -152,54 +126,72 @@ public class GetAutonomous implements ICommand {
 		case RIGHT:
 			break;
 		}
+    return new LinkedList<ICommand>();
 	}
 	
 	/**
 	 * Place cube in exchange autonomous; switch based on starting position.
 	 */
 	@SuppressWarnings("all")
-	public void doExchange() {
-		JOptionPane.showMessageDialog(null, "Exchange was chosen");
+	public Queue<ICommand> doExchange() {
+    //TODO replace with turning scalar
 		switch (mStartingPos) {	
 		case LEFT:
 			break;
 		case MIDDLE:
 			break;
 		}
+    return new LinkedList<ICommand>();
 	}
+  
+  /**
+   * Crosses autonomous line based on starting position.
+   */
+  public Queue<ICommand> crossAutoLine() {
+    //TODO replace with turning scalar
+    switch(mStartingPos) {
+    case LEFT:
+      break;
+    case MIDDLE:
+      break;
+    case RIGHT:
+      break;
+    }
+    return new LinkedList<ICommand>();
+  }
 	
 	/**
 	 * Determines whether or not our starting position corresponds to the pre-configured owned side.
 	 * @param side - Corresponding side received from match data.
 	 * @return - Whether or not the starting position matches the owned side from match data.
 	 */
-	public boolean onMySide(OwnedSide side) {
-		if (side == OwnedSide.LEFT && mStartingPos == EStartingPosition.RIGHT) {
-			return false;
-		} else if (side == OwnedSide.RIGHT && mStartingPos == EStartingPosition.LEFT) {
-			return false;
-		}
-		return true;
-	}
+	public boolean isOnMySide(OwnedSide side) {
+    switch(side) {
+    case LEFT:
+      return mStartingPos == EStartingPosition.LEFT || mStartingPos == EStartingPosition.MIDDLE;
+    case RIGHT:
+      return mStartingPos == EStartingPosition.RIGHT || mStartingPos == EStartingPosition.MIDDLE;
+    case UNKNOWN:
+    default:
+      return false;
+    }
+  }
 	/**
 	 * Determines whether or not our starting position corresponds to the exchange.
 	 * @return - Whether or not our starting position is viable to place a cube into the exchange.
 	 */
-	public boolean onMySideExchange() {
-		if (mStartingPos == EStartingPosition.RIGHT) {
-			return false;
-		}
-		return true;
+	public boolean isExchangeOnMySide() {
+		return mStartingPos == EStartingPosition.MIDDLE || mStartingPos == EStartingPosition.LEFT;
 	}
 	
 	/**
 	 * Parses the network table entries and stores the values into the decision variables.
 	 * Converts the number representation of the network table entry into an enum.
 	 */
-	public void parseEntries() {
-		int posNum = nPosEntry.getNumber(new Integer(-1)).intValue();
-		int crossNum = nCrossEntry.getNumber(new Integer(-1)).intValue();
-		Integer[] defaultArray = { -1 };
+	private void parseEntries() {
+		int posNum = nPosEntry.getNumber(EStartingPosition.UNKNOWN.ordinal()).intValue();
+		int crossNum = nCrossEntry.getNumber(ECross.NONE.ordinal()).intValue();
+		Integer[] defaultArray = { ECubeAction.NONE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mStartingPos = EStartingPosition.intToEnum(posNum);
@@ -208,13 +200,22 @@ public class GetAutonomous implements ICommand {
 			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 		}
 
+		switch(mStartingPos) {
+		case LEFT: mTurnScalar = 1; break;
+		
+		case RIGHT: mTurnScalar = -1; break;
+		
+    case MIDDLE: 
+		case UNKNOWN:
+	  default: mTurnScalar = 0; break;
+		}
 	}
 	
 	/**
 	 * Game data method. Returns the owned side of the switch at beginning of match.
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
-	public OwnedSide getSwitchData() {
+	public OwnedSide getSwitchOwnedSide() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR);
 	}
 	
@@ -222,7 +223,7 @@ public class GetAutonomous implements ICommand {
 	 * Game data method. Returns the owned side of the scale at beginning of match.
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
-	public OwnedSide getScaleData() {
+	public OwnedSide getScaleOwnedSide() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 
 	}
@@ -232,28 +233,52 @@ public class GetAutonomous implements ICommand {
 	 * @param c - Type of cube action, SCALE, SWITCH, EXCHANGE.
 	 * @return - Whether or not our starting position is viable to perform the given cube action.
 	 */
-	public boolean mySide(ECubeAction c) {
-		if (c == ECubeAction.EXCHANGE) {
-			return onMySideExchange();
-		} else if (c == ECubeAction.SWITCH) {
-			return onMySide(mSwitchSide);
-		}
-		return onMySide(mScaleSide);
+	public boolean isCubeActionOnMySide(ECubeAction c) {
+	  switch(c) {
+	  case EXCHANGE:
+	    return isExchangeOnMySide();
+	  case SCALE:
+	    return isOnMySide(mScaleSide);
+	  case SWITCH:
+	    return isOnMySide(mSwitchSide);
+    case NONE:
+    default:
+      return true;
+	  }
 	}
+  
+  /**
+   * Utilizes the previous to mySide methods.
+   * @param c - Type of cube action, SCALE, SWITCH, EXCHANGE.
+   * @return - Whether or not our starting position is viable to perform the given cube action.
+   */
+  public boolean isCubeActionOtherSide(ECubeAction c) {
+    switch(c) {
+    case EXCHANGE:
+      return false;
+    case SCALE:
+      return !isOnMySide(mScaleSide);
+    case SWITCH:
+      return !isOnMySide(mSwitchSide);
+    case NONE:
+    default:
+      return true;
+    }
+  }
 	
-	/**
-	 * Crosses autonomous line based on starting position.
-	 */
-	public void crossAutoLine() {
-		switch(mStartingPos) {
-		case LEFT:
-			break;
-		case MIDDLE:
-			break;
-		case RIGHT:
-			break;
-		}
+	/*package*/ List<ECubeAction> getCubeActionsOnMySide() {
+	  return mCubeActionPrefs
+        .stream()
+        .filter(cA -> isCubeActionOnMySide(cA))
+        .collect(Collectors.toList());
 	}
+  
+  /*package*/ List<ECubeAction> getCubeActionsOnOtherSide() {
+    return mCubeActionPrefs
+        .stream()
+        .filter(cA -> isCubeActionOtherSide(cA))
+        .collect(Collectors.toList());
+  }
 	
 	/**
 	 * Testing method.
