@@ -15,11 +15,11 @@ import com.google.gson.Gson;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -125,8 +125,12 @@ public class AutonConfigDisplay extends Application {
     Button down = new Button("Down");
     up.setOnAction(e -> swapEntriesUp(listView, preferenceArray) );
     down.setOnAction(e -> swapEntriesDown(listView, preferenceArray) );
-    
-    VBox result = new VBox(label, listView, up, down);
+    up.setMinWidth(60);
+    down.setMinWidth(60);
+    HBox buttons = new HBox(up, down);
+    buttons.setMargin(up, new Insets(10, 40, 10, 40));
+    buttons.setMargin(down, new Insets(10, 40, 10, 40));
+    VBox result = new VBox(label, listView, buttons);
     return result;
   }
   
