@@ -70,9 +70,9 @@ public class DriverControl implements IModule{
 			mIntake.retractIntake();
 		}
 		if(intakeSpeed > 0) {
-			mIntake.spinIn(intakeSpeed);
+			mIntake.intakeIn(intakeSpeed);
 		} else {
-			mIntake.spinOut(intakeSpeed);
+			mIntake.intakeOut(intakeSpeed);
 		}
 		
 	}

@@ -38,21 +38,17 @@ public class Intake implements IModule{
 		leftIntake.set(ControlMode.PercentOutput, power );
 		rightIntake.set(ControlMode.PercentOutput, power);
 		
-		if(isElevatorDown && !intakeExtended) {
-			extendIntake();
-		}
-		else if(!isElevatorDown && intakeExtended) {
-			retractIntake();
-		}
 		return true;
 	}
 	public void retractIntake() {
-		
-		intakeExtended = false;
+		if(!isElevatorDown && intakeExtended) {
+			intakeExtended = false;
+		}
 	}
 	public void extendIntake() {
-		
-		intakeExtended = true;
+		if(isElevatorDown && !intakeExtended) {
+			intakeExtended = true;
+		}
 	}
 	
 	public void intakeIn(double inPower) {
