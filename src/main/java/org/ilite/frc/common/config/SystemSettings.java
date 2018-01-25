@@ -65,6 +65,12 @@ public class SystemSettings extends ConstantsBase {
   public static ELogitech310  DRIVER_MAP_INTAKE_BUTTON = ELogitech310.A_BTN;
   public static ELogitech310  DRIVER_MAP_OUTTAKE_BUTTON = ELogitech310.B_BTN;
   
+  // =============================================================================
+  // Sensor Ports
+  // =============================================================================
+  public static int ULTRASONIC_PORT = 0;
+  public static int BEAM_INPUT_CHANNEL = 1;
+  
   @Override
   public String getFileLocation() {
     return "~/constants.txt";
