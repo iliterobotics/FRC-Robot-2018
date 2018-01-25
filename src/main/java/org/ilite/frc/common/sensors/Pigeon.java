@@ -127,10 +127,16 @@ public class Pigeon
     }
     public void zeroAll()
     {
-        for(int i = 0; i < 3; i++)
-        {
-            ypr[i] = 0;
-        }
+    	try {
+    		for(int i = 0; i < 3; i++)
+    		{
+    			ypr[i] = 0;
+    		}
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println("exception " + e);
+    	}
     }
 
 }
