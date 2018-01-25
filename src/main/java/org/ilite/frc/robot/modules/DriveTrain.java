@@ -61,7 +61,6 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
-		System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
 		return false;
 	}	
 	

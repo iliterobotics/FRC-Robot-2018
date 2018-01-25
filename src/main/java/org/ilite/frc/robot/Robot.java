@@ -12,7 +12,9 @@ import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.Intake;
 
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -38,12 +40,16 @@ public class Robot extends IterativeRobot {
   private ICommand mCurrentCommand;
   
   // Temporary...
+  private final Intake intake;
+  private final Elevator elevator;
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
 
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
-	drivetraincontrol = new DriverControl(mData);
+	elevator = new Elevator();
+	intake = new Intake(elevator);
+	drivetraincontrol = new DriverControl(mData, intake, elevator);
 	dt = new DriveTrain(drivetraincontrol);
 	Logger.setLevel(ELevel.INFO);
   }
@@ -91,7 +97,7 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol);
+	  setRunningModules(dt, drivetraincontrol, intake, elevator);
 	  initializeRunningModules();
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
@@ -121,6 +127,7 @@ public class Robot extends IterativeRobot {
    */
   private void mapInputs() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), null, false);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
