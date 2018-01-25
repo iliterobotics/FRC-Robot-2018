@@ -12,14 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class LEDControl implements IModule {
 
 	private CANifier mCanifier;
-	private boolean isBlinking;
 	private long blinkStartTime;
 	private boolean isOn;
 	
 	public enum LEDColor {
-		PURPLE(255, 0, 255), 
+		PURPLE(255, 0, 200), 
 		RED(255, 0, 0), 
-		LIGHT_BLUE(0, 100, 255),
+		LIGHT_BLUE(0, 100, 220),
 		WHITE(255, 255, 255), 
 		GREEN(0, 255, 0),
 		YELLOW(255, 255, 0),
@@ -37,18 +36,17 @@ public class LEDControl implements IModule {
 			this.b = b;
 		}
 	}
-	
-	public enum Condition
-	{
-		EMERGENCY(LEDColor.RED, false),
-		DEFAULT(LEDColor.PURPLE, false),
-		BLINK_BLUE(LEDColor.BLUE, true);
+		
+	//pulse speed = 100, slow flash = 300, solid = 0
+	public enum Message{
+		EXAMPLE_MESSAGE(LEDColor.WHITE, 100);
+
 		final LEDColor color;
-		final boolean blink;
-		Condition(LEDColor color, boolean blink)
+		final int delay;
+		Message(LEDColor color, int delay)
 		{
 			this.color = color;
-			this.blink = blink;
+			this.delay = delay;
 		}
 	}
 
@@ -56,7 +54,6 @@ public class LEDControl implements IModule {
 	public LEDControl(Hardware pHardware)
 	{
 		mCanifier = pHardware.getCanifier();
-		this.isBlinking = true;
 		this.isOn = true;
 	}
 	public void initialize(double pNow) {
@@ -67,17 +64,6 @@ public class LEDControl implements IModule {
 	@Override
 	public void update(double pNow) {
 		SmartDashboard.putNumber("time", Timer.getFPGATimestamp());
-		if(isBlinking) {
-			if(System.currentTimeMillis() - blinkStartTime > 300) {
-				isOn = !isOn;
-				blinkStartTime = System.currentTimeMillis();
-			}
-			if(isOn) {
-				setLED(255, 255, 255);
-			} else {
-				setLED(0, 0, 0);
-			}
-		}
 	}
 	
 
@@ -86,22 +72,21 @@ public class LEDControl implements IModule {
 	{
 		//order = grb
 		double[] rgb = new double[3];
-		rgb[0] = color.g / 256;
-		rgb[1] = color.r / 256;
-		rgb[2] = color.b / 256;
+		rgb[0] = (double)color.g / 256;
+		rgb[1] = (double)color.r / 256;
+		rgb[2] = (double)color.b / 256;
 		return rgb;
 	}
 	
+	//will be obsolete
 	public void setLED(double r, double g, double b)
 	{
 		setLED(new double[] {g, r, b});
 	}
-	public void setLED(Condition c)
+	
+	public void setLED(Message m)
 	{
-//		if(c.blink)
-//			setLEDBlink(colorCreator(c.color));
-//		else
-			setLED(colorCreator(c.color));
+		setLED(colorCreator(m.color), m.delay);
 	}
 	private void setLED(double[] rgb)
 	{
@@ -110,10 +95,21 @@ public class LEDControl implements IModule {
 		mCanifier.setLEDOutput(rgb[2], CANifier.LEDChannel.LEDChannelC);
 	}
 	
-	private void setLEDBlink(double[] rgb)
+	private void setLED(double[] rgb, long blinkDelay)
 	{
-		
-		
+		if(blinkDelay == 0)
+		{
+			isOn = true;
+		}
+		else if(System.currentTimeMillis() - blinkStartTime > blinkDelay) {
+			isOn = !isOn;
+			blinkStartTime = System.currentTimeMillis();
+		}
+		if(isOn) {
+			setLED(rgb);
+		} else {
+			turnOffLED();
+		}
 	}
 	
 	public void turnOffLED()
