@@ -1,93 +1,71 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.sensors.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Intake implements IModule{
 	
-	private final TalonSRX leftIn;
-	private final TalonSRX rightIn;
+	private final TalonSRX leftIntake;
+	private final TalonSRX rightIntake;
+	private Elevator mElevator;
+	private BeamBreakSensor backBeam;
+	private BeamBreakSensor frontBeam;
+	private boolean isElevatorDown;
+	private boolean intakeExtended;
 	private double power;
-	private boolean cubeIn;
-	private boolean intakeOut;
-	private Elevator elevator;
-	
-	public Intake(Elevator elevator)
+	public Intake(Elevator pElevator)
 	{
-		this.elevator = elevator;
-		leftIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
-		rightIn = new TalonSRX(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		intakeOut = false;
-		cubeIn = false;
+		leftIntake = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
+		rightIntake = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
+		mElevator = pElevator;
+		backBeam = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
+		frontBeam = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
 	}
 
 
 	@Override
 	public void initialize(double pNow) {
-		// TODO Auto-generated method stub
+		isElevatorDown = mElevator.isDown();
 		
 	}
 
 	@Override
 	public boolean update(double pNow) {
+		isElevatorDown = mElevator.isDown();
+		leftIntake.set(ControlMode.PercentOutput, power );
+		rightIntake.set(ControlMode.PercentOutput, power);
 		
-		/*if (intakeOut)
-			cubeIn = sensorValue;
-			*/
-		
-		if ( elevator.isDown() )
-		{
-			leftIn.set( ControlMode.PercentOutput, power );
-			rightIn.set( ControlMode.PercentOutput, -power );
-		}
-		
-		//if ( elevator.intakeSafeRetract() )
-		//	retractIntake();
-		
-		System.out.printf("Intake extended: %s Intake Power: %s\n", intakeOut, power);
-		return true;
-	}
-	
-	public void spinIn(double pIntakePower)
-	{
-		/*if ( !intakeOut && elevator.intakeSafeExtend() )
-		{
+		if(isElevatorDown && !intakeExtended) {
 			extendIntake();
 		}
-		*/
-		if ( intakeOut )
-		{
-			if ( cubeIn )
-			{
-				setPower(0);
-			}
-			setPower(pIntakePower);
+		else if(!isElevatorDown && intakeExtended) {
+			retractIntake();
 		}
+		return true;
 	}
-	public void spinOut(double pIntakePower)
-	{
-		setPower(pIntakePower);
+	public void retractIntake() {
+		
+		intakeExtended = false;
 	}
-	public void setPower(double power)
-	{
-		this.power = power;
+	public void extendIntake() {
+		
+		intakeExtended = true;
 	}
 	
-	public void extendIntake()
-	{
-		intakeOut = true;
+	public void intakeIn(double inPower) {
+		if(isElevatorDown && intakeExtended && !backBeam.isBroken()) 
+			power = inPower;
 	}
-	public void retractIntake()
-	{
-		intakeOut = false;
+	public void intakeOut(double inPower) {
+		if(isElevatorDown)
+			power = inPower;
+		
 	}
-
-	
 	@Override
 	public void shutdown(double pNow) {
-		// TODO Auto-generated method stub
 		
 	}
 	

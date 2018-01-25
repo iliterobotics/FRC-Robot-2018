@@ -69,7 +69,10 @@ public class SystemSettings extends ConstantsBase {
   // Sensor Ports
   // =============================================================================
   public static int ULTRASONIC_PORT = 0;
-  public static int BEAM_INPUT_CHANNEL = 1;
+  public static int BEAM_BREAK_FRONT = 0;
+  public static int BEAM_BREAK_BACK = 1;
+  public static final int DIO_PORT_ELEVATION_LIMIT_SWITCH = 0;
+  
   
   @Override
   public String getFileLocation() {

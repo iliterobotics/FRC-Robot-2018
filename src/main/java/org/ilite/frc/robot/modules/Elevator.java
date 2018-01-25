@@ -5,18 +5,20 @@ import org.ilite.frc.common.config.SystemSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public class Elevator implements IModule{
-	
-	private final TalonSRX leftElevator;
-	private final TalonSRX rightElevator;
-	private double power;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-	public Elevator()
-	{
-		leftElevator = new TalonSRX(SystemSettings.ELEVATOR_TALONID_LEFT);
-		rightElevator = new TalonSRX(SystemSettings.ELEVATOR_TALONID_RIGHT);
+public class Elevator implements IModule {
+	private TalonSRX leftElevator, rightElevator;
+	private double mPower;
+	private boolean mState;
+	private DigitalInput limitSwitch;
+
+	public Elevator() {
+		leftElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
+		rightElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
+		limitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
 	}
-	
+
 	@Override
 	public void initialize(double pNow) {
 
@@ -24,41 +26,28 @@ public class Elevator implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		intakeSafeRetract();
-		intakeSafeExtend();
-		
-		leftElevator.set( ControlMode.PercentOutput, power );
-		rightElevator.set( ControlMode.PercentOutput, -power );
+		if ((!limitSwitch.get())) {
+			mState = true;
+		} else {
+			mState = false;
+		}
+
+		leftElevator.set(ControlMode.PercentOutput, mPower);
+		rightElevator.set(ControlMode.PercentOutput, mPower);
 		return true;
 	}
 
+	public void setPower(double power) {
+		mPower = power;
+	}
 
+	public boolean isDown() {
+		return mState;
+	}
 
 	@Override
 	public void shutdown(double pNow) {
-		// TODO Auto-generated method stub
-		
-	}
-	public boolean intakeSafeExtend()
-	{
-		if ( this.isDown() )
-		{
-			return true;
-		}
-		return false;
-	}
-	public boolean intakeSafeRetract()
-	{
-			return true;
-	}
-	
-	public boolean isDown()
-	{
-		return true;
-	}
-	public void setPower( double power )
-	{
-		this.power = power;
+
 	}
 
 }

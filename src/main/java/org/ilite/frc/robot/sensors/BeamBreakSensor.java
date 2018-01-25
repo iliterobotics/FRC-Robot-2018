@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class BeamBreakSensor implements IModule {
 	private DigitalInput beamInput;
 	
-	public BeamBreakSensor() {
-		beamInput = new DigitalInput(SystemSettings.BEAM_INPUT_CHANNEL);
+	public BeamBreakSensor(int ID) {
+		beamInput = new DigitalInput(ID);
 	}
 	@Override
 	public void shutdown(double pNow) {
@@ -24,12 +24,13 @@ public class BeamBreakSensor implements IModule {
 
 	@Override
 	public boolean update(double pNow) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 	
 	public boolean isBroken() {
 		return beamInput.get();
 	}
+	
 
 }
