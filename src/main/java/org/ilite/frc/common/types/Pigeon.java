@@ -34,7 +34,53 @@ public class Pigeon
     
     public double getYaw(){
         pigeon.getYawPitchRoll(ypr);
+        if(ypr[0] > 360)
+            ypr[0] = ypr[0] - ((int)(Math.floor(ypr[0] / 360)) * 360);
+        
+        if(ypr[0] < 0)
+        {
+            if(ypr[0] < -360)
+            {
+                ypr[0] = ypr[0] + ((int)(Math.floor(ypr[0] / 360)) * 360);
+            }
+            
+            ypr[0] = 360 - Math.abs(ypr[0]);
+        }
         return ypr[0];
+    }
+    
+    public double getPitch(){
+        pigeon.getYawPitchRoll(ypr);
+        if(ypr[1] > 360)
+            ypr[1] = ypr[1] - ((int)(Math.floor(ypr[1] / 360)) * 360);
+        
+        if(ypr[1] < 0)
+        {
+            if(ypr[1] < -360)
+            {
+                ypr[1] = ypr[1] + ((int)(Math.floor(ypr[1] / 360)) * 360);
+            }
+            
+            ypr[1] = 360 - Math.abs(ypr[1]);
+        }
+        return ypr[1];
+    }
+    
+    public double getRoll(){
+        pigeon.getYawPitchRoll(ypr);
+        if(ypr[2] > 360)
+            ypr[2] = ypr[2] - ((int)(Math.floor(ypr[2] / 360)) * 360);
+        
+        if(ypr[2] < 0)
+        {
+            if(ypr[2] < -360)
+            {
+                ypr[2] = ypr[2] + ((int)(Math.floor(ypr[2] / 360)) * 360);
+            }
+            
+            ypr[2] = 360 - Math.abs(ypr[2]);
+        }
+        return ypr[2];
     }
     
     public double getCompassHading(){
