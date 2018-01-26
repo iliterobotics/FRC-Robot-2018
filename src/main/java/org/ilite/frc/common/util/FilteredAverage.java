@@ -14,6 +14,13 @@ public class FilteredAverage {
     mGains = pGains;
   }
 
+  public FilteredAverage(double[] pGains) {
+    if(pGains == null || pGains.length == 0) {
+      throw new IllegalArgumentException("Cannot create a filtered average without filter gains!");
+    }
+    mGains = pGains;
+  }
+
   public void addNumber(double newNumber) {
       mNumbers.add(newNumber);
       if (!isUnderMaxSize()) {

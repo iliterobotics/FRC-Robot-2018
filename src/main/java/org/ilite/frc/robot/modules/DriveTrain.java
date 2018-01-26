@@ -1,7 +1,5 @@
 package org.ilite.frc.robot.modules;
 
-import java.util.ArrayList;
-
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
@@ -12,12 +10,9 @@ import org.ilite.frc.robot.controlloop.IControlLoop;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.flybotix.hfr.util.log.ILog;
-import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.MotorSafety;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -45,8 +40,15 @@ public class DriveTrain implements IControlLoop {
 		//rightFollower2.follow(rightMaster);
 		//leftFollower2.follow(leftMaster);
 		leftFollower.follow(leftMaster);
-		controlMode = ControlMode.PercentOutput;	
-	}
+		controlMode = ControlMode.PercentOutput;
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		rightMaster.setSensorPhase(false);
+		leftMaster.setSensorPhase(false);
+		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
+
+		}
+	
 	@Override
 	public void initialize(double pNow) {
 		leftMaster.set(controlMode, desiredLeft);
@@ -62,6 +64,10 @@ public class DriveTrain implements IControlLoop {
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
 		System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
+		System.out.println("Left Motor poition: " + getLeftPosition() + "\nRight Motor poition: " + getRightPosition());
+		SmartDashboard.putNumber("Left Position", getLeftPosition());
+		SmartDashboard.putNumber("Right Position", getRightPosition());
+
 		return false;
 	}	
 	
@@ -123,6 +129,26 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
+	}
+	
+	public int getLeftVelocity()
+	{
+		return leftMaster.getSelectedSensorVelocity(0);
+	}
+	
+	public int getRightVelocity()
+	{
+		return rightMaster.getSelectedSensorVelocity(0);
+	}
+	
+	public int getLeftPosition()
+	{
+		return leftMaster.getSelectedSensorPosition(0);
+	}
+	
+	public int getRightPosition()
+	{
+		return rightMaster.getSelectedSensorPosition(0);
 	}
 	
 }
