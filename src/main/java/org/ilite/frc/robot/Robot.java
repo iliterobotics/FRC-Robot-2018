@@ -42,12 +42,6 @@ public class Robot extends IterativeRobot {
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
   private Pigeon pidgey;
-
-  //Collision Threshold => Temporary Value
-  final static double kCollisionThreshold_DeltaG = 0.5f;
-  double lastAccelX;
-  double lastAccelY;
-  double lastAccelZ;
   
    
   public Robot() {
@@ -187,27 +181,6 @@ public class Robot extends IterativeRobot {
   }
   public void disabledPeriodic() {
     //mControlLoop.stop();
-  }
-  
-  
-  public void collisionDetection(){
-      while(true){
-          boolean collisionDetected = false;
-          double currentAccelX = pidgey.getAccelX();
-          double currentJerkX = currentAccelX - lastAccelX;
-          lastAccelX = currentAccelX;
-          double currentAccelY = pidgey.getAccelY();
-          double currentJerkY = currentAccelY - lastAccelY;
-          lastAccelY = currentAccelY;
-//          double currentAccelZ = pidgey.getAccelZ();
-//          double currentJerkZ = currentAccelZ - lastAccelZ;
-//          lastAccelZ = currentAccelZ;
-          if ( ( Math.abs(currentJerkX) > kCollisionThreshold_DeltaG ) ||
-                  ( Math.abs(currentJerkY) > kCollisionThreshold_DeltaG) ) {
-                 collisionDetected = true;
-          }
-          
-      }
   }
   
   
