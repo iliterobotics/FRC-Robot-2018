@@ -3,6 +3,8 @@ package org.ilite.frc.robot;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.ilite.frc.common.sensors.Pigeon;
+
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.kauailabs.navx.frc.AHRS;
@@ -19,6 +21,7 @@ public class Hardware {
   private PowerDistributionPanel mPDP;
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
+  private Pigeon mPigeonWrapper;
   
   Hardware() {
     
@@ -35,6 +38,7 @@ public class Hardware {
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
+    mPigeonWrapper = new Pigeon(mPigeon);
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -61,9 +65,9 @@ public class Hardware {
     return mPDP;
   }
   
-  public PigeonIMU getPigeon()
+  public Pigeon getPigeon()
   {
-	  return mPigeon;
+	  return mPigeonWrapper;
   }
 
 }

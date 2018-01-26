@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
@@ -42,8 +43,6 @@ public class Robot extends IterativeRobot {
   // Temporary...
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
-  private Pigeon pidgey;
-  
    
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
@@ -69,17 +68,16 @@ public class Robot extends IterativeRobot {
         // Talons TBD ... they're somewhat picky.
     );
 
-       pidgey = new Pigeon(mHardware);
-
-    
   }
 
   public void autonomousInit() {
-	mLog.info("AUTONOMOUS");
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
+    mHardware.getPigeon().zeroAll();
   }
   public void autonomousPeriodic() {
+    mCurrentTime = Timer.getFPGATimestamp();
+    mapInputsAndCachedSensors();
 	setRunningModules();
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
@@ -95,7 +93,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
-	  pidgey.zeroAll();
+	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
@@ -106,7 +104,7 @@ public class Robot extends IterativeRobot {
     
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
-      mapInputs();
+      mapInputsAndCachedSensors();
       
       updateRunningModules();
     }
@@ -117,11 +115,13 @@ public class Robot extends IterativeRobot {
    * 2. Perform any input filtering (such as split the split arcade re-map and squaring of the turn)
    * 3. Sets DriveTrain outputs based on processed input
    */
-  private void mapInputs() {
+  private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
+      
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
+      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
   }
   
   /**
@@ -132,12 +132,14 @@ public class Robot extends IterativeRobot {
 	  //Grab the next command
 	  mCurrentCommand = mCommandQueue.peek();
 	  if(mCurrentCommand != null) {
-		if(firstRun) mCurrentCommand.initialize();
-		//If this command is finished executing
-		if(mCurrentCommand.update()) mCommandQueue.poll(); //Discard the command and initialize the next one
+	    if(firstRun) mCurrentCommand.initialize();
+	    //If this command is finished executing
+	    if(mCurrentCommand.update()) {
+	      mCommandQueue.poll(); //Discard the command and initialize the next one
+	    }
 	    if(mCommandQueue.peek() != null) {
-	    	mCommandQueue.peek().initialize();
-	    	return true;
+	      mCommandQueue.peek().initialize();
+	      return true;
 	    }
 	  }
 	  return false;
@@ -159,7 +161,9 @@ public class Robot extends IterativeRobot {
    */
   private void setRunningModules(IModule...modules) {
 	  mRunningModules.clear();
-	  for(IModule m : modules) mRunningModules.add(m);
+	  for(IModule m : modules) {
+	    mRunningModules.add(m);
+	  }
 	  initializeRunningModules();
   }
   
