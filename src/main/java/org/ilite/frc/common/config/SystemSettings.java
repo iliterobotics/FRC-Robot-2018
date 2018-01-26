@@ -36,7 +36,8 @@ public class SystemSettings extends ConstantsBase {
 	//public static  int DRIVETRAIN_TALONID_RIGHT3 = 5;
 	//public static  int DRIVETRAIN_TALONID_LEFT3 = 4;
 	
-	public  static int kCONTROLLER_ID = 0;
+	public static int TALON_CONFIG_TIMEOUT_MS = 50;
+	public static int kCONTROLLER_ID = 0;
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
@@ -58,6 +59,18 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static ELogitech310  DRIVER_MAP_THROTTLE_AXIS = ELogitech310.LEFT_Y_AXIS;
   public static ELogitech310  DRIVER_MAP_TURN_AXIS = ELogitech310.COMBINED_TRIGGER_AXIS;
+  
+  // =============================================================================
+  // Motion Magic Constants
+  // =============================================================================
+  public static int		MOTION_MAGIC_PID_SLOT;
+  public static int		MOTION_MAGIC_LOOP_SLOT;
+  public static int		MOTION_MAGIC_P;
+  public static int		MOTION_MAGIC_I;
+  public static int		MOTION_MAGIC_D;
+  public static int		MOTION_MAGIC_F;
+  public static int		MOTION_MAGIC_V;
+  public static int		MOTION_MAGIC_A;
   
   @Override
   public String getFileLocation() {
