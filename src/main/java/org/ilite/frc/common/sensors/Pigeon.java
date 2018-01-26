@@ -1,5 +1,6 @@
 package org.ilite.frc.common.sensors;
 
+import org.ilite.frc.common.util.FilteredAverage;
 import org.ilite.frc.robot.Hardware;
 
 import com.ctre.phoenix.sensors.*;
@@ -11,9 +12,11 @@ public class Pigeon implements IMU{
 
   //Collision Threshold => Temporary Value
   final static double kCollisionThreshold_DeltaG = 0.5f;
-  double lastAccelX;
-  double lastAccelY;
-  double lastAccelZ;
+  private final FilteredAverage mAccelerationX;
+  private final FilteredAverage mAccelerationY;
+  private double mLastUpdate = 0d;
+  
+  private static final double[] kCollisionGains = {0.75, 0.25};
 	
 	public Pigeon(Hardware pHardware)
 	{
@@ -21,6 +24,9 @@ public class Pigeon implements IMU{
 		mPigeon = pHardware.getPigeon();
 		System.out.println(mPigeon.getFusedHeading());
 //		mPigeon.getYawPitchRoll(ypr);
+		
+		mAccelerationX = new FilteredAverage(kCollisionGains);
+		mAccelerationY = new FilteredAverage(kCollisionGains);
 
 	}
 
@@ -51,32 +57,27 @@ public class Pigeon implements IMU{
 	}
 
 	public double getAccelX() {
-		
-		return 0;
+	  //TODO
+		return 0d;
 	}
 
 	public double getAccelY() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 0d;
 	}
   
   
-  public void detectCollision(){
-    boolean collisionDetected = false;
-    double currentAccelX = pidgey.getAccelX();
-    double currentJerkX = currentAccelX - lastAccelX;
-    lastAccelX = currentAccelX;
-    double currentAccelY = pidgey.getAccelY();
-    double currentJerkY = currentAccelY - lastAccelY;
-    lastAccelY = currentAccelY;
-    //          double currentAccelZ = pidgey.getAccelZ();
-    //          double currentJerkZ = currentAccelZ - lastAccelZ;
-    //          lastAccelZ = currentAccelZ;
-    if ( ( Math.abs(currentJerkX) > kCollisionThreshold_DeltaG ) ||
-        ( Math.abs(currentJerkY) > kCollisionThreshold_DeltaG) ) {
-      collisionDetected = true;
-    }
+  public boolean detectCollision(double pNow){
+    double currentAccelX = getAccelX();
+    double currentAccelY = getAccelY();
     
+    double currentJerkX = (currentAccelX - mAccelerationX.getAverage()) / (pNow - mLastUpdate);
+    double currentJerkY = (currentAccelY - mAccelerationY.getAverage()) / (pNow - mLastUpdate);
     
+    mAccelerationX.addNumber(currentAccelX);
+    mAccelerationY.addNumber(currentAccelY);
+    mLastUpdate = pNow;
+    
+    return Math.abs(currentJerkX) >= kCollisionThreshold_DeltaG || Math.abs(currentJerkY) >= kCollisionThreshold_DeltaG;
   }
 }
