@@ -85,6 +85,6 @@ public class ControlLoopManager implements Runnable{
   
   private void mapSensors() {
     //TODO change timestamp to mLatestTime
-    ENavX.map(mData.navx, mHardware.getNavX());
+//    ENavX.map(mData.navx, mHardware.getNavX());
   }
 }
