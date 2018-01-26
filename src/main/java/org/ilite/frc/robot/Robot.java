@@ -9,7 +9,8 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.robot.commands.Command;
+import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
@@ -32,11 +33,11 @@ public class Robot extends IterativeRobot {
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
   
-//  private final ControlLoopManager mControlLoop;
+  private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<Command> mCommandQueue = new LinkedList<>();
-  private Command mCurrentCommand;
+  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private ICommand mCurrentCommand;
   
   // Temporary...
   private final DriveTrain dt;
@@ -45,10 +46,10 @@ public class Robot extends IterativeRobot {
   
    
   public Robot() {
-//    mControlLoop = new ControlLoopManager(mData, mHardware);
-    dt = new DriveTrain();
-    drivetraincontrol = new DriverControl(dt, mData);
-    Logger.setLevel(ELevel.INFO);
+	mControlLoop = new ControlLoopManager(mData, mHardware);
+	drivetraincontrol = new DriverControl(mData);
+	dt = new DriveTrain(drivetraincontrol);
+	Logger.setLevel(ELevel.INFO);
   }
 
   public void robotInit() {
@@ -74,6 +75,7 @@ public class Robot extends IterativeRobot {
   }
 
   public void autonomousInit() {
+	mLog.info("AUTONOMOUS");
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
   }
@@ -95,13 +97,12 @@ public class Robot extends IterativeRobot {
 	  initializeRunningModules();
 	  pidgey.zeroAll();
 	  
+	  mControlLoop.setRunningControlLoops();
+	  mControlLoop.start();
   }
 
   public void teleopPeriodic() {
     // Remember that DriverControl classes don't go here. They aren't Modules.
-	
-//	mControlLoop.setRunningControlLoops();
-//    mControlLoop.start();
     
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
@@ -172,15 +173,15 @@ public class Robot extends IterativeRobot {
   }
   
   public void test() {
-    mLog.info("TEST");
+	  mLog.info("TEST");
   }
 
-  public void disabledInit()
-  {
-	    mLog.info("DISABLED");	  
+  public void disabledInit() {
+	  mLog.info("DISABLED");
+	  mControlLoop.stop();
   }
+  
   public void disabledPeriodic() {
-    //mControlLoop.stop();
   }
   
   

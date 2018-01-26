@@ -1,6 +1,11 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.robot.Data;
+//import org.usfirst.frc.team1885.robot.SystemSettings;
+import org.ilite.frc.robot.controlloop.IControlLoop;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -12,16 +17,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Class for running all drive train control operations from both autonomous and
  * driver-control
  */
-public class DriveTrain implements IModule {
-  //private final ILog mLog = Logger.createLog(DriveTrain.class);
+public class DriveTrain implements IControlLoop {
+	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
-	//private Solenoid gearShifter;
+	private DriverControl driverControl;
+	
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
 	
-	public DriveTrain()
+	public DriveTrain(DriverControl driverControl)
 	{
+		this.driverControl = driverControl;
 		//leftMaster = new TalonSRX(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
 		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
@@ -41,6 +48,7 @@ public class DriveTrain implements IModule {
 		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
 
 		}
+	
 	@Override
 	public void initialize(double pNow) {
 		leftMaster.set(controlMode, desiredLeft);
@@ -51,8 +59,10 @@ public class DriveTrain implements IModule {
 	@Override
 	public boolean update(double pNow) {
 		//updateSpeed(desiredLeft, desiredRight);
-		leftMaster.set(controlMode, desiredLeft);
-		rightMaster.set(controlMode, desiredRight);
+		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
+		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
 		System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
 		System.out.println("Left Motor poition: " + getLeftPosition() + "\nRight Motor poition: " + getRightPosition());
 		SmartDashboard.putNumber("Left Position", getLeftPosition());
@@ -112,6 +122,13 @@ public class DriveTrain implements IModule {
 		default:
 			break;
 		}
+	}
+	@Override
+	public void loop(double pNow) {
+		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
+		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
 	}
 	
 	public int getLeftVelocity()
