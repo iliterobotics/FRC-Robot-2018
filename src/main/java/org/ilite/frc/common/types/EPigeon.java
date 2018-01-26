@@ -21,8 +21,8 @@ public enum EPigeon implements CodexOf<Double>{
     pCodex.set(FUSED_HEADING, pPigeon.getHeading());
     pCodex.set(ROLL, pPigeon.getRoll());
     pCodex.set(PITCH, pPigeon.getPitch());
-    pCodex.set(fACCEL_X, pPigeon.getAccelX());
-    pCodex.set(fACCEL_Y, pPigeon.getAccelY());
+    pCodex.set(fACCEL_X, pPigeon.getFilteredAccelX());
+    pCodex.set(fACCEL_Y, pPigeon.getFilteredAccelY());
     pCodex.set(JERK_X, pPigeon.getJerkX());
     pCodex.set(JERK_Y, pPigeon.getJerkY());
   }

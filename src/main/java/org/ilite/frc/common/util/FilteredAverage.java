@@ -7,13 +7,6 @@ public class FilteredAverage {
   private final ArrayList<Double> mNumbers = new ArrayList<Double>();
   private final double[] mGains;
 
-  public FilteredAverage(double...pGains) {
-    if(pGains == null || pGains.length == 0) {
-      throw new IllegalArgumentException("Cannot create a filtered average without filter gains!");
-    }
-    mGains = pGains;
-  }
-
   public FilteredAverage(double[] pGains) {
     if(pGains == null || pGains.length == 0) {
       throw new IllegalArgumentException("Cannot create a filtered average without filter gains!");
