@@ -21,6 +21,7 @@ public class DriveTrain implements IControlLoop {
 	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
 	private DriverControl driverControl;
+	//private PDM g;
 	
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
 	private ControlMode controlMode;
@@ -49,10 +50,14 @@ public class DriveTrain implements IControlLoop {
 
 		}
 	
+	
+
 	@Override
 	public void initialize(double pNow) {
 		leftMaster.set(controlMode, desiredLeft);
 		rightMaster.set(controlMode, desiredRight);
+		leftMaster.setSelectedSensorPosition(0, 0, 10);
+		rightMaster.setSelectedSensorPosition(0, 0, 10);
 		
 	}
 
@@ -63,10 +68,12 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
-		System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
-		System.out.println("Left Motor poition: " + getLeftPosition() + "\nRight Motor poition: " + getRightPosition());
+		//System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
+		//System.out.println("Left Motor position: " + getLeftPosition() + "\nRight Motor position: " + getRightPosition());
 		SmartDashboard.putNumber("Left Position", getLeftPosition());
 		SmartDashboard.putNumber("Right Position", getRightPosition());
+		SmartDashboard.putNumber("Desired Left", driverControl.getDesiredLeftOutput());
+		SmartDashboard.putNumber("Desired Right", driverControl.getDesiredRightOutput());	
 
 		return false;
 	}	
@@ -141,12 +148,12 @@ public class DriveTrain implements IControlLoop {
 		return rightMaster.getSelectedSensorVelocity(0);
 	}
 	
-	public int getLeftPosition()
+	public double getLeftPosition()
 	{
 		return leftMaster.getSelectedSensorPosition(0);
 	}
 	
-	public int getRightPosition()
+	public double getRightPosition()
 	{
 		return rightMaster.getSelectedSensorPosition(0);
 	}

@@ -1,57 +1,71 @@
 package org.ilite.frc.common.sensors;
 
+import org.ilite.frc.common.util.FilteredAverage;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Pigeon extends IMU{
 
 	private double[] ypr;
-  private short[] xyz;
 	private PigeonIMU mPigeon;
+
+  //Collision Threshold => Temporary Value
+  final static double kCollisionThreshold_DeltaG = 0.5f;
+  private final FilteredAverage mAccelerationX;
+  private final FilteredAverage mAccelerationY;
+  private double mJerkX = 0d;
+  private double mJerkY = 0d;
+  private double mLastUpdate = 0d;
   
   //TODO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
   private static final double[] kCollisionGains = {1.0};
-  
-  /**
-   * Creates a Pigeon sensor wrapper from the hardware.  Assumes the hardware has already been
-   * initialized on the CAN bus.  Uses 0.5G as the default g-force.
-   * @param pHardware - Initialized PigeonIMU
-   */
-  public Pigeon(PigeonIMU pHardware){
-    this(pHardware, 0.5d);
-  }
 	
-	/**
-	 * Creates a Pigeon sensor wrapper from the hardware.  Assumes the hardware has already been
-	 * initialized on the CAN bus.
-   * @param pHardware - Initialized PigeonIMU
-   * @param pCollisionThreshold_DeltaG - The threshold to use for the collision g-force
-	 */
-	public Pigeon(PigeonIMU pHardware, double pCollisionThreshold_DeltaG){
-	  super(kCollisionGains);
+	public Pigeon(PigeonIMU pHardware){
+		super(kCollisionGains);
+		this.mAccelerationX = super.mAccelerationX;
+		this.mAccelerationY = super.mAccelerationY;
 		ypr = new double[3];
-		xyz = new short[3];
 		mPigeon = pHardware;
-		setCollisionThreshold_DeltaG(pCollisionThreshold_DeltaG);
+		//mAccelerationX = new FilteredAverage(kCollisionGains);
+		//mAccelerationY = new FilteredAverage(kCollisionGains);
 	}
 	
 	/**
 	 * Pre-populates the filters & calculated values so it's done only once per cycle
 	 * @param pTimestampNow
 	 */
-	protected void updateSensorCache(double pTimestampNow) {
+	public void update(double pTimestampNow) {
     mPigeon.getYawPitchRoll(ypr);
     for(int i = 0 ; i < ypr.length; i++) {
       ypr[i] = clampDegrees(ypr[i]);
     }
+
+    double currentAccelX = getRawAccelX();
+    double currentAccelY = getRawAccelY();
     
-    mPigeon.getBiasedAccelerometer(xyz);
+    mJerkX = (currentAccelX - mAccelerationX.getAverage()) / (pTimestampNow - mLastUpdate);
+    mJerkY = (currentAccelY - mAccelerationY.getAverage()) / (pTimestampNow - mLastUpdate);
+    
+    mAccelerationX.addNumber(currentAccelX);
+    mAccelerationY.addNumber(currentAccelY);
+    mLastUpdate = pTimestampNow;
+    
+    SmartDashboard.putNumber("Yaw", getYaw());
+    SmartDashboard.putNumber("Pitch", getPitch());
+    SmartDashboard.putNumber("Roll", getRoll());
+    SmartDashboard.putNumber("AccelX", getAccelX());
+    SmartDashboard.putNumber("AccelX", getAccelY());
+    SmartDashboard.putNumber("JerkX", getJerkX());
+    SmartDashboard.putNumber("JerkY", getJerkX());
 	}
 	
 	public double getHeading() {
 	  return mPigeon.getFusedHeading();
 	}
-
+	
 	public double getYaw() {
     return ypr[0];
 	}
@@ -62,23 +76,49 @@ public class Pigeon extends IMU{
 	
 	public double getRoll() {
     return ypr[2];
+	}	
+	
+	public double getAccelX() {
+	  return mAccelerationX.getAverage();
 	}
-
-  protected double getRawAccelX() {
-    return xyz[0];
-  }
-  
-  protected double getRawAccelY() {
-    return xyz[0];
-  }
+	
+	public double getAccelY() {
+	  return mAccelerationY.getAverage();
+	}
+	
+	public double getJerkX() {
+	  return mJerkX;
+	}
+	
+	public double getJerkY() {
+	  return mJerkY;
+	}
 	
 	public void zeroAll() {
 		for(int i = 0; i < ypr.length; i++) {
 			ypr[i] = 0;
 		}
-    for(int i = 0; i < xyz.length; i++) {
-      xyz[i] = 0;
-    }
 		mPigeon.setFusedHeading(0d, 20); //TODO - figure out CAN timeout defaults
 	}
+
+	public double getRawAccelX() {
+	  //TODO - either biased accelerometer, or somewhere in the quaternion?
+		return 0d;
+	}
+
+	public double getRawAccelY() {
+    //TODO - either biased accelerometer, or somewhere in the quaternion?
+		return 0d;
+	}
+  
+  
+  public boolean detectCollision(){
+    return Math.abs(mJerkX) >= kCollisionThreshold_DeltaG || Math.abs(mJerkY) >= kCollisionThreshold_DeltaG;
+  }
+
+@Override
+protected void updateSensorCache(double pTimestampNow) {
+	// TODO Auto-generated method stub
+	
+}
 }

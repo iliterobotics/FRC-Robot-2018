@@ -29,10 +29,10 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-    public static  int kDRIVETRAIN_TALONID_LEFT1 = 4;
-	public static  int kDRIVETRAIN_TALONID_LEFT2 = 2;
-	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 1;
-	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 3;
+    public static  int kDRIVETRAIN_TALONID_LEFT1 = 2;
+	public static  int kDRIVETRAIN_TALONID_LEFT2 = 4;
+	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 3;
+	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 1;
 	//public static  int DRIVETRAIN_TALONID_RIGHT3 = 5;
 	//public static  int DRIVETRAIN_TALONID_LEFT3 = 4;
 	
