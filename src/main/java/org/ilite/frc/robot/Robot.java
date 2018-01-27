@@ -18,10 +18,11 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer; 
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -34,17 +35,21 @@ public class Robot extends IterativeRobot {
   private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private final GetAutonomous getAutonomous;
+  private Queue<ICommand> mCommandQueue;
   private ICommand mCurrentCommand;
   
   // Temporary...
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
+  
 
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	drivetraincontrol = new DriverControl(mData);
 	dt = new DriveTrain(drivetraincontrol);
+	SystemSettings.AUTON_TABLE = NetworkTableInstance.getDefault().getTable("AUTON_TABLE");
+	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -71,6 +76,7 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
 	mLog.info("AUTONOMOUS");
     System.out.println("Default autonomousInit() method... Overload me!");
+    mCommandQueue = getAutonomous.getAutonomousCommands();
   }
   public void autonomousPeriodic() {
 	setRunningModules();
