@@ -19,6 +19,6 @@ public class LidarLite
 	public LidarLite(int I2Cport)
 	{
 		I2C lidari2c = new I2C(Port.kOnboard, I2Cport);
-		lidari2c.
+		
 	}
 }
