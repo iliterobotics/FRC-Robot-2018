@@ -42,7 +42,7 @@ public class AutonConfigDisplay extends Application {
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
-
+  
   @Override
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
@@ -89,7 +89,7 @@ public class AutonConfigDisplay extends Application {
     label.setTextAlignment(TextAlignment.CENTER);
     ListView<String> listView = new ListView<>();
     for (E e : enums) {
-        listView.getItems().add(e.toString());
+        listView.getItems().add(e.name());
     }
     listView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
         @Override
