@@ -49,6 +49,7 @@ public class SystemSettings extends ConstantsBase {
   // Pigeon
   // =============================================================================  
   public static int PIGEON_DEVICE_ID = 5;
+  public static int ULTRASONIC_PORT_ID = 0;
   // =============================================================================
   // Input Constants
   // =============================================================================

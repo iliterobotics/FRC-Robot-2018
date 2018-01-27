@@ -4,6 +4,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.sensors.Pigeon;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -22,6 +23,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  //private UltraSonicSensor mUltraSonic;
   
   Hardware() {
     
@@ -33,12 +35,15 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       PigeonIMU pPigeon
+      //ltraSonicSensor pUltraSonic
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon);
+    //
+    //mUltraSonic = pUltraSonic;
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -69,5 +74,10 @@ public class Hardware {
   {
 	  return mPigeonWrapper;
   }
+  
+  /*public UltraSonicSensor getUltraSonicSensor()
+  {
+	  return mUltraSonic;
+  }*/
 
 }

@@ -55,5 +55,7 @@ public class UltraSonicSensor {
     mDistanceFilter.addNumber(mWpiUltrasonic.getRangeInches());
 		return mDistanceFilter.getAverage();
 	}
+	
+	
 
 }

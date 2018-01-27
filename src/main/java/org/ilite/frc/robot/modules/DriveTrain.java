@@ -1,6 +1,7 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
@@ -26,6 +27,7 @@ public class DriveTrain implements IControlLoop {
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
+	private UltraSonicSensor Ultra;
 	
 	public DriveTrain(DriverControl driverControl)
 	{
@@ -46,6 +48,8 @@ public class DriveTrain implements IControlLoop {
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		rightMaster.setSensorPhase(false);
 		leftMaster.setSensorPhase(false);
+		Ultra = new UltraSonicSensor(0, 0);
+		//Ultra.setEnabled(false);
 		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
 
 		}
@@ -58,6 +62,7 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.set(controlMode, desiredRight);
 		leftMaster.setSelectedSensorPosition(0, 0, 10);
 		rightMaster.setSelectedSensorPosition(0, 0, 10);
+		//Ultra.setEnabled(true);
 		
 	}
 
@@ -74,7 +79,8 @@ public class DriveTrain implements IControlLoop {
 		SmartDashboard.putNumber("Right Position", getRightPosition());
 		SmartDashboard.putNumber("Desired Left", driverControl.getDesiredLeftOutput());
 		SmartDashboard.putNumber("Desired Right", driverControl.getDesiredRightOutput());	
-
+		//SmartDashboard.putNumber("Ultra Inches", Ultra.getInches());
+		
 		return false;
 	}	
 	

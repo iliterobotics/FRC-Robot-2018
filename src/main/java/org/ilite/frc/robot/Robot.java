@@ -17,6 +17,7 @@ import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -60,6 +61,8 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
+        //new UltraSonicSensor(0, 0)
+        
         // Sensors
         // Custom hw
         // Spike relays
@@ -74,6 +77,7 @@ public class Robot extends IterativeRobot {
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
+   // mHardware.getUltraSonicSensor().setEnabled(true);
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
@@ -94,7 +98,7 @@ public class Robot extends IterativeRobot {
 	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
-	  
+	  //mHardware.getUltraSonicSensor().setEnabled(true);
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
   }
