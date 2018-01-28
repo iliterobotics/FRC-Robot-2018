@@ -44,12 +44,12 @@ public class Intake implements IModule{
 		
 		leftIntakeTalon.set(ControlMode.PercentOutput, power );
 		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
-		
+		/*
 		rightCurrent = rightIntakeTalon.getOutputCurrent();
 		rightVoltage = rightIntakeTalon.getMotorOutputVoltage();
 		leftCurrent = leftIntakeTalon.getOutputCurrent();
 		leftVoltage = leftIntakeTalon.getMotorOutputVoltage();
-
+		*/
 		return true;
 	}
 	public void retractIntake() {
@@ -65,10 +65,11 @@ public class Intake implements IModule{
 	
 	public void intakeIn(double inPower) {
 		
-		double rightRatio = rightCurrent/rightVoltage;
+		/*double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		if (rightRatio > 5 || leftRatio > 5)
 			power = -inPower;
+			*/
 		if(isElevatorDown && intakeExtended /*&& !backBeamBreak.isBroken()*/) 
 			power = inPower;
 		
