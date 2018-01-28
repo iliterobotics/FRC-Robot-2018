@@ -12,8 +12,8 @@ public class Intake implements IModule{
 	private final TalonSRX leftIntakeTalon;
 	private final TalonSRX rightIntakeTalon;
 	private ElevatorModule mElevator;
-	private BeamBreakSensor backBeamBreak;
-	private BeamBreakSensor frontBeamBreak;
+	//private BeamBreakSensor backBeamBreak;
+	//private BeamBreakSensor frontBeamBreak;
 	private double rightCurrent;
 	private double rightVoltage;
 	private double leftVoltage;
@@ -26,8 +26,8 @@ public class Intake implements IModule{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		mElevator = pElevator;
-		backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
-		frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
+		//backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
+		//frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
 		
 	}
 
@@ -69,7 +69,7 @@ public class Intake implements IModule{
 		double leftRatio = leftCurrent/leftVoltage;
 		if (rightRatio > 5 || leftRatio > 5)
 			power = -inPower;
-		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
+		if(isElevatorDown && intakeExtended /*&& !backBeamBreak.isBroken()*/) 
 			power = inPower;
 		
 	}
