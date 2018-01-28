@@ -35,8 +35,13 @@ public class SystemSettings extends ConstantsBase {
 	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
 	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
 	public static  int DRIVETRAIN_TALONID_RIGHT3 = 7;
+	public static int INTAKE_TALONID_FRONT_LEFT = 13;
+	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
+	public static int ELEVATOR_TALONID_LEFT = 11;
+	public static int ELEVATOR_TALONID_RIGHT = 12;
 	
 	public  static int kCONTROLLER_ID = 0;
+
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
@@ -62,6 +67,8 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static ELogitech310  DRIVER_MAP_THROTTLE_AXIS = ELogitech310.LEFT_Y_AXIS;
   public static ELogitech310  DRIVER_MAP_TURN_AXIS = ELogitech310.COMBINED_TRIGGER_AXIS;
+  public static ELogitech310  DRIVER_MAP_INTAKE_BUTTON = ELogitech310.A_BTN;
+  public static ELogitech310  DRIVER_MAP_OUTTAKE_BUTTON = ELogitech310.B_BTN;
   
   @Override
   public String getFileLocation() {
