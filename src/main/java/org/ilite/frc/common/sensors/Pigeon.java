@@ -67,7 +67,21 @@ public class Pigeon extends IMU{
 	}
 	
 	public double getYaw() {
-    return ypr[0];
+	    if(ypr[0] > 360)
+	                  ypr[0] = ypr[0] - ((int)(Math.floor(ypr[0] / 360)) * 360);
+	              
+	              if(ypr[0] < 0)
+	              {
+	                  if(ypr[0] < -360)
+	                  {
+	                      ypr[0] = ypr[0] + ((int)(Math.floor(ypr[0] / 360)) * 360);
+	                  }
+	                  
+	                  ypr[0] = 360 - Math.abs(ypr[0]);
+	              }
+	                  
+	              return ypr[0];
+    //return ypr[0];
 	}
 	
 	public double getPitch() {
