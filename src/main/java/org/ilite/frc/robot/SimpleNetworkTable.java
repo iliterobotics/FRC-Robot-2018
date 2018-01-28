@@ -9,6 +9,9 @@ public class SimpleNetworkTable  {
     
     public SimpleNetworkTable(String name) {
         netTable = NetworkTableInstance.getDefault().getTable(name);
+        netTable.getInstance().startClient();//Init 
+        netTable.getInstance().setServerTeam(1885);
+        netTable.getInstance().startClientTeam(1885);
     }
     public synchronized void initKeys() {
     	    netTable.getEntry("Cross").setDefaultNumber(-1);
@@ -30,6 +33,10 @@ public class SimpleNetworkTable  {
     
     public synchronized void putNumberArray(String key, Integer[] values) {
     		netTable.getEntry(key).setNumberArray(values);
+    }
+    
+    public synchronized NetworkTableInstance getInstance() {
+    		return netTable.getInstance();
     }
     
 }
