@@ -18,7 +18,7 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Comms
   // =============================================================================
-  public static NetworkTable AUTON_TABLE;
+  public static NetworkTable AUTON_TABLE =  NetworkTableInstance.getDefault().getTable("AUTON_TABLE");
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";

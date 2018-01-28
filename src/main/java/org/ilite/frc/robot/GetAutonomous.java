@@ -1,5 +1,8 @@
 package org.ilite.frc.robot;
+import javax.swing.JOptionPane;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -45,9 +48,9 @@ public class GetAutonomous {
 		this.nAutonTable = pAutonTable;
 		doComplexAutonomous = true;
     try {
-      nPosEntry = nAutonTable.getEntry("position");
-      nCrossEntry = nAutonTable.getEntry("cross");
-      nCubeActionPrefsEntry = nAutonTable.getEntry("cubeActionList");
+      nPosEntry = nAutonTable.getEntry("Starting Position");
+      nCrossEntry = nAutonTable.getEntry("Cross");
+      nCubeActionPrefsEntry = nAutonTable.getEntry("Cube Action");
     } catch (Exception e) {
     
     }
@@ -101,6 +104,7 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> doScale() {
 	  //TODO replace with turning scalar
+		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 			break;
@@ -118,6 +122,7 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> doSwitch() {
     //TODO replace with turning scalar
+		System.out.printf("Doing switch autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 			break;
@@ -135,6 +140,7 @@ public class GetAutonomous {
 	@SuppressWarnings("all")
 	public Queue<ICommand> doExchange() {
     //TODO replace with turning scalar
+		System.out.printf("Doing exchange autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {	
 		case LEFT:
 			break;
@@ -149,6 +155,7 @@ public class GetAutonomous {
    */
   public Queue<ICommand> crossAutoLine() {
     //TODO replace with turning scalar
+	System.out.printf("Doing auto line autonomous starting on %s\n", mStartingPos);
     switch(mStartingPos) {
     case LEFT:
       break;
@@ -191,13 +198,19 @@ public class GetAutonomous {
 	private void parseEntries() {
 		int posNum = nPosEntry.getNumber(EStartingPosition.UNKNOWN.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.NONE.ordinal()).intValue();
+		System.out.println(posNum);
+		System.out.println(crossNum);
 		Integer[] defaultArray = { ECubeAction.NONE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
-
+		
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mCrossType = ECross.intToEnum(crossNum);
+		mCubeActionPrefs = new ArrayList<>();
+		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
-			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
+			if(n.intValue() == -1) continue;
+				mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
+			
 		}
 
 		switch(mStartingPos) {
@@ -279,22 +292,6 @@ public class GetAutonomous {
         .filter(cA -> isCubeActionOtherSide(cA))
         .collect(Collectors.toList());
   }
-	
-	/**
-	 * Testing method.
-	 * @param pActions
-	 * @param pCross
-	 * @param pPos
-	 * @param pSwitchSide
-	 * @param pScaleSide
-	 */
-	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos,
-		OwnedSide pSwitchSide, OwnedSide pScaleSide) {
-		mCubeActionPrefs = pActions;
-		mCrossType = pCross;
-		mStartingPos = pPos;
-		mSwitchSide = pSwitchSide;
-		mScaleSide = pScaleSide;
-	}
+
 
 }

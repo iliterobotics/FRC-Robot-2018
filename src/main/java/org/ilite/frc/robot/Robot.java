@@ -48,8 +48,8 @@ public class Robot extends IterativeRobot {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	drivetraincontrol = new DriverControl(mData);
 	dt = new DriveTrain(drivetraincontrol);
-	SystemSettings.AUTON_TABLE = NetworkTableInstance.getDefault().getTable("AUTON_TABLE");
 	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+	
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -190,5 +190,8 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+	  System.out.println("Getting autonomous...");
+	  getAutonomous.getAutonomousCommands();
+	  Timer.delay(1);
   }
 }

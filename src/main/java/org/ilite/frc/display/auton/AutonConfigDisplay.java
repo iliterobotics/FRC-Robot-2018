@@ -3,11 +3,10 @@ package org.ilite.frc.display.auton;
 import java.util.Arrays;
 import java.util.List;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.common.types.ESupportedTypes;
-import org.ilite.frc.display.frclog.data.RobotDataStream;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
@@ -37,7 +36,7 @@ import javafx.util.Callback;
 public class AutonConfigDisplay extends Application {
 
   private Gson gson;
-  private String[] preferredCubeActions;
+  private Integer[] preferredCubeActions;
 	
   public static void main(String[] pArgs) {
     launch(pArgs);
@@ -46,10 +45,12 @@ public class AutonConfigDisplay extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 1920, 800);
+    Scene scene = new Scene(root, 800, 600);
     
     gson = new Gson();
-    preferredCubeActions = new String[ECubeAction.values().length];
+    preferredCubeActions = new Integer[ECubeAction.values().length];
+    for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
+    
     
     HBox h = new HBox(
     		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
@@ -73,17 +74,14 @@ public class AutonConfigDisplay extends Application {
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
 	        event -> 
-	        RobotDataStream.inst().sendDataToRobot(
-	            pEnumeration.getSimpleName(), 
-	            ESupportedTypes.INTEGER, 
-	            Integer.toString(combo.getSelectionModel().getSelectedItem().ordinal()))
+		    SystemSettings.AUTON_TABLE.getEntry(pEnumeration.getSimpleName()).setNumber(combo.getSelectionModel().getSelectedItem().ordinal())
 	    );
 	    combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);
 	    return result;
   }
   
-  private <E extends Enum<E>> VBox labeledCheckboxDropdown(Class<E> pEnumeration, String[] preferenceArray) {
+  private <E extends Enum<E>> VBox labeledCheckboxDropdown(Class<E> pEnumeration, Object[] preferenceArray) {
     List<E> enums = EnumUtils.getEnums(pEnumeration, true);
     Label label = new Label(toPrettyCase(pEnumeration.getSimpleName().substring(1)));
     label.setTextAlignment(TextAlignment.CENTER);
@@ -97,9 +95,9 @@ public class AutonConfigDisplay extends Application {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener(e -> {
 					if(observable.get()) {
-			            preferenceArray[listView.getItems().indexOf(item)] = item;
+			            preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
 					} else {
-						preferenceArray[listView.getItems().indexOf(item)] = null;
+						preferenceArray[listView.getItems().indexOf(item)] = -1;
 					}
 					System.out.println(Arrays.toString(preferenceArray));
             });
@@ -111,12 +109,7 @@ public class AutonConfigDisplay extends Application {
 
 		@Override
 		public void onChanged(Change arg0) {
-			RobotDataStream.inst().sendDataToRobot( 
-		            pEnumeration.getSimpleName(),  
-		            ESupportedTypes.STRING, 
-		            gson.toJson(preferredCubeActions)
-		            );
-			System.out.println("List change detected.");
+			SystemSettings.AUTON_TABLE.getEntry(pEnumeration.getSimpleName()).setNumberArray(preferredCubeActions);
 		}
     	
     });
@@ -146,7 +139,7 @@ public class AutonConfigDisplay extends Application {
     return sb.toString();
   }
   
-  private static void swapEntriesUp(ListView listView, String[] outputArray) {
+  private static void swapEntriesUp(ListView listView, Object[] outputArray) {
 	  ObservableList list = listView.getItems();
 	  Object selectedItem = listView.getSelectionModel().getSelectedItem();
 	  int selectedIndex = list.indexOf(selectedItem);
@@ -155,13 +148,13 @@ public class AutonConfigDisplay extends Application {
 	  if(selectedIndex - 1 >= 0) {
 		  list.set(selectedIndex, list.get(selectedIndex - 1));
 		  list.set(selectedIndex - 1, temp);
-		  outputArray[selectedIndex] = null;
-		  outputArray[selectedIndex - 1] = null;
+		  outputArray[selectedIndex] = -1;
+		  outputArray[selectedIndex - 1] = -1;
 	  }
 	  listView.setItems(list);
   }
   
-  private static void swapEntriesDown(ListView listView, String[] outputArray) {
+  private static void swapEntriesDown(ListView listView, Object[] outputArray) {
 	  ObservableList list = listView.getItems();
 	  Object selectedItem = listView.getSelectionModel().getSelectedItem();
 	  int selectedIndex = list.indexOf(selectedItem);
@@ -170,8 +163,8 @@ public class AutonConfigDisplay extends Application {
 	  if(selectedIndex + 1 < list.size()) {
 		  list.set(selectedIndex, list.get(selectedIndex + 1));
 		  list.set(selectedIndex + 1, temp);
-		  outputArray[selectedIndex] = null;
-		  outputArray[selectedIndex + 1] = null;
+		  outputArray[selectedIndex] = -1;
+		  outputArray[selectedIndex + 1] = -1;
 	  }
 	  listView.setItems(list);
   }

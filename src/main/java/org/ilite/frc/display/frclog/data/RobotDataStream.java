@@ -88,6 +88,28 @@ public class RobotDataStream {
     }
   }
   
+  public void sendDataToRobot(String pData, ESupportedTypes pType, Object[] pValue) {
+	  if(pValue == null) { 
+	      return;
+	    }
+	    NetworkTableEntry entry = mTable.getEntry(pData);
+	    switch(pType) {
+	    case BOOLEAN:
+	      entry.setBooleanArray((Boolean[])pValue);
+	      break;
+	    case DOUBLE:
+	    case INTEGER:
+	    case LONG:
+	      entry.setNumberArray((Number[])pValue);
+	      break;
+	    case STRING:
+	    case UNSUPPORTED:
+	    default:
+	      entry.setStringArray((String[])pValue);
+	      break;
+	    }
+  }
+  
   private RobotDataStream() {
     mTable = NetworkTableInstance.getDefault().getTable("Generic Config Data");
   }

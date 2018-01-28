@@ -7,6 +7,7 @@ public enum ECubeAction {
 	NONE;
 	
 	public static ECubeAction intToEnum(int num) {
+		if(num == -1) return NONE;
 		return values()[num];
 	}
 	
