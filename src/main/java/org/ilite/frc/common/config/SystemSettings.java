@@ -7,6 +7,10 @@ import org.ilite.frc.common.types.ELogitech310;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Trajectory.Config;
+import jaci.pathfinder.Trajectory.FitMethod;
+
 public class SystemSettings extends ConstantsBase {
   
   public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
@@ -57,10 +61,22 @@ public class SystemSettings extends ConstantsBase {
   public static double	DRIVETRAIN_kA = 0;
   public static double	DRIVETRAIN_kV = 0;
   
+  
   // =============================================================================
   // Pigeon
   // =============================================================================  
   public static int PIGEON_DEVICE_ID = 5;
+  // =============================================================================
+  // Motion Profiling Constants
+  // =============================================================================
+  public static String 	MP_WRITE_DIRECTORY = "";
+  public static FitMethod 	MP_FIT_METHOD = FitMethod.HERMITE_QUINTIC;
+  public static int		MP_SAMPLES = Config.SAMPLES_HIGH;
+  public static double 	MP_DELTA_TIME = 0;
+  public static double 	MP_MAX_VEL = 0;
+  public static double 	MP_MAX_ACC = 0;
+  public static double 	MP_MAX_JERK = 0;
+  
   // =============================================================================
   // Input Constants
   // =============================================================================
