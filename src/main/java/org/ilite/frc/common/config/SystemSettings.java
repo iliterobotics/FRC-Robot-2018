@@ -45,6 +45,17 @@ public class SystemSettings extends ConstantsBase {
   public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
+  public static int		DRIVETRAIN_ENC_TICKS_PER_TURN = 0;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 0;
+  public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
+  public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
+  public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
+  public static double	DRIVETRAIN_ANGLE_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_VELOCITY_kD = 0;
+  public static double	DRIVETRAIN_kA = 0;
+  public static double	DRIVETRAIN_kV = 0;
   
   // =============================================================================
   // Pigeon
@@ -67,6 +78,7 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   // Motion Magic Constants
   // =============================================================================
+  public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
   public static int		MOTION_MAGIC_PID_SLOT;
   public static int		MOTION_MAGIC_LOOP_SLOT;
   public static int		MOTION_MAGIC_P;
