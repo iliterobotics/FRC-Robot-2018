@@ -97,7 +97,7 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol, intake, elevator);
+	  setRunningModules(dt, drivetraincontrol, intake);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
