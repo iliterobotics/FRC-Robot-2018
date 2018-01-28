@@ -23,30 +23,32 @@ public class DriveTrain implements IControlLoop {
 	private DriverControl driverControl;
 	//private PDM g;
 	
-	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
+	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
 	
 	public DriveTrain(DriverControl driverControl)
 	{
 		this.driverControl = driverControl;
-		//leftMaster = new TalonSRX(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
+    leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
+    leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
+    
 		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
-		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
 		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
-		//leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
-		//rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
+		rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
+		
 		rightFollower.follow(rightMaster);
-		//rightFollower2.follow(rightMaster);
-		//leftFollower2.follow(leftMaster);
-		leftFollower.follow(leftMaster);
+		rightFollower2.follow(rightMaster);
+    leftFollower.follow(leftMaster);
+		leftFollower2.follow(leftMaster);
+		
 		controlMode = ControlMode.PercentOutput;
+		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		rightMaster.setSensorPhase(false);
 		leftMaster.setSensorPhase(false);
-		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
 
 		}
 	
