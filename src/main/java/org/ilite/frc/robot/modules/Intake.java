@@ -41,6 +41,7 @@ public class Intake implements IModule{
 	@Override
 	public boolean update(double pNow) {
 		isElevatorDown = mElevator.isDown();
+		
 		leftIntakeTalon.set(ControlMode.PercentOutput, power );
 		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
 		
@@ -67,7 +68,7 @@ public class Intake implements IModule{
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		if (rightRatio > 5 || leftRatio > 5)
-			power = 0;
+			power = -inPower;
 		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
 			power = inPower;
 		
