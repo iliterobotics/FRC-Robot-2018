@@ -18,14 +18,14 @@ public class DriverControl implements IModule{
 	private Joystick mGamepad;
 	private Data mData;
 	private Intake mIntake;
-	private Elevator mElevator;
+	private ElevatorModule mElevator;
 	
 	private Object desiredValueLock = new Object();
 	private double desiredLeftOutput, desiredRightOutput;
 	private NeutralMode desiredNeutralMode;
 	private ControlMode desiredControlMode; 
 	
-	public DriverControl(Data pData, Intake pIntake, Elevator pElevator)
+	public DriverControl(Data pData, Intake pIntake, ElevatorModule pElevator)
 	{
 		this.mGamepad = new Joystick(SystemSettings.kCONTROLLER_ID);
 		this.mData = pData;
@@ -63,10 +63,10 @@ public class DriverControl implements IModule{
 	private void updateIntake() {
 		double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
 		System.out.println("Intake Speed:" + intakeSpeed);
-		if(mData.operator.get(ELogitech310.DPAD_UP) != null) {
+		if(mData.operator.isSet(ELogitech310.DPAD_UP)) {
 			mIntake.extendIntake();
 		} 
-		else if(mData.operator.get(ELogitech310.DPAD_DOWN) != null) {
+		else if(mData.operator.isSet(ELogitech310.DPAD_DOWN)) {
 			mIntake.retractIntake();
 		}
 		if(intakeSpeed > 0) {

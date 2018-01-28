@@ -12,7 +12,7 @@ import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
-import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 
@@ -41,13 +41,13 @@ public class Robot extends IterativeRobot {
   
   // Temporary...
   private final Intake intake;
-  private final Elevator elevator;
+  private final ElevatorModule elevator;
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
 
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
-	elevator = new Elevator();
+	elevator = new ElevatorModule();
 	intake = new Intake(elevator);
 	drivetraincontrol = new DriverControl(mData, intake, elevator);
 	dt = new DriveTrain(drivetraincontrol);

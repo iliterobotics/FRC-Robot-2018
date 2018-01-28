@@ -1,3 +1,4 @@
+
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
@@ -8,21 +9,26 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Intake implements IModule{
 	
-	private final TalonSRX leftIntake;
-	private final TalonSRX rightIntake;
-	private Elevator mElevator;
-	private BeamBreakSensor backBeam;
-	private BeamBreakSensor frontBeam;
+	private final TalonSRX leftIntakeTalon;
+	private final TalonSRX rightIntakeTalon;
+	private ElevatorModule mElevator;
+	private BeamBreakSensor backBeamBreak;
+	private BeamBreakSensor frontBeamBreak;
+	private double rightCurrent;
+	private double rightVoltage;
+	private double leftVoltage;
+	private double leftCurrent;
 	private boolean isElevatorDown;
 	private boolean intakeExtended;
 	private double power;
-	public Intake(Elevator pElevator)
+	public Intake(ElevatorModule pElevator)
 	{
-		leftIntake = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
-		rightIntake = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
+		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
+		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		mElevator = pElevator;
-		backBeam = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
-		frontBeam = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
+		backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
+		frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
+		
 	}
 
 
@@ -35,9 +41,14 @@ public class Intake implements IModule{
 	@Override
 	public boolean update(double pNow) {
 		isElevatorDown = mElevator.isDown();
-		leftIntake.set(ControlMode.PercentOutput, power );
-		rightIntake.set(ControlMode.PercentOutput, power);
+		leftIntakeTalon.set(ControlMode.PercentOutput, power );
+		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
 		
+		rightCurrent = rightIntakeTalon.getOutputCurrent();
+		rightVoltage = rightIntakeTalon.getMotorOutputVoltage();
+		leftCurrent = leftIntakeTalon.getOutputCurrent();
+		leftVoltage = leftIntakeTalon.getMotorOutputVoltage();
+
 		return true;
 	}
 	public void retractIntake() {
@@ -52,8 +63,14 @@ public class Intake implements IModule{
 	}
 	
 	public void intakeIn(double inPower) {
-		if(isElevatorDown && intakeExtended && !backBeam.isBroken()) 
+		
+		double rightRatio = rightCurrent/rightVoltage;
+		double leftRatio = leftCurrent/leftVoltage;
+		if (rightRatio > 5 || leftRatio > 5)
+			power = 0;
+		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
 			power = inPower;
+		
 	}
 	public void intakeOut(double inPower) {
 		if(isElevatorDown)
