@@ -74,7 +74,7 @@ public class AutonConfigDisplay extends Application {
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
 	        event -> 
-		    SystemSettings.AUTON_TABLE.getEntry(pEnumeration.getSimpleName()).setNumber(combo.getSelectionModel().getSelectedItem().ordinal())
+		    SystemSettings.AUTON_TABLE.getEntry(pEnumeration.getSimpleName()).forceSetNumber(combo.getSelectionModel().getSelectedItem().ordinal())
 	    );
 	    combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);
@@ -109,7 +109,8 @@ public class AutonConfigDisplay extends Application {
 
 		@Override
 		public void onChanged(Change arg0) {
-			SystemSettings.AUTON_TABLE.getEntry(pEnumeration.getSimpleName()).setNumberArray(preferredCubeActions);
+			System.out.println("On changed");
+			SystemSettings.AUTON_TABLE.getEntry("Cube Action").setDefaultNumberArray(preferredCubeActions);
 		}
     	
     });

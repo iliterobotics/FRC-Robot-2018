@@ -9,6 +9,7 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
@@ -47,10 +48,15 @@ public class GetAutonomous {
 	public GetAutonomous(NetworkTable pAutonTable) {
 		this.nAutonTable = pAutonTable;
 		doComplexAutonomous = true;
+		SystemSettings.AUTON_TABLE.getEntry("Cross").setDefaultNumber(-1);
+		SystemSettings.AUTON_TABLE.getEntry("Starting Position").setDefaultNumber(-1);
+		Number[] defaultArray = {0};
+		SystemSettings.AUTON_TABLE.getEntry("Cube Action").setDefaultNumberArray(defaultArray);
     try {
       nPosEntry = nAutonTable.getEntry("Starting Position");
       nCrossEntry = nAutonTable.getEntry("Cross");
       nCubeActionPrefsEntry = nAutonTable.getEntry("Cube Action");
+      
     } catch (Exception e) {
     
     }
@@ -196,6 +202,7 @@ public class GetAutonomous {
 	 * Converts the number representation of the network table entry into an enum.
 	 */
 	private void parseEntries() {
+		System.out.println(SystemSettings.AUTON_TABLE.getKeys());
 		int posNum = nPosEntry.getNumber(EStartingPosition.UNKNOWN.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.NONE.ordinal()).intValue();
 		System.out.println(posNum);
@@ -292,6 +299,23 @@ public class GetAutonomous {
         .filter(cA -> isCubeActionOtherSide(cA))
         .collect(Collectors.toList());
   }
+  
+  /** 
+   * Testing method. 
+   * @param pActions 
+   * @param pCross 
+   * @param pPos 
+   * @param pSwitchSide 
+   * @param pScaleSide 
+   */ 
+  public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos, 
+    OwnedSide pSwitchSide, OwnedSide pScaleSide) { 
+    mCubeActionPrefs = pActions; 
+    mCrossType = pCross; 
+    mStartingPos = pPos; 
+    mSwitchSide = pSwitchSide; 
+    mScaleSide = pScaleSide; 
+  } 
 
 
 }
