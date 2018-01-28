@@ -55,6 +55,16 @@ public class DriverControl implements IModule{
 		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
 		desiredLeftOutput = throttle - rotate;
 		desiredRightOutput = throttle + rotate;
+		
+		int leftScalar = desiredLeftOutput < 0 ? -1 : 1;
+		int rightScalar = desiredRightOutput < 0 ? -1 : 1;
+		desiredLeftOutput =  leftScalar * Math.min(Math.abs(desiredLeftOutput), 0.5);
+		desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 0.5);
+		
+		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
+		  desiredLeftOutput /= 3;
+		  desiredRightOutput /= 3;
+		}
 	}
 	
 	private void updateIntake() {
