@@ -7,16 +7,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class ElevatorModule implements IModule {
-	private TalonSRX leftElevatorTalon, rightElevatorTalon;
-	private double mDesiredPower;
-	private boolean isDown;
-	private DigitalInput bottomLimitSwitch;
+public class Elevator implements IModule {
+	private TalonSRX leftElevator, rightElevator;
+	private double mPower;
+	private boolean mState;
+	private DigitalInput limitSwitch;
 
-	public ElevatorModule() {
-		leftElevatorTalon = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
-		rightElevatorTalon = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
-		bottomLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
+	public Elevator() {
+		leftElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
+		rightElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
+		limitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
 	}
 
 	@Override
@@ -26,25 +26,23 @@ public class ElevatorModule implements IModule {
 
 	@Override
 	public boolean update(double pNow) {
-		if ((!bottomLimitSwitch.get())) {
-			isDown = true;
+		if ((!limitSwitch.get())) {
+			mState = true;
 		} else {
-			isDown = false;
+			mState = false;
 		}
 
-		leftElevatorTalon.set(ControlMode.PercentOutput, mDesiredPower);
-		rightElevatorTalon.set(ControlMode.PercentOutput, mDesiredPower);
-		
-		
+		leftElevator.set(ControlMode.PercentOutput, mPower);
+		rightElevator.set(ControlMode.PercentOutput, mPower);
 		return true;
 	}
 
-	public void setDesiredPower(double power) {
-		mDesiredPower = power;
+	public void setPower(double power) {
+		mPower = power;
 	}
 
 	public boolean isDown() {
-		return isDown;
+		return mState;
 	}
 
 	@Override
