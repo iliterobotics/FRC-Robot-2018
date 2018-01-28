@@ -7,13 +7,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class Elevator implements IModule {
+public class ElevatorModule implements IModule {
 	private TalonSRX leftElevator, rightElevator;
 	private double mPower;
 	private boolean mState;
 	private DigitalInput limitSwitch;
 
-	public Elevator() {
+	public ElevatorModule() {
 		leftElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
 		rightElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
 		limitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
