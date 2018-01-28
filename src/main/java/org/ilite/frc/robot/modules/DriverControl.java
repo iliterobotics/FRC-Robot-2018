@@ -50,14 +50,11 @@ public class DriverControl implements IModule{
 	}
 	
 	private void updateDriveTrain() {
-//		double rotate = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_LEFT_Y);
-//		double throttle = mGamepad.getRawAxis(SystemSettings.kGAMEPAD_RIGHT_X);
 		double rotate = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
 		desiredLeftOutput = throttle - rotate;
 		desiredRightOutput = throttle + rotate;
-		System.out.println("TEST DRIVE PRINT");
 	}
 	
 	private void updateIntake() {

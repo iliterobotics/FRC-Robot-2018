@@ -32,11 +32,11 @@ public class DriveTrain implements IControlLoop {
 		this.driverControl = driverControl;
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
     leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
-    leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
+    leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT3);
     
 		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
 		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
-		rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
+		rightFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT3);
 		
 		rightFollower.follow(rightMaster);
 		rightFollower2.follow(rightMaster);
@@ -70,6 +70,8 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
+		SmartDashboard.putNumber("Left Position", leftMaster.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Right Position", rightMaster.getSelectedSensorPosition(0));
 		return false;
 	}	
 	

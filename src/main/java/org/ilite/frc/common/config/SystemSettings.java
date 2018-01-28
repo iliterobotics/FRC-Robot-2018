@@ -31,10 +31,10 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
 	public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
-  public static  int DRIVETRAIN_TALONID_LEFT3 = 10;
+  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
 	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
 	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
-	public static  int DRIVETRAIN_TALONID_RIGHT3 = 7;
+	public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
 	public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
 	public static int ELEVATOR_TALONID_LEFT = 11;
