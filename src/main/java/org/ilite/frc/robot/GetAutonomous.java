@@ -23,7 +23,7 @@ import openrio.powerup.MatchData.OwnedSide;
 
 public class GetAutonomous {
 	//Network Table instance variables.
-	private NetworkTable nAutonTable;
+	private SimpleNetworkTable nAutonTable;
 	private NetworkTableEntry nPosEntry;
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
@@ -45,13 +45,10 @@ public class GetAutonomous {
 	 * 
 	 * @param pAutonTable - Autonomous network table to be passed in from Robot.java
 	 */
-	public GetAutonomous(NetworkTable pAutonTable) {
+	public GetAutonomous(SimpleNetworkTable pAutonTable) {
 		this.nAutonTable = pAutonTable;
+		nAutonTable.initKeys();
 		doComplexAutonomous = true;
-		SystemSettings.AUTON_TABLE.getEntry("Cross").setDefaultNumber(-1);
-		SystemSettings.AUTON_TABLE.getEntry("Starting Position").setDefaultNumber(-1);
-		Number[] defaultArray = {0};
-		SystemSettings.AUTON_TABLE.getEntry("Cube Action").setDefaultNumberArray(defaultArray);
     try {
       nPosEntry = nAutonTable.getEntry("Starting Position");
       nCrossEntry = nAutonTable.getEntry("Cross");
@@ -202,7 +199,6 @@ public class GetAutonomous {
 	 * Converts the number representation of the network table entry into an enum.
 	 */
 	private void parseEntries() {
-		System.out.println(SystemSettings.AUTON_TABLE.getKeys());
 		int posNum = nPosEntry.getNumber(EStartingPosition.UNKNOWN.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.NONE.ordinal()).intValue();
 		System.out.println(posNum);
@@ -212,7 +208,7 @@ public class GetAutonomous {
 		
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mCrossType = ECross.intToEnum(crossNum);
-		mCubeActionPrefs = new ArrayList<>();
+		mCubeActionPrefs = new ArrayList<ECubeAction>();
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if(n.intValue() == -1) continue;
