@@ -23,6 +23,7 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -122,8 +123,8 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
-      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), null, false);
+      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros

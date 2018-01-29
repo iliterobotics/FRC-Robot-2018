@@ -50,6 +50,8 @@ public class DriverControl implements IModule{
 	}
 	
 	private void updateDriveTrain() {
+	  mData.driverinput.set(ELogitech310.RUMBLE, 1.0);
+	  
 		double rotate = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);

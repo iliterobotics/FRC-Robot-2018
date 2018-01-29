@@ -26,6 +26,7 @@ public class DriveTrain implements IControlLoop {
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
+	private double maxVelocity;
 	
 	public DriveTrain(DriverControl driverControl)
 	{
@@ -45,10 +46,12 @@ public class DriveTrain implements IControlLoop {
 		
 		controlMode = ControlMode.PercentOutput;
 		
-		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
-		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
-		rightMaster.setSensorPhase(false);
-		leftMaster.setSensorPhase(false);
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		rightMaster.setSensorPhase(true);
+		leftMaster.setSensorPhase(true);
+		leftMaster.config
+		this.maxVelocity = 0;
 
 		}
 	
@@ -70,15 +73,13 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
 		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
-		SmartDashboard.putNumber("Left Position", leftMaster.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Right Position", rightMaster.getSelectedSensorPosition(0));
+		
+		maxVelocity = Math.max(maxVelocity, (getLeftVelocity() + getRightVelocity()) / 2);
+		SmartDashboard.putNumber("Highest Velocity", maxVelocity);
+		SmartDashboard.putNumber("Left Position", getLeftPosition());
+		SmartDashboard.putNumber("Right Position", getRightPosition());
 		return false;
-	}	
-	
-	/*private void updateSpeed(double l, double r)
-	{
-	
-	}*/
+	}
 	
 	public void set(ControlMode pMode, double l, double r)
 	{
@@ -94,7 +95,6 @@ public class DriveTrain implements IControlLoop {
 	public void shutdown(double pNow) {
 		leftMaster.neutralOutput();
 		rightMaster.neutralOutput();
-		
 	}
 	
 	public void changeModes(ControlMode controlMode)

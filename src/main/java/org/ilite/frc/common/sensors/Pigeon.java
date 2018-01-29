@@ -80,8 +80,7 @@ public class Pigeon extends IMU{
 	                  ypr[0] = 360 - Math.abs(ypr[0]);
 	              }
 	                  
-	              return ypr[0];
-    //return ypr[0];
+	    return ypr[0];
 	}
 	
 	public double getPitch() {
