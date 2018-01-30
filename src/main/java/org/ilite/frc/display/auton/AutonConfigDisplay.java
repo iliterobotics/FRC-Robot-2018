@@ -1,5 +1,7 @@
 package org.ilite.frc.display.auton;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -32,6 +35,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView; 
 
 public class AutonConfigDisplay extends Application {
 
@@ -46,6 +51,20 @@ public class AutonConfigDisplay extends Application {
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
+  
+    try {
+    		scene.getStylesheets().add(AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm());
+    	  	Image field = new Image(new File("./field.png").toURI().toURL().toExternalForm());
+    	    ImageView fieldView = new ImageView(field);
+    	    fieldView.setX(400);
+    	    fieldView.setY(200);
+    	    fieldView.setFitHeight(400);
+    	    fieldView.setFitWidth(600);
+    	    fieldView.setPreserveRatio(true);
+    }
+    catch (Exception e) {
+    	System.out.println("File not found");
+    }
     
     gson = new Gson();
     preferredCubeActions = new Integer[ECubeAction.values().length];
@@ -61,7 +80,7 @@ public class AutonConfigDisplay extends Application {
     h.setSpacing(10d);
     root.setCenter(h);
     BorderPane.setAlignment(h, Pos.CENTER);
-  
+    
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
     primaryStage.show();
