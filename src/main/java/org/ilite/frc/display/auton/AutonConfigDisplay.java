@@ -27,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +42,6 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
-  private Gson gson;
   private Integer[] preferredCubeActions;
   private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
@@ -55,9 +55,7 @@ public class AutonConfigDisplay extends Application {
     Scene scene = new Scene(root, 800, 600);
 		
     scene.getStylesheets().add(iliteCss);
-	  setFieldImage("./field.png");
     
-    gson = new Gson();
     preferredCubeActions = new Integer[ECubeAction.values().length];
     for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
     
@@ -67,10 +65,11 @@ public class AutonConfigDisplay extends Application {
       }
     });
     
-    Button mode = new Button("Stephen Mode");
+    Button mode = new Button("Enhanced Mode");
     mode.setOnAction(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
-        mode.setText("Stephen Mode");
+        mode.setText("Enhanced Mode");
+        scene.getStylesheets().clear();
         scene.getStylesheets().add(iliteCss);
       } else {
         mode.setText("Judge's Mode");
@@ -92,7 +91,7 @@ public class AutonConfigDisplay extends Application {
     root.setCenter(selectionBoxes);
     root.setBottom(modeOptions);
     BorderPane.setAlignment(selectionBoxes, Pos.CENTER);
-    BorderPane.setAlignment(modeOptions, Pos.BOTTOM_RIGHT);
+    BorderPane.setAlignment(modeOptions, Pos.BOTTOM_LEFT);
     
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
@@ -127,7 +126,7 @@ public class AutonConfigDisplay extends Application {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener(e -> {
     					if(observable.get()) {
-    			            preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
+    			      preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
     					} else {
     						preferenceArray[listView.getItems().indexOf(item)] = -1;
     					}
@@ -183,6 +182,7 @@ public class AutonConfigDisplay extends Application {
 		  list.set(selectedIndex - 1, temp);
 		  outputArray[selectedIndex] = -1;
 		  outputArray[selectedIndex - 1] = -1;
+		  listView.getSelectionModel().select(selectedIndex - 1);
 	  }
 	  listView.setItems(list);
   }
@@ -198,6 +198,7 @@ public class AutonConfigDisplay extends Application {
 		  list.set(selectedIndex + 1, temp);
 		  outputArray[selectedIndex] = -1;
 		  outputArray[selectedIndex + 1] = -1;
+	    listView.getSelectionModel().select(selectedIndex + 1);
 	  }
 	  listView.setItems(list);
   }

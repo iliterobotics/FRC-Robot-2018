@@ -22,9 +22,14 @@
 	-fx-background-color: #a385e0;
 	-fx-text-fill: black;
 }
+
 .list-view .list-cell:odd {
 	-fx-background-color: #9370DB;
 	-fx-text-fill: black;
+}
+
+.list-view .list-cell:selected {
+	-fx-background-color: #28a745;
 }
 
 .button{
