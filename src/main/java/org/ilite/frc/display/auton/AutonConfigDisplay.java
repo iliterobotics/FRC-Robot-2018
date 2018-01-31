@@ -1,7 +1,8 @@
 package org.ilite.frc.display.auton;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,27 +23,27 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView; 
+import javafx.util.Callback; 
 
 public class AutonConfigDisplay extends Application {
 
   private Gson gson;
   private Integer[] preferredCubeActions;
-	
+  private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
+	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -51,35 +52,40 @@ public class AutonConfigDisplay extends Application {
   public void start(Stage primaryStage) throws Exception {
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
-  
-    try {
-    		scene.getStylesheets().add(AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm());
-    	  	Image field = new Image(new File("./field.png").toURI().toURL().toExternalForm());
-    	    ImageView fieldView = new ImageView(field);
-    	    fieldView.setX(400);
-    	    fieldView.setY(200);
-    	    fieldView.setFitHeight(400);
-    	    fieldView.setFitWidth(600);
-    	    fieldView.setPreserveRatio(true);
-    }
-    catch (Exception e) {
-    	System.out.println("File not found");
-    }
+		
+    scene.getStylesheets().add(awesomeCss);
+	  setFieldImage("./field.png");
     
     gson = new Gson();
     preferredCubeActions = new Integer[ECubeAction.values().length];
     for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
     
+    Button mode = new Button("Judge's Mode");
+    mode.setOnAction(e -> {
+      if(scene.getStylesheets().contains(awesomeCss)) {
+        mode.setText("Stephen Mode😤");
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(iliteCss);
+      } else {
+        mode.setText("Judge's Mode");
+        scene.getStylesheets().add(awesomeCss);
+        setFieldImage("./field.png");
+      }
+    });
     
-    HBox h = new HBox(
+    HBox selectionBoxes = new HBox(
     		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
     		labeledDropdown(EStartingPosition.class),
     		labeledDropdown(ECross.class)
     );
     
-    h.setSpacing(10d);
-    root.setCenter(h);
-    BorderPane.setAlignment(h, Pos.CENTER);
+    HBox modeOptions = new HBox(mode);
+    
+    selectionBoxes.setSpacing(10d);
+    root.setCenter(selectionBoxes);
+    root.setBottom(modeOptions);
+    BorderPane.setAlignment(selectionBoxes, Pos.CENTER);
+    BorderPane.setAlignment(modeOptions, Pos.BOTTOM_RIGHT);
     
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
@@ -187,6 +193,20 @@ public class AutonConfigDisplay extends Application {
 		  outputArray[selectedIndex + 1] = -1;
 	  }
 	  listView.setItems(list);
+  }
+  
+  private static void setFieldImage(String path) {
+    try {
+      Image field = new Image(new File(path).toURI().toURL().toExternalForm());
+      ImageView fieldView = new ImageView(field);
+      fieldView.setX(400);
+      fieldView.setY(200);
+      fieldView.setFitHeight(400);
+      fieldView.setFitWidth(600);
+      fieldView.setPreserveRatio(true);
+    } catch (Exception e) {
+      System.err.println("File not found.");
+    }
   }
   
 }
