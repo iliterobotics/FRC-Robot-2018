@@ -70,11 +70,11 @@ public class AutonConfigDisplay extends Application {
     Button mode = new Button("Judge's Mode");
     mode.setOnAction(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
-        mode.setText("Stephen Mode😤");
-        scene.getStylesheets().clear();
+        mode.setText("Stephen Mode");
         scene.getStylesheets().add(iliteCss);
       } else {
         mode.setText("Judge's Mode");
+        scene.getStylesheets().clear();
         scene.getStylesheets().add(awesomeCss);
         setFieldImage("./field.png");
       }
