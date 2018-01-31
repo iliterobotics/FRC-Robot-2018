@@ -1,7 +1,6 @@
 package org.ilite.frc.display.auton;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +33,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback; 
@@ -59,6 +60,12 @@ public class AutonConfigDisplay extends Application {
     gson = new Gson();
     preferredCubeActions = new Integer[ECubeAction.values().length];
     for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
+    
+    scene.setOnMouseClicked(e -> {
+      if(scene.getStylesheets().contains(awesomeCss)) {
+        playSound("./airhorn.mp3");
+      }
+    });
     
     Button mode = new Button("Judge's Mode");
     mode.setOnAction(e -> {
@@ -207,6 +214,14 @@ public class AutonConfigDisplay extends Application {
     } catch (Exception e) {
       System.err.println("File not found.");
     }
+  }
+  
+  private static void playSound(String sound){
+    // cl is the ClassLoader for the current class, ie. CurrentClass.class.getClassLoader();
+    URL file = AutonConfigDisplay.class.getResource(sound);
+    final Media media = new Media(file.toString());
+    final MediaPlayer mediaPlayer = new MediaPlayer(media);
+    mediaPlayer.play();
   }
   
 }
