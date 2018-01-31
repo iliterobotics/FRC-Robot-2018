@@ -54,7 +54,7 @@ public class AutonConfigDisplay extends Application {
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
 		
-    scene.getStylesheets().add(awesomeCss);
+    scene.getStylesheets().add(iliteCss);
 	  setFieldImage("./field.png");
     
     gson = new Gson();
@@ -67,7 +67,7 @@ public class AutonConfigDisplay extends Application {
       }
     });
     
-    Button mode = new Button("Judge's Mode");
+    Button mode = new Button("Stephen Mode");
     mode.setOnAction(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
         mode.setText("Stephen Mode");
@@ -126,12 +126,12 @@ public class AutonConfigDisplay extends Application {
         public ObservableValue<Boolean> call(String item) {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener(e -> {
-					if(observable.get()) {
-			            preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
-					} else {
-						preferenceArray[listView.getItems().indexOf(item)] = -1;
-					}
-					System.out.println(Arrays.toString(preferenceArray));
+    					if(observable.get()) {
+    			            preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
+    					} else {
+    						preferenceArray[listView.getItems().indexOf(item)] = -1;
+    					}
+    					System.out.println(Arrays.toString(preferenceArray));
             });
             return observable;
         }

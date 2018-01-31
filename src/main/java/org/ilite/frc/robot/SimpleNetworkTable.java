@@ -9,15 +9,15 @@ public class SimpleNetworkTable  {
     
     public SimpleNetworkTable(String name) {
         netTable = NetworkTableInstance.getDefault().getTable(name);
-        netTable.getInstance().startClient();//Init 
+        netTable.getInstance().startClient("1885");//Init 
         netTable.getInstance().setServerTeam(1885);
         netTable.getInstance().startClientTeam(1885);
     }
     public synchronized void initKeys() {
     	    netTable.getEntry("Cross").setDefaultNumber(-1);
-		netTable.getEntry("Starting Position").setDefaultNumber(-1);
-		Number[] defaultArray = {0};
-		netTable.getEntry("Cube Action").setDefaultNumberArray(defaultArray);
+      		netTable.getEntry("Starting Position").setDefaultNumber(-1);
+      		Number[] defaultArray = {0};
+      		netTable.getEntry("Cube Action").setDefaultNumberArray(defaultArray);
     }
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
