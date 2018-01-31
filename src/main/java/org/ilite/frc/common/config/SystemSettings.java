@@ -7,6 +7,10 @@ import org.ilite.frc.common.types.ELogitech310;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Trajectory.Config;
+import jaci.pathfinder.Trajectory.FitMethod;
+
 public class SystemSettings extends ConstantsBase {
   
   public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
@@ -40,8 +44,8 @@ public class SystemSettings extends ConstantsBase {
 	public static int ELEVATOR_TALONID_LEFT = 11;
 	public static int ELEVATOR_TALONID_RIGHT = 12;
 	
-	public  static int kCONTROLLER_ID = 0;
-
+	public static int TALON_CONFIG_TIMEOUT_MS = 50;
+	public static int kCONTROLLER_ID = 0;
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
@@ -49,11 +53,34 @@ public class SystemSettings extends ConstantsBase {
   public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
+  public static int		DRIVETRAIN_ENC_TICKS_PER_TURN = 0;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 0;
+  public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
+  public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
+  public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
+  public static double	DRIVETRAIN_ANGLE_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kP = 0;
+  public static double	DRIVETRAIN_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_VELOCITY_kD = 0;
+  public static double	DRIVETRAIN_kA = 0;
+  public static double	DRIVETRAIN_kV = 0;
+  
   
   // =============================================================================
   // Pigeon
   // =============================================================================  
   public static int PIGEON_DEVICE_ID = 5;
+  // =============================================================================
+  // Motion Profiling Constants
+  // =============================================================================
+  public static String 	MP_WRITE_DIRECTORY = "";
+  public static FitMethod 	MP_FIT_METHOD = FitMethod.HERMITE_QUINTIC;
+  public static int		MP_SAMPLES = Config.SAMPLES_HIGH;
+  public static double 	MP_DELTA_TIME = 0;
+  public static double 	MP_MAX_VEL = 0;
+  public static double 	MP_MAX_ACC = 0;
+  public static double 	MP_MAX_JERK = 0;
+  
   // =============================================================================
   // Input Constants
   // =============================================================================
@@ -69,6 +96,19 @@ public class SystemSettings extends ConstantsBase {
   public static ELogitech310  DRIVER_MAP_TURN_AXIS = ELogitech310.COMBINED_TRIGGER_AXIS;
   public static ELogitech310  DRIVER_MAP_INTAKE_BUTTON = ELogitech310.A_BTN;
   public static ELogitech310  DRIVER_MAP_OUTTAKE_BUTTON = ELogitech310.B_BTN;
+  
+  // =============================================================================
+  // Motion Magic Constants
+  // =============================================================================
+  public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
+  public static int		MOTION_MAGIC_PID_SLOT;
+  public static int		MOTION_MAGIC_LOOP_SLOT;
+  public static int		MOTION_MAGIC_P;
+  public static int		MOTION_MAGIC_I;
+  public static int		MOTION_MAGIC_D;
+  public static int		MOTION_MAGIC_F;
+  public static int		MOTION_MAGIC_V;
+  public static int		MOTION_MAGIC_A;
   
   @Override
   public String getFileLocation() {
