@@ -60,8 +60,8 @@ public class DriverControl implements IModule{
 		
 		int leftScalar = desiredLeftOutput < 0 ? -1 : 1;
 		int rightScalar = desiredRightOutput < 0 ? -1 : 1;
-		desiredLeftOutput =  leftScalar * Math.min(Math.abs(desiredLeftOutput), 0.5);
-		desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 0.5);
+		desiredLeftOutput =  leftScalar * Math.min(Math.abs(desiredLeftOutput), 1);
+		desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 1);
 		
 		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
 		  desiredLeftOutput /= 3;
@@ -90,7 +90,23 @@ public class DriverControl implements IModule{
 		
 	}
 	
-	public double getDesiredLeftOutput() {
+	public void setDesiredLeftOutput(double desiredLeftOutput) {
+    this.desiredLeftOutput = desiredLeftOutput;
+  }
+
+  public void setDesiredRightOutput(double desiredRightOutput) {
+    this.desiredRightOutput = desiredRightOutput;
+  }
+
+  public void setDesiredNeutralMode(NeutralMode desiredNeutralMode) {
+    this.desiredNeutralMode = desiredNeutralMode;
+  }
+
+  public void setDesiredControlMode(ControlMode desiredControlMode) {
+    this.desiredControlMode = desiredControlMode;
+  }
+
+  public double getDesiredLeftOutput() {
 		synchronized (desiredValueLock) {
 			return desiredLeftOutput;
 		}

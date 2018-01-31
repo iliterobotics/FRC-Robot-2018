@@ -48,9 +48,9 @@ public class DriveTrain implements IControlLoop {
 		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
-		rightMaster.setSensorPhase(true);
+		rightMaster.setSensorPhase(false);
 		leftMaster.setSensorPhase(true);
-		leftMaster.config
+		
 		this.maxVelocity = 0;
 
 		}
@@ -68,27 +68,35 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public boolean update(double pNow) {
-		//updateSpeed(desiredLeft, desiredRight);
-		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
-		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
-		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
-		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
+	  ControlMode newMode = driverControl.getDesiredControlMode();
+    if(newMode != controlMode) {
+      controlMode = newMode;
+      initMode(controlMode);
+    }
+    leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+    rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+    leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
+    rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
 		
-		maxVelocity = Math.max(maxVelocity, (getLeftVelocity() + getRightVelocity()) / 2);
+		maxVelocity = Math.max(maxVelocity, (getLeftVelocityFeetPerSecond() + getRightVelocityFeetPerSecond()) / 2);
+		
 		SmartDashboard.putNumber("Highest Velocity", maxVelocity);
-		SmartDashboard.putNumber("Left Position", getLeftPosition());
-		SmartDashboard.putNumber("Right Position", getRightPosition());
+		SmartDashboard.putNumber("Left Velocity (Ticks)", getLeftVelocity());
+		SmartDashboard.putNumber("Right Velocity (Ticks)", getRightVelocity());
+		SmartDashboard.putNumber("Left Velocity (FPS)", getLeftVelocityFeetPerSecond());
+		SmartDashboard.putNumber("Right Velocity (FPS)", getRightVelocityFeetPerSecond());
+		SmartDashboard.putNumber("Left Position (Ticks)", getLeftPosition());
+		SmartDashboard.putNumber("Right Position (Ticks)", getRightPosition());
+		SmartDashboard.putNumber("Left Position (Inches)", getLeftPositionInches());
+    SmartDashboard.putNumber("Right Position (Unches)", getRightPositionInches());
+		
 		return false;
 	}
 	
-	public void set(ControlMode pMode, double l, double r)
+	public void set(double l, double r)
 	{
 		desiredLeft = l;
 		desiredRight = r;
-	}
-	
-	public void setPower(double l, double r) {
-		set(ControlMode.PercentOutput, l, r);
 	}
 	
 	@Override
@@ -97,7 +105,7 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.neutralOutput();
 	}
 	
-	public void changeModes(ControlMode controlMode)
+	public void initMode(ControlMode controlMode)
 	{
 		switch(controlMode)
 		{
@@ -119,10 +127,10 @@ public class DriveTrain implements IControlLoop {
 			leftMaster.config_kI(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			leftMaster.config_kD(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			leftMaster.config_kF(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-			/* set acceleration and vcruise velocity - see documentation */
+			
 			leftMaster.configMotionCruiseVelocity(SystemSettings.MOTION_MAGIC_V, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			leftMaster.configMotionAcceleration(SystemSettings.MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-			/* zero the sensor */
+			
 			leftMaster.setSelectedSensorPosition(0, SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			
 			rightMaster.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
@@ -130,10 +138,10 @@ public class DriveTrain implements IControlLoop {
 			rightMaster.config_kI(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			rightMaster.config_kD(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			rightMaster.config_kF(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-			/* set acceleration and vcruise velocity - see documentation */
+			
 			rightMaster.configMotionCruiseVelocity(SystemSettings.MOTION_MAGIC_V, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			rightMaster.configMotionAcceleration(SystemSettings.MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-			/* zero the sensor */
+			
 			rightMaster.setSelectedSensorPosition(0, SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 			break;
 		case MotionMagicArc:
@@ -150,6 +158,11 @@ public class DriveTrain implements IControlLoop {
 	}
 	@Override
 	public void loop(double pNow) {
+	  ControlMode newMode = driverControl.getDesiredControlMode();
+	  if(newMode != controlMode) {
+	    controlMode = newMode;
+	    initMode(controlMode);
+	  }
 		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
 		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
@@ -166,15 +179,31 @@ public class DriveTrain implements IControlLoop {
 		return rightMaster.getSelectedSensorVelocity(0);
 	}
 	
-	public double getLeftPosition()
+	public double getLeftVelocityFeetPerSecond() {
+	  return (double)(getLeftVelocity() * (1.0 / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0);
+	}
+	
+	public double getRightVelocityFeetPerSecond() {
+    return (double)(getRightVelocity() * (1.0 / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0);
+  }
+	
+	public int getLeftPosition()
 	{
 		return leftMaster.getSelectedSensorPosition(0);
 	}
 	
-	public double getRightPosition()
+	public int getRightPosition()
 	{
 		return rightMaster.getSelectedSensorPosition(0);
 	}
+	
+	public double getLeftPositionInches() {
+	  return (getLeftPosition() / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE;
+	}
+	
+	public double getRightPositionInches() {
+    return getRightPosition() / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE;
+  }
 	
 }
 	
