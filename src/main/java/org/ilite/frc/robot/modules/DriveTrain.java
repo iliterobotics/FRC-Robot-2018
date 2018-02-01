@@ -4,155 +4,170 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
+//import org.usfirst.frc.team1885.robot.SystemSettings;
+import org.ilite.frc.robot.controlloop.IControlLoop;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.flybotix.hfr.util.log.ILog;
-import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.MotorSafety;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
  */
-public class DriveTrain implements IModule {
-  private final ILog mLog = Logger.createLog(DriveTrain.class);
+public class DriveTrain implements IControlLoop {
+	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
-	private Solenoid gearShifter;
-	private final TalonSRX mLeftMaster;
-	private final TalonSRX mLeftFollow;
-  private final TalonSRX mRightMaster;
-  private final TalonSRX mRightFollow;
-  private final Data data;
-  
+	private DriverControl driverControl;
+	//private PDM g;
+	
+	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
+	private ControlMode controlMode;
+	private double desiredLeft, desiredRight;
+	
+	public DriveTrain(DriverControl driverControl)
+	{
+		this.driverControl = driverControl;
+		//leftMaster = new TalonSRX(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
+		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
+		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
+		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
+		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
+		//leftFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_LEFT3);
+		//rightFollower2 = new TalonSRX(SystemSettings.DRIVETRAIN_TALONID_RIGHT3);
+		rightFollower.follow(rightMaster);
+		//rightFollower2.follow(rightMaster);
+		//leftFollower2.follow(leftMaster);
+		leftFollower.follow(leftMaster);
+		controlMode = ControlMode.PercentOutput;
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		rightMaster.setSensorPhase(false);
+		leftMaster.setSensorPhase(false);
+		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
 
-	public DriveTrain(Data pData) {
-	  data = pData;
-		gearShifter = new Solenoid(SystemSettings.DRIVETRAIN_SHIFT_SOLENOID_ID);
+		}
+	
+	
+
+	@Override
+	public void initialize(double pNow) {
+		leftMaster.set(controlMode, desiredLeft);
+		rightMaster.set(controlMode, desiredRight);
+		leftMaster.setSelectedSensorPosition(0, 0, 10);
+		rightMaster.setSelectedSensorPosition(0, 0, 10);
 		
-		mLeftMaster = createTalon(SystemSettings.TALON_ADDR_DT_LEFT_MASTER, FeedbackDevice.QuadEncoder);
-//		mLeftMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
-		mLeftFollow = createTalon(SystemSettings.TALON_ADDR_DT_LEFT_FOLLOW_1, SystemSettings.TALON_ADDR_DT_LEFT_MASTER);
-//		mLeftFollow.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
-    
-    mRightMaster = createTalon(SystemSettings.TALON_ADDR_DT_RIGHT_MASTER, FeedbackDevice.QuadEncoder);
-//    mRightMaster.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
-    mRightFollow = createTalon(SystemSettings.TALON_ADDR_DT_RIGHT_FOLLOW_1, SystemSettings.TALON_ADDR_DT_RIGHT_MASTER);
-//    mRightFollow.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 5);
+	}
+
+	@Override
+	public boolean update(double pNow) {
+		//updateSpeed(desiredLeft, desiredRight);
+		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
+		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
+		//System.out.printf("Left: %s Right: %s\n", desiredLeft, desiredRight);
+		//System.out.println("Left Motor position: " + getLeftPosition() + "\nRight Motor position: " + getRightPosition());
+		SmartDashboard.putNumber("Left Position", getLeftPosition());
+		SmartDashboard.putNumber("Right Position", getRightPosition());
+		SmartDashboard.putNumber("Desired Left", driverControl.getDesiredLeftOutput());
+		SmartDashboard.putNumber("Desired Right", driverControl.getDesiredRightOutput());	
+
+		return false;
+	}	
+	
+	/*private void updateSpeed(double l, double r)
+	{
+	
+	}*/
+	
+	public void set(ControlMode pMode, double l, double r)
+	{
+		desiredLeft = l;
+		desiredRight = r;
+	}
+	
+	public void setPower(double l, double r) {
+		set(ControlMode.PercentOutput, l, r);
+	}
+	
+	@Override
+	public void shutdown(double pNow) {
+		leftMaster.neutralOutput();
+		rightMaster.neutralOutput();
 		
 	}
-
-	public void setShift(boolean shift) {
-//		set(IS_SHIFT, shift ? 1d : null);
-		set(EDriveTrain.VOLTAGE_RAMP_RATE, shift ? 
-		    SystemSettings.DRIVETRAIN_HIGH_GEAR_RAMP_RATE : 
-		    SystemSettings.DRIVETRAIN_DEFAULT_RAMP_RATE);
-    
-		// Set these outside the control loop so we don't waste clock cycles
-//		mLeftMaster.setVoltageRampRate(get(VOLTAGE_RAMP_RATE));
-//    mRightMaster.setVoltageRampRate(get(VOLTAGE_RAMP_RATE));
+	
+	public void changeModes(ControlMode controlMode)
+	{
+		switch(controlMode)
+		{
+		case Velocity:
+			break;
+		case PercentOutput:
+			desiredLeft = 0;
+			desiredRight = 0;
+			break;
+		case Current:	
+			break;
+		case Disabled:
+			break;
+		case Follower:
+			break;
+		case MotionMagic:
+			break;
+		case MotionMagicArc:
+			break;
+		case MotionProfile:
+			break;
+		case MotionProfileArc:
+			break;
+		case Position:
+			break;
+		default:
+			break;
+		}
 	}
-
-	public void setPower(double left, double right) {
-    set(EDriveTrain.DESIRED_LEFT_POWER, left);
-    set(EDriveTrain.DESIRED_RIGHT_POWER, right);
+	@Override
+	public void loop(double pNow) {
+		leftMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		rightMaster.setNeutralMode(driverControl.getDesiredNeutralMode());
+		leftMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredLeftOutput());
+		rightMaster.set(driverControl.getDesiredControlMode(), driverControl.getDesiredRightOutput());
 	}
-
-	public double getCurrentFeedback(){
-	  return -1d;
-//		return (mRightMaster.getOutputCurrent() + mLeftMaster.getOutputCurrent())/2;
+	
+	public int getLeftVelocity()
+	{
+		return leftMaster.getSelectedSensorVelocity(0);
 	}
-
-  @Override
-  public void initialize(double pNow) {
-//    mLeftMaster.setControlMode(TalonControlMode.PercentVbus.value);
-//    mRightMaster.setControlMode(TalonControlMode.PercentVbus.value);
-    set(EDriveTrain.VOLTAGE_RAMP_RATE, SystemSettings.DRIVETRAIN_DEFAULT_RAMP_RATE);
-    setShift(false);
-    resetEncoders();
-  }
-  
-  public void resetEncoders() {
-//    mLeftMaster.setEncPosition(0);
-//    mLeftMaster.setPosition(0);
-//    mRightMaster.setEncPosition(0);
-//    mRightMaster.setPosition(0);
-//    mLeftFollow.setEncPosition(0);
-//    mLeftFollow.setPosition(0);
-//    mRightFollow.setEncPosition(0);
-//    mRightFollow.setPosition(0);
-  }
-  
-  @Override
-  public void update(double pNow) {
-    data.drivetrain.meta().setTimestamp(pNow);
-    set(EDriveTrain.TIME_SECONDS, Timer.getFPGATimestamp());
-//    set(LEFT_POSITION_ROT, (double)mLeftMaster.getEncPosition());
-//    set(RIGHT_POSITION_ROT,(double)mRightMaster.getEncPosition());
-//    set(LEFT_VELOCITY_RPM, (double)mLeftMaster.getEncVelocity());
-//    set(RIGHT_VELOCITY_RPM, (double)mRightMaster.getEncVelocity());
-//    
-//    set(LEFT_TALON_MASTER_CURRENT, mLeftMaster.getOutputCurrent());
-//    set(LEFT_TALON_MASTER_VOLTAGE, mLeftMaster.getOutputVoltage());
-//    set(LEFT_TALON_FOLLOW_CURRENT, mLeftFollow.getOutputCurrent());
-//    set(LEFT_TALON_FOLLOW_VOLTAGE, mLeftFollow.getOutputVoltage());
-//
-//    set(RIGHT_TALON_MASTER_CURRENT, mRightMaster.getOutputCurrent());
-//    set(RIGHT_TALON_MASTER_VOLTAGE, mRightMaster.getOutputVoltage());
-//    set(RIGHT_TALON_FOLLOW_CURRENT, mRightFollow.getOutputCurrent());
-//    set(RIGHT_TALON_FOLLOW_VOLTAGE, mRightFollow.getOutputVoltage());
-    
-    
-//    set(TALON_VBUS, (mLeftMaster.getBusVoltage() + mRightMaster.getBusVoltage())/2);
-
-//    mLeftMaster.set(get(DESIRED_LEFT_POWER) * -1);
-//    mRightMaster.set(get(DESIRED_RIGHT_POWER));
-//    gearShifter.set(data.drivetrain. isSet(IS_SHIFT));
-    if(data.driverinput.isSet(ELogitech310.BACK)) {
-      resetEncoders();
-    }
-  }
-
-  @Override
-  public void shutdown(double pNow) {
-    // TODO Auto-generated method stub
-    
-  }
-  
-  private void set(EDriveTrain pEnum, double pValue) {
-    data.drivetrain.set(pEnum, pValue);
-  }
-  
-  private double get(EDriveTrain pEnum) {
-    return data.drivetrain.get(pEnum);
-  }
-
-  
-  private TalonSRX createTalon(int pAddress) {
-    return createTalon(pAddress, null, null);
-  }
-  
-  private TalonSRX createTalon(int pAddress, Integer pMasterAddr) {
-    return createTalon(pAddress, pMasterAddr, null);
-  }
-  
-  private TalonSRX createTalon(int pAddress, FeedbackDevice pFeedback) {
-    return createTalon(pAddress, null, pFeedback);
-  }
-  
-  private TalonSRX createTalon(int pAddress, Integer pMasterAddr, FeedbackDevice pFeedback) {
-    TalonSRX result = new TalonSRX(pAddress);
-    if(pMasterAddr != null) {
-      mLog.warn("Setting " + pAddress + " to follow " + pMasterAddr);
-//      result.setControlMode(TalonControlMode.Follower.value);
-//      result.set(pMasterAddr);
-    }
-    if(pFeedback != null) {
-//      result.setFeedbackDevice(pFeedback);
-    }
-    return result;
-  }
-
+	
+	public int getRightVelocity()
+	{
+		return rightMaster.getSelectedSensorVelocity(0);
+	}
+	
+	public double getLeftPosition()
+	{
+		return leftMaster.getSelectedSensorPosition(0);
+	}
+	
+	public double getRightPosition()
+	{
+		return rightMaster.getSelectedSensorPosition(0);
+	}
+	
 }
+	
+	
+
+
+
+	
+
+
+
+  
+
+	
