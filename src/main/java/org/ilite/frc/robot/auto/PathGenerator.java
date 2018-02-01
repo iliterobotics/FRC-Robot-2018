@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.auto;;
+package org.ilite.frc.robot.auto;
 
 import java.io.File;
 
