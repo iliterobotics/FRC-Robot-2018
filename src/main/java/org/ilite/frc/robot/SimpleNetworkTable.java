@@ -22,21 +22,22 @@ public class SimpleNetworkTable  {
       		netTable.getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
       		Number[] defaultArray = {0};
       		netTable.getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(defaultArray);
+      		netTable.getEntry("Chosen Autonomous").setDefaultString("");
     }
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
     }
-    
-    public synchronized Number getNumber(String key, Integer defaultValue) {
-        return netTable.getEntry(key).getNumber(defaultValue);
-    }
-
+  
     public synchronized void putNumber(String key, Integer value) {
         netTable.getEntry(key).forceSetNumber(value);
     }
     
     public synchronized void putNumberArray(String key, Integer[] values) {
     		netTable.getEntry(key).setNumberArray(values);
+    }
+    
+    public synchronized void putString(String key, String value) {
+    		netTable.getEntry(key).forceSetString(value);
     }
     
     public synchronized NetworkTableInstance getInstance() {

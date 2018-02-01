@@ -76,6 +76,7 @@ public class GetAutonomous {
 			if (!mCubeActionPrefs.isEmpty()) {
 				ECubeAction prefAction = mCubeActionPrefs.get(0);//Does most preferred driver selection.
 				System.out.println("Autonomous chose: " + prefAction.toString());
+				nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s", mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
 				switch (prefAction) {
 				case SCALE:
 				  commands.addAll(doScale());
