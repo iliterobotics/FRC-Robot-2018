@@ -141,7 +141,7 @@ public class AutonConfigDisplay extends Application {
 		@Override
 		public void onChanged(Change arg0) {
 			System.out.println("On changed");
-			SystemSettings.AUTON_TABLE.putNumberArray("Cube Action",preferredCubeActions);
+			SystemSettings.AUTON_TABLE.putNumberArray(pEnumeration.getSimpleName(), preferredCubeActions);
 		}
     	
     });

@@ -50,9 +50,9 @@ public class GetAutonomous {
 		nAutonTable.initKeys();
 		doComplexAutonomous = true;
     try {
-      nPosEntry = nAutonTable.getEntry("Starting Position");
-      nCrossEntry = nAutonTable.getEntry("Cross");
-      nCubeActionPrefsEntry = nAutonTable.getEntry("Cube Action");
+      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
+      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
+      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
       
     } catch (Exception e) {
     
@@ -215,7 +215,6 @@ public class GetAutonomous {
 				mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 			
 		}
-
 		switch(mStartingPos) {
 		case LEFT: mTurnScalar = 1; break;
 		
@@ -232,6 +231,7 @@ public class GetAutonomous {
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
 	public OwnedSide getSwitchOwnedSide() {
+	  System.out.println(MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR));
 		return MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR);
 	}
 	
@@ -240,8 +240,8 @@ public class GetAutonomous {
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
 	public OwnedSide getScaleOwnedSide() {
+	  System.out.println(MatchData.getOwnedSide(MatchData.GameFeature.SCALE));
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
-
 	}
 	
 	/**

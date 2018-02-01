@@ -1,5 +1,9 @@
 package org.ilite.frc.robot;
 
+import org.ilite.frc.common.types.ECross;
+import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.EStartingPosition;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -14,10 +18,10 @@ public class SimpleNetworkTable  {
         netTable.getInstance().startClientTeam(1885);
     }
     public synchronized void initKeys() {
-    	    netTable.getEntry("Cross").setDefaultNumber(-1);
-      		netTable.getEntry("Starting Position").setDefaultNumber(-1);
+    	    netTable.getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1);
+      		netTable.getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
       		Number[] defaultArray = {0};
-      		netTable.getEntry("Cube Action").setDefaultNumberArray(defaultArray);
+      		netTable.getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(defaultArray);
     }
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
