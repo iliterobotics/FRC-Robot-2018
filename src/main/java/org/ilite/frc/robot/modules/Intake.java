@@ -13,11 +13,12 @@ public class Intake implements IModule{
 	private final TalonSRX rightIntakeTalon;
 	private ElevatorModule mElevator;
 	private BeamBreakSensor backBeamBreak;
-	//private BeamBreakSensor frontBeamBreak;
+	private BeamBreakSensor frontBeamBreak;
 	private double rightCurrent;
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
+	private final double intakeRatioNoCube = .3;
 	private boolean isElevatorDown;
 	private boolean intakeExtended;
 	private double power;
@@ -27,7 +28,7 @@ public class Intake implements IModule{
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		mElevator = pElevator;
 		backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
-		//frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
+		frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
 		
 	}
 
@@ -59,8 +60,22 @@ public class Intake implements IModule{
 	}
 	
 	public void intakeIn(double inPower) {
-		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
-			power = inPower;
+		
+		//BeamBreak
+		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken())
+			if (frontBeamBreak.isBroken())
+				power = inPower;
+			else
+				power = inPower * intakeRatioNoCube;
+		
+		/*Current Limiting
+		double rightRatio = rightCurrent/rightVoltage;
+	    double leftRatio = leftCurrent/leftVoltage;
+	    if (rightRatio > 5 || leftRatio > 5)
+	      power = -inPower;
+	    if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
+	      power = inPower;
+		*/
 		
 	}
 	public void intakeOut(double inPower) {

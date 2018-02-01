@@ -111,6 +111,15 @@ public class SystemSettings extends ConstantsBase {
   public static int		MOTION_MAGIC_V;
   public static int		MOTION_MAGIC_A;
   
+  // =============================================================================
+  // Sensor Settings
+  // =============================================================================
+  public static int     DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 0;
+  public static int     DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 0;
+  public static int     BEAM_BREAK_BACK = 0;
+  public static int     BEAM_BREAK_FRONT = 0;
+  public static int     ULTRASONIC_PORT = 0;
+  
   @Override
   public String getFileLocation() {
     return "~/constants.txt";
