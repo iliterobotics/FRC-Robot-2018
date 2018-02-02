@@ -65,6 +65,11 @@ public class AutonConfigDisplay extends Application {
       }
     });
     
+    Button send = new Button("Send");
+    send.setOnAction(e -> {
+      SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+    });
+    
     Button mode = new Button("Enhanced Mode");
     mode.setOnAction(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
@@ -85,7 +90,9 @@ public class AutonConfigDisplay extends Application {
     		labeledDropdown(ECross.class)
     );
     
-    HBox modeOptions = new HBox(mode);
+    HBox modeOptions = new HBox(mode, send);
+   
+    modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
     
     selectionBoxes.setSpacing(10d);
     root.setCenter(selectionBoxes);
