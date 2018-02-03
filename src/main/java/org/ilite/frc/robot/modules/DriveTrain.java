@@ -28,10 +28,10 @@ public class DriveTrain implements IControlLoop {
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower; /*leftFollower2, rightFollower2;*/
 	private ControlMode controlMode;
 	private double desiredLeft, desiredRight;
-	private Hardware mHardware;
-	private UltraSonicSensor ultra;
+	//private Hardware mHardware;
+	//private UltraSonicSensor ultra;
 	
-	public DriveTrain(DriverControl driverControl, Hardware pHardware)
+	public DriveTrain(DriverControl driverControl)
 	{
 		this.driverControl = driverControl;
 		//leftMaster = new TalonSRX(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
@@ -50,9 +50,9 @@ public class DriveTrain implements IControlLoop {
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		rightMaster.setSensorPhase(false);
 		leftMaster.setSensorPhase(false);
-		mHardware = pHardware;
-		ultra = mHardware.getUltraSonicSensor();
-		ultra.setEnabled(false);
+		//mHardware = pHardware;
+		//ultra = mHardware.getUltraSonicSensor();
+		//ultra.setEnabled(false);
 		//rightMaster.setStatusFramePeriod(frameValue, periodMs, timeoutMs)
 
 		}
@@ -65,7 +65,7 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.set(controlMode, desiredRight);
 		leftMaster.setSelectedSensorPosition(0, 0, 10);
 		rightMaster.setSelectedSensorPosition(0, 0, 10);
-		ultra.setEnabled(true);
+		//ultra.setEnabled(true);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class DriveTrain implements IControlLoop {
 		SmartDashboard.putNumber("Right Position", getRightPosition());
 		SmartDashboard.putNumber("Desired Left", driverControl.getDesiredLeftOutput());
 		SmartDashboard.putNumber("Desired Right", driverControl.getDesiredRightOutput());	
-		SmartDashboard.putNumber("Ultra Inches", ultra.getInches());
+		//SmartDashboard.putNumber("Ultra Inches", ultra.getInches());
 		
 		return false;
 	}	

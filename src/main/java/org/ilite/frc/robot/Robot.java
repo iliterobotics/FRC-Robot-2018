@@ -48,7 +48,7 @@ public class Robot extends IterativeRobot {
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	drivetraincontrol = new DriverControl(mData);
-	dt = new DriveTrain(drivetraincontrol, mHardware);
+	dt = new DriveTrain(drivetraincontrol);
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -61,7 +61,7 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
-        new UltraSonicSensor(0, 0)
+        new UltraSonicSensor(SystemSettings.ULTRASONIC_PORT_ID, 1)
         
         // Sensors
         // Custom hw
@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
-   // mHardware.getUltraSonicSensor().setEnabled(true);
+    mHardware.getUltraSonicSensor().setEnabled(true);
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
@@ -98,7 +98,7 @@ public class Robot extends IterativeRobot {
 	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
-	  //mHardware.getUltraSonicSensor().setEnabled(true);
+	  mHardware.getUltraSonicSensor().setEnabled(true);
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
   }
