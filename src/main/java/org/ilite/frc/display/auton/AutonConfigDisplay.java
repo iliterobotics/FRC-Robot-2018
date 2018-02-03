@@ -9,6 +9,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.common.input.EDriverControlMode;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
@@ -39,6 +40,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback; 
+
 
 public class AutonConfigDisplay extends Application {
 
@@ -84,10 +86,12 @@ public class AutonConfigDisplay extends Application {
       }
     });
     
+    
     HBox selectionBoxes = new HBox(
     		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
     		labeledDropdown(EStartingPosition.class),
-    		labeledDropdown(ECross.class)
+    		labeledDropdown(ECross.class),
+    		labeledDropdown(EDriverControlMode.class)
     );
     
     HBox modeOptions = new HBox(mode, send);
