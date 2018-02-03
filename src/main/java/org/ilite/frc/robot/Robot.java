@@ -48,7 +48,7 @@ public class Robot extends IterativeRobot {
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	drivetraincontrol = new DriverControl(mData);
-	dt = new DriveTrain(drivetraincontrol);
+	dt = new DriveTrain(drivetraincontrol, mHardware);
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -60,8 +60,8 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
-        //new UltraSonicSensor(0, 0)
+        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
+        new UltraSonicSensor(0, 0)
         
         // Sensors
         // Custom hw

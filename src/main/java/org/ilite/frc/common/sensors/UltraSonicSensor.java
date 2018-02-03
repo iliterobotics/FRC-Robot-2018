@@ -1,19 +1,14 @@
 package org.ilite.frc.common.sensors;
-
 import org.ilite.frc.common.util.FilteredAverage;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Ultrasonic;
-
 public class UltraSonicSensor {
 	private Ultrasonic mWpiUltrasonic;
-
-  //TODO - single value for now - could be VERY noisy
+  //TDO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
 	private static final double[] kFilterGains = {1.0};
 	private final FilteredAverage mDistanceFilter;
-	
 	/**
 	 * Creates a ultrasonic sensor using channels that are passed in.  The sensor is
 	 * DISABLED by default so it isn't running when the bot turns on.  Call setEnabled(true)
@@ -24,10 +19,12 @@ public class UltraSonicSensor {
 	public UltraSonicSensor(int pPingChannelDIOid, int pEchoChannelDIOid) {
 	  DigitalOutput ping = new DigitalOutput(pPingChannelDIOid);
 	  DigitalInput echo = new DigitalInput(pEchoChannelDIOid);
-    mWpiUltrasonic = new Ultrasonic(ping,echo);
+    mWpiUltrasonic = new Ultrasonic(ping, echo);
+    System.out.println("built");
     mWpiUltrasonic.setEnabled(false);
     mWpiUltrasonic.setAutomaticMode(true);
     mDistanceFilter = new FilteredAverage(kFilterGains);
+    System.out.println("success");
 	}
 	
 	/**

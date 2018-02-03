@@ -23,7 +23,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
-  //private UltraSonicSensor mUltraSonic;
+  private UltraSonicSensor mUltraSonic;
   
   Hardware() {
     
@@ -34,16 +34,15 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      PigeonIMU pPigeon
-      //ltraSonicSensor pUltraSonic
+      PigeonIMU pPigeon,
+      UltraSonicSensor pUltraSonic
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon);
-    //
-    //mUltraSonic = pUltraSonic;
+    mUltraSonic = pUltraSonic;
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -75,9 +74,9 @@ public class Hardware {
 	  return mPigeonWrapper;
   }
   
-  /*public UltraSonicSensor getUltraSonicSensor()
+  public UltraSonicSensor getUltraSonicSensor()
   {
 	  return mUltraSonic;
-  }*/
+  }
 
 }
