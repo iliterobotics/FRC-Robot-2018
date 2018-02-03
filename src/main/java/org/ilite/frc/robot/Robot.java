@@ -190,10 +190,12 @@ public class Robot extends IterativeRobot {
   
   public void disabledPeriodic()
   {
+	  System.out.println(lidar.checkSignal());
 	  if(lidar.checkSignal())
 	  {
 		  System.out.println("Signal: Yes");
 		  System.out.println("Distance:" + lidar.getDistance());
+	  }
   }
   
   
