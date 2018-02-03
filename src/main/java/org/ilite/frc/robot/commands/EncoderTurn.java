@@ -25,7 +25,6 @@ public class EncoderTurn {
 	public boolean update() {
 		mLeftTargetPosition = mSetpointDegrees * SystemSettings.DRIVETRAIN_WHEEL_TURNS_PER_DEGREE;
 		mRightTargetPosition = -mSetpointDegrees * SystemSettings.DRIVETRAIN_WHEEL_TURNS_PER_DEGREE;
-		while()
 		return false;
 	}
 	
