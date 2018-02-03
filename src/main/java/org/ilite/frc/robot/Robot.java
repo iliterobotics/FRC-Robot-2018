@@ -98,12 +98,13 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol, intake);
+	  setRunningModules(dt, drivetraincontrol, intake, elevator);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
+
   }
 
   public void teleopPeriodic() {
