@@ -6,6 +6,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,11 +24,13 @@ public class Intake implements IModule{
 	private double startReverseTime;
 	private double currentTime; 
 	private boolean startCurrentLimiting;
+	private DigitalInput limitSwitch;
 	public Intake(ElevatorModule pElevator)
 	{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		extender = new Solenoid(0);
+		limitSwitch = new DigitalInput(SystemSettings.INTAKE_LIMIT_SWITCH);
 	}
 
 
@@ -66,33 +69,40 @@ public class Intake implements IModule{
 		SmartDashboard.putNumber("MaxRatio", maxRatio);
 		
 		System.out.println("L: " + leftRatio +" R: " + rightRatio);
-		if ( rightRatio >  3 || leftRatio > 3 )
+		if(!limitSwitch.get())
 		{
-			startCurrentLimiting = true;
-			power = -inPower * .5;
-		}
-		else if (rightRatio < 1 && leftRatio < 1)
-		{
-			startCurrentLimiting = false;
-			power = inPower;
-		}
-		else if (startCurrentLimiting)
-		{
-			power = -inPower * .5;
-		}
-		else
-		{
-			power = inPower;
+			if ( rightRatio >  3 || leftRatio > 3 )
+			{
+				startCurrentLimiting = true;
+				power = -inPower * .5;
+			}
+			else if (rightRatio < 1 && leftRatio < 1)
+			{
+				startCurrentLimiting = false;
+				power = inPower;
+			}
+			else if (startCurrentLimiting)
+			{
+				power = -inPower * .5;
+			}
+			else
+			{
+				power = inPower;
+			}
 		}
 
 		
 	}
-	public void setIntake(boolean out)
+	public void setIntakePneumatics(boolean out)
 	{
 		extender.set(out);
 	}
+	public boolean limitSwitch()
+	{
+		return limitSwitch.get();
+	}
 	public void intakeOut(double inPower) {
-			power = inPower;
+		power = inPower;
 			
 	}
 	@Override

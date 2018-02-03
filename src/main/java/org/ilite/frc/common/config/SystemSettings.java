@@ -13,7 +13,8 @@ import jaci.pathfinder.Trajectory.FitMethod;
 
 public class SystemSettings extends ConstantsBase {
   
-  public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
+  
+public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
   
   // =============================================================================
@@ -110,6 +111,10 @@ public class SystemSettings extends ConstantsBase {
   public static int		MOTION_MAGIC_F;
   public static int		MOTION_MAGIC_V;
   public static int		MOTION_MAGIC_A;
+  // =============================================================================
+  // Sensors
+  // =============================================================================
+  public static final int INTAKE_LIMIT_SWITCH = 0;
   
   @Override
   public String getFileLocation() {
