@@ -24,7 +24,7 @@ public class ElevatorModule implements IModule {
 
 	@Override
 	public void initialize(double pNow) {
-
+		
 	}
 
 	@Override
@@ -40,8 +40,6 @@ public class ElevatorModule implements IModule {
 			mAtTop = false;
 		}
 		
-		
-
 		leftElevator.set(ControlMode.PercentOutput, mPower);
 		rightElevator.set(ControlMode.PercentOutput, mPower);
 		return true;

@@ -87,6 +87,8 @@ public class DriverControl implements IModule{
 	}
 	
 	private void updateElevator() {
+		double power = (-mData.operator.get(ELogitech310.LEFT_TRIGGER_AXIS) + mData.operator.get(ELogitech310.RIGHT_TRIGGER_AXIS));
+		mElevator.setPower(power);
 		
 	}
 	
