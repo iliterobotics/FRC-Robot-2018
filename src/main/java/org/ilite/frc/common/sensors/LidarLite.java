@@ -24,7 +24,16 @@ public class LidarLite
 	//https://www.chiefdelphi.com/forums/showthread.php?t=150887
 	private I2C lidari2c;
 	private boolean hasSignal;
-	private byte[] distance;
+	
+	private class Distance {
+		private byte[] distance;	
+		
+		public void setDistance(byte [] distance) { 
+			this.distance = distance;
+		}
+	}
+	
+	private Distance distance = new Distance();
 	private final static int LIDAR_ADDR = 0x62;
 	private final static int LIDAR_CONFIG_REGISTER = 0x00;
 	private final static int LIDAR_DISTANCE_REGISTER = 0x8f;
@@ -33,12 +42,15 @@ public class LidarLite
 	{
 		lidari2c = new I2C(Port.kOnboard, LIDAR_ADDR);
 		hasSignal = false;
-		distance = new byte[2];
+		distance.distance = new byte[2];
 	}
 	
-	public double getDistance()
+	
+	
+	public String getDistance()
 	{
-		return (int) Integer.toUnsignedLong(distance[0] << 8) + Byte.toUnsignedInt(distance[1]) / 100.0;
+		return "Distance[0]: " + Double.toString(distance.distance[0]) + " \n Distance[1]: " + Double.toString(distance.distance[1]);
+		//return ((double) Integer.toUnsignedLong(distance[0] << 8)) + ((double) Byte.toUnsignedInt(distance[1])) / 100.0d;
 	}
 	
 	public boolean checkSignal()
@@ -46,18 +58,24 @@ public class LidarLite
 		return hasSignal;
 	}
 	
-	private void update()
+	public void update()
 	{
-		if(lidari2c.write(LIDAR_CONFIG_REGISTER, 0x04))
+		if(!lidari2c.write(LIDAR_CONFIG_REGISTER, 0x04))
 		{
-			hasSignal = false;
+			hasSignal = true;
+		} else {
+			System.out.println("NO LIDAR INIT");
+			return;
 		}
 		Timer.delay(0.04);
-		if(lidari2c.read(LIDAR_DISTANCE_REGISTER, 2, distance))
+		if(!lidari2c.read(LIDAR_DISTANCE_REGISTER, 2, distance.distance))
 		{
-			hasSignal = false;
+			System.out.println("LIDAR HAS VALUE: " + distance.distance[0] + " " + distance.distance[1]);
+			hasSignal = true;
+		} else {
+			System.out.println("NO LIDAR!");
+			return;
 		}
-		hasSignal = true;
 		Timer.delay(0.005);
 	}
 }
