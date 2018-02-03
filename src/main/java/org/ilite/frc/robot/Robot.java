@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.sensors.Pigeon;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.commands.ICommand;
@@ -17,7 +17,6 @@ import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import org.ilite.frc.common.sensors.UltraSonicSensor;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -25,6 +24,7 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
@@ -61,7 +61,7 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
-        new UltraSonicSensor(SystemSettings.ULTRASONIC_PORT_ID, 1)
+        new UltraSonicSensor(SystemSettings.ULTRASONIC_PORT_ID)
         
         // Sensors
         // Custom hw
@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
-    mHardware.getUltraSonicSensor().setEnabled(true);
+    //mHardware.getUltraSonicSensor().setEnabled(true);
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
@@ -98,9 +98,11 @@ public class Robot extends IterativeRobot {
 	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
-	  mHardware.getUltraSonicSensor().setEnabled(true);
+	  //mHardware.getUltraSonicSensor().setEnabled(true);
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
+	  
+	 System.out.println("Ultrasonic: " + mHardware.getUltraSonicSensor().getInches());
   }
 
   public void teleopPeriodic() {
@@ -109,10 +111,9 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      
+      System.out.println(mHardware.getUltraSonicSensor().getInches());
       updateRunningModules();
-    }
-  
+  }  
   
   /**
    * 1. Map joysticks to codexes
