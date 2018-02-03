@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.LidarLite;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
@@ -43,6 +44,8 @@ public class Robot extends IterativeRobot {
   // Temporary...
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
+  
+  private LidarLite lidar = new LidarLite();
    
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
@@ -185,7 +188,12 @@ public class Robot extends IterativeRobot {
 	  mControlLoop.stop();
   }
   
-  public void disabledPeriodic() {
+  public void disabledPeriodic()
+  {
+	  if(lidar.checkSignal())
+	  {
+		  System.out.println("Signal: Yes");
+		  System.out.println("Distance:" + lidar.getDistance());
   }
   
   

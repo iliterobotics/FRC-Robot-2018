@@ -2,6 +2,7 @@ package org.ilite.frc.common.sensors;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LidarLite
 {
@@ -21,9 +22,43 @@ public class LidarLite
 	//https://www.robotshop.com/forum/lidar-lite-v3-communication-with-frc-roborio-t15519
 	//https://www.reddit.com/r/FRC/comments/7g6oei/how_do_i_use_the_navxmxp_with_a_lidarlite/
 	//https://www.chiefdelphi.com/forums/showthread.php?t=150887
-	public LidarLite(int I2Cport)
+	private I2C lidari2c;
+	private boolean hasSignal;
+	private byte[] distance;
+	private final static int LIDAR_ADDR = 0x62;
+	private final static int LIDAR_CONFIG_REGISTER = 0x00;
+	private final static int LIDAR_DISTANCE_REGISTER = 0x8f;
+	
+	public LidarLite()
 	{
-		I2C lidari2c = new I2C(Port.kOnboard, I2Cport);
-		
+		lidari2c = new I2C(Port.kOnboard, LIDAR_ADDR);
+		hasSignal = false;
+		distance = new byte[2];
+	}
+	
+	public double getDistance()
+	{
+		int distCm = (int) Integer.toUnsignedLong(mDistance[0] << 8) + Byte.toUnsignedInt(mDistance[1]);
+		return distCm / 100.0;
+	}
+	
+	public boolean checkSignal()
+	{
+		return hasSignal;
+	}
+	
+	private void update()
+	{
+		if(lidari2c.write(LIDAR_CONFIG_REGISTER, 0x04))
+		{
+			hasSignal = false;
+		}
+		Timer.delay(0.04);
+		if(lidari2c.read(LIDAR_DISTANCE_REGISTER, 2, distance))
+		{
+			hasSignal = false;
+		}
+		hasSignal = true;
+		Timer.delay(0.005);
 	}
 }
