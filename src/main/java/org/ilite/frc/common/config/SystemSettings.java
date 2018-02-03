@@ -51,10 +51,10 @@ public class SystemSettings extends ConstantsBase {
   // =============================================================================
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 4.875;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
-  public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
+  public static double  DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-  public static int		  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
+  public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
   public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 0;
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
@@ -71,6 +71,7 @@ public class SystemSettings extends ConstantsBase {
   // Pigeon
   // =============================================================================  
   public static int PIGEON_DEVICE_ID = 5;
+  public static double PIGEON_COLLISION_THRESHOLD = 10;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================

@@ -1,24 +1,27 @@
 package org.ilite.frc.common.sensors;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.robot.Data;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 public class Pigeon extends IMU{
 
 	private double[] ypr;
 	private short[] xyz;
 	private PigeonIMU mPigeon;
+	private Data data;
 
   //TODO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
   private static final double[] kCollisionGains = {1.0};
 	
-	public Pigeon(PigeonIMU pHardware, double pCollisionThreshold_DeltaG){
+	public Pigeon(PigeonIMU pPigeon, Data data, double pCollisionThreshold_DeltaG){
 		super(kCollisionGains);
 		ypr = new double[3];
 		xyz = new short[3];
-		mPigeon = pHardware;
+		this.mPigeon = pPigeon;
+		this.data = data;
 		setCollisionThreshold_DeltaG(pCollisionThreshold_DeltaG);
 		//mAccelerationX = new FilteredAverage(kCollisionGains);
 		//mAccelerationY = new FilteredAverage(kCollisionGains);
@@ -44,6 +47,14 @@ public class Pigeon extends IMU{
     mAccelerationX.addNumber(currentAccelX);
     mAccelerationY.addNumber(currentAccelY);
     mLastUpdate = pTimestampNow;
+	}
+	
+	private void map() {
+	  data.pigeon.set(EPigeon.YAW, ypr[0]);
+	  data.pigeon.set(EPigeon.ROLL, ypr[1]);
+	  data.pigeon.set(EPigeon.PITCH, ypr[2]);
+	  data.pigeon.set(EPigeon.fACCEL_X, mAccelerationX.getAverage());
+	  data.pigeon.set(EPigeon.fACCEL_Y, mAccelerationY.getAverage());
 	}
 	
 	public double getHeading() {

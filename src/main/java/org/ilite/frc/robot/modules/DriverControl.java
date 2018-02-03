@@ -4,11 +4,11 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
+import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 //import edu.wpi.first.wpilibj.Talon;
 
@@ -20,10 +20,10 @@ public class DriverControl implements IModule{
 	private Intake mIntake;
 	private Elevator mElevator;
 	
-	private Object desiredValueLock = new Object();
+	private Object messageLock = new Object();
 	private double desiredLeftOutput, desiredRightOutput;
-	private NeutralMode desiredNeutralMode;
-	private ControlMode desiredControlMode; 
+	private DriveMessage driveMessage;
+	private ProfilingMessage profilingMessage;
 	
 	public DriverControl(Data pData, Intake pIntake, Elevator pElevator)
 	{
@@ -31,8 +31,8 @@ public class DriverControl implements IModule{
 		this.mData = pData;
 		this.mIntake = pIntake;
 		this.mElevator = pElevator;
-		this.desiredNeutralMode = NeutralMode.Brake;
-		this.desiredControlMode = ControlMode.PercentOutput;
+		this.driveMessage = new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake);
+		this.profilingMessage = new ProfilingMessage(null, null, Double.NaN, false);
 	}
 	
 	@Override
@@ -90,46 +90,31 @@ public class DriverControl implements IModule{
 		
 	}
 	
-	public void setDesiredLeftOutput(double desiredLeftOutput) {
-    this.desiredLeftOutput = desiredLeftOutput;
-  }
-
-  public void setDesiredRightOutput(double desiredRightOutput) {
-    this.desiredRightOutput = desiredRightOutput;
-  }
-
-  public void setDesiredNeutralMode(NeutralMode desiredNeutralMode) {
-    this.desiredNeutralMode = desiredNeutralMode;
-  }
-
-  public void setDesiredControlMode(ControlMode desiredControlMode) {
-    this.desiredControlMode = desiredControlMode;
-  }
-
-  public double getDesiredLeftOutput() {
-		synchronized (desiredValueLock) {
-			return desiredLeftOutput;
-		}
+	public void setDriveMessage(DriveMessage driveMessage) {
+	  synchronized(messageLock) {
+	    this.driveMessage = driveMessage;
+	  }
 	}
 	
-	public double getDesiredRightOutput() {
-		synchronized(desiredValueLock) {
-			return desiredRightOutput;
-		}
+	public void setProfilingMessage(ProfilingMessage profilingMessage) {
+	  synchronized(messageLock) {
+	    this.profilingMessage = profilingMessage;
+	  }
+  }
+	
+	public DriveMessage getDriveMessage() {
+	  synchronized(messageLock) {
+	    return driveMessage;
+	  }
 	}
 	
-	public ControlMode getDesiredControlMode() {
-		synchronized(desiredValueLock) {
-			return desiredControlMode;
-		}
-	}
+	public ProfilingMessage getProfilingMessage() {
+	  synchronized(messageLock) {
+	    return profilingMessage;
+	  }
+    
+  }
 	
-	public NeutralMode getDesiredNeutralMode() {
-		synchronized(desiredValueLock) {
-			return desiredNeutralMode;
-		}
-	}
-
 	@Override
 	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub

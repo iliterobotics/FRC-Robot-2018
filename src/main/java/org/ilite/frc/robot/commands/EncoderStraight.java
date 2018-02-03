@@ -1,10 +1,13 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.modules.DriveMode;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class EncoderStraight implements ICommand{
 
@@ -25,9 +28,7 @@ public class EncoderStraight implements ICommand{
   public void initialize() {
     mLeftTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
     mRightTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
-    mDriverControl.setDesiredControlMode(ControlMode.MotionMagic);
-    mDriverControl.setDesiredLeftOutput(mLeftTargetPosition);
-    mDriverControl.setDesiredLeftOutput(mRightTargetPosition);
+    mDriverControl.setDriveMessage(new DriveMessage(mLeftTargetPosition, mRightPosition, DriveMode.MotionMagic, NeutralMode.Brake));
   }
   
   public boolean update() {

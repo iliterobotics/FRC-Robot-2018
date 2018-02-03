@@ -23,7 +23,6 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -54,7 +53,7 @@ public class Robot extends IterativeRobot {
 	elevator = new Elevator();
 	intake = new Intake(elevator);
 	drivetraincontrol = new DriverControl(mData, intake, elevator);
-	dt = new DriveTrain(drivetraincontrol);
+	dt = new DriveTrain(drivetraincontrol, mData);
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -66,7 +65,8 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
+        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
+        mData
         // Sensors
         // Custom hw
         // Spike relays
@@ -129,7 +129,7 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+//      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
   }
   
   /**

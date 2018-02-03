@@ -2,6 +2,8 @@ package org.ilite.frc.robot;
 
 import java.text.DecimalFormat;
 
+import org.ilite.frc.common.config.SystemSettings;
+
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.team254.lib.util.MovingAverage;
@@ -34,4 +36,23 @@ public class Utils {
       count = 0;
     }
   }
+  
+  public static double ticksToRotations(int ticks) {
+    return ticks / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
+  }
+  
+  public static double ticksToInches(int ticks) {
+    return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_DIAMETER;
+  }
+  
+  public static double ticksToRPM(int ticks) {
+    return ticksToRotations(ticks) * 60000;
+  }
+  
+  public static double ticksToFPS(int ticks) {
+    return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0;
+  }
+  
+  
+  
 }
