@@ -2,72 +2,90 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.robot.sensors.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Intake implements IModule{
-	
+	private static final double REVERSE_TIME = .1;
 	private final TalonSRX leftIntakeTalon;
 	private final TalonSRX rightIntakeTalon;
-	private ElevatorModule mElevator;
-	private BeamBreakSensor backBeamBreak;
-	//private BeamBreakSensor frontBeamBreak;
 	private double rightCurrent;
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	private boolean isElevatorDown;
-	private boolean intakeExtended;
+	private double maxRatio;
 	private double power;
+	private double startReverseTime;
+	private double currentTime; 
+	private boolean startCurrentLimiting;
 	public Intake(ElevatorModule pElevator)
 	{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		//mElevator = pElevator;
-		//backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
-		//frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
-		
 	}
 
 
 	@Override
 	public void initialize(double pNow) {
-		//isElevatorDown = mElevator.isDown();
 		
 	}
 
 	@Override
 	public boolean update(double pNow) {
-		//isElevatorDown = mElevator.isDown();
 		
-		leftIntakeTalon.set(ControlMode.PercentOutput, power );
+		
+		rightCurrent = rightIntakeTalon.getOutputCurrent();
+		leftCurrent = leftIntakeTalon.getOutputCurrent();
+		rightVoltage = rightIntakeTalon.getBusVoltage();
+		leftVoltage = leftIntakeTalon.getBusVoltage();
+		
+		leftIntakeTalon.set(ControlMode.PercentOutput, -power );
 		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
+		
+		
 
 		return true;
 	}
-	/*public void retractIntake() {
-		if(!isElevatorDown && intakeExtended) {
-			intakeExtended = false;
-		}
-	}
-	
-	public void extendIntake() {
-		if(isElevatorDown && !intakeExtended) {
-			intakeExtended = true;
-		}
-	}
-	*/
+
 	public void intakeIn(double inPower) {
-		//if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
+		
+		
+		double rightRatio = rightCurrent/rightVoltage;
+		double leftRatio = leftCurrent/leftVoltage;
+		if(leftRatio > maxRatio)
+			maxRatio = leftRatio;
+		if(rightRatio > maxRatio)
+			maxRatio = rightRatio;
+		SmartDashboard.putNumber("MaxRatio", maxRatio);
+		
+		System.out.println("L: " + leftRatio +" R: " + rightRatio);
+		if ( rightRatio >  3 || leftRatio > 3 )
+		{
+			startCurrentLimiting = true;
+			power = -inPower * .5;
+		}
+		else if (rightRatio < 1 && leftRatio < 1)
+		{
+			startCurrentLimiting = false;
 			power = inPower;
+		}
+		else if (startCurrentLimiting)
+		{
+			power = -inPower * .5;
+		}
+		else
+		{
+			power = inPower;
+		}
+
 		
 	}
 	public void intakeOut(double inPower) {
-		//if(isElevatorDown)
 			power = inPower;
-		
+			
 	}
 	@Override
 	public void shutdown(double pNow) {

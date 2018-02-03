@@ -112,7 +112,7 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      System.out.println("Yaw: " + mHardware.getPigeon().getYaw());
+      //System.out.println("Yaw: " + mHardware.getPigeon().getYaw());
       updateRunningModules();
     }
   
