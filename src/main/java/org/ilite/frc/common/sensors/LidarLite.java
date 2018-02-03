@@ -38,8 +38,7 @@ public class LidarLite
 	
 	public double getDistance()
 	{
-		int distCm = (int) Integer.toUnsignedLong(mDistance[0] << 8) + Byte.toUnsignedInt(mDistance[1]);
-		return distCm / 100.0;
+		return (int) Integer.toUnsignedLong(distance[0] << 8) + Byte.toUnsignedInt(distance[1]) / 100.0;
 	}
 	
 	public boolean checkSignal()
