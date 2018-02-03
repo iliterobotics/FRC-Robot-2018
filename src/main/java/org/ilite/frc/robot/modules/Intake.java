@@ -6,6 +6,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
@@ -17,6 +18,7 @@ public class Intake implements IModule{
 	private double leftVoltage;
 	private double leftCurrent;
 	private double maxRatio;
+	public Solenoid extender;
 	private double power;
 	private double startReverseTime;
 	private double currentTime; 
@@ -25,6 +27,7 @@ public class Intake implements IModule{
 	{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
+		extender = new Solenoid(0);
 	}
 
 
@@ -35,6 +38,7 @@ public class Intake implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
+		
 		
 		
 		rightCurrent = rightIntakeTalon.getOutputCurrent();
@@ -82,6 +86,10 @@ public class Intake implements IModule{
 		}
 
 		
+	}
+	public void setIntake(boolean out)
+	{
+		extender.set(out);
 	}
 	public void intakeOut(double inPower) {
 			power = inPower;
