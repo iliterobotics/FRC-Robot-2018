@@ -16,7 +16,7 @@ public class ElevatorModule implements IModule {
 	public ElevatorModule() {
 		leftElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
 		rightElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
-		limitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
+		//limitSwitch = new DigitalInput(SystemSettings.DIO_PORT_ELEVATION_LIMIT_SWITCH);
 	}
 
 	@Override

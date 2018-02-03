@@ -10,7 +10,7 @@ public class UltrasonicSensor implements IModule {
 	private double mDistanceInch;
 	
 	public UltrasonicSensor() {
-		mUltrasonicSensor = new AnalogInput(SystemSettings.ULTRASONIC_PORT);
+		//mUltrasonicSensor = new AnalogInput(SystemSettings.ULTRASONIC_PORT);
 	}
 	
 	public double getDistanceInches() {

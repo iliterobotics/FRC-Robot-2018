@@ -25,8 +25,8 @@ public class Intake implements IModule{
 	{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		mElevator = pElevator;
-		backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
+		//mElevator = pElevator;
+		//backBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_BACK);
 		//frontBeamBreak = new BeamBreakSensor(SystemSettings.BEAM_BREAK_FRONT);
 		
 	}
@@ -34,37 +34,38 @@ public class Intake implements IModule{
 
 	@Override
 	public void initialize(double pNow) {
-		isElevatorDown = mElevator.isDown();
+		//isElevatorDown = mElevator.isDown();
 		
 	}
 
 	@Override
 	public boolean update(double pNow) {
-		isElevatorDown = mElevator.isDown();
+		//isElevatorDown = mElevator.isDown();
 		
 		leftIntakeTalon.set(ControlMode.PercentOutput, power );
 		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
 
 		return true;
 	}
-	public void retractIntake() {
+	/*public void retractIntake() {
 		if(!isElevatorDown && intakeExtended) {
 			intakeExtended = false;
 		}
 	}
+	
 	public void extendIntake() {
 		if(isElevatorDown && !intakeExtended) {
 			intakeExtended = true;
 		}
 	}
-	
+	*/
 	public void intakeIn(double inPower) {
-		if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
+		//if(isElevatorDown && intakeExtended && !backBeamBreak.isBroken()) 
 			power = inPower;
 		
 	}
 	public void intakeOut(double inPower) {
-		if(isElevatorDown)
+		//if(isElevatorDown)
 			power = inPower;
 		
 	}

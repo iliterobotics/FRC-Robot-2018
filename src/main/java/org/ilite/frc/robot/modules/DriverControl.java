@@ -72,12 +72,13 @@ public class DriverControl implements IModule{
 	private void updateIntake() {
 		double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
 		System.out.println("Intake Speed:" + intakeSpeed);
-		if(mData.operator.isSet(ELogitech310.DPAD_UP)) {
+		/*if(mData.operator.isSet(ELogitech310.DPAD_UP)) {
 			mIntake.extendIntake();
 		} 
 		else if(mData.operator.isSet(ELogitech310.DPAD_DOWN)) {
 			mIntake.retractIntake();
 		}
+		*/
 		if(intakeSpeed > 0) {
 			mIntake.intakeIn(intakeSpeed);
 		} else {
