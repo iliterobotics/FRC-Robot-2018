@@ -15,15 +15,11 @@ public class DriverInput implements IModule{
   private DriveControl driveControl;
   
 	private Data mData;
-	private Intake mIntake;
-	private Elevator mElevator;
 	
-	public DriverInput(DriveControl pDriveControl, Data pData, Intake pIntake, Elevator pElevator)
+	public DriverInput(DriveControl pDriveControl, Data pData)
 	{
 	  this.driveControl = pDriveControl;
 		this.mData = pData;
-		this.mIntake = pIntake;
-		this.mElevator = pElevator;
 	}
 	
 	@Override
@@ -41,16 +37,16 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateDriveTrain() {
-	  double desiredLeftOutput, desiredRightOutput;
+		double desiredLeftOutput, desiredRightOutput;
 	  
 		double rotate = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
 		
 		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
-      rotate /= 3;
-      rotate /= 3;
-    }
+	      rotate /= 3;
+	      rotate /= 3;
+		}
 		
 		desiredLeftOutput = throttle - rotate;
 		desiredRightOutput = throttle + rotate;
@@ -65,20 +61,6 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateIntake() {
-		double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
-		System.out.println("Intake Speed:" + intakeSpeed);
-		if(mData.operator.get(ELogitech310.DPAD_UP) != null) {
-			mIntake.extendIntake();
-		} 
-		else if(mData.operator.get(ELogitech310.DPAD_DOWN) != null) {
-			mIntake.retractIntake();
-		}
-		if(intakeSpeed > 0) {
-			mIntake.spinIn(intakeSpeed);
-		} else {
-			mIntake.spinOut(intakeSpeed);
-		}
-		
 	}
 	
 	private void updateElevator() {

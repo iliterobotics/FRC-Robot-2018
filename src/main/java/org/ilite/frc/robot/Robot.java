@@ -15,20 +15,13 @@ import org.ilite.frc.robot.commands.EncoderStraight;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
-import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
-import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -52,17 +45,13 @@ public class Robot extends IterativeRobot {
   
   // Temporary...
   private final DriveControl driveControl;
-  private final Elevator elevator;
-  private final Intake intake;
   private final DriveTrain dt;
   private final DriverInput drivetraincontrol;
   public Robot() {
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
-	dt = new DriveTrain(driveControl, mData);
-	drivetraincontrol = new DriverInput(driveControl, mData, intake, elevator);
 	driveControl = new DriveControl();
-	intake = new Intake(elevator);
-	elevator = new Elevator();
+	dt = new DriveTrain(driveControl, mData);
+	drivetraincontrol = new DriverInput(driveControl, mData);
 	mControlLoop = new ControlLoopManager(mData, mHardware);
   }
 
@@ -99,7 +88,7 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules(drivetraincontrol, dt);
+	setRunningModules(dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
@@ -112,7 +101,7 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol, intake);
+	  setRunningModules(dt, drivetraincontrol);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
