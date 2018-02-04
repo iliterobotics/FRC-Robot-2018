@@ -7,7 +7,7 @@ public class FilteredAverage {
   private final ArrayList<Double> mNumbers = new ArrayList<Double>();
   private final double[] mGains;
 
-  public FilteredAverage(double...pGains) {
+  public FilteredAverage(double[] pGains) {
     if(pGains == null || pGains.length == 0) {
       throw new IllegalArgumentException("Cannot create a filtered average without filter gains!");
     }
@@ -15,11 +15,11 @@ public class FilteredAverage {
   }
 
   public void addNumber(double newNumber) {
-      mNumbers.add(newNumber);
-      if (!isUnderMaxSize()) {
-          mNumbers.remove(0);
-      }
+  mNumbers.add(newNumber);
+  if (!isUnderMaxSize()) {
+      mNumbers.remove(0);
   }
+}
 
   public double getAverage() {
       double result = 0;
