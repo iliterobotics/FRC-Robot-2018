@@ -7,9 +7,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriveTrain;
@@ -112,7 +112,6 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      //System.out.println("Yaw: " + mHardware.getPigeon().getYaw());
       updateRunningModules();
     }
   
@@ -129,6 +128,7 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
   }
   
   /**
