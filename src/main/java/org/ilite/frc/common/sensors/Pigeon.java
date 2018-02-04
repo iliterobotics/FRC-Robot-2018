@@ -2,8 +2,6 @@ package org.ilite.frc.common.sensors;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Pigeon extends IMU{
 
 	private double[] ypr;
