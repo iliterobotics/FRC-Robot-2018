@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.MotorSafety;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -86,13 +87,15 @@ public class DriveTrain implements IControlLoop {
       rightMaster.set(controlMode, driveMessage.rightOutput);
       break;
     default:
+      System.out.println(driveMessage.leftOutput);
+      System.out.println(driveMessage.rightOutput);
       leftMaster.setNeutralMode(driveMessage.neutralMode);
       rightMaster.setNeutralMode(driveMessage.neutralMode);
       leftMaster.set(controlMode, driveMessage.leftOutput);
       rightMaster.set(controlMode, driveMessage.rightOutput);
       break;
     }
-		
+		SmartDashboard.putString("Control Mode Debug", controlMode.name());
 		return false;
 	}
 	

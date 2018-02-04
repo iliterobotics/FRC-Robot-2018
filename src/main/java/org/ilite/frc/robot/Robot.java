@@ -86,6 +86,7 @@ public class Robot extends IterativeRobot {
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
+    setRunningModules(dt);
     mCommandQueue.clear();
     mCommandQueue.add(new EncoderStraight(60, driveControl, dt));
     updateCommandQueue(true);
@@ -93,7 +94,6 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-    setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     

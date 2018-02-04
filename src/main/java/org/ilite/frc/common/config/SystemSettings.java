@@ -103,14 +103,14 @@ public class SystemSettings extends ConstantsBase {
   // Motion Magic Constants
   // =============================================================================
   public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
-  public static int		MOTION_MAGIC_PID_SLOT;
-  public static int		MOTION_MAGIC_LOOP_SLOT;
-  public static int		MOTION_MAGIC_P;
-  public static int		MOTION_MAGIC_I;
-  public static int		MOTION_MAGIC_D;
-  public static int		MOTION_MAGIC_F;
-  public static int		MOTION_MAGIC_V;
-  public static int		MOTION_MAGIC_A;
+  public static int		MOTION_MAGIC_PID_SLOT = 0;
+  public static int		MOTION_MAGIC_LOOP_SLOT = 0;
+  public static double		MOTION_MAGIC_P = 0;
+  public static double		MOTION_MAGIC_I = 0;
+  public static double		MOTION_MAGIC_D = 0;
+  public static double		MOTION_MAGIC_F = 0.00104166666666666666666666666667;
+  public static int		MOTION_MAGIC_V = 350;
+  public static int		MOTION_MAGIC_A = 80;
   
   @Override
   public String getFileLocation() {

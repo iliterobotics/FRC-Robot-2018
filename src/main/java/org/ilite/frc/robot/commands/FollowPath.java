@@ -7,6 +7,7 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.modules.DriverInput;
+import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
 import org.ilite.frc.robot.modules.drivetrain.DriveMode;
 import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
@@ -22,7 +23,7 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class FollowPath implements ICommand {
 	
-	private DriverInput mDriverControl;
+	private DriveControl mDriveControl;
 	private Data data;
 	
 	private Config mConfig;
@@ -31,8 +32,8 @@ public class FollowPath implements ICommand {
 	
 	private boolean mIsBackwards;
 	
-	public FollowPath(DriverInput pDriverControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
-		this.mDriverControl = pDriverControl;
+	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
+		this.mDriveControl = pDriveControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
 		
@@ -43,8 +44,8 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriverInput pDriverControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
-		this.mDriverControl = pDriverControl;
+	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
+		this.mDriveControl = pDriveControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
 		this.mLeftTrajectory = pLeftTrajectory;
@@ -53,16 +54,16 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriverInput pDriverControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
-		this(pDriverControl, data, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
+	public FollowPath(DriveControl pDriveControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
+		this(pDriveControl, data, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
 	}
 	
-	public FollowPath(DriverInput pDriverControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
-		this(pDriverControl, data, new Trajectory(pSegments), pIsBackwards);
+	public FollowPath(DriveControl pDriveControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
+		this(pDriveControl, data, new Trajectory(pSegments), pIsBackwards);
 	}
 	
 	public void initialize() {
-		mDriverControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
+		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
 		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
 		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
 		
@@ -73,7 +74,7 @@ public class FollowPath implements ICommand {
 	public boolean update() {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
 		
-		mDriverControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, data.pigeon.get(EPigeon.YAW), mIsBackwards));
+		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, data.pigeon.get(EPigeon.YAW), mIsBackwards));
 		
 		return false;
 	}
