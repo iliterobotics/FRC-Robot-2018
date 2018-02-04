@@ -125,8 +125,8 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
-      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
+      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros

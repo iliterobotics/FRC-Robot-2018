@@ -36,7 +36,7 @@ public enum EInputScale {
       return Math.sin(pJoystickInput);
     case EXPONENTIAL : 
       double sign = pJoystickInput > 0 ? 1 : -1;
-      return Math.pow(pJoystickInput, pScalar) * sign;
+      return 0.2 * Math.pow(pJoystickInput, pScalar) * sign;
     case UNIT:
     default:
       return pJoystickInput;

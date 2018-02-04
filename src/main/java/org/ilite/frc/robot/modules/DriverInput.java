@@ -39,17 +39,17 @@ public class DriverInput implements IModule{
 	private void updateDriveTrain() {
 		double desiredLeftOutput, desiredRightOutput;
 	  
-		double rotate = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
+		double rotate = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-		double throttle = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
+		double throttle = -mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
 		
 		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
 	      rotate /= 3;
 	      rotate /= 3;
 		}
 		
-		desiredLeftOutput = throttle - rotate;
-		desiredRightOutput = throttle + rotate;
+		desiredLeftOutput = throttle + rotate;
+		desiredRightOutput = throttle - rotate;
 		
 		int leftScalar = desiredLeftOutput < 0 ? -1 : 1;
 		int rightScalar = desiredRightOutput < 0 ? -1 : 1;

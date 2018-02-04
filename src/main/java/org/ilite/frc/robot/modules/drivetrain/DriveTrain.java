@@ -53,6 +53,15 @@ public class DriveTrain implements IControlLoop {
 		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		
+		rightMaster.setInverted(true);
+		rightFollower.setInverted(true);
+		rightFollower2.setInverted(true);
+		
+		leftMaster.setInverted(false);
+		leftFollower.setInverted(false);
+		leftFollower2.setInverted(false);
+		
 		rightMaster.setSensorPhase(false);
 		leftMaster.setSensorPhase(true);
 	}
