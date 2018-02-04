@@ -1,0 +1,25 @@
+.root {
+	-fx-background-color: #7D3C98;
+	-fx-background-image: url("./stephenwelch.JPG");
+	
+	-fx-font-size: 12pt;
+    -fx-font-family: "Comic Sans MS"; /*Palatino*/
+    -fx-text-fill: #B0E0E6;
+    
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 3, 2;
+    -fx-padding: 0.333333em 0.583em 0.333333em 0.583em;
+}
+
+.label{
+	-fx-background-color: #B0E0E6;
+	-fx-padding: 0.333333em 0.583em 0.333333em 0.583em;
+}
+.combo-box{
+	-fx-background-color: #9370DB;
+}
+
+.button{
+	-fx-background-color: #9370DB;
+}
+
