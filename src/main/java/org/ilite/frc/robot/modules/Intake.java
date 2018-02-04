@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
-	private static final double REVERSE_TIME = .1;
+	
 	private final TalonSRX leftIntakeTalon;
 	private final TalonSRX rightIntakeTalon;
 	private double rightCurrent;
@@ -19,18 +19,20 @@ public class Intake implements IModule{
 	private double leftVoltage;
 	private double leftCurrent;
 	private double maxRatio;
-	public Solenoid extender;
+	public Solenoid leftExtender;
+	public Solenoid rightExtender;
+	public boolean solOut;
 	private double leftPower;
 	private double rightPower;
-	private double startReverseTime;
-	private double currentTime; 
 	private boolean startCurrentLimiting;
 	private DigitalInput limitSwitch;
+	
 	public Intake(ElevatorModule pElevator)
 	{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		extender = new Solenoid(0);
+		leftExtender = new Solenoid(0);
+		rightExtender = new Solenoid(1);
 		limitSwitch = new DigitalInput(SystemSettings.INTAKE_LIMIT_SWITCH);
 	}
 
@@ -49,7 +51,8 @@ public class Intake implements IModule{
 		leftCurrent = leftIntakeTalon.getOutputCurrent();
 		rightVoltage = rightIntakeTalon.getBusVoltage();
 		leftVoltage = leftIntakeTalon.getBusVoltage();
-		
+		leftExtender.set(solOut);
+		rightExtender.set(solOut);
 		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
 		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);	
 		
@@ -103,9 +106,9 @@ public class Intake implements IModule{
 
 		
 	}
-	public void setIntakePneumatics(boolean out)
+	public void setIntakePneumaticsOut(boolean out)
 	{
-		extender.set(out);
+		solOut = out;
 	}
 	public boolean limitSwitch()
 	{
