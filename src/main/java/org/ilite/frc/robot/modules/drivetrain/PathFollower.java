@@ -1,7 +1,6 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.robot.modules.DriveMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 

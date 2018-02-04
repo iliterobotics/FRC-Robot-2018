@@ -63,7 +63,7 @@ public class SystemSettings extends ConstantsBase {
   public static double	DRIVETRAIN_VELOCITY_kP = 0;
   public static double	DRIVETRAIN_VELOCITY_kI = 0;
   public static double	DRIVETRAIN_VELOCITY_kD = 0;
-  public static double	DRIVETRAIN_kA = 0;
+  public static double	DRIVETRAIN_kA = 0.012463593901570832;
   public static double	DRIVETRAIN_kV = 0.00104166666666666666666666666667;
   
   

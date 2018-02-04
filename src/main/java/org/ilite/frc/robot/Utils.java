@@ -37,20 +37,24 @@ public class Utils {
     }
   }
   
-  public static double ticksToRotations(int ticks) {
+  public static double ticksToRotations(double ticks) {
     return ticks / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
   }
   
-  public static double ticksToInches(int ticks) {
+  public static double ticksToInches(double ticks) {
     return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_DIAMETER;
   }
   
-  public static double ticksToRPM(int ticks) {
+  public static double ticksToRPM(double ticks) {
     return ticksToRotations(ticks) * 60000;
   }
   
-  public static double ticksToFPS(int ticks) {
+  public static double ticksToFPS(double ticks) {
     return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0;
+  }
+  
+  public static double fpsToTicks(double fps) {
+    return fps * 12 * (1 / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE) * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN * (1 / 1000) * (1 / 10);
   }
   
   
