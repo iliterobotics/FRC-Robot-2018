@@ -186,16 +186,14 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+	  lidar.start();
   }
   
   public void disabledPeriodic()
   {
-	  lidar.update();
-	  System.out.println(lidar.checkSignal());
 	  if(lidar.checkSignal())
 	  {
-		  System.out.println("Signal: Yes");
-		  System.out.println("Distance:" + lidar.getDistance());
+		  System.out.println("Lidar Distance:" + lidar.getDistance());
 	  }
   }
   
