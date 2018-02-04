@@ -26,10 +26,14 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer; 
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -42,24 +46,24 @@ public class Robot extends IterativeRobot {
   private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private final GetAutonomous getAutonomous;
+  private Queue<ICommand> mCommandQueue;
   private ICommand mCurrentCommand;
   
   // Temporary...
-  private final Intake intake;
-  private final Elevator elevator;
   private final DriveControl driveControl;
+  private final Elevator elevator;
+  private final Intake intake;
   private final DriveTrain dt;
   private final DriverInput drivetraincontrol;
-   
   public Robot() {
-	mControlLoop = new ControlLoopManager(mData, mHardware);
-	elevator = new Elevator();
-	intake = new Intake(elevator);
-	driveControl = new DriveControl();
-	drivetraincontrol = new DriverInput(driveControl, mData, intake, elevator);
+  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
 	dt = new DriveTrain(driveControl, mData);
-	Logger.setLevel(ELevel.INFO);
+	drivetraincontrol = new DriverInput(driveControl, mData, intake, elevator);
+	driveControl = new DriveControl();
+	intake = new Intake(elevator);
+	elevator = new Elevator();
+	mControlLoop = new ControlLoopManager(mData, mHardware);
   }
 
   public void robotInit() {
@@ -84,6 +88,7 @@ public class Robot extends IterativeRobot {
 
   public void autonomousInit() {
     System.out.println("Default autonomousInit() method... Overload me!");
+    mCommandQueue = getAutonomous.getAutonomousCommands();
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
     setRunningModules(dt);
@@ -94,6 +99,7 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
+	setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
@@ -120,7 +126,6 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      
       updateRunningModules();
     }
   
