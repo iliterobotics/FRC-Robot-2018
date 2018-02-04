@@ -49,14 +49,6 @@ public class Pigeon extends IMU{
     mLastUpdate = pTimestampNow;
 	}
 	
-	private void map() {
-	  data.pigeon.set(EPigeon.YAW, ypr[0]);
-	  data.pigeon.set(EPigeon.ROLL, ypr[1]);
-	  data.pigeon.set(EPigeon.PITCH, ypr[2]);
-	  data.pigeon.set(EPigeon.fACCEL_X, mAccelerationX.getAverage());
-	  data.pigeon.set(EPigeon.fACCEL_Y, mAccelerationY.getAverage());
-	}
-	
 	public double getHeading() {
 	  return mPigeon.getFusedHeading();
 	}

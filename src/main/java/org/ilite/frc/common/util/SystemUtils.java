@@ -35,14 +35,15 @@ public class SystemUtils {
     return addrs;
   }
   
-//  /**
-//   * Provides a way to write every value of a codex to the smart dashboard.
-//   * @param pCodex
-//   */
-//  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex) {
-//    List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
-//    for(E e : enums) {
-//      SmartDashboard.putNumber(e.toString(), (double) pCodex.get(e));
-//    }
-//  }
+  /**
+   * Provides a way to write every value of a codex to the smart dashboard.
+   * @param pCodex
+   */
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex) {
+    List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
+    for(E e : enums) {
+      Double value = (Double) pCodex.get(e);
+      if(e != null) SmartDashboard.putNumber(e.toString(), (value == null) ? 0 : value);
+    }
+  }
 }

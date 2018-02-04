@@ -1,7 +1,7 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 
 public class EncoderTurn {
 	

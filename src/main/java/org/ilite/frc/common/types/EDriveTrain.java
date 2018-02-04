@@ -1,5 +1,10 @@
 package org.ilite.frc.common.types;
 
+import org.ilite.frc.robot.Utils;
+import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
+import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
+
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 
 public enum EDriveTrain implements CodexOf<Double> {
@@ -47,5 +52,36 @@ public enum EDriveTrain implements CodexOf<Double> {
   RIGHT_TALON_FOLLOW2_CURRENT,
   
   TALON_VBUS,
-  TALON_CONTROL_MODE,
+  TALON_CONTROL_MODE;
+  
+  public static void map(Codex<Double, EDriveTrain> pCodex, DriveTrain driveTrain, DriveMessage driveMessage, double pTimestampNow) {
+    double leftPositionTicks = driveTrain.getLeftMaster().getSelectedSensorPosition(0);
+    double rightPositionTicks = driveTrain.getRightMaster().getSelectedSensorPosition(0);
+    double leftVelocityTicks = driveTrain.getLeftMaster().getSelectedSensorVelocity(0);
+    double rightVelocityTicks = driveTrain.getRightMaster().getSelectedSensorVelocity(0);
+    System.out.println("Left Vel: " + leftVelocityTicks);
+    System.out.println("Right Vel: " + rightVelocityTicks);
+    pCodex.set(DESIRED_LEFT_OUTPUT, driveMessage.leftOutput);
+    pCodex.set(DESIRED_RIGHT_OUTPUT, driveMessage.rightOutput);
+    pCodex.set(DRIVE_MODE, (double)driveTrain.getDriveMode().ordinal());
+    
+    pCodex.set(LEFT_POSITION_TICKS, (double)leftPositionTicks);
+    pCodex.set(LEFT_POSITION_ROT, Utils.ticksToRotations(leftPositionTicks));
+    pCodex.set(LEFT_POSITION_INCHES, Utils.ticksToInches(leftPositionTicks));
+    
+    pCodex.set(RIGHT_POSITION_TICKS, (double)rightPositionTicks);
+    pCodex.set(RIGHT_POSITION_ROT, Utils.ticksToRotations(rightPositionTicks));
+    pCodex.set(RIGHT_POSITION_INCHES, Utils.ticksToInches(rightPositionTicks));
+    
+    pCodex.set(LEFT_VELOCITY_TICKS, (double)leftVelocityTicks);
+    pCodex.set(LEFT_VELOCITY_RPM, Utils.ticksToRPM(leftVelocityTicks));
+    pCodex.set(LEFT_VELOCITY_FPS, Utils.ticksToFPS(leftVelocityTicks));
+    
+    pCodex.set(RIGHT_VELOCITY_TICKS, (double)rightVelocityTicks);
+    pCodex.set(RIGHT_VELOCITY_RPM, Utils.ticksToRPM(rightVelocityTicks));
+    pCodex.set(RIGHT_VELOCITY_FPS, Utils.ticksToFPS(rightVelocityTicks));
+    
+    pCodex.set(TALON_CONTROL_MODE, (double)driveTrain.getControlMode().ordinal());  
+  }
+  
 }

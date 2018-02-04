@@ -6,9 +6,9 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.DriveMode;
-import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
+import org.ilite.frc.robot.modules.drivetrain.DriveMode;
 import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -22,7 +22,7 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class FollowPath implements ICommand {
 	
-	private DriverControl mDriverControl;
+	private DriverInput mDriverControl;
 	private Data data;
 	
 	private Config mConfig;
@@ -31,7 +31,7 @@ public class FollowPath implements ICommand {
 	
 	private boolean mIsBackwards;
 	
-	public FollowPath(DriverControl pDriverControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
+	public FollowPath(DriverInput pDriverControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
 		this.mDriverControl = pDriverControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
@@ -43,7 +43,7 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriverControl pDriverControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
+	public FollowPath(DriverInput pDriverControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
 		this.mDriverControl = pDriverControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
@@ -53,11 +53,11 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriverControl pDriverControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
+	public FollowPath(DriverInput pDriverControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
 		this(pDriverControl, data, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
 	}
 	
-	public FollowPath(DriverControl pDriverControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
+	public FollowPath(DriverInput pDriverControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
 		this(pDriverControl, data, new Trajectory(pSegments), pIsBackwards);
 	}
 	

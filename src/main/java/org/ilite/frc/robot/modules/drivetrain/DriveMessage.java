@@ -1,7 +1,5 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
-import org.ilite.frc.robot.modules.DriveMode;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class DriveMessage {

@@ -1,25 +1,17 @@
-package org.ilite.frc.robot.modules;
+package org.ilite.frc.robot.modules.drivetrain;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.sensors.Pigeon;
-import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.Utils;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
 import org.ilite.frc.robot.controlloop.IControlLoop;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.PathFollower;
-import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
+import org.ilite.frc.robot.modules.TalonFactory;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.MotorSafety;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.followers.EncoderFollower;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -27,7 +19,7 @@ import jaci.pathfinder.followers.EncoderFollower;
 public class DriveTrain implements IControlLoop {
 	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
-	private DriverControl driverControl;
+	private DriveControl driveControl;
 	private Data data;
 	//private PDM g;
 	
@@ -38,9 +30,9 @@ public class DriveTrain implements IControlLoop {
 	
 	private int leftPositionTicks, rightPositionTicks, leftVelocityTicks, rightVelocityTicks;
 	
-	public DriveTrain(DriverControl driverControl, Data data)
+	public DriveTrain(DriveControl driveControl, Data data)
 	{
-		this.driverControl = driverControl;
+		this.driveControl = driveControl;
 		this.data = data;
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
     leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
@@ -55,6 +47,7 @@ public class DriveTrain implements IControlLoop {
     leftFollower.follow(leftMaster);
 		leftFollower2.follow(leftMaster);
 		
+		controlMode = ControlMode.PercentOutput;
 		driveMode = DriveMode.PercentOutput;
 		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
@@ -67,6 +60,7 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public void initialize(double pNow) {
+	  updateDriveMode(driveMode);
 		leftMaster.set(controlMode, 0);
 		rightMaster.set(controlMode, 0);
 		leftMaster.setSelectedSensorPosition(0, 0, 10);
@@ -76,10 +70,10 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public boolean update(double pNow) {
-	  DriveMessage driveMessage = driverControl.getDriveMessage();
-	  ProfilingMessage profilingMessage = driverControl.getProfilingMessage();
+	  DriveMessage driveMessage = driveControl.getDriveMessage();
+	  ProfilingMessage profilingMessage = driveControl.getProfilingMessage();
 	  
-	  updateDriveMode(driveMessage.driveMode);
+	  setMode(driveMessage.driveMode);
     
     switch(driveMode) {
     case Pathfinder:
@@ -105,7 +99,7 @@ public class DriveTrain implements IControlLoop {
 	private void updateDriveMode(DriveMode newMode) {
 	  if(newMode != driveMode) {
 	    driveMode = newMode;
-	    initMode(driveMode);
+	    setMode(driveMode);
 	  }
 	}
 	
@@ -115,8 +109,10 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.neutralOutput();
 	}
 	
-	public void initMode(DriveMode driveMode)
+	public void setMode(DriveMode driveMode)
 	{
+	  if(this.driveMode == driveMode) return;
+	  this.driveMode = driveMode;
 		switch(driveMode)
 		{
 		case PercentOutput:
@@ -158,33 +154,20 @@ public class DriveTrain implements IControlLoop {
 	  update(pNow);
 	}
 	
-	public void map(DriveMessage driveMessage) {
-	  leftPositionTicks = leftMaster.getSelectedSensorPosition(0);
-	  rightPositionTicks = rightMaster.getSelectedSensorPosition(0);
-	  leftVelocityTicks = leftMaster.getSelectedSensorVelocity(0);
-	  rightVelocityTicks = rightMaster.getSelectedSensorVelocity(0);
-	  
-	  data.drivetrain.set(EDriveTrain.DESIRED_LEFT_OUTPUT, driveMessage.leftOutput);
-	  data.drivetrain.set(EDriveTrain.DESIRED_RIGHT_OUTPUT, driveMessage.rightOutput);
-	  data.drivetrain.set(EDriveTrain.DRIVE_MODE, (double)driveMode.ordinal());
-	  
-	  data.drivetrain.set(EDriveTrain.LEFT_POSITION_TICKS, (double)leftPositionTicks);
-	  data.drivetrain.set(EDriveTrain.LEFT_POSITION_ROT, Utils.ticksToRotations(leftPositionTicks));
-	  data.drivetrain.set(EDriveTrain.LEFT_POSITION_INCHES, Utils.ticksToInches(leftPositionTicks));
-	  
-	  data.drivetrain.set(EDriveTrain.RIGHT_POSITION_TICKS, (double)rightPositionTicks);
-    data.drivetrain.set(EDriveTrain.RIGHT_POSITION_ROT, Utils.ticksToRotations(rightPositionTicks));
-    data.drivetrain.set(EDriveTrain.RIGHT_POSITION_INCHES, Utils.ticksToInches(rightPositionTicks));
-	  
-    data.drivetrain.set(EDriveTrain.LEFT_VELOCITY_TICKS, (double)leftVelocityTicks);
-    data.drivetrain.set(EDriveTrain.LEFT_VELOCITY_RPM, Utils.ticksToRPM(leftVelocityTicks));
-    data.drivetrain.set(EDriveTrain.LEFT_VELOCITY_FPS, Utils.ticksToFPS(leftVelocityTicks));
-    
-    data.drivetrain.set(EDriveTrain.RIGHT_VELOCITY_TICKS, (double)rightVelocityTicks);
-    data.drivetrain.set(EDriveTrain.RIGHT_VELOCITY_RPM, Utils.ticksToRPM(rightVelocityTicks));
-    data.drivetrain.set(EDriveTrain.RIGHT_VELOCITY_FPS, Utils.ticksToFPS(rightVelocityTicks));
-    
-    data.drivetrain.set(EDriveTrain.TALON_CONTROL_MODE, (double)controlMode.ordinal());  
+	public TalonSRX getLeftMaster() {
+	  return leftMaster;
+	}
+	
+	public TalonSRX getRightMaster() {
+	  return rightMaster;
+	}
+	
+	public DriveMode getDriveMode() {
+	  return driveMode;
+	}
+	
+	public ControlMode getControlMode() {
+	  return controlMode;
 	}
 	
 }

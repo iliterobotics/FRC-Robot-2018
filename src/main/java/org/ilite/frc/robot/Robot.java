@@ -7,16 +7,19 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.EncoderStraight;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
+import org.ilite.frc.robot.modules.drivetrain.DriveControl;
+import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
@@ -45,15 +48,17 @@ public class Robot extends IterativeRobot {
   // Temporary...
   private final Intake intake;
   private final Elevator elevator;
+  private final DriveControl driveControl;
   private final DriveTrain dt;
-  private final DriverControl drivetraincontrol;
+  private final DriverInput drivetraincontrol;
    
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	elevator = new Elevator();
 	intake = new Intake(elevator);
-	drivetraincontrol = new DriverControl(mData, intake, elevator);
-	dt = new DriveTrain(drivetraincontrol, mData);
+	driveControl = new DriveControl();
+	drivetraincontrol = new DriverInput(driveControl, mData, intake, elevator);
+	dt = new DriveTrain(driveControl, mData);
 	Logger.setLevel(ELevel.INFO);
   }
 
@@ -81,16 +86,19 @@ public class Robot extends IterativeRobot {
     System.out.println("Default autonomousInit() method... Overload me!");
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
+    mCommandQueue.clear();
+    mCommandQueue.add(new EncoderStraight(60, driveControl, dt));
+    updateCommandQueue(true);
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules(drivetraincontrol, dt);
+    setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
-	//TODO put updateCommandQueue into autoninit
-	updateCommandQueue(true);
+    //TODO put updateCommandQueue into autoninit
+    updateCommandQueue(false);
     updateRunningModules();
       
   }
@@ -129,6 +137,10 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      EDriveTrain.map(mData.drivetrain, dt, driveControl.getDriveMessage(), mCurrentTime);
+
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
 //      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
   }
   
@@ -180,7 +192,7 @@ public class Robot extends IterativeRobot {
    */
   private void initializeRunningModules() {
 	  for(IModule m : mRunningModules) {
-		  m.initialize(Timer.getFPGATimestamp());
+		  m.initialize(mCurrentTime);
 	  }
   }
   
@@ -194,6 +206,8 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+    SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
+    SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
   }
   
   

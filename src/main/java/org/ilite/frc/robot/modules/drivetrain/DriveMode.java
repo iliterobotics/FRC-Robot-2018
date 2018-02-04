@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.modules;
+package org.ilite.frc.robot.modules.drivetrain;
 
 public enum DriveMode {
 
