@@ -20,7 +20,8 @@ public class Intake implements IModule{
 	private double leftCurrent;
 	private double maxRatio;
 	public Solenoid extender;
-	private double power;
+	private double leftPower;
+	private double rightPower;
 	private double startReverseTime;
 	private double currentTime; 
 	private boolean startCurrentLimiting;
@@ -49,8 +50,8 @@ public class Intake implements IModule{
 		rightVoltage = rightIntakeTalon.getBusVoltage();
 		leftVoltage = leftIntakeTalon.getBusVoltage();
 		
-		leftIntakeTalon.set(ControlMode.PercentOutput, -power );
-		rightIntakeTalon.set(ControlMode.PercentOutput, power);	
+		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
+		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);	
 		
 		
 
@@ -74,21 +75,30 @@ public class Intake implements IModule{
 			if ( rightRatio >  3 || leftRatio > 3 )
 			{
 				startCurrentLimiting = true;
-				power = -inPower * .5;
+				leftPower = -inPower * .7;
+				rightPower = -inPower * .2;
 			}
-			else if (rightRatio < 1 && leftRatio < 1)
+			else if (rightRatio < .7 && leftRatio < .7)
 			{
 				startCurrentLimiting = false;
-				power = inPower;
+				leftPower = inPower;
+				rightPower = inPower;
 			}
 			else if (startCurrentLimiting)
 			{
-				power = -inPower * .5;
+				leftPower = -inPower * .7;
+				rightPower = -inPower * .2;
 			}
 			else
 			{
-				power = inPower;
+				leftPower = inPower;
+				rightPower = inPower;
 			}
+		}
+		else
+		{
+			leftPower = 0;
+			rightPower = 0;
 		}
 
 		
@@ -102,8 +112,8 @@ public class Intake implements IModule{
 		return limitSwitch.get();
 	}
 	public void intakeOut(double inPower) {
-		power = inPower;
-			
+		leftPower = inPower;
+		rightPower= inPower;
 	}
 	@Override
 	public void shutdown(double pNow) {
