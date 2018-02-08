@@ -37,6 +37,10 @@ public class Utils {
     }
   }
   
+  public static double absoluteAverage(double a, double b) {
+	  return (Math.abs(a) + Math.abs(b)) / 2;
+  }
+  
   public static double ticksToRotations(double ticks) {
     return ticks / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
   }

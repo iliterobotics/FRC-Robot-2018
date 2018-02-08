@@ -120,6 +120,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		MOTION_MAGIC_A = 951;
   
   // =============================================================================
+  // Autonomous Constants
+  // =============================================================================
+  public static int		AUTO_POS_TOLERANCE = 100;
+  
+  // =============================================================================
   // Sensors
   // =============================================================================
   public static final int INTAKE_LIMIT_SWITCH = 0;
