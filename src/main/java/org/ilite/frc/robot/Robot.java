@@ -82,8 +82,6 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     setRunningModules(dt);
     mCommandQueue.clear();
-    mCommandQueue.add(new EncoderTurn(90, driveControl));
-    System.out.println(mCommandQueue);
     updateCommandQueue(true);
   }
   public void autonomousPeriodic() {
