@@ -49,8 +49,8 @@ public class AutonConfigDisplay extends Application {
   private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
 	private double mDelay = -1;
-	private static Number mCross = -1;
-	private static Number mStartingPosition = -1;
+	private static Integer mCross = -1;
+	private static Integer mStartingPosition = -1;
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -75,8 +75,8 @@ public class AutonConfigDisplay extends Application {
     send.setOnAction(e -> {
       SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
       SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
-      SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), value);
-      SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), value);
+      SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
+      SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
      
     });
     
