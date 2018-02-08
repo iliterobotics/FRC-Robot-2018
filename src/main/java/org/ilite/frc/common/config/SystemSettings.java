@@ -111,6 +111,16 @@ public class SystemSettings extends ConstantsBase {
   public static int		MOTION_MAGIC_V;
   public static int		MOTION_MAGIC_A;
   
+  public static int ELEV_MOTION_MAGIC_PID_SLOT;
+  public static int	ELEV_MOTION_MAGIC_LOOP_SLOT;
+  public static int	ELEV_MOTION_MAGIC_P;
+  public static int	ELEV_MOTION_MAGIC_I;
+  public static int	ELEV_MOTION_MAGIC_D;
+  public static int	ELEV_MOTION_MAGIC_F; //= (ELEV_MAX_VELOCITY_PERCENTAGE * 1023) / ((rotations/min) * (1/60) * (1/1000) * 1024); 
+  public static int	ELEV_MOTION_MAGIC_V;
+  public static int	ELEV_MOTION_MAGIC_A;
+  public static int ELEV_MAX_VELOCITY_PERCENTAGE;
+  
   // =============================================================================
   // Sensor Settings
   // =============================================================================
