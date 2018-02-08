@@ -9,6 +9,7 @@ import org.ilite.frc.robot.modules.TalonFactory;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.MotorSafety;
@@ -36,8 +37,8 @@ public class DriveTrain implements IControlLoop {
 		this.driveControl = driveControl;
 		this.data = data;
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
-    leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
-    leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT3);
+		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
+    	leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT3);
     
 		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
 		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
@@ -45,7 +46,7 @@ public class DriveTrain implements IControlLoop {
 		
 		rightFollower.follow(rightMaster);
 		rightFollower2.follow(rightMaster);
-    leftFollower.follow(leftMaster);
+		leftFollower.follow(leftMaster);
 		leftFollower2.follow(leftMaster);
 		
 		controlMode = ControlMode.PercentOutput;
@@ -62,7 +63,7 @@ public class DriveTrain implements IControlLoop {
 		leftFollower.setInverted(false);
 		leftFollower2.setInverted(false);
 		
-		rightMaster.setSensorPhase(false);
+		rightMaster.setSensorPhase(true);
 		leftMaster.setSensorPhase(true);
 	}
 	
@@ -70,12 +71,11 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public void initialize(double pNow) {
-	  updateDriveMode(driveMode);
+		setMode(new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake));
 		leftMaster.set(controlMode, 0);
 		rightMaster.set(controlMode, 0);
 		leftMaster.setSelectedSensorPosition(0, 0, 10);
 		rightMaster.setSelectedSensorPosition(0, 0, 10);
-		
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class DriveTrain implements IControlLoop {
 	  DriveMessage driveMessage = driveControl.getDriveMessage();
 	  ProfilingMessage profilingMessage = driveControl.getProfilingMessage();
 	  
-	  setMode(driveMessage.driveMode);
+	  setMode(driveMessage);
     
     switch(driveMode) {
     case Pathfinder:
@@ -91,28 +91,18 @@ public class DriveTrain implements IControlLoop {
                                     leftPositionTicks, rightPositionTicks,
                                     data.pigeon.get(EPigeon.YAW), 
                                     profilingMessage.isBackwards);
-      updateDriveMode(driveMessage.driveMode);
+      
       leftMaster.set(controlMode, driveMessage.leftOutput);
       rightMaster.set(controlMode, driveMessage.rightOutput);
       break;
     default:
-      System.out.println(driveMessage.leftOutput);
-      System.out.println(driveMessage.rightOutput);
       leftMaster.setNeutralMode(driveMessage.neutralMode);
       rightMaster.setNeutralMode(driveMessage.neutralMode);
       leftMaster.set(controlMode, driveMessage.leftOutput);
       rightMaster.set(controlMode, driveMessage.rightOutput);
       break;
     }
-		SmartDashboard.putString("Control Mode Debug", controlMode.name());
 		return false;
-	}
-	
-	private void updateDriveMode(DriveMode newMode) {
-	  if(newMode != driveMode) {
-	    driveMode = newMode;
-	    setMode(driveMode);
-	  }
 	}
 	
 	@Override
@@ -121,10 +111,10 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.neutralOutput();
 	}
 	
-	public void setMode(DriveMode driveMode)
+	public void setMode(DriveMessage driveMessage)
 	{
-	  if(this.driveMode == driveMode) return;
-	  this.driveMode = driveMode;
+	  if(driveMessage.driveMode == driveMode && driveMessage.initMode != true) return;
+	  this.driveMode = driveMessage.driveMode;
 		switch(driveMode)
 		{
 		case PercentOutput:

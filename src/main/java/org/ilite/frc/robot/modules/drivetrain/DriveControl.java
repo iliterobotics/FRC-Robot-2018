@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DriveControl {
 
   private Object messageLock = new Object();
-  private double desiredLeftOutput, desiredRightOutput;
   private DriveMessage driveMessage;
   private ProfilingMessage profilingMessage;
   

@@ -59,8 +59,6 @@ public enum EDriveTrain implements CodexOf<Double> {
     double rightPositionTicks = driveTrain.getRightMaster().getSelectedSensorPosition(0);
     double leftVelocityTicks = driveTrain.getLeftMaster().getSelectedSensorVelocity(0);
     double rightVelocityTicks = driveTrain.getRightMaster().getSelectedSensorVelocity(0);
-    System.out.println("Left Vel: " + leftVelocityTicks);
-    System.out.println("Right Vel: " + rightVelocityTicks);
     pCodex.set(DESIRED_LEFT_OUTPUT, driveMessage.leftOutput);
     pCodex.set(DESIRED_RIGHT_OUTPUT, driveMessage.rightOutput);
     pCodex.set(DRIVE_MODE, (double)driveTrain.getDriveMode().ordinal());
