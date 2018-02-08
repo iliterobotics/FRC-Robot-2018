@@ -13,71 +13,71 @@ public class GyroTurn implements ICommand {
 
 private static final int TIMEOUT = 3000;
 	
-	private org.ilite.frc.robot.modules.drivetrain.DriveControl driveControl;
-	private Data data;
+	private DriveControl mDriveControl;
+	private Data mData;
 	
-	private static final int MIN_ALIGNED_COUNT = 5;
-	private static final double KP = 0.0101;
-	private static final double KD = 0.0105;
-	private static final double KI = 0.0;
-	private static final double MINIMUM_POWER = 0.05;
+	private static final int kMIN_ALIGNED_COUNT = 5;
+	private static final double kP = 0.0101;
+	private static final double kD = 0.0105;
+	private static final double kI = 0.0;
+	private static final double kMIN_POWER = 0.05;
 	
-	private double degrees, targetYaw;
-	private double error, lastError, totalError;
-	private double alignedCount;
-	private final double allowableError;
+	private double mSetpointDegrees, mTargetYaw;
+	private double mError, mLastError, mTotalError;
+	private double mAlignedCount;
+	private final double mAllowableError;
 	
-	private long startTime;
+	private long mStartTime;
 	
-	double leftPower, rightPower, output = 0;
+	double mLeftPower, mRightPower, mOutput = 0;
 	
-	public GyroTurn(DriveControl driveControl, Data data, double degrees, double allowableError)
+	public GyroTurn(DriveControl pDriveControl, Data pData, double pDegrees, double pAllowableError)
 	{
-		this.driveControl = driveControl;
-		this.data = data;
-		this.degrees = degrees;
-		this.alignedCount = 0;
-		this.allowableError = allowableError;
+		this.mDriveControl = pDriveControl;
+		this.mData = pData;
+		this.mSetpointDegrees = pDegrees;
+		this.mAlignedCount = 0;
+		this.mAllowableError = pAllowableError;
 	}
 
 	@Override
-	public void initialize() {
-		this.targetYaw = degrees;  //Calculate the target heading off of # of degrees to turn
-		this.lastError = this.error = getError(); //Calculate the initial error value
-		this.totalError += this.error;
-		startTime = System.currentTimeMillis();
+	public void initialize(double pNow) {
+		this.mTargetYaw = mSetpointDegrees;  //Calculate the target heading off of # of degrees to turn
+		this.mLastError = this.mError = getError(); //Calculate the initial error value
+		this.mTotalError += this.mError;
+		mStartTime = System.currentTimeMillis();
 	}
 	
-	public boolean update()
+	public boolean update(double pNow)
 	{
-		error = getError(); //Update error value
-		System.out.println(error);
-		this.totalError += this.error; //Update running error total
+		mError = getError(); //Update error value
+		System.out.println(mError);
+		this.mTotalError += this.mError; //Update running error total
 		
-		if((Math.abs(error) < allowableError)) alignedCount++;
-		if(alignedCount >= MIN_ALIGNED_COUNT) return true;
-		if(System.currentTimeMillis() - startTime > TIMEOUT) return true;
+		if((Math.abs(mError) < mAllowableError)) mAlignedCount++;
+		if(mAlignedCount >= kMIN_ALIGNED_COUNT) return true;
+		if(System.currentTimeMillis() - mStartTime > TIMEOUT) return true;
 		
-		output = ((KP * error) + (KI * totalError) + (KD * (error - lastError)));
-		if(Math.abs(output) < MINIMUM_POWER){
-			double scalar = output>0?1:-1;
-			output = MINIMUM_POWER * scalar;
+		mOutput = ((kP * mError) + (kI * mTotalError) + (kD * (mError - mLastError)));
+		if(Math.abs(mOutput) < kMIN_POWER){
+			double scalar = mOutput>0?1:-1;
+			mOutput = kMIN_POWER * scalar;
 		}
-		leftPower = output; 
-		rightPower = -output;
+		mLeftPower = mOutput; 
+		mRightPower = -mOutput;
 		
-		driveControl.setDriveMessage(new DriveMessage(leftPower, rightPower, DriveMode.PercentOutput, NeutralMode.Brake));
+		mDriveControl.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DriveMode.PercentOutput, NeutralMode.Brake));
 		
-		lastError = error;
+		mLastError = mError;
 		return false;
 	}
 	
 	public double getError(){
-		return IMU.getAngleDistance(IMU.convertTo360(IMU.clampDegrees(data.pigeon.get(EPigeon.YAW))), targetYaw);
+		return IMU.getAngleDistance(IMU.convertTo360(IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW))), mTargetYaw);
 	}
 
 	@Override
-	public void shutdown() {
+	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub
 		
 	}

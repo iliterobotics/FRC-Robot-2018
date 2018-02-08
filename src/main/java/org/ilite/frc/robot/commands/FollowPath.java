@@ -62,7 +62,7 @@ public class FollowPath implements ICommand {
 		this(pDriveControl, data, new Trajectory(pSegments), pIsBackwards);
 	}
 	
-	public void initialize() {
+	public void initialize(double pNow) {
 		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
 		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
 		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
@@ -71,7 +71,7 @@ public class FollowPath implements ICommand {
 		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
 	}
 	
-	public boolean update() {
+	public boolean update(double pNow) {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
 		
 		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, data.pigeon.get(EPigeon.YAW), mIsBackwards));
@@ -80,7 +80,7 @@ public class FollowPath implements ICommand {
 	}
 
 	@Override
-	public void shutdown() {
+	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -25,7 +25,7 @@ public class EncoderStraight implements ICommand{
     this.mData = pData;
   }
   
-  public void initialize() {
+  public void initialize(double pNow) {
     mLeftTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
     mRightTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
     mAbsoluteTargetPosition = Utils.absoluteAverage(mLeftTargetPosition, mRightTargetPosition);
@@ -33,7 +33,7 @@ public class EncoderStraight implements ICommand{
     mDriveControl.setDriveMessage(new DriveMessage(mLeftTargetPosition, mRightTargetPosition, DriveMode.MotionMagic, NeutralMode.Brake));
   }
   
-  public boolean update() {
+  public boolean update(double pNow) {
     mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
     mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
     mAbsolutePosition = Utils.absoluteAverage(mLeftPosition, mRightPosition);
@@ -46,7 +46,7 @@ public class EncoderStraight implements ICommand{
     return false;
   }
   
-  public void shutdown() {
+  public void shutdown(double pNow) {
     
   }
   
