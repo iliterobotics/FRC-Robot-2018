@@ -23,11 +23,16 @@ public class SimpleNetworkTable  {
       		Number[] defaultArray = {0};
       		netTable.getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(defaultArray);
       		netTable.getEntry("Chosen Autonomous").setDefaultString("");
+      		netTable.getEntry("Delay").setDefaultDouble(-1);
     }
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
     }
   
+    public synchronized void putDouble(String key, double value) {
+    	netTable.getEntry(key).forceSetDouble(value);
+    }
+    
     public synchronized void putNumber(String key, Integer value) {
         netTable.getEntry(key).forceSetNumber(value);
     }

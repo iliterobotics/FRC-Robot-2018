@@ -48,6 +48,9 @@ public class AutonConfigDisplay extends Application {
   private Integer[] preferredCubeActions;
   private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
+	private double mDelay = -1;
+	private static Number mCross = -1;
+	private static Number mStartingPosition = -1;
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -71,6 +74,10 @@ public class AutonConfigDisplay extends Application {
     Button send = new Button("Send");
     send.setOnAction(e -> {
       SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+      SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
+      SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), value);
+      SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), value);
+     
     });
     
     Button mode = new Button("Enhanced Mode");
@@ -98,7 +105,8 @@ public class AutonConfigDisplay extends Application {
     		delayLabel,
     		delayText);
     delayText.setOnAction(e -> {
-    	delayText.getText();
+    	mDelay = Double.parseDouble(delayText.getText());
+    	SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
     });
     HBox modeOptions = new HBox(mode, send);
    
@@ -121,8 +129,15 @@ public class AutonConfigDisplay extends Application {
 	    label.setTextAlignment(TextAlignment.CENTER);
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
-	        event -> 
-		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal())
+	        event -> {
+		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal());
+	        if(pEnumeration.getSimpleName() == "ECross") {
+	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
+	        }
+	        else {
+	        	mStartingPosition =combo.getSelectionModel().getSelectedItem().ordinal();
+	        }
+	        }
 	    );
 	    combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);

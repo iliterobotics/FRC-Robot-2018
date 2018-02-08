@@ -27,11 +27,13 @@ public class GetAutonomous {
 	private NetworkTableEntry nPosEntry;
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
+	private NetworkTableEntry nDelayEntry;
 	
 	//Decision variables to be set by networktable entries.
 	private List<ECubeAction> mCubeActionPrefs;
 	private EStartingPosition mStartingPos;
 	private ECross mCrossType;
+	private double mDelay;
 	private boolean doComplexAutonomous;
 	
 	//Game Data - Jaci's API
@@ -53,7 +55,7 @@ public class GetAutonomous {
       nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
       nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
       nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
-      
+      nDelayEntry = nAutonTable.getEntry("Delay");
     } catch (Exception e) {
     
     }
@@ -207,6 +209,7 @@ public class GetAutonomous {
 		Integer[] defaultArray = { ECubeAction.NONE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 		
+		mDelay = nDelayEntry.getDouble(-1);
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mCrossType = ECross.intToEnum(crossNum);
 		mCubeActionPrefs = new ArrayList<ECubeAction>();
