@@ -29,6 +29,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -84,16 +85,21 @@ public class AutonConfigDisplay extends Application {
         scene.getStylesheets().add(awesomeCss);
         setFieldImage("./field.png");
       }
+      
     });
-    
+    TextField delayText = new TextField();
+    Label delayLabel = new Label("Delay");
     
     HBox selectionBoxes = new HBox(
     		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
     		labeledDropdown(EStartingPosition.class),
     		labeledDropdown(ECross.class),
-    		labeledDropdown(EDriverControlMode.class)
-    );
-    
+    		labeledDropdown(EDriverControlMode.class),
+    		delayLabel,
+    		delayText);
+    delayText.setOnAction(e -> {
+    	delayText.getText();
+    });
     HBox modeOptions = new HBox(mode, send);
    
     modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
