@@ -123,6 +123,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Autonomous Constants
   // =============================================================================
   public static int		AUTO_POS_TOLERANCE = 100;
+  public static double	AUTO_TURN_TIMEOUT = 3;
   
   // =============================================================================
   // Sensors

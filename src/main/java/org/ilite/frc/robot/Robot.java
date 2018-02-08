@@ -144,13 +144,13 @@ public class Robot extends IterativeRobot {
 	  //Grab the next command
 	  mCurrentCommand = mCommandQueue.peek();
 	  if(mCurrentCommand != null) {
-	    if(firstRun) mCurrentCommand.initialize();
+	    if(firstRun) mCurrentCommand.initialize(mCurrentTime);
 	    //If this command is finished executing
-	    if(mCurrentCommand.update()) {
+	    if(mCurrentCommand.update(mCurrentTime)) {
 	      mCommandQueue.poll(); //Discard the command and initialize the next one
 	    }
 	    if(mCommandQueue.peek() != null) {
-	      mCommandQueue.peek().initialize();
+	      mCommandQueue.peek().initialize(mCurrentTime);
 	      return true;
 	    }
 	  }
