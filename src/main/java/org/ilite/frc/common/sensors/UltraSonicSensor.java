@@ -10,6 +10,7 @@ public class UltraSonicSensor {
 	private AnalogInput analogInput;
 	private double distance;
 	private static final double MM_CONVERSION = 0.03937007874;
+	private static final double ACD_CONVERSION = 1474.358974;
 	private static final double SCALE_FACTOR = 0.2;
   //TDO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
@@ -76,7 +77,8 @@ public class UltraSonicSensor {
 	
 	private void calculate()
 	{
-		distance = (analogInput.getVoltage() * 1023) * MM_CONVERSION;
+		distance = (analogInput.getVoltage() * ACD_CONVERSION) * MM_CONVERSION;
+		
 	}
 	
 	public void zeroDistance()

@@ -111,7 +111,7 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      System.out.println(mHardware.getUltraSonicSensor().getInches());
+      System.out.println("Ultrasonic " + mHardware.getUltraSonicSensor().getInches());
       updateRunningModules();
   }  
   
@@ -191,6 +191,7 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+      System.out.println("Ultrasonic in Inches: " + mHardware.getUltraSonicSensor().getInches());
   }
   
   
