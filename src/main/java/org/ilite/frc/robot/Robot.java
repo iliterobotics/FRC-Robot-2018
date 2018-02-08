@@ -11,7 +11,7 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.robot.commands.EncoderStraight;
+import org.ilite.frc.robot.commands.EncoderTurn;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -82,13 +82,13 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     setRunningModules(dt);
     mCommandQueue.clear();
-    mCommandQueue.add(new EncoderStraight(60, driveControl, dt));
+    mCommandQueue.add(new EncoderTurn(90, driveControl));
+    System.out.println(mCommandQueue);
     updateCommandQueue(true);
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules(dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     

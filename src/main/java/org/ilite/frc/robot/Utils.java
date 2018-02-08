@@ -42,7 +42,7 @@ public class Utils {
   }
   
   public static double ticksToInches(double ticks) {
-    return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_DIAMETER;
+    return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE;
   }
   
   public static double ticksToRPM(double ticks) {
