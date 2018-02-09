@@ -2,11 +2,12 @@ package org.ilite.frc.robot.commands;
 
 import java.io.File;
 
+import org.controlsfx.tools.Utils;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
 import org.ilite.frc.robot.modules.drivetrain.DriveMode;
@@ -44,6 +45,10 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
+	public FollowPath(DriveControl pDriveControl, Data pData, File pLeftTrajectoryFile, File pRightTrajectoryFile, boolean pIsBackwards) {
+		this(pDriveControl, pData, Pathfinder.readFromCSV(pLeftTrajectoryFile), Pathfinder.readFromCSV(pRightTrajectoryFile), true);
+	}
+	
 	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
 		this.mDriveControl = pDriveControl;
 		this.data = data;
@@ -74,7 +79,7 @@ public class FollowPath implements ICommand {
 	public boolean update(double pNow) {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
 		
-		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, data.pigeon.get(EPigeon.YAW), mIsBackwards));
+		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, mIsBackwards));
 		
 		return false;
 	}
