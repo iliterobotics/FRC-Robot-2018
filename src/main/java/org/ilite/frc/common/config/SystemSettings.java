@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
+import org.ilite.frc.robot.Utils;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
@@ -62,7 +63,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
-  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
@@ -112,18 +113,19 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
   public static int		MOTION_MAGIC_PID_SLOT = 0;
   public static int		MOTION_MAGIC_LOOP_SLOT = 0;
-  public static double	MOTION_MAGIC_P = 0;
-  public static double	MOTION_MAGIC_I = 0;
+  public static double	MOTION_MAGIC_P = 0.05;
+  public static double	MOTION_MAGIC_I = 0.00001;
   public static double	MOTION_MAGIC_D = 0;
   public static double	MOTION_MAGIC_F = 1.07570977918;
-  public static int		MOTION_MAGIC_V = 951;
-  public static int		MOTION_MAGIC_A = 951;
+  public static int		MOTION_MAGIC_V = 600;
+  public static int		MOTION_MAGIC_A = 200;
   
   // =============================================================================
   // Autonomous Constants
   // =============================================================================
-  public static int		AUTO_POS_TOLERANCE = 100;
-  public static double	AUTO_TURN_TIMEOUT = 3;
+  public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
+  public static int		AUTO_TURN_POS_TOLERANCE = 100;
+  public static double	AUTO_TURN_TIMEOUT = 5;
   
   // =============================================================================
   // Sensors

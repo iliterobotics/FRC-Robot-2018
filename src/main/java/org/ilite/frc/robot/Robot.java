@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,7 +12,7 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.robot.commands.EncoderTurn;
+import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -80,8 +81,10 @@ public class Robot extends IterativeRobot {
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
+    mapInputsAndCachedSensors();
     setRunningModules(dt);
     mCommandQueue.clear();
+    mCommandQueue.add(new FollowPath(driveControl, mData, new File("testPath_left_detailed.csv"), new File("testPath_right_detailed.csv"), false));
     updateCommandQueue(true);
   }
   public void autonomousPeriodic() {
@@ -148,10 +151,10 @@ public class Robot extends IterativeRobot {
 	    //If this command is finished executing
 	    if(mCurrentCommand.update(mCurrentTime)) {
 	      mCommandQueue.poll(); //Discard the command and initialize the next one
-	    }
-	    if(mCommandQueue.peek() != null) {
-	      mCommandQueue.peek().initialize(mCurrentTime);
-	      return true;
+	      if(mCommandQueue.peek() != null) {
+		      mCommandQueue.peek().initialize(mCurrentTime);
+		      return true;
+		  }
 	    }
 	  }
 	  return false;

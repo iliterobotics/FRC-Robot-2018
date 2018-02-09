@@ -10,7 +10,7 @@ public class DriveControl {
   
   public DriveControl() {
     this.driveMessage = new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake);
-    this.profilingMessage = new ProfilingMessage(null, null, Double.NaN, false);
+    this.profilingMessage = new ProfilingMessage(null, null, false);
   }
   
   public void setDriveMessage(DriveMessage driveMessage) {

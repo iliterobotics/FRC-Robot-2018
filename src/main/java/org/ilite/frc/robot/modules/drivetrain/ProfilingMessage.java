@@ -8,7 +8,7 @@ public class ProfilingMessage {
   public double angle;
   public final boolean isBackwards;
   
-  public ProfilingMessage(EncoderFollower leftFollower, EncoderFollower rightFollower, double angle, boolean isBackwards) {
+  public ProfilingMessage(EncoderFollower leftFollower, EncoderFollower rightFollower, boolean isBackwards) {
     super();
     this.leftFollower = leftFollower;
     this.rightFollower = rightFollower;

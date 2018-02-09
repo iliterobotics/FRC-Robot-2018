@@ -13,8 +13,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class EncoderStraight implements ICommand{
 
   private double mSetpointInches;
-  private double mLeftTargetPosition, mRightTargetPosition, mAbsoluteTargetPosition;
-  private double mLeftPosition, mRightPosition, mAbsolutePosition;
+  private double mLeftTargetPosition, mRightTargetPosition;
+  private double mLeftPosition, mRightPosition;
   
   private DriveControl mDriveControl;
   private Data mData;
@@ -26,24 +26,33 @@ public class EncoderStraight implements ICommand{
   }
   
   public void initialize(double pNow) {
+	mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
+	mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
+	
     mLeftTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
     mRightTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
-    mAbsoluteTargetPosition = Utils.absoluteAverage(mLeftTargetPosition, mRightTargetPosition);
     
-    mDriveControl.setDriveMessage(new DriveMessage(mLeftTargetPosition, mRightTargetPosition, DriveMode.MotionMagic, NeutralMode.Brake));
+    System.out.println("Right Target: " + mRightTargetPosition + " Left Target: " + mLeftTargetPosition);
+    mDriveControl.setDriveMessage(new DriveMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DriveMode.MotionMagic, NeutralMode.Brake));
   }
   
   public boolean update(double pNow) {
     mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
     mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
-    mAbsolutePosition = Utils.absoluteAverage(mLeftPosition, mRightPosition);
     
-    if(mAbsoluteTargetPosition - mAbsolutePosition < SystemSettings.AUTO_POS_TOLERANCE) {
+    if(isFinished()) {
+    	System.out.println("EncoderStraight Finished");
     	mDriveControl.setDriveMessage(new DriveMessage(mLeftPosition, mRightPosition, DriveMode.MotionMagic, NeutralMode.Brake));
     	return true;
     }
     
     return false;
+  }
+  
+  private boolean isFinished() {
+	  boolean leftSideFinished = Math.abs(mLeftTargetPosition - mLeftPosition) < SystemSettings.AUTO_STRAIGHT_POS_TOLERANCE;
+	  boolean rightSideFinished = Math.abs(mRightTargetPosition - mRightPosition) < SystemSettings.AUTO_STRAIGHT_POS_TOLERANCE;
+	  return leftSideFinished && rightSideFinished;
   }
   
   public void shutdown(double pNow) {

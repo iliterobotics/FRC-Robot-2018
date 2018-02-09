@@ -1,6 +1,7 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
@@ -30,7 +31,7 @@ public class DriveTrain implements IControlLoop {
 	private DriveMode driveMode;
 	private ControlMode controlMode; 
 	
-	private int leftPositionTicks, rightPositionTicks, leftVelocityTicks, rightVelocityTicks;
+	private int leftPositionTicks, rightPositionTicks, leftVelocityTicks, rightVelocityTicks, leftMaxVelocityTicks, rightMaxVelocityTicks = 0;
 	
 	public DriveTrain(DriveControl driveControl, Data data)
 	{
@@ -63,8 +64,8 @@ public class DriveTrain implements IControlLoop {
 		leftFollower.setInverted(false);
 		leftFollower2.setInverted(false);
 		
-		rightMaster.setSensorPhase(true);
-		leftMaster.setSensorPhase(true);
+		rightMaster.setSensorPhase(false);
+		leftMaster.setSensorPhase(false);
 	}
 	
 	
@@ -89,7 +90,7 @@ public class DriveTrain implements IControlLoop {
     case Pathfinder:
       driveMessage = PathFollower.calculateOutputs(profilingMessage.leftFollower, profilingMessage.rightFollower, 
                                     leftPositionTicks, rightPositionTicks,
-                                    data.pigeon.get(EPigeon.YAW), 
+                                    IMU.convertTo360(IMU.clampDegrees(data.pigeon.get(EPigeon.YAW))), 
                                     profilingMessage.isBackwards);
       
       leftMaster.set(controlMode, driveMessage.leftOutput);
@@ -102,6 +103,13 @@ public class DriveTrain implements IControlLoop {
       rightMaster.set(controlMode, driveMessage.rightOutput);
       break;
     }
+    
+    leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, getLeftMaster().getSelectedSensorVelocity(0));
+    rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, getRightMaster().getSelectedSensorVelocity(0));
+    
+    SmartDashboard.putNumber("Highest Left Velocity", leftMaxVelocityTicks);
+    SmartDashboard.putNumber("Highest Right Velocity", rightMaxVelocityTicks);
+    
 		return false;
 	}
 	
@@ -150,6 +158,9 @@ public class DriveTrain implements IControlLoop {
 		default:
 			break;
 		}
+		
+		
+		
 	}
 	@Override
 	public void loop(double pNow) {
