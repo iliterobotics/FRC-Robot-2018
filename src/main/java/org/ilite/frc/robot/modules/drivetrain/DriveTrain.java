@@ -4,6 +4,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.Utils;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
 import org.ilite.frc.robot.controlloop.IControlLoop;
 import org.ilite.frc.robot.modules.TalonFactory;
@@ -107,8 +108,8 @@ public class DriveTrain implements IControlLoop {
     leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, getLeftMaster().getSelectedSensorVelocity(0));
     rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, getRightMaster().getSelectedSensorVelocity(0));
     
-    SmartDashboard.putNumber("Highest Left Velocity", leftMaxVelocityTicks);
-    SmartDashboard.putNumber("Highest Right Velocity", rightMaxVelocityTicks);
+    SmartDashboard.putNumber("Highest Left Velocity", Utils.ticksToFPS(leftMaxVelocityTicks));
+    SmartDashboard.putNumber("Highest Right Velocity", Utils.ticksToFPS(rightMaxVelocityTicks));
     
 		return false;
 	}
