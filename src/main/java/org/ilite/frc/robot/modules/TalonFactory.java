@@ -3,6 +3,7 @@ package org.ilite.frc.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.MotorSafety;
 
 public class TalonFactory {
 	
@@ -22,6 +23,7 @@ public class TalonFactory {
         public int PULSE_WIDTH_STATUS_FRAME_RATE_MS = 100;
         public double VOLTAGE_COMPENSATION_RAMP_RATE = 0;
         public double VOLTAGE_RAMP_RATE = 0;
+        public double EXPIRATION_TIMEOUT_SECONDS = MotorSafety.DEFAULT_SAFETY_EXPIRATION;
         
     }
 	

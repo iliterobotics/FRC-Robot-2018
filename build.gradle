@@ -39,9 +39,15 @@ dependencies {
 	compile 'org.jfree:jfreechart-fx:1.0.0'
 	compile 'org.controlsfx:controlsfx:9.0.0'
 	
+	// Required for NetworkTables
+	compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "4.+"
+	runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "4.+", classifier: "all"
+	
 	// Poofs library and its dependencies
 	compile name: 'json-simple-1.1.1'
 	compile name: 'poofs.2017'
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+	testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
 }
 
 repositories {
