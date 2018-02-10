@@ -69,18 +69,17 @@ public class FollowPath implements ICommand {
 	
 	public void initialize(double pNow) {
 		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
-		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
-		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
 		
-		mRightFollower.configureEncoder(data.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
-		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
+		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
+		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
+		
+		mRightFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
+		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
 	}
 	
 	public boolean update(double pNow) {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
-		
 		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, mIsBackwards));
-		
 		return false;
 	}
 

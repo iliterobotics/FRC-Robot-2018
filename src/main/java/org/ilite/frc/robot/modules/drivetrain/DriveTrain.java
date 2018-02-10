@@ -65,8 +65,8 @@ public class DriveTrain implements IControlLoop {
 		leftFollower.setInverted(false);
 		leftFollower2.setInverted(false);
 		
-		rightMaster.setSensorPhase(false);
-		leftMaster.setSensorPhase(false);
+		rightMaster.setSensorPhase(true);
+		leftMaster.setSensorPhase(true);
 	}
 	
 	
@@ -93,9 +93,9 @@ public class DriveTrain implements IControlLoop {
                                     leftPositionTicks, rightPositionTicks,
                                     IMU.convertTo360(IMU.clampDegrees(data.pigeon.get(EPigeon.YAW))), 
                                     profilingMessage.isBackwards);
-      
       leftMaster.set(controlMode, driveMessage.leftOutput);
       rightMaster.set(controlMode, driveMessage.rightOutput);
+      System.out.printf("Left: %s Right: %s\n", driveMessage.leftOutput, driveMessage.rightOutput);
       break;
     default:
       leftMaster.setNeutralMode(driveMessage.neutralMode);
@@ -110,6 +110,7 @@ public class DriveTrain implements IControlLoop {
     
     SmartDashboard.putNumber("Highest Left Velocity", Utils.ticksToFPS(leftMaxVelocityTicks));
     SmartDashboard.putNumber("Highest Right Velocity", Utils.ticksToFPS(rightMaxVelocityTicks));
+    SmartDashboard.putString("Drive Mode", driveMode.name());
     
 		return false;
 	}

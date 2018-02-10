@@ -68,11 +68,16 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
   public static double	DRIVETRAIN_ANGLE_kP = 0;
-  public static double	DRIVETRAIN_VELOCITY_kP = 0;
-  public static double	DRIVETRAIN_VELOCITY_kI = 0;
-  public static double	DRIVETRAIN_VELOCITY_kD = 0;
-  public static double	DRIVETRAIN_kA = 0.012463593901570832;
-  public static double	DRIVETRAIN_kV = 0.00104166666666666666666666666667;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 0;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kD = 0;
+  public static double	DRIVETRAIN_LEFT_kA = 0;
+  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 12.438666713767692;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 0;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
+  public static double  DRIVETRAIN_RIGHT_kA = 0;
+  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 12.226785617440987;
   
   
   // =============================================================================
