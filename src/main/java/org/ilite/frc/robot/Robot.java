@@ -77,7 +77,8 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
+        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
+        CameraServer.getInstance().startAutomaticCapture()
         // Sensors
         // Custom hw
         // Spike relays
@@ -85,13 +86,10 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
-    
-    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-    camera.setFPS(30);
-//    camera.setResolution(320, 240);
+       
     pipeline = new GripPipeline();
-    processing = new Processing(camera);
-    visionThread = new VisionThread(camera, pipeline, processing);
+    processing = new Processing(mHardware.getVisionCamera());
+    visionThread = new VisionThread(mHardware.getVisionCamera(), pipeline, processing);
     try {
     	visionThread.start();
     } catch (Exception e) {

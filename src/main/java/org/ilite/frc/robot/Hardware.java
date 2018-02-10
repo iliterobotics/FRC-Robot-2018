@@ -5,14 +5,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.sensors.Pigeon;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-
-import com.ctre.phoenix.sensors.PigeonIMU;
 public class Hardware {
   private ILog mLog = Logger.createLog(Hardware.class);
 
@@ -22,6 +21,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  private UsbCamera mVisionCamera;
   
   Hardware() {
     
@@ -32,13 +32,17 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      PigeonIMU pPigeon
+      PigeonIMU pPigeon,
+      UsbCamera pVisionCamera
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon, 0.5d);
+    mVisionCamera = pVisionCamera;
+    
+    mVisionCamera.setFPS(30);
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -68,6 +72,10 @@ public class Hardware {
   public Pigeon getPigeon()
   {
 	  return mPigeonWrapper;
+  }
+  
+  public UsbCamera getVisionCamera() {
+    return mVisionCamera;
   }
 
 }
