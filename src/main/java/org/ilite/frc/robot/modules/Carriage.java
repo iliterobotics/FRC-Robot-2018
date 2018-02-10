@@ -60,6 +60,10 @@ public class Carriage implements IModule{
 			if(currentTime >= kickTimer)
 			{
 				//kick
+				//testing code:
+				solenoid1.set(true);
+				solenoid2.set(true);
+				solenoid3.set(true);
 			}
 			if(currentTime >= releaseTimer)
 			{
