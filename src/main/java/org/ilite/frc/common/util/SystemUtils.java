@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.codex.CodexOf;
+import com.flybotix.hfr.util.lang.EnumUtils;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class SystemUtils {
 
   public static List<InetAddress> getSystemInetAddresses() {
@@ -27,5 +33,16 @@ public class SystemUtils {
     }
     
     return addrs;
+  }
+  
+  /**
+   * Provides a way to write every value of a codex to the smart dashboard.
+   * @param pCodex
+   */
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex) {
+    List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
+    for(E e : enums) {
+      SmartDashboard.putNumber(e.toString(), (double) pCodex.get(e));
+    }
   }
 }
