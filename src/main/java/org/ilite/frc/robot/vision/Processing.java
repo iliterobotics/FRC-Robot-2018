@@ -48,13 +48,13 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 		double x, y = 0;
 		contours = pipeline.filterContoursOutput;
     Rect target = new Rect();
-    	
+
+    targetList.clear();
 		if(!contours.isEmpty()) {
 			for(MatOfPoint contour : contours) {
 				target = Imgproc.boundingRect(contour);
-				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) target.width /= 4;
+//				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) target.width /= 4;
 				synchronized(imgLock) {
-				  targetList.clear();
 				  targetList.add(calculateTarget(target));
         }
 			}

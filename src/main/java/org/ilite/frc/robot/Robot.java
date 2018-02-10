@@ -63,8 +63,6 @@ public class Robot extends IterativeRobot {
     elevator = new ElevatorModule();
     intake = new Intake(elevator);
   	mControlLoop = new ControlLoopManager(mData, mHardware);
-  	elevator = new ElevatorModule();
-  	intake = new Intake(elevator);
   	drivetraincontrol = new DriverControl(mData, intake, elevator);
   	dt = new DriveTrain(drivetraincontrol);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
@@ -117,7 +115,6 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-    setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
@@ -162,6 +159,7 @@ public class Robot extends IterativeRobot {
     EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
     ECubeTarget.map(mData.vision, processing);
     SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+    SystemUtils.writeCodexToSmartDashboard(mData.vision);
   }
   
   /**

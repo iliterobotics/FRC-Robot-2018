@@ -17,6 +17,7 @@ public enum ECubeTarget implements CodexOf<Double>{
   
   public static void map(Codex<Double, ECubeTarget> pCodex, Processing pProcessing, int targetIndex) {
     pCodex.reset();
+    if(pProcessing.getTargets().size() <= 0) return;
     Target cubeTarget = pProcessing.getTargets().get(targetIndex);
     pCodex.set(ECubeTarget.CENTER_X, cubeTarget.centerX);
     pCodex.set(ECubeTarget.CENTER_Y, cubeTarget.centerY);

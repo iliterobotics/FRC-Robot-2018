@@ -125,8 +125,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		 VISION_TWO_CUBE_WIDTH = 50;
   public static double VISION_HORIZ_FOV_DEGREES = 60;
   public static double VISION_VERT_FOV_DEGREES = 60;
-  public static int    VISION_CAMERA_WIDTH = 320;
-  public static int    VISION_CAMERA_HEIGHT = 240;
+  public static int    VISION_CAMERA_WIDTH = 160;
+  public static int    VISION_CAMERA_HEIGHT = 120;
   public static double VISION_DEGREES_PER_PIXEL_X = VISION_HORIZ_FOV_DEGREES / VISION_CAMERA_WIDTH;
   public static double VISION_DEGREES_PER_PIXEL_Y = VISION_VERT_FOV_DEGREES / VISION_CAMERA_HEIGHT;
   //We calculate this because the coordinate system usually starts from the left, meaning 0 degrees is the leftmost part of the camera's view. We want 0 to be the center of the view.
