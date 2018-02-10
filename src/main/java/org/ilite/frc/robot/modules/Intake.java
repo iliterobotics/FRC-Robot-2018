@@ -18,7 +18,10 @@ public class Intake implements IModule{
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	private double maxRatio;
+	private final double leftPowerLimiter = .7;
+	private final double rightPowerLimiter = .2;
+	private final double maxCurrentRatio = 3;
+	private final double minCurrentRatio = .7;	
 	public Solenoid leftExtender;
 	public Solenoid rightExtender;
 	public boolean solOut;
@@ -66,22 +69,17 @@ public class Intake implements IModule{
 		
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
-		if(leftRatio > maxRatio)
-			maxRatio = leftRatio;
-		if(rightRatio > maxRatio)
-			maxRatio = rightRatio;
-		SmartDashboard.putNumber("MaxRatio", maxRatio);
 		
 		System.out.println("L: " + leftRatio +" R: " + rightRatio);
 		if(!limitSwitch.get())
 		{
-			if ( rightRatio >  3 || leftRatio > 3 )
+			if ( rightRatio >  maxCurrentRatio || leftRatio > maxCurrentRatio )
 			{
 				startCurrentLimiting = true;
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * leftPowerLimiter;
+				rightPower = -inPower * rightPowerLimiter;
 			}
-			else if (rightRatio < .7 && leftRatio < .7)
+			else if (rightRatio < minCurrentRatio && leftRatio < minCurrentRatio)
 			{
 				startCurrentLimiting = false;
 				leftPower = inPower;
@@ -89,8 +87,8 @@ public class Intake implements IModule{
 			}
 			else if (startCurrentLimiting)
 			{
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * leftPowerLimiter;
+				rightPower = -inPower * rightPowerLimiter;
 			}
 			else
 			{
