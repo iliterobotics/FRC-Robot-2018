@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class Hardware {
@@ -21,6 +22,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  private UsbCamera mVisionCamera;
   private Data data;
   
   Hardware() {
@@ -33,6 +35,7 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       PigeonIMU pPigeon,
+      UsbCamera pVisionCamera,
       Data data
   ) {
     mDriverJoystick = pDriverJoystick;
@@ -40,6 +43,8 @@ public class Hardware {
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
+    mVisionCamera = pVisionCamera;
+    mVisionCamera.setFPS(30);
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -69,6 +74,10 @@ public class Hardware {
   public Pigeon getPigeon()
   {
 	  return mPigeonWrapper;
+  }
+  
+  public UsbCamera getVisionCamera() {
+    return mVisionCamera;
   }
 
 }

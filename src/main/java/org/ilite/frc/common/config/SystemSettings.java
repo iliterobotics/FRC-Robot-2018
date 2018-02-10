@@ -2,17 +2,13 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
-
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
 import org.ilite.frc.robot.Utils;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
 
-import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Trajectory.FitMethod;
 
@@ -136,6 +132,21 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Sensors
   // =============================================================================
   public static final int INTAKE_LIMIT_SWITCH = 0;
+  
+  // =============================================================================
+  // Vision Constants
+  // =============================================================================
+  public static double VISION_CUBE_WIDTH_INCHES = 12; // Average of possible cube widths
+  public static int		 VISION_TWO_CUBE_WIDTH = 50;
+  public static double VISION_HORIZ_FOV_DEGREES = 60;
+  public static double VISION_VERT_FOV_DEGREES = 60;
+  public static int    VISION_CAMERA_WIDTH = 160;
+  public static int    VISION_CAMERA_HEIGHT = 120;
+  public static double VISION_DEGREES_PER_PIXEL_X = VISION_HORIZ_FOV_DEGREES / VISION_CAMERA_WIDTH;
+  public static double VISION_DEGREES_PER_PIXEL_Y = VISION_VERT_FOV_DEGREES / VISION_CAMERA_HEIGHT;
+  //We calculate this because the coordinate system usually starts from the left, meaning 0 degrees is the leftmost part of the camera's view. We want 0 to be the center of the view.
+  public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
+  
   @Override
   public String getFileLocation() {
     return "~/constants.txt";
