@@ -14,6 +14,7 @@ import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
@@ -47,10 +48,12 @@ public class Robot extends IterativeRobot {
   private final DriverControl drivetraincontrol;
   
   private LidarLite lidar = new LidarLite();
+  private Carriage carriage;
    
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
 	drivetraincontrol = new DriverControl(mData);
+	carriage = new Carriage(mData);
 	dt = new DriveTrain(drivetraincontrol);
 	Logger.setLevel(ELevel.INFO);
   }
@@ -95,7 +98,7 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol);
+	  setRunningModules(/*dt, drivetraincontrol, */carriage);
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -111,6 +114,7 @@ public class Robot extends IterativeRobot {
       mapInputsAndCachedSensors();
       
       updateRunningModules();
+      
     }
   
   
@@ -125,7 +129,7 @@ public class Robot extends IterativeRobot {
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
-      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+//      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
   }
   
   /**
@@ -194,7 +198,7 @@ public class Robot extends IterativeRobot {
   {
 	  if(lidar.checkSignal())
 	  {
-		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
+//		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
 	  }
   }
   
