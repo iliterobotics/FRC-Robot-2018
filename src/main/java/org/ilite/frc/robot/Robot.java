@@ -60,6 +60,8 @@ public class Robot extends IterativeRobot {
   private final DriverControl drivetraincontrol;
 
   public Robot() {
+    elevator = new ElevatorModule();
+    intake = new Intake(elevator);
   	mControlLoop = new ControlLoopManager(mData, mHardware);
   	elevator = new ElevatorModule();
   	intake = new Intake(elevator);
