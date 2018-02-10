@@ -38,7 +38,7 @@ public class Hardware {
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
-    mPigeonWrapper = new Pigeon(mPigeon);
+    mPigeonWrapper = new Pigeon(mPigeon, 0.5d);
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {

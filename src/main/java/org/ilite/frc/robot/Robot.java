@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer; 
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -40,7 +40,8 @@ public class Robot extends IterativeRobot {
   private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private final GetAutonomous getAutonomous;
+  private Queue<ICommand> mCommandQueue;
   private ICommand mCurrentCommand;
   
   // Temporary...
@@ -48,14 +49,15 @@ public class Robot extends IterativeRobot {
   private final ElevatorModule elevator;
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
-   
+
   public Robot() {
-	mControlLoop = new ControlLoopManager(mData, mHardware);
-	elevator = new ElevatorModule();
-	intake = new Intake(elevator);
-	drivetraincontrol = new DriverControl(mData, intake, elevator);
-	dt = new DriveTrain(drivetraincontrol);
-	Logger.setLevel(ELevel.INFO);
+    elevator = new ElevatorModule();
+    intake = new Intake(elevator);
+  	mControlLoop = new ControlLoopManager(mData, mHardware);
+  	drivetraincontrol = new DriverControl(mData, intake, elevator);
+  	dt = new DriveTrain(drivetraincontrol);
+  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+  	Logger.setLevel(ELevel.INFO);
   }
 
   public void robotInit() {
@@ -79,6 +81,7 @@ public class Robot extends IterativeRobot {
 
   public void autonomousInit() {
     System.out.println("Default autonomousInit() method... Overload me!");
+    mCommandQueue = getAutonomous.getAutonomousCommands();
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
   }
@@ -193,6 +196,9 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+	  System.out.println("Getting autonomous...");
+	  getAutonomous.getAutonomousCommands();
+	  Timer.delay(1);
   }
   
   

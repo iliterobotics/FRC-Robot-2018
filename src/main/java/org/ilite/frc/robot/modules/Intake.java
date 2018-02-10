@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
 	
@@ -17,17 +18,14 @@ public class Intake implements IModule{
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	private final double leftPowerLimiter = .7;
-	private final double rightPowerLimiter = .2;
-	private final double maxCurrentRatio = 3;
-	private final double minCurrentRatio = .7;	
+	private double maxRatio;
 	public Solenoid leftExtender;
 	public Solenoid rightExtender;
 	public boolean solOut;
 	private double leftPower;
 	private double rightPower;
 	private boolean startCurrentLimiting;
-	private DigitalInput beamBreak;
+	private DigitalInput limitSwitch;
 	
 	public Intake(ElevatorModule pElevator)
 	{
@@ -35,7 +33,7 @@ public class Intake implements IModule{
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		leftExtender = new Solenoid(0);
 		rightExtender = new Solenoid(1);
-		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
+		limitSwitch = new DigitalInput(SystemSettings.INTAKE_LIMIT_SWITCH);
 	}
 
 
@@ -68,17 +66,22 @@ public class Intake implements IModule{
 		
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
+		if(leftRatio > maxRatio)
+			maxRatio = leftRatio;
+		if(rightRatio > maxRatio)
+			maxRatio = rightRatio;
+		SmartDashboard.putNumber("MaxRatio", maxRatio);
 		
 		System.out.println("L: " + leftRatio +" R: " + rightRatio);
-		if(!beamBreak.get())
+		if(!limitSwitch.get())
 		{
-			if ( rightRatio >  maxCurrentRatio || leftRatio > maxCurrentRatio )
+			if ( rightRatio >  3 || leftRatio > 3 )
 			{
 				startCurrentLimiting = true;
-				leftPower = -inPower * leftPowerLimiter;
-				rightPower = -inPower * rightPowerLimiter;
+				leftPower = -inPower * .7;
+				rightPower = -inPower * .2;
 			}
-			else if (rightRatio < minCurrentRatio && leftRatio < minCurrentRatio)
+			else if (rightRatio < .7 && leftRatio < .7)
 			{
 				startCurrentLimiting = false;
 				leftPower = inPower;
@@ -86,8 +89,8 @@ public class Intake implements IModule{
 			}
 			else if (startCurrentLimiting)
 			{
-				leftPower = -inPower * leftPowerLimiter;
-				rightPower = -inPower * rightPowerLimiter;
+				leftPower = -inPower * .7;
+				rightPower = -inPower * .2;
 			}
 			else
 			{
@@ -109,7 +112,7 @@ public class Intake implements IModule{
 	}
 	public boolean limitSwitch()
 	{
-		return beamBreak.get();
+		return limitSwitch.get();
 	}
 	public void intakeOut(double inPower) {
 		leftPower = inPower;
