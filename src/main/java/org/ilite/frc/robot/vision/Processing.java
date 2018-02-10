@@ -54,6 +54,7 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 				target = Imgproc.boundingRect(contour);
 				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) target.width /= 4;
 				synchronized(imgLock) {
+				  targetList.clear();
 				  targetList.add(calculateTarget(target));
         }
 			}
@@ -62,8 +63,6 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 		cameraSink.grabFrame(currentFrame);
 		paintTarget(currentFrame);
 		cameraStream.putFrame(currentFrame);
-		
-		targetList.clear();
 	}
 	
 	public void paintTarget(Mat frameToPaint) {
