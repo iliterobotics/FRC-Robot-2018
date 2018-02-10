@@ -4,64 +4,64 @@
   <class id="1" language="java" name="org.ilite.frc.robot.modules.PneumaticModule" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/PneumaticModule.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1206" y="1166"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    <position height="77" width="228" x="847" y="747"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="2" language="java" name="org.ilite.frc.robot.modules.Intake" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/Intake.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="642" y="1139"/>    
+    <position height="-1" width="-1" x="600" y="771"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="3" language="java" name="org.ilite.frc.robot.modules.DriverControl" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/DriverControl.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="681" y="1780"/>    
+    <position height="-1" width="-1" x="665" y="988"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="4" language="java" name="org.ilite.frc.robot.modules.DriveTrain" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/DriveTrain.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="298" y="1478"/>    
+    <position height="-1" width="-1" x="458" y="772"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <interface id="5" language="java" name="org.ilite.frc.robot.modules.IModule" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/IModule.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="660" y="723"/>    
+    <position height="-1" width="-1" x="628" y="435"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
   <class id="6" language="java" name="org.ilite.frc.robot.modules.ElevatorModule" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/ElevatorModule.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="928" y="1036"/>    
+    <position height="-1" width="-1" x="740" y="776"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="7" language="java" name="org.ilite.frc.robot.modules.RobotMap" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/modules/RobotMap.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="202" y="346"/>    
+    <position height="-1" width="-1" x="908" y="368"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -71,30 +71,30 @@
   <interface id="8" language="java" name="org.ilite.frc.robot.controlloop.IControlLoop" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/controlloop/IControlLoop.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="330" y="938"/>    
+    <position height="-1" width="-1" x="470" y="616"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
   <class id="9" language="java" name="org.ilite.frc.robot.controlloop.ControlLoopManager" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/controlloop/ControlLoopManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="-102" y="1470"/>    
+    <position height="-1" width="-1" x="306" y="430"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="10" language="java" name="org.ilite.frc.robot.Hardware" project="FRC-Robot-2018" 
     file="/FRC-Robot-2018/src/main/java/org/ilite/frc/robot/Hardware.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="-184" y="1896"/>    
+    <position height="-1" width="-1" x="266" y="744"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <class id="11" language="java" name="org.ilite.frc.robot.Robot" project="FRC-Robot-2018" 
@@ -102,17 +102,17 @@
     <position height="-1" width="-1" x="638" y="308"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <association id="12">    
     <end type="SOURCE" refId="11" navigable="false">      
       <attribute id="13" name="mControlLoop">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="408" y="-1040"/>      
       </attribute>      
       <multiplicity id="14" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="408" y="-1040"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="9" navigable="true"/>    
@@ -121,10 +121,10 @@
   <association id="15">    
     <end type="SOURCE" refId="9" navigable="false">      
       <attribute id="16" name="mControlLoops">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="140" y="-322"/>      
       </attribute>      
       <multiplicity id="17" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="140" y="-322"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="8" navigable="true"/>    
@@ -133,10 +133,10 @@
   <association id="18">    
     <end type="SOURCE" refId="3" navigable="false">      
       <attribute id="19" name="mElevator">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-188" y="-260"/>      
       </attribute>      
       <multiplicity id="20" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-188" y="-260"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="6" navigable="true"/>    
@@ -145,10 +145,10 @@
   <association id="21">    
     <end type="SOURCE" refId="3" navigable="false">      
       <attribute id="22" name="mIntake">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-42" y="-368"/>      
       </attribute>      
       <multiplicity id="23" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-42" y="-368"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
@@ -157,10 +157,10 @@
   <association id="24">    
     <end type="SOURCE" refId="11" navigable="false">      
       <attribute id="25" name="mRunningModules">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-32" y="-288"/>      
       </attribute>      
       <multiplicity id="26" minimum="0" maximum="2147483647">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-32" y="-288"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
@@ -169,10 +169,10 @@
   <association id="27">    
     <end type="SOURCE" refId="9" navigable="false">      
       <attribute id="28" name="mHardware">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="450" y="-1152"/>      
       </attribute>      
       <multiplicity id="29" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="450" y="-1152"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="10" navigable="true"/>    
@@ -181,10 +181,10 @@
   <association id="30">    
     <end type="SOURCE" refId="4" navigable="false">      
       <attribute id="31" name="driverControl">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-16" y="-792"/>      
       </attribute>      
       <multiplicity id="32" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="-16" y="-792"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
@@ -205,10 +205,10 @@
   <association id="36">    
     <end type="SOURCE" refId="11" navigable="false">      
       <attribute id="37" name="mHardware">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="450" y="-1152"/>      
       </attribute>      
       <multiplicity id="38" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+        <position height="0" width="0" x="450" y="-1152"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="10" navigable="true"/>    

@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
 	
@@ -28,7 +27,7 @@ public class Intake implements IModule{
 	private double leftPower;
 	private double rightPower;
 	private boolean startCurrentLimiting;
-	private DigitalInput limitSwitch;
+	private DigitalInput beamBreak;
 	
 	public Intake(ElevatorModule pElevator)
 	{
@@ -36,7 +35,7 @@ public class Intake implements IModule{
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		leftExtender = new Solenoid(0);
 		rightExtender = new Solenoid(1);
-		limitSwitch = new DigitalInput(SystemSettings.INTAKE_LIMIT_SWITCH);
+		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
 	}
 
 
@@ -71,7 +70,7 @@ public class Intake implements IModule{
 		double leftRatio = leftCurrent/leftVoltage;
 		
 		System.out.println("L: " + leftRatio +" R: " + rightRatio);
-		if(!limitSwitch.get())
+		if(!beamBreak.get())
 		{
 			if ( rightRatio >  maxCurrentRatio || leftRatio > maxCurrentRatio )
 			{
@@ -110,7 +109,7 @@ public class Intake implements IModule{
 	}
 	public boolean limitSwitch()
 	{
-		return limitSwitch.get();
+		return beamBreak.get();
 	}
 	public void intakeOut(double inPower) {
 		leftPower = inPower;
