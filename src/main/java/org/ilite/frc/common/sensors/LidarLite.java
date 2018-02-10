@@ -1,5 +1,6 @@
 package org.ilite.frc.common.sensors;
 
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,6 +45,9 @@ public class LidarLite
 		distance = new byte[2];
 	}
 	
+	public byte[] getDistanceRegister() {
+		return Arrays.copyOf(distance, 2);
+	}
 	
 	
 	public double getDistance()

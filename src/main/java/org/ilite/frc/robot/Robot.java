@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -193,7 +194,7 @@ public class Robot extends IterativeRobot {
   {
 	  if(lidar.checkSignal())
 	  {
-		  System.out.println("Lidar Distance:" + lidar.getDistance());
+		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
 	  }
   }
   
