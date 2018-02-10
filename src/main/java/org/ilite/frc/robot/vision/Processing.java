@@ -24,7 +24,7 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 	private CvSource cameraStream;
 	
 	private Mat currentFrame;
-	private List<Point> centerList;
+	private List<Target> targetList;
 	private ArrayList<MatOfPoint> contours;
 	private Object imgLock;
 	
@@ -34,9 +34,10 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 		imgLock = new Object();
 		this.camera = camera;
 		this.cameraSink = CameraServer.getInstance().getVideo(camera);
-	    this.cameraStream = CameraServer.getInstance().putVideo("Tracking", 320, 240);
-	    this.currentFrame = new Mat();
-	    this.centerList = new ArrayList<>();
+    this.cameraStream = CameraServer.getInstance().putVideo("Tracking", 320, 240);
+    this.currentFrame = new Mat();
+    
+    this.targetList = new ArrayList<>();
 	}
 	
 	@Override
@@ -46,36 +47,43 @@ public class Processing implements VisionRunner.Listener<GripPipeline> {
 		
 		double x, y = 0;
 		contours = pipeline.filterContoursOutput;
-    	Rect target = new Rect();
+    Rect target = new Rect();
     	
 		if(!contours.isEmpty()) {
 			for(MatOfPoint contour : contours) {
 				target = Imgproc.boundingRect(contour);
-				x = target.x + (target.width / 2);
-				y =  target.y + (target.height / 2);
-				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) x -= target.width / 4;
+				if(target.width >= SystemSettings.VISION_TWO_CUBE_WIDTH) target.width /= 4;
 				synchronized(imgLock) {
-            		centerList.add(new Point(x, y));
-        		}
+				  targetList.add(calculateTarget(target));
+        }
 			}
-    	}
+    }
 		
 		cameraSink.grabFrame(currentFrame);
 		paintTarget(currentFrame);
 		cameraStream.putFrame(currentFrame);
-		centerList.clear();
+		
+		targetList.clear();
 	}
 	
 	public void paintTarget(Mat frameToPaint) {
-		for(Point center : centerList) Imgproc.circle(frameToPaint, center, 15, new Scalar(0, 0, 255));
+		for(Target target : targetList) Imgproc.circle(frameToPaint, new Point(target.centerX, target.centerY), 15, new Scalar(0, 0, 255));
 	}
 	
 	public Object getImageLock() {
 		return imgLock;
 	}
 	
-	public List<Point> getCenters() {
-		return centerList;
+	public Target calculateTarget(Rect rect) {
+	  double centerX = rect.x + (rect.width / 2);
+	  double centerY = rect.y + (rect.height / 2);
+	  double angle = (SystemSettings.VISION_DEGREES_PER_PIXEL_X * centerX) - SystemSettings.VISION_CAMERA_DEGREES_CENTER_X;
+	  // TODO: Add distance calculation
+	  return new Target(centerX, centerY, 0, 0, angle);
+	}
+	
+	public List<Target> getTargets() {
+	  return targetList;
 	}
 
 }

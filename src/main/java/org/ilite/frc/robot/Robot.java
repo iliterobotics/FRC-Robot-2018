@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
@@ -16,18 +17,14 @@ import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.vision.GripPipeline;
 import org.ilite.frc.robot.vision.Processing;
-import org.ilite.frc.robot.modules.Intake;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -53,6 +50,8 @@ public class Robot extends IterativeRobot {
   private ICommand mCurrentCommand;
   
   private VisionThread visionThread;
+  private GripPipeline pipeline;
+  private Processing processing;
   
   // Temporary...
   private final Intake intake;
@@ -62,7 +61,9 @@ public class Robot extends IterativeRobot {
 
   public Robot() {
   	mControlLoop = new ControlLoopManager(mData, mHardware);
-  	drivetraincontrol = new DriverControl(mData);
+  	elevator = new ElevatorModule();
+  	intake = new Intake(elevator);
+  	drivetraincontrol = new DriverControl(mData, intake, elevator);
   	dt = new DriveTrain(drivetraincontrol);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
   	Logger.setLevel(ELevel.INFO);
@@ -88,8 +89,8 @@ public class Robot extends IterativeRobot {
     UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
     camera.setFPS(30);
 //    camera.setResolution(320, 240);
-    GripPipeline pipeline = new GripPipeline();
-    Processing processing = new Processing(camera);
+    pipeline = new GripPipeline();
+    processing = new Processing(camera);
     visionThread = new VisionThread(camera, pipeline, processing);
     try {
     	visionThread.start();
@@ -116,12 +117,12 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules(drivetraincontrol, dt);
+    setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
-	//TODO put updateCommandQueue into autoninit
-	updateCommandQueue(true);
+    //TODO put updateCommandQueue into autoninit
+    updateCommandQueue(true);
     updateRunningModules();
       
   }
@@ -153,13 +154,14 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
-      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
+    ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
+    ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
-      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+    EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+    ECubeTarget.map(mData.vision, processing);
+    SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
   }
   
   /**
