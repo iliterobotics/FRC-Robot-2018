@@ -23,10 +23,6 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -54,8 +50,10 @@ public class Robot extends IterativeRobot {
   private final DriverControl drivetraincontrol;
 
   public Robot() {
+    elevator = new ElevatorModule();
+    intake = new Intake(elevator);
   	mControlLoop = new ControlLoopManager(mData, mHardware);
-  	drivetraincontrol = new DriverControl(mData);
+  	drivetraincontrol = new DriverControl(mData, intake, elevator);
   	dt = new DriveTrain(drivetraincontrol);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
   	Logger.setLevel(ELevel.INFO);

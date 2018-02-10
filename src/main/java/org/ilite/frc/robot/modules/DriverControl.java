@@ -73,9 +73,9 @@ public class DriverControl implements IModule{
 		double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
 		
 		if (mData.operator.get(ELogitech310.DPAD_DOWN) != null)
-			mIntake.setIntakePneumatics(false);
+			mIntake.setIntakePneumaticsOut(false);
 		if (mData.operator.get(ELogitech310.DPAD_UP) != null)
-			mIntake.setIntakePneumatics(true);
+			mIntake.setIntakePneumaticsOut(true);
 		
 		if(intakeSpeed > 0) {
 			mIntake.intakeIn(intakeSpeed);
