@@ -13,7 +13,8 @@ import jaci.pathfinder.Trajectory.FitMethod;
 
 public class SystemSettings extends ConstantsBase {
   
-  public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
+
+public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
   
   // =============================================================================
@@ -41,6 +42,8 @@ public class SystemSettings extends ConstantsBase {
 	public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
 	public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
+	public static final int ELEVATOR_TALONID_LEFT = 0;
+	public static final int ELEVATOR_TALONID_RIGHT = 1;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
 	public static int kCONTROLLER_ID = 0;
@@ -125,14 +128,15 @@ public class SystemSettings extends ConstantsBase {
   // Sensor Settings
   // =============================================================================
   public static int     DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 0;
-  public static int     DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 0;
   public static int     BEAM_BREAK_BACK = 0;
   public static int     DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 1;
-//  public static int     BEAM_BREAK_BACK = 0;
+//public static int     BEAM_BREAK_BACK = 0;
   public static int     BEAM_BREAK_FRONT = 0;
   public static int     ULTRASONIC_PORT = 0;
-  
-  public static int SHIFT_SOLENOID = 0;
+  public static final int SHIFT_SOLENOID = 0;
+
+
+
   @Override
   public String getFileLocation() {
     return "~/constants.txt";
