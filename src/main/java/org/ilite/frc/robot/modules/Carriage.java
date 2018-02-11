@@ -8,6 +8,8 @@ public class Carriage implements IModule{
 
 	private Solenoid solenoid1, solenoid2, solenoid3;
 	private double kickTimer;
+	private final int kickDelay = 1;
+	private final int releaseDelay = 5;
 	private double releaseTimer;
 	private double currentTime;
 	private Data mData;
@@ -55,8 +57,8 @@ public class Carriage implements IModule{
 	{
 		if(!isScheduled)
 		{
-			kickTimer = pNow + 1;
-			releaseTimer = pNow + 5;
+			kickTimer = pNow + kickDelay;
+			releaseTimer = pNow + releaseDelay;
 			isScheduled = true;
 		}
 		else
@@ -78,7 +80,6 @@ public class Carriage implements IModule{
 	}
 	public void reset()
 	{
-		isScheduled = false;
 		solenoid1.set(false);
 		solenoid2.set(false);
 		solenoid3.set(false);
