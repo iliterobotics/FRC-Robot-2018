@@ -18,24 +18,27 @@ public class Intake implements IModule{
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	private double maxRatio;
 	public Solenoid leftExtender;
 	public Solenoid rightExtender;
 	public boolean solOut;
 	private double leftPower;
 	private double rightPower;
 	private boolean startCurrentLimiting;
-	private DigitalInput limitSwitch;
+	private DigitalInput beamBreak;
+	private final double LEFT_LIMITER = .7;
+	private final double RIGHT_LIMITER = .2;
+	private final double MAX_RATIO = 3;
+	private final double MIN_RATIO = .7;
 	
-	public Intake(ElevatorModule pElevator)
-	{
+	
+	public Intake(ElevatorModule pElevator){
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		leftExtender = new Solenoid(0);
 		rightExtender = new Solenoid(1);
-		limitSwitch = new DigitalInput(SystemSettings.INTAKE_LIMIT_SWITCH);
+		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
+		
 	}
-
 
 	@Override
 	public void initialize(double pNow) {
@@ -44,9 +47,6 @@ public class Intake implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		
-		
-		
 		rightCurrent = rightIntakeTalon.getOutputCurrent();
 		leftCurrent = leftIntakeTalon.getOutputCurrent();
 		rightVoltage = rightIntakeTalon.getBusVoltage();
@@ -54,34 +54,27 @@ public class Intake implements IModule{
 		leftExtender.set(solOut);
 		rightExtender.set(solOut);
 		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
-		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);	
-		
-		
-
+		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);
 		return true;
+		
 	}
 
 	public void intakeIn(double inPower) {
-		
-		
+			
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
-		if(leftRatio > maxRatio)
-			maxRatio = leftRatio;
-		if(rightRatio > maxRatio)
-			maxRatio = rightRatio;
-		SmartDashboard.putNumber("MaxRatio", maxRatio);
+
 		
-		System.out.println("L: " + leftRatio +" R: " + rightRatio);
-		if(!limitSwitch.get())
+		
+		if(beamBreak.get())
 		{
-			if ( rightRatio >  3 || leftRatio > 3 )
+			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
 				startCurrentLimiting = true;
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * LEFT_LIMITER;
+				rightPower = -inPower * RIGHT_LIMITER;
 			}
-			else if (rightRatio < .7 && leftRatio < .7)
+			else if (rightRatio < MIN_RATIO && leftRatio < MIN_RATIO)
 			{
 				startCurrentLimiting = false;
 				leftPower = inPower;
@@ -89,8 +82,8 @@ public class Intake implements IModule{
 			}
 			else if (startCurrentLimiting)
 			{
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * LEFT_LIMITER;
+				rightPower = -inPower * RIGHT_LIMITER;
 			}
 			else
 			{
@@ -102,25 +95,22 @@ public class Intake implements IModule{
 		{
 			leftPower = 0;
 			rightPower = 0;
-		}
-
-		
+		}	
 	}
 	public void setIntakePneumaticsOut(boolean out)
 	{
 		solOut = out;
 	}
-	public boolean limitSwitch()
-	{
-		return limitSwitch.get();
+	public boolean beamBreak(){
+		return beamBreak.get();
 	}
-	public void intakeOut(double inPower) {
+	public void intakeOut(double inPower) 
+	{
 		leftPower = inPower;
 		rightPower= inPower;
 	}
 	@Override
-	public void shutdown(double pNow) {
-		
+	public void shutdown(double pNow) {	
 	}
 	
 
