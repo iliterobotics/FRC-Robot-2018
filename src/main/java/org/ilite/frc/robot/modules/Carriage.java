@@ -12,6 +12,7 @@ public class Carriage implements IModule{
 	private double currentTime;
 	private Data mData;
 	private boolean isScheduled;
+	private boolean isPushing;
 	
 	
 	public Carriage(Data pData)
@@ -38,16 +39,13 @@ public class Carriage implements IModule{
 	@Override
 	public boolean update(double pNow)
 	{
-		if(!mData.driverinput.isSet(ELogitech310.DPAD_LEFT))
+		if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
+		{
+			schedule(pNow);
+		}
+		else
 		{
 			reset();
-			if(!isScheduled)
-			{
-				schedule(pNow);
-				solenoid1.set(false);
-				solenoid2.set(false);
-				solenoid3.set(false);
-			}
 		}
 		currentTime = pNow;
 		return false;
@@ -55,13 +53,13 @@ public class Carriage implements IModule{
 		
 	public void schedule(double pNow)
 	{
-		if(mData.operator.isSet(ELogitech310.DPAD_LEFT))
+		if(!isScheduled)
 		{
 			kickTimer = pNow + 1;
 			releaseTimer = pNow + 5;
 			isScheduled = true;
 		}
-		if(isScheduled = true)
+		else
 		{
 			if(currentTime >= kickTimer)
 			{
@@ -74,12 +72,16 @@ public class Carriage implements IModule{
 				//release
 				solenoid2.set(true);
 				solenoid3.set(true);
+				reset();
 			}
 		}
 	}
 	public void reset()
 	{
 		isScheduled = false;
+		solenoid1.set(false);
+		solenoid2.set(false);
+		solenoid3.set(false);
 		//undo kick and release
 	}
 	
