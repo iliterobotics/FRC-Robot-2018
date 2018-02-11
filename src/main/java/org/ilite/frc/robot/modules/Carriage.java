@@ -49,6 +49,7 @@ public class Carriage implements IModule{
 				solenoid3.set(false);
 			}
 		}
+		currentTime = pNow;
 		return false;
 	}	
 		
@@ -56,7 +57,6 @@ public class Carriage implements IModule{
 	{
 		if(mData.operator.isSet(ELogitech310.DPAD_LEFT))
 		{
-			currentTime = pNow;
 			kickTimer = pNow + 1;
 			releaseTimer = pNow + 5;
 			isScheduled = true;
@@ -68,20 +68,18 @@ public class Carriage implements IModule{
 				//kick
 				//testing code:
 				solenoid1.set(true);
-				solenoid2.set(true);
-				solenoid3.set(true);
 			}
 			if(currentTime >= releaseTimer)
 			{
 				//release
-				
+				solenoid2.set(true);
+				solenoid3.set(true);
 			}
 		}
 	}
 	public void reset()
 	{
 		isScheduled = false;
-		currentTime = 0;
 		//undo kick and release
 	}
 	
