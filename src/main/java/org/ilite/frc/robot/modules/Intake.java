@@ -18,7 +18,6 @@ public class Intake implements IModule{
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	private double maxRatio;
 	public Solenoid leftExtender;
 	public Solenoid rightExtender;
 	public boolean solOut;
@@ -26,6 +25,11 @@ public class Intake implements IModule{
 	private double rightPower;
 	private boolean startCurrentLimiting;
 	private DigitalInput beamBreak;
+	private final double LEFT_LIMITER = .7;
+	private final double RIGHT_LIMITER = .2;
+	private final double MAX_RATIO = 3;
+	private final double MIN_RATIO = .7;
+	
 	
 	public Intake(ElevatorModule pElevator){
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
@@ -59,22 +63,18 @@ public class Intake implements IModule{
 			
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
-		if(leftRatio > maxRatio)
-			maxRatio = leftRatio;
-		if(rightRatio > maxRatio)
-			maxRatio = rightRatio;
-		SmartDashboard.putNumber("MaxRatio", maxRatio);
+
 		
 		
 		if(beamBreak.get())
 		{
-			if ( rightRatio >  3 || leftRatio > 3 )
+			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
 				startCurrentLimiting = true;
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * LEFT_LIMITER;
+				rightPower = -inPower * RIGHT_LIMITER;
 			}
-			else if (rightRatio < .7 && leftRatio < .7)
+			else if (rightRatio < MIN_RATIO && leftRatio < MIN_RATIO)
 			{
 				startCurrentLimiting = false;
 				leftPower = inPower;
@@ -82,8 +82,8 @@ public class Intake implements IModule{
 			}
 			else if (startCurrentLimiting)
 			{
-				leftPower = -inPower * .7;
-				rightPower = -inPower * .2;
+				leftPower = -inPower * LEFT_LIMITER;
+				rightPower = -inPower * RIGHT_LIMITER;
 			}
 			else
 			{
@@ -101,7 +101,7 @@ public class Intake implements IModule{
 	{
 		solOut = out;
 	}
-	public boolean limitSwitch(){
+	public boolean beamBreak(){
 		return beamBreak.get();
 	}
 	public void intakeOut(double inPower) 
