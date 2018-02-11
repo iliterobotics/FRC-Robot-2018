@@ -120,7 +120,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Sensors
   // =============================================================================
-  public static final int INTAKE_LIMIT_SWITCH = 0;
+  public static final int INTAKE_BEAM_BREAK = 0;
   
   @Override
   public String getFileLocation() {
