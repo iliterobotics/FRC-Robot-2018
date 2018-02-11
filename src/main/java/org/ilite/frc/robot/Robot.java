@@ -1,6 +1,5 @@
 package org.ilite.frc.robot;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,22 +12,22 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.IModule;
-import org.ilite.frc.robot.modules.Intake;
-import org.ilite.frc.robot.vision.GripPipeline;
-import org.ilite.frc.robot.vision.Processing;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
+import org.ilite.frc.robot.vision.GripPipeline;
+import org.ilite.frc.robot.vision.Processing;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -69,8 +68,8 @@ public class Robot extends IterativeRobot {
   
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-      
-       mHardware.init(
+    
+    mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
@@ -113,7 +112,8 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     setRunningModules(dt);
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(driveControl, mData, new File("/home/lvuser/paths/testPath_left_detailed.csv"), new File("/home/lvuser/paths/testPath_right_detailed.csv"), false));
+    //mCommandQueue.add(new FollowPath(driveControl, mData, new File("/home/lvuser/paths/testPath_left_detailed.csv"), new File("/home/lvuser/paths/testPath_right_detailed.csv"), false));
+    mCommandQueue.add(new GyroTurn(driveControl, mData, 3));
     updateCommandQueue(true);
   }
   public void autonomousPeriodic() {
@@ -157,12 +157,15 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
+      EDriveTrain.map(mData.drivetrain, dt, driveControl.getDriveMessage(), mCurrentTime);
+      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      ECubeTarget.map(mData.vision, processing);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
-    SystemUtils.writeCodexToSmartDashboard(mData.vision);
+      SystemUtils.writeCodexToSmartDashboard(mData.vision);
   }
   
   /**
