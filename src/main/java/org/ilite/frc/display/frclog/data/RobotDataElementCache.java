@@ -33,7 +33,7 @@ public class RobotDataElementCache {
   
   public <V, E extends Enum<E> & CodexOf<V>> void clearHistoryFor(Class<E> pEnum) {
     for(E e : EnumSet.allOf(pEnum)) {
-      mCache.remove(hashOf(e));
+      mCache.get(hashOf(e)).clear();
     }
   }
   

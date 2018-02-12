@@ -5,34 +5,21 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 public class Pigeon extends IMU{
 
 	private double[] ypr;
-  private short[] xyz;
+	private short[] xyz;
 	private PigeonIMU mPigeon;
-  
+
   //TODO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
   private static final double[] kCollisionGains = {1.0};
-  
-  /**
-   * Creates a Pigeon sensor wrapper from the hardware.  Assumes the hardware has already been
-   * initialized on the CAN bus.  Uses 0.5G as the default g-force.
-   * @param pHardware - Initialized PigeonIMU
-   */
-  public Pigeon(PigeonIMU pHardware){
-    this(pHardware, 0.5d);
-  }
 	
-	/**
-	 * Creates a Pigeon sensor wrapper from the hardware.  Assumes the hardware has already been
-	 * initialized on the CAN bus.
-   * @param pHardware - Initialized PigeonIMU
-   * @param pCollisionThreshold_DeltaG - The threshold to use for the collision g-force
-	 */
 	public Pigeon(PigeonIMU pHardware, double pCollisionThreshold_DeltaG){
-	  super(kCollisionGains);
+		super(kCollisionGains);
 		ypr = new double[3];
 		xyz = new short[3];
 		mPigeon = pHardware;
 		setCollisionThreshold_DeltaG(pCollisionThreshold_DeltaG);
+		//mAccelerationX = new FilteredAverage(kCollisionGains);
+		//mAccelerationY = new FilteredAverage(kCollisionGains);
 	}
 	
 	/**
@@ -44,14 +31,23 @@ public class Pigeon extends IMU{
     for(int i = 0 ; i < ypr.length; i++) {
       ypr[i] = clampDegrees(ypr[i]);
     }
+
+    double currentAccelX = getRawAccelX();
+    double currentAccelY = getRawAccelY();
+    
+    mJerkX = (currentAccelX - mAccelerationX.getAverage()) / (pTimestampNow - mLastUpdate);
+    mJerkY = (currentAccelY - mAccelerationY.getAverage()) / (pTimestampNow - mLastUpdate);
     
     mPigeon.getBiasedAccelerometer(xyz);
+    mAccelerationX.addNumber(currentAccelX);
+    mAccelerationY.addNumber(currentAccelY);
+    mLastUpdate = pTimestampNow;
 	}
 	
 	public double getHeading() {
 	  return mPigeon.getFusedHeading();
 	}
-
+	
 	public double getYaw() {
     return ypr[0];
 	}
@@ -62,23 +58,36 @@ public class Pigeon extends IMU{
 	
 	public double getRoll() {
     return ypr[2];
+	}	
+	
+	public double getAccelX() {
+	  return mAccelerationX.getAverage();
 	}
-
-  protected double getRawAccelX() {
-    return xyz[0];
-  }
-  
-  protected double getRawAccelY() {
-    return xyz[0];
-  }
+	
+	public double getAccelY() {
+	  return mAccelerationY.getAverage();
+	}
+	
+	public double getJerkX() {
+	  return mJerkX;
+	}
+	
+	public double getJerkY() {
+	  return mJerkY;
+	}
 	
 	public void zeroAll() {
 		for(int i = 0; i < ypr.length; i++) {
 			ypr[i] = 0;
 		}
-    for(int i = 0; i < xyz.length; i++) {
-      xyz[i] = 0;
-    }
 		mPigeon.setFusedHeading(0d, 20); //TODO - figure out CAN timeout defaults
+	}
+
+	public double getRawAccelX() {
+		return xyz[0];
+	}
+
+	public double getRawAccelY() {
+		return xyz[1];
 	}
 }

@@ -15,11 +15,11 @@ public class FilteredAverage {
   }
 
   public void addNumber(double newNumber) {
-      mNumbers.add(newNumber);
-      if (!isUnderMaxSize()) {
-          mNumbers.remove(0);
-      }
+  mNumbers.add(newNumber);
+  if (!isUnderMaxSize()) {
+      mNumbers.remove(0);
   }
+}
 
   public double getAverage() {
       double result = 0;

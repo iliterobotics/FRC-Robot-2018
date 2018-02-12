@@ -8,26 +8,33 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+
 import org.ilite.frc.common.sensors.LidarLite;
 import org.ilite.frc.common.sensors.Pigeon;
+
+
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.Intake;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer; 
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -40,22 +47,29 @@ public class Robot extends IterativeRobot {
   private final ControlLoopManager mControlLoop;
   
   private List<IModule> mRunningModules = new LinkedList<>();
-  private Queue<ICommand> mCommandQueue = new LinkedList<>();
+  private final GetAutonomous getAutonomous;
+  private Queue<ICommand> mCommandQueue;
   private ICommand mCurrentCommand;
   
   // Temporary...
+  private final Intake intake;
+  private final ElevatorModule elevator;
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
+
   
   private LidarLite lidar = new LidarLite();
   private Carriage carriage;
    
   public Robot() {
-	mControlLoop = new ControlLoopManager(mData, mHardware);
-	drivetraincontrol = new DriverControl(mData);
-	carriage = new Carriage(mData);
-	dt = new DriveTrain(drivetraincontrol);
-	Logger.setLevel(ELevel.INFO);
+    mControlLoop = new ControlLoopManager(mData, mHardware);
+    drivetraincontrol = new DriverControl(mData);
+    elevator = new ElevatorModule();
+    intake = new Intake(elevator);
+    carriage = new Carriage(mData);
+    dt = new DriveTrain(drivetraincontrol);
+    getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+    Logger.setLevel(ELevel.INFO);
   }
 
   public void robotInit() {
@@ -79,13 +93,14 @@ public class Robot extends IterativeRobot {
 
   public void autonomousInit() {
     System.out.println("Default autonomousInit() method... Overload me!");
+    mCommandQueue = getAutonomous.getAutonomousCommands();
     mLog.info("AUTONOMOUS");
     mHardware.getPigeon().zeroAll();
   }
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules();
+	setRunningModules(drivetraincontrol, dt);
     //mControlLoop.setRunningControlLoops();
     //mControlLoop.start();
     
@@ -98,7 +113,9 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(/*dt, drivetraincontrol, */carriage);
+
+	  setRunningModules(dt, drivetraincontrol, intake, carriage);
+
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -112,7 +129,6 @@ public class Robot extends IterativeRobot {
       mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
-      
       updateRunningModules();
       
     }
@@ -124,12 +140,14 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), null, false);
-      
+      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
-//      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+
   }
   
   /**
@@ -194,15 +212,15 @@ public class Robot extends IterativeRobot {
 	  lidar.start();
   }
   
-  public void disabledPeriodic()
-  {
+  public void disabledPeriodic() {
+	  System.out.println("Getting autonomous...");
+	  getAutonomous.getAutonomousCommands();
+	  Timer.delay(1);
 	  if(lidar.checkSignal())
 	  {
 //		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
 	  }
+
   }
-  
-  
-  
   
 }

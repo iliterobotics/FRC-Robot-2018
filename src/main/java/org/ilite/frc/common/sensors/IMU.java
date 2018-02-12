@@ -2,7 +2,7 @@ package org.ilite.frc.common.sensors;
 
 import org.ilite.frc.common.util.FilteredAverage;
 
-public abstract class IMU {
+public abstract  class IMU {
   public enum Axis {
     YAW,
     PITCH,
@@ -33,7 +33,7 @@ public abstract class IMU {
   public double get(Axis pAxis) {
     switch(pAxis) {
     case PITCH:
-      return getYaw();
+      return getPitch();
     case ROLL:
       return getRoll();
     case YAW:

@@ -13,7 +13,8 @@ public enum EPigeon implements CodexOf<Double>{
   fACCEL_X,
   fACCEL_Y,
   JERK_X,
-  JERK_Y;
+  JERK_Y,
+  COLLISION;
   
   public static void map(Codex<Double, EPigeon> pCodex, Pigeon pPigeon, double pTimestampNow) {
     pPigeon.update(pTimestampNow);
@@ -25,5 +26,6 @@ public enum EPigeon implements CodexOf<Double>{
     pCodex.set(fACCEL_Y, pPigeon.getFilteredAccelY());
     pCodex.set(JERK_X, pPigeon.getJerkX());
     pCodex.set(JERK_Y, pPigeon.getJerkY());
+    pCodex.set(COLLISION, pPigeon.detectCollision() ? 1d : 0d);
   }
 }
