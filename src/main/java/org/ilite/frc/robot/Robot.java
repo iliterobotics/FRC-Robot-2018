@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -7,11 +8,17 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+
+import org.ilite.frc.common.sensors.LidarLite;
+import org.ilite.frc.common.sensors.Pigeon;
+
+
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.ElevatorModule;
@@ -50,14 +57,19 @@ public class Robot extends IterativeRobot {
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
 
+  
+  private LidarLite lidar = new LidarLite();
+  private Carriage carriage;
+   
   public Robot() {
+    mControlLoop = new ControlLoopManager(mData, mHardware);
+    drivetraincontrol = new DriverControl(mData);
     elevator = new ElevatorModule();
     intake = new Intake(elevator);
-  	mControlLoop = new ControlLoopManager(mData, mHardware);
-  	drivetraincontrol = new DriverControl(mData, intake, elevator);
-  	dt = new DriveTrain(drivetraincontrol);
-  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
-  	Logger.setLevel(ELevel.INFO);
+    carriage = new Carriage(mData);
+    dt = new DriveTrain(drivetraincontrol);
+    getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+    Logger.setLevel(ELevel.INFO);
   }
 
   public void robotInit() {
@@ -101,7 +113,9 @@ public class Robot extends IterativeRobot {
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
-	  setRunningModules(dt, drivetraincontrol, intake);
+
+	  setRunningModules(dt, drivetraincontrol, intake, carriage);
+
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -116,6 +130,7 @@ public class Robot extends IterativeRobot {
 //      mData.resetAll(mCurrentTime);
       mapInputsAndCachedSensors();
       updateRunningModules();
+      
     }
   
   
@@ -132,6 +147,7 @@ public class Robot extends IterativeRobot {
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+
   }
   
   /**
@@ -193,15 +209,18 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+	  lidar.start();
   }
   
   public void disabledPeriodic() {
 	  System.out.println("Getting autonomous...");
 	  getAutonomous.getAutonomousCommands();
 	  Timer.delay(1);
+	  if(lidar.checkSignal())
+	  {
+//		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
+	  }
+
   }
-  
-  
-  
   
 }
