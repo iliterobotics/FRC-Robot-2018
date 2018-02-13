@@ -37,16 +37,18 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
-	public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
-  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
-	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
-	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
+  public static  int kDRIVETRAIN_TALONID_LEFT1 = 12;
+	public static  int kDRIVETRAIN_TALONID_LEFT2 = 10;
+  public static  int kDRIVETRAIN_TALONID_LEFT3 = 11;
+	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
+	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
 	public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
 	public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
 	public static int ELEVATOR_TALONID_LEFT = 11;
 	public static int ELEVATOR_TALONID_RIGHT = 12;
+	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
+	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
 	public static int kCONTROLLER_ID = 0;
@@ -77,10 +79,14 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   
   
   // =============================================================================
-  // Pigeon
+  // Controllers
   // =============================================================================  
-  public static int PIGEON_DEVICE_ID = 5;
   public static double PIGEON_COLLISION_THRESHOLD = 10;
+  public static int PIGEON_DEVICE_ID = 5;
+  public static int PCM_DEVICE_ID = 2;
+  public static int VRM_DEVICE_ID = 1;
+  public static int PDP_DEVICE_ID = 0;
+  public static int CANIFIER_DEVICE_ID = 4;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================
@@ -131,7 +137,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Sensors
   // =============================================================================
-  public static final int INTAKE_LIMIT_SWITCH = 0;
+  public static final int INTAKE_BEAM_BREAK = 0;
+  public static final int HALL_EFFECT = 1;
   
   // =============================================================================
   // Vision Constants
