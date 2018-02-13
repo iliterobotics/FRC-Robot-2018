@@ -1,6 +1,5 @@
 package org.ilite.frc.robot;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -8,24 +7,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
-
 import org.ilite.frc.common.sensors.LidarLite;
-import org.ilite.frc.common.sensors.Pigeon;
-
-
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
-import org.ilite.frc.robot.modules.Carriage;
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.DriverControl;
-import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
@@ -33,13 +23,11 @@ import org.ilite.frc.robot.vision.GripPipeline;
 import org.ilite.frc.robot.vision.Processing;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -65,19 +53,17 @@ public class Robot extends IterativeRobot {
   private GripPipeline pipeline;
   private Processing processing;
   
-  // Temporary...
-  private final DriveControl driveControl;
   private final DriveTrain dt;
+  private final DriveControl driveControl;
   private final DriverInput drivetraincontrol;
+  
   private LidarLite lidar = new LidarLite();
-  private Carriage carriage;
+  
   public Robot() {
-	  elevator = new ElevatorModule();
-	  intake = new Intake(elevator);
     mControlLoop = new ControlLoopManager(mData, mHardware);
+    driveControl = new DriveControl();
 	  drivetraincontrol = new DriverInput(driveControl, mData);
-    carriage = new Carriage(mData);
-	dt = new DriveTrain(driveControl, mData);
+    dt = new DriveTrain(driveControl, mData);
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
     Logger.setLevel(ELevel.INFO);
   }
@@ -123,7 +109,7 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
 	mLog.info("AUTONOMOUS");
 
-    setRunningModules(dt, intake, elevator, carriage);
+    setRunningModules(dt);
     mControlLoop.setRunningControlLoops();
     mControlLoop.start();
     
@@ -149,7 +135,7 @@ public class Robot extends IterativeRobot {
   {
 	  mLog.info("TELEOP");
 
-	  setRunningModules(dt, drivetraincontrol, intake, carriage);
+	  setRunningModules(dt, drivetraincontrol);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
