@@ -62,10 +62,10 @@ public class Robot extends IterativeRobot {
   private Carriage carriage;
    
   public Robot() {
+	elevator = new ElevatorModule();
+	intake = new Intake(elevator);
     mControlLoop = new ControlLoopManager(mData, mHardware);
-    drivetraincontrol = new DriverControl(mData);
-    elevator = new ElevatorModule();
-    intake = new Intake(elevator);
+    drivetraincontrol = new DriverControl(mData, intake, elevator);
     carriage = new Carriage(mData);
     dt = new DriveTrain(drivetraincontrol);
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
@@ -92,22 +92,25 @@ public class Robot extends IterativeRobot {
   }
 
   public void autonomousInit() {
-    System.out.println("Default autonomousInit() method... Overload me!");
-    mCommandQueue = getAutonomous.getAutonomousCommands();
-    mLog.info("AUTONOMOUS");
+	mLog.info("AUTONOMOUS");
+
+    setRunningModules(dt, intake, elevator, carriage);
+    mControlLoop.setRunningControlLoops();
+    mControlLoop.start();
+    
     mHardware.getPigeon().zeroAll();
+    
+    mCommandQueue = getAutonomous.getAutonomousCommands();
+    // Add commands here
+    updateCommandQueue(true);
   }
+  
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	setRunningModules(drivetraincontrol, dt);
-    //mControlLoop.setRunningControlLoops();
-    //mControlLoop.start();
     
-	//TODO put updateCommandQueue into autoninit
-	updateCommandQueue(true);
+	updateCommandQueue(false);
     updateRunningModules();
-      
   }
   
   public void teleopInit()
@@ -115,8 +118,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 
 	  setRunningModules(dt, drivetraincontrol, intake, carriage);
-
-	  initializeRunningModules();
+	  
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
@@ -125,13 +127,10 @@ public class Robot extends IterativeRobot {
 
   public void teleopPeriodic() {
     // Remember that DriverControl classes don't go here. They aren't Modules.
-    
-      mCurrentTime = Timer.getFPGATimestamp();
-//      mData.resetAll(mCurrentTime);
-      mapInputsAndCachedSensors();
-      updateRunningModules();
-      
-    }
+    mCurrentTime = Timer.getFPGATimestamp();
+    mapInputsAndCachedSensors();
+    updateRunningModules();
+  }
   
   
   /**
@@ -178,7 +177,6 @@ public class Robot extends IterativeRobot {
 	  for(IModule m : mRunningModules) {
 		  m.update(mCurrentTime);
 	  }
-	  
   }
   
   /**
@@ -209,18 +207,12 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
-	  lidar.start();
   }
   
   public void disabledPeriodic() {
 	  System.out.println("Getting autonomous...");
 	  getAutonomous.getAutonomousCommands();
 	  Timer.delay(1);
-	  if(lidar.checkSignal())
-	  {
-//		  System.out.println(Arrays.toString(lidar.getDistanceRegister()));
-	  }
-
   }
   
 }
