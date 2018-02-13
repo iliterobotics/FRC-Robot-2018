@@ -1,7 +1,9 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
@@ -14,23 +16,29 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class EncoderTurn implements ICommand {
 	
+  private final double kDegreeTolerance;
+  
 	private double mStartTime;
-	private double mSetpointDegrees;
+	private double mInitialYaw, mSetpointDegrees;
 	private double mLeftTargetPosition, mRightTargetPosition;
 	private double mLeftPosition, mRightPosition;
 	
 	private DriveControl mDriveControl;
 	private Data mData;
 	
-	public EncoderTurn(double pDegrees, DriveControl pDriveControl, Data pData) {
-		this.mSetpointDegrees = pDegrees / 2;
+	public EncoderTurn(double pDegrees, double pDegreeTolerance, DriveControl pDriveControl, Data pData) {
+		this.mSetpointDegrees = pDegrees;
+		this.kDegreeTolerance = pDegreeTolerance;
 		this.mDriveControl = pDriveControl;
 		this.mData = pData;
 	}
 	
 	public void initialize(double pNow) {
 		mStartTime = pNow;
-
+		
+		mInitialYaw = IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW));
+		mSetpointDegrees = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)), mInitialYaw);
+		
 		mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
 		mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
 		
@@ -62,7 +70,8 @@ public class EncoderTurn implements ICommand {
 	public boolean isFinished() {
 		boolean leftFinished = Math.abs(mLeftTargetPosition - mLeftPosition) < SystemSettings.AUTO_TURN_POS_TOLERANCE;
 		boolean rightFinished = Math.abs(mRightTargetPosition - mRightPosition) < SystemSettings.AUTO_TURN_POS_TOLERANCE;
-		return leftFinished && rightFinished;
+		boolean angleInTolerance = Math.abs(IMU.getAngleSum(mSetpointDegrees, mInitialYaw) - mData.pigeon.get(EPigeon.YAW)) < kDegreeTolerance;
+		return leftFinished && rightFinished && angleInTolerance;
 	}
 	
 	public void shutdown(double pNow) {
