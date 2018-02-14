@@ -62,13 +62,16 @@ public class Robot extends IterativeRobot {
   private Carriage carriage;
    
   public Robot() {
-	elevator = new ElevatorModule();
-	intake = new Intake(elevator);
-    mControlLoop = new ControlLoopManager(mData, mHardware);
-    drivetraincontrol = new DriverControl(mData, intake, elevator);
+  	elevator = new ElevatorModule();
+  	intake = new Intake(elevator);
     carriage = new Carriage(mData);
+    
+    drivetraincontrol = new DriverControl(mData, intake, elevator);
     dt = new DriveTrain(drivetraincontrol);
+
+    mControlLoop = new ControlLoopManager(mData, mHardware);
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+    mCommandQueue = new LinkedList<>();
     Logger.setLevel(ELevel.INFO);
   }
 
