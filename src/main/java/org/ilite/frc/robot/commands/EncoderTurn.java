@@ -37,7 +37,7 @@ public class EncoderTurn implements ICommand {
 		mStartTime = pNow;
 		
 		mInitialYaw = IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW));
-		mSetpointDegrees = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)), mInitialYaw);
+		mSetpointDegrees = IMU.getAngleDistance(mInitialYaw, IMU.getAngleSum(mInitialYaw, mSetpointDegrees));
 		
 		mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
 		mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
@@ -45,13 +45,16 @@ public class EncoderTurn implements ICommand {
 		mLeftTargetPosition = mSetpointDegrees * SystemSettings.DRIVETRAIN_WHEEL_TURNS_PER_DEGREE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
 		mRightTargetPosition = -mSetpointDegrees * SystemSettings.DRIVETRAIN_WHEEL_TURNS_PER_DEGREE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
 		
+		mLeftTargetPosition += mLeftPosition;
+		mRightTargetPosition += mRightPosition;
+		
 		mDriveControl.setDriveMessage(new DriveMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DriveMode.MotionMagic, NeutralMode.Brake));
 	}
 	
 	public boolean update(double pNow) {
 		mLeftPosition = mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS);
 		mRightPosition = mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS);
-		
+				
 		if(pNow - mStartTime > SystemSettings.AUTO_TURN_TIMEOUT) {
 			System.out.println("EncoderTurn timed out.");
 			mDriveControl.setDriveMessage(new DriveMessage(mLeftPosition, mRightPosition, DriveMode.MotionMagic, NeutralMode.Brake));
@@ -63,7 +66,7 @@ public class EncoderTurn implements ICommand {
 			mDriveControl.setDriveMessage(new DriveMessage(mLeftPosition, mRightPosition, DriveMode.MotionMagic, NeutralMode.Brake));
 	    	return true;
 		}
-		
+		System.out.printf("Left: %s Left Target: %s Right: %s Right Target: %s Yaw: %s Target Yaw: %s\n", mLeftPosition, mLeftTargetPosition, mRightPosition, mRightTargetPosition, IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)), IMU.getAngleSum(mSetpointDegrees, mInitialYaw));
 		return false;
 	}
 	
