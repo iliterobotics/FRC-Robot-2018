@@ -85,6 +85,7 @@ public class Pigeon extends IMU{
 		for(int i = 0; i < ypr.length; i++) {
 			ypr[i] = 0;
 		}
+		mPigeon.setYaw(0d, 20);
 		mPigeon.setFusedHeading(0d, 20); //TODO - figure out CAN timeout defaults
 	}
 
