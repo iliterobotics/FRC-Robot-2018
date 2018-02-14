@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,6 +14,7 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -107,15 +109,27 @@ public class Robot extends IterativeRobot {
   }
 
   public void autonomousInit() {
-	mLog.info("AUTONOMOUS");
+    mLog.info("AUTONOMOUS");
 
     setRunningModules(dt);
     mControlLoop.setRunningControlLoops();
     mControlLoop.start();
     
     mHardware.getPigeon().zeroAll();
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    mapInputsAndCachedSensors();
     
     mCommandQueue = getAutonomous.getAutonomousCommands();
+    mCommandQueue.clear();
+    mCommandQueue.add(new FollowPath(driveControl, mData, 
+                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+                      false));
     // Add commands here
     updateCommandQueue(true);
   }
@@ -123,10 +137,6 @@ public class Robot extends IterativeRobot {
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
-	  setRunningModules(drivetraincontrol, dt);
-    //mControlLoop.setRunningControlLoops();
-    //mControlLoop.start();
-    
     updateCommandQueue(false);
     updateRunningModules();
   }

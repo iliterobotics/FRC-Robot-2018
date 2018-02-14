@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Pathfinder;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -91,11 +92,10 @@ public class DriveTrain implements IControlLoop {
     case Pathfinder:
       driveMessage = PathFollower.calculateOutputs(profilingMessage.leftFollower, profilingMessage.rightFollower, 
                                     leftPositionTicks, rightPositionTicks,
-                                    IMU.convertTo360(IMU.clampDegrees(data.pigeon.get(EPigeon.YAW))), 
+                                    IMU.clampDegrees(data.pigeon.get(EPigeon.YAW)), 
                                     profilingMessage.isBackwards);
       leftMaster.set(controlMode, driveMessage.leftOutput);
       rightMaster.set(controlMode, driveMessage.rightOutput);
-      System.out.printf("Left: %s Right: %s\n", driveMessage.leftOutput, driveMessage.rightOutput);
       break;
     default:
       leftMaster.setNeutralMode(driveMessage.neutralMode);

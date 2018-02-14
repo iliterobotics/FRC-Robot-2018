@@ -24,9 +24,12 @@ public class PathFollower {
   }
   
   public static double calculateAngleOutput(EncoderFollower follower, double angle, boolean isBackwards) {
-    double mActualHeading = (isBackwards) ? Pathfinder.boundHalfDegrees(angle + 180): angle;
-    double mDesiredHeading = Pathfinder.r2d(follower.getHeading()); //Only need to use 1 side because both sides are parallel
-    return SystemSettings.DRIVETRAIN_ANGLE_kP * Pathfinder.boundHalfDegrees(mDesiredHeading - mActualHeading);
+    double mActualHeading = (isBackwards) ? Pathfinder.boundHalfDegrees(angle + 180): Pathfinder.boundHalfDegrees(angle);
+    double mDesiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(follower.getHeading())); //Only need to use 1 side because both sides are parallel
+    double mHeadingError = Pathfinder.boundHalfDegrees(mDesiredHeading - mActualHeading);
+    double mOutput = SystemSettings.DRIVETRAIN_ANGLE_kP * mHeadingError;
+    System.out.printf("Actual Heading: %s Desired Heading: %s Heading Error: %s Heading Output: %s\n", mActualHeading, mDesiredHeading, mHeadingError, mOutput);
+    return mOutput;
   }
   
 }

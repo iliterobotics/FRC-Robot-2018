@@ -37,16 +37,16 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT1 = 12;
-	public static  int kDRIVETRAIN_TALONID_LEFT2 = 10;
-  public static  int kDRIVETRAIN_TALONID_LEFT3 = 11;
-	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
-	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
-	public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
-	public static int INTAKE_TALONID_FRONT_LEFT = 13;
-	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
-	public static int ELEVATOR_TALONID_LEFT = 11;
-	public static int ELEVATOR_TALONID_RIGHT = 12;
+  public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
+  public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
+  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
+  public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
+  public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
+  public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
+  public static int INTAKE_TALONID_FRONT_LEFT = 13;
+  public static int INTAKE_TALONID_FRONT_RIGHT = 14;
+  public static int ELEVATOR_TALONID_LEFT = 11;
+  public static int ELEVATOR_TALONID_RIGHT = 12;
 	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
 	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
 	
@@ -65,17 +65,17 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
-  public static double	DRIVETRAIN_ANGLE_kP = 0;
+  public static double	DRIVETRAIN_ANGLE_kP = 0.007;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 0;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kD = 0;
   public static double	DRIVETRAIN_LEFT_kA = 0;
-  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 12.438666713767692;
+  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 12.388812338161408;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 0;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
   public static double  DRIVETRAIN_RIGHT_kA = 0;
-  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 12.226785617440987;
+  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 11.97751373940957;
   
   
   // =============================================================================
@@ -120,19 +120,19 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
   public static int		MOTION_MAGIC_PID_SLOT = 0;
   public static int		MOTION_MAGIC_LOOP_SLOT = 0;
-  public static double	MOTION_MAGIC_P = 0.05;
-  public static double	MOTION_MAGIC_I = 0.00001;
-  public static double	MOTION_MAGIC_D = 0;
-  public static double	MOTION_MAGIC_F = 1.07570977918;
-  public static int		MOTION_MAGIC_V = 600;
-  public static int		MOTION_MAGIC_A = 200;
+  public static double	MOTION_MAGIC_P = 0.5;
+  public static double	MOTION_MAGIC_I = 0.0;
+  public static double	MOTION_MAGIC_D = 0.0;
+  public static double	MOTION_MAGIC_F = 1023 / 951;
+  public static int		MOTION_MAGIC_V = 951;
+  public static int		MOTION_MAGIC_A = 951;
   
   // =============================================================================
   // Autonomous Constants
   // =============================================================================
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
-  public static double	AUTO_TURN_TIMEOUT = 5;
+  public static double	AUTO_TURN_TIMEOUT = 5000;
   
   // =============================================================================
   // Sensors
