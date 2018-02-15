@@ -15,6 +15,7 @@ import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -29,6 +30,8 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -72,7 +75,8 @@ public class Robot extends IterativeRobot {
   
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-    
+    NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    limelight.getEntry("ledMode").setNumber(1.0);
     mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
@@ -126,10 +130,11 @@ public class Robot extends IterativeRobot {
     
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(driveControl, mData, 
-                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-                      false));
+    mCommandQueue.add(new GyroTurn(driveControl, mData, 90.0, 3));
+//    mCommandQueue.add(new FollowPath(driveControl, mData, 
+//                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+//                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+//                      false));
     // Add commands here
     updateCommandQueue(true);
   }

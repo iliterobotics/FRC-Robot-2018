@@ -36,6 +36,15 @@ public class GyroTurn implements ICommand {
     this.mAlignedCount = 0.0;
     this.mAllowableError = pAllowableError;
   }
+  
+  public GyroTurn(DriveControl pDriveControl, Data pData, double angle, double pAllowableError) {
+	    this.mDriveControl = pDriveControl;
+	    this.mData = pData;
+	    Double visionAngle = angle;
+	    this.mSetpointDegrees = visionAngle == null ? 0 : visionAngle;
+	    this.mAlignedCount = 0.0;
+	    this.mAllowableError = pAllowableError;
+  }
 
   @Override
   public void initialize(double pNow) {
