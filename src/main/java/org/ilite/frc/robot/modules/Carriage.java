@@ -65,19 +65,17 @@ public class Carriage implements IModule{
 		{
 			if(currentTime >= kickTimer)
 			{
-				//kick
-				//testing code:
 				solenoid1.set(true);
 			}
 			if(currentTime >= releaseTimer)
 			{
-				//release
 				solenoid2.set(true);
 				solenoid3.set(true);
 				reset();
 			}
 		}
 	}
+	
 	public void reset()
 	{
 		solenoid1.set(false);
@@ -85,5 +83,7 @@ public class Carriage implements IModule{
 		solenoid3.set(false);
 		//undo kick and release
 	}
+	
+	
 	
 }

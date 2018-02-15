@@ -109,6 +109,10 @@ public class Intake implements IModule{
 		leftPower = inPower;
 		rightPower= inPower;
 	}
+	
+	public boolean isPneumaticsOut(){
+		return solOut;
+	}
 	@Override
 	public void shutdown(double pNow) {	
 	}
