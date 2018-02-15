@@ -72,16 +72,26 @@ public class ElevatorModule implements IModule {
 		}
 	}
 
-
-	public void setPosition(double ticks)
+	public enum ElevatorPosition
+	{
+		CLIMB(0),
+		BOTTOM(0),
+		SWITCH(0),
+		SCALE(0);
+		
+		double inches;
+		private ElevatorPosition(double inches)
+		{
+			this.inches = inches;
+		}
+	}
+	public void setPosition(double inches)
 	{
 		double currentTick = masterElevator.getSelectedSensorPosition(SystemSettings.MOTION_MAGIC_PID_SLOT);
 
-		double targetTick = (currentTick < ticks) ? (currentTick - (ticks)) : -(currentTick - ticks);
-
+		
 
 		masterElevator.set(ControlMode.MotionMagic, targetTick);
-//		followerElevator.set(ControlMode.MotionMagic, targetTick);
 	}
 
 	@Override
