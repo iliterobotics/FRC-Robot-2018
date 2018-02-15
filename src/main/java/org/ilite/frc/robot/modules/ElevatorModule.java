@@ -85,15 +85,18 @@ public class ElevatorModule implements IModule {
 			this.inches = inches;
 		}
 	}
-	public void setPosition(double inches)
+	
+	public void setPosition(ElevatorPosition desiredPosition)
+	{
+		setPosition(desiredPosition.inches);
+	}
+	
+	private void setPosition(double inches)
 	{
 		double currentTick = masterElevator.getSelectedSensorPosition(SystemSettings.MOTION_MAGIC_PID_SLOT);
-
-		
-
-		masterElevator.set(ControlMode.MotionMagic, targetTick);
+		double desiredTick = //some regression for inches to encoder ticks
+		masterElevator.set(ControlMode.MotionMagic, desiredtick);
 	}
-
 	@Override
 	public void initialize(double pNow) {
 
@@ -166,7 +169,7 @@ public class ElevatorModule implements IModule {
 			}
 		}
 
-		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
+//		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
 		
 		switch(elevatorState){
 
@@ -225,6 +228,11 @@ public class ElevatorModule implements IModule {
 
 	public boolean isDown() {
 		return mAtBottom;
+	}
+	
+	public void zeroEncoder()
+	{
+		masterElevator.setSelectedSensorPosition(0, 0, 0);
 	}
 
 	@Override
