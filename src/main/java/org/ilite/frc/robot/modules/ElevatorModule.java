@@ -15,6 +15,8 @@ public class ElevatorModule implements IModule {
 	private DigitalInput bottomLimitSwitch, topLimitSwitch, topTripSwitch, bottomTripSwitch, beamBreak;
 	private Solenoid solenoid;
 	private ElevatorState elevatorState;
+	private ElevatorPosition elevatorPosition;
+	private boolean gearState;
 
 	public ElevatorModule() {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
@@ -26,7 +28,9 @@ public class ElevatorModule implements IModule {
 		direction = true;
 		beamBreak = new DigitalInput(SystemSettings.BEAM_BREAK_FRONT);
 		elevatorState = ElevatorState.STOP;
-
+		elevatorPosition = ElevatorPosition.BOTTOM;
+		gearState = false;
+		
 		masterElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
 		masterElevator.config_kP(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.config_kI(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
@@ -88,14 +92,15 @@ public class ElevatorModule implements IModule {
 	
 	public void setPosition(ElevatorPosition desiredPosition)
 	{
-		setPosition(desiredPosition.inches);
+		elevatorPosition = desiredPosition;
+		setPosition(elevatorPosition.inches);
 	}
 	
 	private void setPosition(double inches)
 	{
 		double currentTick = masterElevator.getSelectedSensorPosition(SystemSettings.MOTION_MAGIC_PID_SLOT);
-		double desiredTick = //some regression for inches to encoder ticks
-		masterElevator.set(ControlMode.MotionMagic, desiredtick);
+		double desiredTick = ;//some regression for inches to encoder ticks
+		masterElevator.set(ControlMode.MotionMagic, desiredTick);
 	}
 	@Override
 	public void initialize(double pNow) {
@@ -224,8 +229,14 @@ public class ElevatorModule implements IModule {
 	public void shiftGear(boolean gear)
 	{
 		solenoid.set(gear);
+		gearState = gear;
 	}
 
+	public boolean getGearState()
+	{
+		return gearState;
+	}
+	
 	public boolean isDown() {
 		return mAtBottom;
 	}
@@ -240,4 +251,14 @@ public class ElevatorModule implements IModule {
 
 	}
 
+	
+	public boolean getDirection()
+	{
+		return direction;
+	}
+	
+	public ElevatorPosition getElevatorPosition()
+	{
+		return elevatorPosition;
+	}
 }
