@@ -128,7 +128,7 @@ public class Robot extends IterativeRobot {
     mCommandQueue.clear();
     mCommandQueue.add(new FollowPath(driveControl, mData, 
                       new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+                      new File("/home/lvuser/paths/testPath_rights_detailed.csv"), 
                       false));
     // Add commands here
     updateCommandQueue(true);

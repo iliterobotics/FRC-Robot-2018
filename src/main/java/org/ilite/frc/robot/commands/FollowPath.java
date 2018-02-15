@@ -46,7 +46,7 @@ public class FollowPath implements ICommand {
 	}
 	
 	public FollowPath(DriveControl pDriveControl, Data pData, File pLeftTrajectoryFile, File pRightTrajectoryFile, boolean pIsBackwards) {
-		this(pDriveControl, pData, Pathfinder.readFromCSV(pLeftTrajectoryFile), Pathfinder.readFromCSV(pRightTrajectoryFile), true);
+		this(pDriveControl, pData, Pathfinder.readFromCSV(pLeftTrajectoryFile), Pathfinder.readFromCSV(pRightTrajectoryFile), pIsBackwards);
 	}
 	
 	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
