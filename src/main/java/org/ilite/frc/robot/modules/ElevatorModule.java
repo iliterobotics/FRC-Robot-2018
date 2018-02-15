@@ -58,8 +58,8 @@ public class ElevatorModule implements IModule {
 		DECELERATE_TOP(0.3),
 		DECELERATE_BOTTOM(-0.2),
 		HOLD(1.1),
+		BOTTOM(-0.2),
 		STOP(0);
-
 		double power;
 		private ElevatorState(double power)
 		{
@@ -182,6 +182,10 @@ public class ElevatorModule implements IModule {
 			masterElevator.set(ControlMode.PercentOutput, Math.min(mPower, elevatorState.getPower()));
 			break;
 
+		case BOTTOM:
+			 masterElevator.set(ControlMode.PercentOutput, Math.max(mPower, elevatorState.getPower()));
+			 break;
+			 
 		case STOP: 
 			masterElevator.set(ControlMode.PercentOutput, elevatorState.getPower());
 			break;
@@ -230,6 +234,11 @@ public class ElevatorModule implements IModule {
 	@Override
 	public void shutdown(double pNow) {
 
+	}
+	
+	public void goToBottom()
+	{
+		elevatorState = ElevatorState.BOTTOM;
 	}
 
 }
