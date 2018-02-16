@@ -133,6 +133,10 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
   public static double	AUTO_TURN_TIMEOUT = 5000;
+  public static Double kP = 0.0;
+  public static Double kI = 0.0;
+  public static Double kD = 0.0;
+
   
   // =============================================================================
   // Sensors

@@ -15,8 +15,9 @@ import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.FollowPath;
-import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.commands.TurnLeft;
+import org.ilite.frc.robot.commands.TurnRight;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.IModule;
@@ -44,6 +45,7 @@ public class Robot extends IterativeRobot {
   private double mCurrentTime = 0;
   
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
+  private SystemSettings settings;
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
   
@@ -65,9 +67,10 @@ public class Robot extends IterativeRobot {
   private LidarLite lidar = new LidarLite();
   
   public Robot() {
+	settings = new SystemSettings();
     mControlLoop = new ControlLoopManager(mData, mHardware);
     driveControl = new DriveControl();
-	  drivetraincontrol = new DriverInput(driveControl, mData);
+	drivetraincontrol = new DriverInput(driveControl, mData);
     dt = new DriveTrain(driveControl, mData);
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
     Logger.setLevel(ELevel.INFO);
@@ -75,6 +78,7 @@ public class Robot extends IterativeRobot {
   
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
+    settings.saveToFile();
     NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
     limelight.getEntry("ledMode").setNumber(1.0);
     mHardware.init(
@@ -118,6 +122,10 @@ public class Robot extends IterativeRobot {
     setRunningModules(dt);
     mControlLoop.setRunningControlLoops();
     mControlLoop.start();
+//    settings.setConstant("kP", 0.2);
+//    settings.setConstant("kI", 0.0000001);
+//    settings.setConstant("kD", 0.0);
+//    settings.saveToFile();
     
     mHardware.getPigeon().zeroAll();
     try {
@@ -126,11 +134,12 @@ public class Robot extends IterativeRobot {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    mapInputsAndCachedSensors();
     
+    settings.loadFromFile();
+    mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new GyroTurn(driveControl, mData, 90.0, 3));
+    mCommandQueue.add(new TurnLeft(driveControl, mData, 90.0, 3));
 //    mCommandQueue.add(new FollowPath(driveControl, mData, 
 //                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
 //                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
@@ -243,6 +252,10 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+//	    settings.setConstant("kP", 0.2);
+//	    settings.setConstant("kI", 0.0000001);
+//	    settings.setConstant("kD", 0.0000000000000001);
+//	    settings.saveToFile();
   }
   
   public void disabledPeriodic() {
