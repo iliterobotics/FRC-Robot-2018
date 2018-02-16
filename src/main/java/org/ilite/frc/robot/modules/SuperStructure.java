@@ -14,6 +14,7 @@ public class SuperStructure implements IModule {
 	private boolean SCALE_POSITION;
 	private boolean CLIMB_READY;
 	private boolean GEAR_SHIFTED;
+	private boolean IS_INTAKE_JAMMED;
 	
 	public SuperStructure(ElevatorModule e, Carriage c, Intake i){
 		elevator = e;
@@ -33,16 +34,19 @@ public class SuperStructure implements IModule {
 		
 	}
 
+	
+	//all elevator methods are implemented in most current ElevatorModule
 	@Override
 	public boolean update(double pNow) {
 		INTAKE_HAS_CUBE = carriage.beamBreakBroken();
 		CARRIAGE_IS_OPEN = carriage.carriageOpens();
 		INTAKE_EXTENDED = intake.isPneumaticsOut();
-		IS_CLIMBING = true;
+		IS_CLIMBING = elevator.getDirection();
 		BOTTOM_POSITION = elevator.isDown();
-		SWITCH_POSITION = true;
-		SCALE_POSITION = true;
-		GEAR_SHIFTED= true;
+		SWITCH_POSITION = elevator.getPosition() == elevator.ElevatorPosition.SWITCH;
+		SCALE_POSITION = elevator.getPosition() == elevator.ElevatorPosition.SCALE;
+		GEAR_SHIFTED = elevator.getGearState();
+		IS_INTAKE_JAMMED = intake.getJammed();
 		return false;
 	}
 	
@@ -55,13 +59,16 @@ public class SuperStructure implements IModule {
 	}
 	
 	public boolean readyToClimb(){
-		return (GEAR_SHIFTED && SCALE_POSITION)
+		return (GEAR_SHIFTED && SCALE_POSITION);
 	}
 	
-
+	public boolean haveCube()
+	{
+		return INTAKE_HAS_CUBE;
+	}
 	
-	
-	
-	
-
+	public boolean elevatorDown()
+	{
+		return
+	}
 }

@@ -29,6 +29,7 @@ public class Intake implements IModule{
 	private final double RIGHT_LIMITER = .2;
 	private final double MAX_RATIO = 3;
 	private final double MIN_RATIO = .7;
+	private boolean isJammed = false;
 	
 	
 	public Intake(ElevatorModule pElevator){
@@ -73,12 +74,14 @@ public class Intake implements IModule{
 				startCurrentLimiting = true;
 				leftPower = -inPower * LEFT_LIMITER;
 				rightPower = -inPower * RIGHT_LIMITER;
+				isJammed = true;
 			}
 			else if (rightRatio < MIN_RATIO && leftRatio < MIN_RATIO)
 			{
 				startCurrentLimiting = false;
 				leftPower = inPower;
 				rightPower = inPower;
+				isJammed = false;
 			}
 			else if (startCurrentLimiting)
 			{
@@ -117,5 +120,9 @@ public class Intake implements IModule{
 	public void shutdown(double pNow) {	
 	}
 	
+	public boolean getJammed()
+	{
+		return isJammed;
+	}
 
 }
