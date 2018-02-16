@@ -34,14 +34,14 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      PigeonIMU pPigeon
-      CANifier pCanifier,
+      PigeonIMU pPigeon,
+      CANifier pCanifier
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
-    mPigeonWrapper = new Pigeon(mPigeon);
+    //mPigeonWrapper = new Pigeon(mPigeon);
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -74,5 +74,9 @@ public class Hardware {
 	  return mPigeonWrapper;
   }
 
+  public CANifier getCanifier()
+  {
+	  return mCanifier;
+  }
 }
 

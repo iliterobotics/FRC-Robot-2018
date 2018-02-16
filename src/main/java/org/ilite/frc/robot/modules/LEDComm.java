@@ -20,8 +20,10 @@ public class LEDComm implements IModule{
 	
 	//Need to implement all conditions with the enumerations for LEDControl.Message
 	@Override
-	public void update(double pNow) {
+	public boolean update(double pNow) {
 		
+		
+		return true;
 	}
 	@Override
 	public void shutdown(double pNow) {

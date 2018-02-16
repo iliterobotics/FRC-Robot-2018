@@ -17,6 +17,7 @@ import org.ilite.frc.robot.modules.DriverControl;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.LEDControl;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -61,7 +62,7 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
-        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID)
+        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID)
         // Sensors
         // Custom hw
