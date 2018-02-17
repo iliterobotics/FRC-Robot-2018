@@ -8,7 +8,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.ilite.frc.common.input.DriverInputUtils;
+import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.types.EPowerDistPanel;
+import org.ilite.frc.common.types.ETalonSRX;
 import org.ilite.frc.display.frclog.data.RobotDataElementCache;
 import org.ilite.frc.display.frclog.data.RobotDataStream;
 import org.ilite.frc.display.frclog.data.RobotDataStream;
@@ -59,7 +63,7 @@ public class DisplayApplication extends Application{
   static List<String> operatorKeys = new ArrayList<String>();
   static List<String> pigeonKeys = new ArrayList<String>();
   static List<String> pdpKeys = new ArrayList<String>();
-  static List<String> navxKeys = new ArrayList<String>();
+  //static List<String> navxKeys = new ArrayList<String>();
   static List<String> drivetrainKeys = new ArrayList<String>();
   static List<String> talonKeys = new ArrayList<String>();
   static List<List<String>> dataMatrix = new ArrayList<>();
@@ -70,7 +74,18 @@ public class DisplayApplication extends Application{
   Class<?> mSelectedCodexToLoad = null;
   
   public void addKeys() {
-	  for()
+	  for(EPigeon e : EPigeon.values()) {
+		  pigeonKeys.add(e.toString());
+	  }
+	  for(EPowerDistPanel e : EPowerDistPanel.values()) {
+		  pdpKeys.add(e.toString());
+	  }
+	  for(EDriveTrain e : EDriveTrain.values()) {
+		  drivetrainKeys.add(e.toString());
+	  }
+	  for(ETalonSRX e : ETalonSRX.values()) {
+		  talonKeys.add(e.toString());
+	  }
   }
   public void matrixInit() {
 	  addKeys();
@@ -78,7 +93,7 @@ public class DisplayApplication extends Application{
 	  dataMatrix.add(operatorKeys);
 	  dataMatrix.add(pigeonKeys);
 	  dataMatrix.add(pdpKeys);
-	  dataMatrix.add(navxKeys);
+	  //dataMatrix.add(navxKeys);
 	  dataMatrix.add(drivetrainKeys);
 	  dataMatrix.add(talonKeys);
   }
