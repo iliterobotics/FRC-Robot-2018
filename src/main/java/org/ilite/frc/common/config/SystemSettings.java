@@ -2,16 +2,13 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
-
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
+import org.ilite.frc.robot.Utils;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
 
-import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Trajectory.FitMethod;
 
@@ -46,17 +43,17 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT1 = 12;
-	public static  int kDRIVETRAIN_TALONID_LEFT2 = 10;
-  public static  int kDRIVETRAIN_TALONID_LEFT3 = 11;
-	public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
-	public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
-	public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
-	public static int INTAKE_TALONID_FRONT_LEFT = 13;
-	public static int INTAKE_TALONID_FRONT_RIGHT = 14;
-	public static int ELEVATOR_TALONID_LEFT = 11;
-	public static int ELEVATOR_TALONID_RIGHT = 12;
+  public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
+  public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
+  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
+  public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
+  public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
+  public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
+  public static int INTAKE_TALONID_FRONT_RIGHT = 14;
+  public static int ELEVATOR_TALONID_LEFT = 11;
+  public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
+  public static int ELEVATOR_TALONID_RIGHT = 12;
 	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
@@ -65,27 +62,34 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Drive Train Constants
   // =============================================================================
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 4.875;
+  public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
-  public static int     DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
+  public static double  DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-  public static int		  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
-  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 0;
+  public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
-  public static double	DRIVETRAIN_ANGLE_kP = 0;
-  public static double	DRIVETRAIN_VELOCITY_kP = 0;
-  public static double	DRIVETRAIN_VELOCITY_kI = 0;
-  public static double	DRIVETRAIN_VELOCITY_kD = 0;
-  public static double	DRIVETRAIN_kA = 0;
-  public static double	DRIVETRAIN_kV = 0.00104166666666666666666666666667;
+  public static double	DRIVETRAIN_ANGLE_kP = 0.005;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 0.001;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kD = 0;
+  public static double	DRIVETRAIN_LEFT_kA = 0;
+  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 11.913739525964548;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 0.001;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
+  public static double  DRIVETRAIN_RIGHT_kA = 0;
+  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 11.989394835736277;
   
   
   // =============================================================================
   // Controllers
   // =============================================================================  
-  public static int PIGEON_DEVICE_ID = 3;
+  public static double PIGEON_COLLISION_THRESHOLD = 10;
+  public static int PIGEON_DEVICE_ID = 5;
   public static int PCM_DEVICE_ID = 2;
   public static int VRM_DEVICE_ID = 1;
   public static int PDP_DEVICE_ID = 0;
@@ -121,19 +125,41 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Motion Magic Constants
   // =============================================================================
   public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
-  public static int		MOTION_MAGIC_PID_SLOT;
-  public static int		MOTION_MAGIC_LOOP_SLOT;
-  public static int		MOTION_MAGIC_P;
-  public static int		MOTION_MAGIC_I;
-  public static int		MOTION_MAGIC_D;
-  public static int		MOTION_MAGIC_F;
-  public static int		MOTION_MAGIC_V;
-  public static int		MOTION_MAGIC_A;
+  public static int		MOTION_MAGIC_PID_SLOT = 0;
+  public static int		MOTION_MAGIC_LOOP_SLOT = 0;
+  public static double	MOTION_MAGIC_P = 0.5;
+  public static double	MOTION_MAGIC_I = 0.0;
+  public static double	MOTION_MAGIC_D = 0.0;
+  public static double	MOTION_MAGIC_F = 1023 / 951;
+  public static int		MOTION_MAGIC_V = 951;
+  public static int		MOTION_MAGIC_A = 951;
+  
+  // =============================================================================
+  // Autonomous Constants
+  // =============================================================================
+  public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
+  public static int		AUTO_TURN_POS_TOLERANCE = 100;
+  public static double	AUTO_TURN_TIMEOUT = 5000;
+  
   // =============================================================================
   // Sensors
   // =============================================================================
   public static final int INTAKE_BEAM_BREAK = 0;
   public static final int HALL_EFFECT = 1;
+  
+  // =============================================================================
+  // Vision Constants
+  // =============================================================================
+  public static double VISION_CUBE_WIDTH_INCHES = 12; // Average of possible cube widths
+  public static int		 VISION_TWO_CUBE_WIDTH = 50;
+  public static double VISION_HORIZ_FOV_DEGREES = 60;
+  public static double VISION_VERT_FOV_DEGREES = 60;
+  public static int    VISION_CAMERA_WIDTH = 160;
+  public static int    VISION_CAMERA_HEIGHT = 120;
+  public static double VISION_DEGREES_PER_PIXEL_X = VISION_HORIZ_FOV_DEGREES / VISION_CAMERA_WIDTH;
+  public static double VISION_DEGREES_PER_PIXEL_Y = VISION_VERT_FOV_DEGREES / VISION_CAMERA_HEIGHT;
+  //We calculate this because the coordinate system usually starts from the left, meaning 0 degrees is the leftmost part of the camera's view. We want 0 to be the center of the view.
+  public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
   
   @Override
   public String getFileLocation() {

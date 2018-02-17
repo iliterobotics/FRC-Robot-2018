@@ -102,25 +102,11 @@ public abstract  class IMU {
   // Utility Methods
   // =====================================================================
   public static double clampDegrees(double pRawValue) {
-    double result = pRawValue;
-    if(result > 360)
-      result = result - ((int)(Math.floor(result / 360)) * 360);
-    
-    if(result < 0)
-    {
-      if(result < -360)
-      {
-        result = result + ((int)(Math.floor(result / 360)) * 360);
-      }
-      
-      result = 360 - Math.abs(result);
-    }
-      
-    return result;
+    return (pRawValue %= 360) >= 0 ? pRawValue : (pRawValue + 360);
   }
   
-  public static double getAngleSum(double angle1, double angle2) {
-    double sum = angle1 + angle2;
+  public static double getAngleSum(double pRawValue1, double pRawValue2) {
+    double sum = pRawValue1 + pRawValue2;
     if(sum > 180){
       sum = -360 + sum;
     } else if(sum < -180){
@@ -130,12 +116,12 @@ public abstract  class IMU {
   }
 
 
-  public static double convertTo360(double angle){
-    if(angle < 0) return angle + 360;
-    return angle;
+  public static double convertTo360(double pRawValue){
+    if(pRawValue < 0) return pRawValue + 360;
+    return pRawValue;
   }
   
-  public static double getAngleDistance(double angle1, double angle2){
-    return getAngleSum(angle1, -angle2);
+  public static double getAngleDistance(double pRawValue1, double pRawValue2){
+    return getAngleSum(pRawValue1, -pRawValue2);
   }
 }
