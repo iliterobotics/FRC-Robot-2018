@@ -47,6 +47,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.File;
 import java.io.BufferedWriter;
@@ -183,9 +185,9 @@ public class DisplayApplication extends Application{
 	  for(List<String> xs : dataMatrix)
 	  { 
 		  for(String s : xs) {
-			  
-			  bWriter.write(s+", " + SmartDashboard.getNumber(s, -99) + "\n");
-			  System.out.println(s+", " + SmartDashboard.getNumber(s, -99) + "\n");
+			  System.out.println("Getting: " + s);
+			  String thing = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry(s).getDouble(-99) + "";
+			  bWriter.write(thing);
 		  }
 	  }
 	  bWriter.close();
@@ -197,12 +199,15 @@ public class DisplayApplication extends Application{
 	  
   }
   
-  public static void main(String[] pArgs) {
-	launch(pArgs);
-	matrixInit();
+  public static void main(String[] pArgs) throws InterruptedException {
+//	launch(pArgs);
+    matrixInit();
     Logger.setLevel(ELevel.DEBUG);
     RobotDataStream.inst();
+    Thread.sleep(1000);
     dumpToCSV();
+    //System.out.println(", " + SmartDashboard.getEntry("A_BTN") + "\n");
+
 //    Logger.setLevel(ELevel.INFO);
     
   }
