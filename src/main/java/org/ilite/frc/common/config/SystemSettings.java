@@ -85,6 +85,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MP_MAX_ACC = 0;
   public static double 	MP_MAX_JERK = 0;
   
+  public static int ENCODER_MAX_TICKS = 0;
+  
   // =============================================================================
   // Input Constants
   // =============================================================================
@@ -128,11 +130,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Sensor Settings
   // =============================================================================
   public static int     DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 0;
-  public static int     BEAM_BREAK_BACK = 0;
+  public static int     BEAM_BREAK_BACK = 12;
   public static int     DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 1;
-//public static int     BEAM_BREAK_BACK = 0;
-  public static int     BEAM_BREAK_FRONT = 0;
-  public static int     ULTRASONIC_PORT = 0;
+//public static int     BEAM_BREAK_BACK = 12;
+  public static int     BEAM_BREAK_FRONT = 11;
+  public static int     ULTRASONIC_PORT = 10;
   public static final int SHIFT_SOLENOID = 0;
 
 

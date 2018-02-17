@@ -1,8 +1,10 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.TalonTach;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -12,13 +14,15 @@ public class ElevatorModule implements IModule {
 	private TalonSRX masterElevator, followerElevator;
 	private double mPower;
 	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
-	private DigitalInput bottomLimitSwitch, topLimitSwitch, topTripSwitch, bottomTripSwitch, beamBreak;
+	private DigitalInput bottomLimitSwitch, topLimitSwitch;
+	private TalonTach talonTach;
 	private Solenoid solenoid;
 	private ElevatorState elevatorState;
 	private ElevatorPosition elevatorPosition;
 	private boolean gearState;
+	private int tickPosition;
 
-	public ElevatorModule() {
+	public ElevatorModule(TalonTach talonTach) {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
 		bottomLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH);
@@ -26,10 +30,12 @@ public class ElevatorModule implements IModule {
 		followerElevator.follow(masterElevator);
 		solenoid = new Solenoid(SystemSettings.SHIFT_SOLENOID);
 		direction = true;
-		beamBreak = new DigitalInput(SystemSettings.BEAM_BREAK_FRONT);
+		//beamBreak = new DigitalInput(SystemSettings.BEAM_BREAK_FRONT);
 		elevatorState = ElevatorState.STOP;
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		gearState = false;
+		masterElevator.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		this.talonTach = talonTach;
 		
 		masterElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
 		masterElevator.config_kP(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
@@ -41,18 +47,6 @@ public class ElevatorModule implements IModule {
 		masterElevator.configMotionAcceleration(SystemSettings.MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 
 		masterElevator.setSelectedSensorPosition(0, SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-
-//		followerElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
-//		followerElevator.config_kP(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//		followerElevator.config_kI(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//		followerElevator.config_kD(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//		followerElevator.config_kF(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//
-//		followerElevator.configMotionCruiseVelocity(SystemSettings.MOTION_MAGIC_V, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//		followerElevator.configMotionAcceleration(SystemSettings.MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-//
-//		followerElevator.setSelectedSensorPosition(0, SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-
 	}
 
 
@@ -99,8 +93,8 @@ public class ElevatorModule implements IModule {
 	private void setPosition(double inches)
 	{
 		double currentTick = masterElevator.getSelectedSensorPosition(SystemSettings.MOTION_MAGIC_PID_SLOT);
-		double desiredTick = ;//some regression for inches to encoder ticks
-		masterElevator.set(ControlMode.MotionMagic, desiredTick);
+		//double desiredTick = some regression to convert inches to ticks
+		//masterElevator.set(ControlMode.MotionMagic, desiredTick);
 	}
 	@Override
 	public void initialize(double pNow) {
@@ -132,22 +126,26 @@ public class ElevatorModule implements IModule {
 		//		leftElevator.set(ControlMode.PercentOutput, mPower);
 		//		return true;
 
-		topSpeedLimitTripped = topTripSwitch.get();
-		bottomSpeedLimitTripped = bottomTripSwitch.get();
-		mAtTop = topLimitSwitch.get();
-		mAtBottom = bottomLimitSwitch.get();
+//		topSpeedLimitTripped = topTripSwitch.get();
+//		bottomSpeedLimitTripped = bottomTripSwitch.get();
+//		mAtTop = topLimitSwitch.get();
+//		mAtBottom = bottomLimitSwitch.get();
 		direction = mPower > 0 ? true : false;
-
-		if(!direction && bottomSpeedLimitTripped)
+		tickPosition = masterElevator.getSelectedSensorPosition(0);
+		if(!talonTach.getSensor())
+		{
+			elevatorState = ElevatorState.NORMAL;
+		}
+		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor() )
 		{
 			elevatorState = ElevatorState.DECELERATE_BOTTOM;
 		}
 
-		if(direction && topSpeedLimitTripped)
+		if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor())
 		{
 			elevatorState = ElevatorState.DECELERATE_TOP;
 		}
-		if((direction && bottomSpeedLimitTripped) ||  (!direction && topSpeedLimitTripped))
+		if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
 		{
 			elevatorState = ElevatorState.NORMAL;
 		}
@@ -161,6 +159,7 @@ public class ElevatorModule implements IModule {
 			{
 				elevatorState = ElevatorState.STOP;
 			}
+			zeroEncoder();
 		}
 		if(mAtTop)
 		{
@@ -189,6 +188,9 @@ public class ElevatorModule implements IModule {
 		case DECELERATE_TOP: 
 			masterElevator.set(ControlMode.PercentOutput, Math.min(mPower, elevatorState.getPower()));
 			break;
+			
+		case HOLD:
+//			masterElevator.set(ControlMode., demand);
 
 		case STOP: 
 			masterElevator.set(ControlMode.PercentOutput, elevatorState.getPower());
@@ -251,6 +253,12 @@ public class ElevatorModule implements IModule {
 
 	}
 
+	public double getHeightInches()
+	{
+		//convert current ticks to inches for DriveTrain
+//		return tickPosition /
+		return 0.0;
+	}
 	
 	public boolean getDirection()
 	{
@@ -260,5 +268,10 @@ public class ElevatorModule implements IModule {
 	public ElevatorPosition getElevatorPosition()
 	{
 		return elevatorPosition;
+	}
+	
+	public ElevatorState getElevatorState()
+	{
+		return elevatorState;
 	}
 }

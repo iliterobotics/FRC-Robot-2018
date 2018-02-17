@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
+import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.commands.ICommand;
@@ -48,10 +49,12 @@ public class Robot extends IterativeRobot {
   private final ElevatorModule elevator;
   private final DriveTrain dt;
   private final DriverControl drivetraincontrol;
-   
+ private final TalonTach talonTach;  
+ 
   public Robot() {
 	mControlLoop = new ControlLoopManager(mData, mHardware);
-	elevator = new ElevatorModule();
+	talonTach = new TalonTach(4);
+	elevator = new ElevatorModule(talonTach);
 	intake = new Intake(elevator);
 	drivetraincontrol = new DriverControl(mData, intake, elevator);
 	dt = new DriveTrain(drivetraincontrol);
@@ -99,6 +102,7 @@ public class Robot extends IterativeRobot {
   {
 	  mLog.info("TELEOP");
 	  setRunningModules(dt, drivetraincontrol, intake, elevator);
+	  
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
