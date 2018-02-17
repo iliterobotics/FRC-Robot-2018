@@ -17,8 +17,11 @@ import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
+import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 import org.ilite.frc.robot.vision.GripPipeline;
@@ -55,20 +58,31 @@ public class Robot extends IterativeRobot {
   private GripPipeline pipeline;
   private Processing processing;
   
-  private final DriveTrain dt;
+  private final DriveTrain mDrive;
+  private final Carriage mCarriage;
+  private final ElevatorModule mElevator;
+  private final Intake mIntake;
   private final DriveControl driveControl;
-  private final DriverInput drivetraincontrol;
+  private final DriverInput mDriverInput;
   
   private LidarLite lidar = new LidarLite();
   
   public Robot() {
+    Logger.setLevel(ELevel.INFO);
+    
     mControlLoop = new ControlLoopManager(mData, mHardware);
     driveControl = new DriveControl();
-	  drivetraincontrol = new DriverInput(driveControl, mData);
-    dt = new DriveTrain(driveControl, mData);
+    
+    mElevator = new ElevatorModule();
+    mCarriage = new Carriage(mData);
+    mIntake = new Intake(mElevator);
+    mDrive = new DriveTrain(driveControl, mData);
+
+    mDriverInput = new DriverInput(driveControl, mIntake, mData);
+    
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
     mCommandQueue = new LinkedList<>();
-    Logger.setLevel(ELevel.INFO);
+   
   }
   
   public void robotInit() {
@@ -113,7 +127,7 @@ public class Robot extends IterativeRobot {
     mLog.info("AUTONOMOUS");
 
     setRunningModules();
-    mControlLoop.setRunningControlLoops(dt);
+    mControlLoop.setRunningControlLoops(mDrive);
     mControlLoop.start();
     
     mHardware.getPigeon().zeroAll();
@@ -146,7 +160,7 @@ public class Robot extends IterativeRobot {
   {
 	  mLog.info("TELEOP");
 
-	  setRunningModules(dt, drivetraincontrol);
+	  setRunningModules(mDrive, mDriverInput);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -170,7 +184,7 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
-      EDriveTrain.map(mData.drivetrain, dt, driveControl.getDriveMessage(), mCurrentTime);
+      EDriveTrain.map(mData.drivetrain, mDrive, driveControl.getDriveMessage(), mCurrentTime);
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       ECubeTarget.map(mData.vision, processing);
     // Any input processing goes here, such as 'split arcade driver'

@@ -13,12 +13,16 @@ public class DriverInput implements IModule{
 
 	
   private DriveControl driveControl;
+  private Carriage mCarriage;
+  private ElevatorModule mElevatorModule;
+  private Intake mIntake;
   
 	private Data mData;
 	
-	public DriverInput(DriveControl pDriveControl, Data pData)
+	public DriverInput(DriveControl pDriveControl, Intake pIntake, Data pData)
 	{
 	  this.driveControl = pDriveControl;
+	  this.mIntake = pIntake;
 		this.mData = pData;
 	}
 	
@@ -61,6 +65,18 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateIntake() {
+	    double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
+	    
+	    if (mData.operator.get(ELogitech310.DPAD_DOWN) != null)
+	      mIntake.setIntakePneumaticsOut(false);
+	    if (mData.operator.get(ELogitech310.DPAD_UP) != null)
+	      mIntake.setIntakePneumaticsOut(true);
+	    
+	    if(intakeSpeed > 0) {
+	      mIntake.intakeIn(intakeSpeed);
+	    } else {
+	      mIntake.intakeOut(intakeSpeed);
+	    }
 	}
 	
 	private void updateElevator() {
