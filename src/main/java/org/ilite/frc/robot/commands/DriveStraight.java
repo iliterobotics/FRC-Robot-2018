@@ -1,84 +1,78 @@
 package org.ilite.frc.robot.commands;
 
-import org.ilite.frc.common.types.EPigeon;
+import static org.ilite.frc.common.types.EDriveTrain.LEFT_POSITION_TICKS;
+import static org.ilite.frc.common.types.EDriveTrain.RIGHT_POSITION_TICKS;
+import static org.ilite.frc.common.types.EPigeon.YAW;
+
+import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
 import org.ilite.frc.robot.modules.drivetrain.DriveMode;
-import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
-import org.ilite.frc.robot.Utils;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class DriveStraight implements ICommand{
-	
-	public final double INITIAL_POWER;
-	public static final double PROPORTION = 0.02;
-	
-//	private final DriveTrain driveTrain;
-	private DriveControl mDriveControl;
-	private Data mData;
-	private Double mError, mLastError, mTotalError;
-//	private final NavX navx;
-	private final Double mDistance, mAlignedCount;
-	private Double mSetDistanceInches, mTargetYaw, mCurrentYaw, mAllowableError, mInitialYaw;
-	
-	private double initialYaw;
-	
-	public DriveStraight(DriveControl pDriveControl, Data pData, double initialPower, double pAllowableError, double pDistance){
-		this.mDriveControl = pDriveControl;
-		this.mData = pData;
-		this.mDistance = pDistance;
-		this.mSetDistanceInches = pDistance;
-		this.mAllowableError = pAllowableError;
-		this.mAlignedCount = 0.0;
-		this.INITIAL_POWER = initialPower;
-	}
-	
-	
-	
-	public boolean update(double pNow){
-		System.out.println("Command printing");
+  
+  private static final double PROPORTION = 0.05;
+  private static final double INITIAL_POWER = 0.4;
+  
+  private final DriveControl driveTrain;
+  private final Data mData;
+  private final double distanceToTravel;
+  
+  private double initialLeftPosition;
+  private double initialRightPosition;
+  
+  private double initialYaw;
 
-		double yawError = getAngleSum(initialYaw, mData.pigeon.get(EPigeon.YAW));
-		//driveTrain.setPower(-(INITIAL_POWER + yawError * PROPORTION), -(INITIAL_POWER - yawError * PROPORTION));
-		mDriveControl.setDriveMessage(new DriveMessage((INITIAL_POWER + yawError * PROPORTION), (INITIAL_POWER - yawError * PROPORTION), DriveMode.PercentOutput, NeutralMode.Brake));
-		
-		return false;
-	}
+  
+  public DriveStraight(DriveControl dt, Data pData, double inches){
+    this.driveTrain = dt;
+    this.mData = pData;
+    this.distanceToTravel = (int)Utils.inchesToTicks(inches);
+  }
+  
+  public void initialize(double pNow){
+    initialYaw = IMU.clampDegrees(mData.pigeon.get(YAW));
+    initialLeftPosition = mData.drivetrain.get(LEFT_POSITION_TICKS);
+    initialRightPosition = mData.drivetrain.get(RIGHT_POSITION_TICKS);
+    System.out.println("Initial Yaw:" + IMU.clampDegrees(mData.pigeon.get(YAW)));
+    System.out.printf("InitL:%s InitR:%s\n", initialLeftPosition, initialRightPosition);
+  }
+  
+  public boolean update(double pNow){
+    
+    if( getAverageDistanceTravel() >= distanceToTravel){
+      driveTrain.setDriveMessage(new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake));
+      DriverStation.reportError("I AM STOPPING", false);
+      System.out.printf("FinalL:%s FinalR:%s DistTravelled:%s Target:%s\n", mData.drivetrain.get(LEFT_POSITION_TICKS), mData.drivetrain.get(RIGHT_POSITION_TICKS), getAverageDistanceTravel(), distanceToTravel);
+      return true;
+    }
+
+    double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), initialYaw);
+    driveTrain.setDriveMessage(new DriveMessage(
+                               INITIAL_POWER + (yawError * PROPORTION), 
+                               INITIAL_POWER - (yawError * PROPORTION),
+                               DriveMode.PercentOutput, NeutralMode.Brake));
+    
+    return false;
+  }
+  
+  public void shutdown(double pNow) {
+    
+  }
+  
+  private double getAverageDistanceTravel(){
+    return (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) + 
+            (Math.abs(mData.drivetrain.get(RIGHT_POSITION_TICKS) - initialRightPosition))) / 2;
+  }
+  
+  public void adjustBearing(double angleDiff){
+    initialYaw = IMU.getAngleSum(initialYaw, angleDiff);
+  }
 	
-	public void adjustBearing(double angleDiff){
-		initialYaw = getAngleSum(initialYaw, angleDiff);
-	}
-
-	@Override
-	public void initialize(double pNow) {
-		//this.mError = getError();
-		mInitialYaw = mData.pigeon.get(EPigeon.YAW);
-	    this.mLastError = mError; // Calculate the initial error value
-	    this.mTotalError = this.mError;
-	}
-
-	
-//	public boolean update(double pNow) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-
-	@Override
-	public void shutdown(double pNow) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public static double getAngleSum(double pRawValue1, double pRawValue2) {//temporary method
-	    double sum = pRawValue1 + pRawValue2;
-	    if(sum > 180){
-	      sum = -360 + sum;
-	    } else if(sum < -180){
-	      sum = 360 + sum;
-	    }
-	    return sum;
-	  }
-
 }

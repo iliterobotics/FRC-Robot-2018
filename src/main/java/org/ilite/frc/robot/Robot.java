@@ -141,7 +141,9 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new DriveStraight(driveControl, mData, 0.2, 3, 10));
+    mCommandQueue.add(new DriveStraight(driveControl, mData, 168));
+    mCommandQueue.add(new GyroTurn(driveControl, mData, 90, 2, "left"));
+    mCommandQueue.add(new DriveStraight(driveControl, mData, 60));
    // mCommandQueue.add(new GyroTurn(driveControl, mData, 90.0, 3, "Left"));
 //    mCommandQueue.add(new FollowPath(driveControl, mData, 
 //                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 

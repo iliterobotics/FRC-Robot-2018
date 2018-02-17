@@ -17,7 +17,7 @@ public class GyroTurn implements ICommand {
   private Data mData;	
   
   private static final int kMIN_ALIGNED_COUNT = 5;
-  private static final Double kP = 0.03;
+  private static final Double kP = 0.017;
   private static final Double kI = 0.0000008;
   private static final Double kD = 0.08;
   private static final Double kMIN_POWER = 0.05;
@@ -87,6 +87,11 @@ public class GyroTurn implements ICommand {
     mDriveControl.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DriveMode.PercentOutput, NeutralMode.Brake));
     
     mLastError = mError;
+    
+    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
+      mDriveControl.setDriveMessage(new DriveMessage(0.0, 0.0, DriveMode.PercentOutput, NeutralMode.Brake));
+      return true;
+    }
     
     System.out.printf("Target: %s Yaw: %s\n", mSetpointDegrees, mData.pigeon.get(EPigeon.YAW));
     return false;
