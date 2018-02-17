@@ -73,7 +73,7 @@ public class DisplayApplication extends Application{
   Color[] positiveColors = { Color.web("#FEE090"), Color.web("#FDAE61"), Color.web("#F46D43"), Color.web("#D73027") };
   Class<?> mSelectedCodexToLoad = null;
   
-  public void addKeys() {
+  public static void addKeys() {
 	  for(EPigeon e : EPigeon.values()) {
 		  pigeonKeys.add(e.toString());
 	  }
@@ -87,11 +87,11 @@ public class DisplayApplication extends Application{
 		  talonKeys.add(e.toString());
 	  }
   }
-  public void matrixInit() {
+  public static void matrixInit() {
 	  addKeys();
 	  dataMatrix.add(driverInputKeys);
 	  dataMatrix.add(operatorKeys);
-	  dataMatrix.add(pigeonKeys);
+	  //dataMatrix.add(pigeonKeys);
 	  dataMatrix.add(pdpKeys);
 	  //dataMatrix.add(navxKeys);
 	  dataMatrix.add(drivetrainKeys);
@@ -183,24 +183,26 @@ public class DisplayApplication extends Application{
 	  for(List<String> xs : dataMatrix)
 	  { 
 		  for(String s : xs) {
-			  bWriter.write(s+", " + SmartDashboard.getNumber(s, -99));
+			  
+			  bWriter.write(s+", " + SmartDashboard.getNumber(s, -99) + "\n");
+			  System.out.println(s+", " + SmartDashboard.getNumber(s, -99) + "\n");
 		  }
 	  }
 	  bWriter.close();
 	  
 	  }
 	  catch (Exception e) {
-		  
+		  System.err.println("Error xd");
 	  }
 	  
   }
   
   public static void main(String[] pArgs) {
-	//start()
-	dumpToCSV();
+	launch(pArgs);
+	matrixInit();
     Logger.setLevel(ELevel.DEBUG);
     RobotDataStream.inst();
-    launch(pArgs);
+    dumpToCSV();
 //    Logger.setLevel(ELevel.INFO);
     
   }

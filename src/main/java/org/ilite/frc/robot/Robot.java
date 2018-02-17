@@ -16,7 +16,7 @@ import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.display.frclog.display.DisplayApplication;
+//import org.ilite.frc.display.frclog.display.DisplayApplication;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
@@ -148,11 +148,21 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+            
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);	
       SystemUtils.writeCodexToSmartDashboard(mData.driverinput);
       SystemUtils.writeCodexToSmartDashboard(mData.operator);
+      SystemUtils.writeCodexToSmartDashboard(mData.pdp);
+      SystemUtils.writeCodexToSmartDashboard(mData.navx);
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
       
-      DisplayApplication.dumpToCSV();
+      
+    	  System.out.println("Solenoid Error");
+      
+      
+      //SystemUtils.writeCodexToSmartDashboard(mData.talons);
+//      DisplayApplication.matrixInit();
+//      DisplayApplication.dumpToCSV();
   }
   
   /**
@@ -217,11 +227,6 @@ public class Robot extends IterativeRobot {
   
   public void disabledPeriodic() {
 	  System.out.println("Getting autonomous...");
-	  for(ELogitech310 a: ELogitech310.values())
-	  {
-		  System.out.println(a.toString());  
-		  //getInstance().getEntry(a.toString()).setDefaultDouble(99);
-	  }
 	  getAutonomous.getAutonomousCommands();
 	  Timer.delay(1);
   }
