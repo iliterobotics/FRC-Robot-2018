@@ -133,6 +133,13 @@ public class Robot extends IterativeRobot {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
     updateRunningModules();
+    
+    SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+    SystemUtils.writeCodexToSmartDashboard(mData.driverinput);
+    SystemUtils.writeCodexToSmartDashboard(mData.operator);
+    SystemUtils.writeCodexToSmartDashboard(mData.pdp);
+    SystemUtils.writeCodexToSmartDashboard(mData.navx);
+    SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
   }
   
   
@@ -148,7 +155,9 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+      
+      
+      
 
   }
   
