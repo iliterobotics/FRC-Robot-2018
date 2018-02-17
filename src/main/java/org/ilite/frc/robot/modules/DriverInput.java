@@ -49,6 +49,8 @@ public class DriverInput implements IModule{
 	      throttle -= (throttle*0.5);
 		}
 		
+		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+		
 		if(mData.driverinput.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.5) {
 			rotate -= (rotate*0.5);
 		}
