@@ -70,11 +70,11 @@ public class FollowPath implements ICommand {
 	public void initialize(double pNow) {
 		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
 		
-		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
+		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER_FEET);
 		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
 		
-		mRightFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
-		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
+		mRightFollower.configureEncoder(data.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER_FEET);
+		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kP, SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kI, SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kD, SystemSettings.DRIVETRAIN_RIGHT_kV, SystemSettings.DRIVETRAIN_RIGHT_kA);
 	}
 	
 	public boolean update(double pNow) {

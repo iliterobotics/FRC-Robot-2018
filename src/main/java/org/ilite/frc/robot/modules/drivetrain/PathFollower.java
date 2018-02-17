@@ -15,8 +15,10 @@ public class PathFollower {
     double leftOutput = (leftFollower.calculate(leftPosition) + turnOutput);
     double rightOutput = (rightFollower.calculate(rightPosition) - turnOutput);
     
-    leftOutput = (isBackwards) ? -leftOutput : leftOutput;
-    rightOutput = (isBackwards) ? -leftOutput : leftOutput;
+    if(isBackwards) {
+      leftOutput *= -1;
+      rightOutput *= -1;
+    }
     
     return new DriveMessage(leftOutput, rightOutput, DriveMode.Pathfinder, NeutralMode.Brake);
   }

@@ -111,8 +111,8 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
     mLog.info("AUTONOMOUS");
 
-    setRunningModules(dt);
-    mControlLoop.setRunningControlLoops();
+    setRunningModules();
+    mControlLoop.setRunningControlLoops(dt);
     mControlLoop.start();
     
     mHardware.getPigeon().zeroAll();
@@ -128,7 +128,7 @@ public class Robot extends IterativeRobot {
     mCommandQueue.clear();
     mCommandQueue.add(new FollowPath(driveControl, mData, 
                       new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-                      new File("/home/lvuser/paths/testPath_rights_detailed.csv"), 
+                      new File("/home/lvuser/paths/testPath_right_detailed.csv"), 
                       false));
     // Add commands here
     updateCommandQueue(true);
