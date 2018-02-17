@@ -67,6 +67,7 @@ public class Robot extends IterativeRobot {
 	  drivetraincontrol = new DriverInput(driveControl, mData);
     dt = new DriveTrain(driveControl, mData);
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
+    mCommandQueue = new LinkedList<>();
     Logger.setLevel(ELevel.INFO);
   }
   
