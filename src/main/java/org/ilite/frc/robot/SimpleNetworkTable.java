@@ -45,8 +45,8 @@ public class SimpleNetworkTable  {
     		netTable.getEntry(key).forceSetString(value);
     }
     
-    public synchronized NetworkTableInstance getInstance() {
-    		return netTable.getInstance();
+    public synchronized NetworkTable getInstance() {
+    		return netTable;
     }
     
 }

@@ -21,6 +21,7 @@ import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.DriverControl;
+import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
@@ -55,7 +56,7 @@ public class Robot extends IterativeRobot {
   private final Intake intake;
   private final ElevatorModule elevator;
   private final DriveTrain dt;
-  private final DriverControl drivetraincontrol;
+  private DriverControl drivetraincontrol;
 
   
   private LidarLite lidar = new LidarLite();
@@ -115,7 +116,22 @@ public class Robot extends IterativeRobot {
 	updateCommandQueue(false);
     updateRunningModules();
   }
+ 
+  public void switchDriverControlModes(DriverControl dc) {
+	  this.drivetraincontrol = dc;
+  }
   
+  public void receiveDriverControlMode() {
+	  String controlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry("Driver Control Mode").getString("ARCADE");
+	  switch (controlMode) {
+	  case "ARCADE":
+		  switchDriverControlModes (new DriverControl(mData,intake,elevator));
+		  break;
+	  case "SPLIT_ARCADE":
+		  switchDriverControlModes(new DriverControlSplitArcade(mData));
+	  }
+	  
+  }
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
