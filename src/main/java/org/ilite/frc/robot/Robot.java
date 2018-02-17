@@ -14,10 +14,12 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.commands.TurnLeft;
-import org.ilite.frc.robot.commands.TurnRight;
+//import org.ilite.frc.robot.commands.TurnLeft;
+//import org.ilite.frc.robot.commands.TurnRight;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.IModule;
@@ -139,7 +141,8 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new TurnLeft(driveControl, mData, 90.0, 3));
+    mCommandQueue.add(new DriveStraight(driveControl, mData, 0.2, 3, 10));
+   // mCommandQueue.add(new GyroTurn(driveControl, mData, 90.0, 3, "Left"));
 //    mCommandQueue.add(new FollowPath(driveControl, mData, 
 //                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
 //                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 

@@ -11,7 +11,7 @@ import org.ilite.frc.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-public class TurnRight implements ICommand {
+public class GyroTurn implements ICommand {
   
   private DriveControl mDriveControl;
   private Data mData;	
@@ -30,8 +30,9 @@ public class TurnRight implements ICommand {
   private final Double mAllowableError;
   private Double mLeftPower, mRightPower, mOutput = 0.0;
   private final Double turnAngle;
+  private final String mDirection;
 
-//  public TurnRight(DriveControl pDriveControl, Data pData, double pAllowableError) {
+//  public GyroTurn(DriveControl pDriveControl, Data pData, double pAllowableError) {
 //    this.mDriveControl = pDriveControl;
 //    this.mData = pData;
 //    Double visionAngle = mData.vision.get(ECubeTarget.DELTA_ANGLE);
@@ -40,21 +41,22 @@ public class TurnRight implements ICommand {
 //    this.mAllowableError = pAllowableError;
 //  }
   
-  public TurnRight(DriveControl pDriveControl, Data pData, double angle, double pAllowableError) {
+  public GyroTurn(DriveControl pDriveControl, Data pData, double angle, double pAllowableError, String pDirection) {
 	    this.mDriveControl = pDriveControl;
 	    this.mData = pData;
 	    turnAngle = angle;
 	    this.mSetpointDegrees = turnAngle;//== null ? 0 : visionAngle;
 	    this.mAlignedCount = 0.0;
 	    this.mAllowableError = pAllowableError;
+	    this.mDirection = pDirection;
   }
 
   @Override
   public void initialize(double pNow) {
     updateValues();
-    this.mError = getError();
-    this.mLastError = mError; // Calculate the initial error value
-    this.mTotalError = this.mError;
+	    this.mError = getError();
+	    this.mLastError = mError; // Calculate the initial error value
+	    this.mTotalError = this.mError;
   }
 
   public boolean update(double pNow) {
@@ -99,7 +101,7 @@ public class TurnRight implements ICommand {
     mCurrentYaw = mCurrentYaw == null ? 0 : mCurrentYaw;
     //mVisionAngle = mData.vision.get(ECubeTarget.DELTA_ANGLE);
     //mTargetYaw = mVisionAngle == null ? mCurrentYaw : -mVisionAngle;
-    mTargetYaw = (Math.abs(360-mSetpointDegrees));
+    mTargetYaw = mDirection.equalsIgnoreCase("Left") ? mSetpointDegrees : (Math.abs(360-mSetpointDegrees));
   }
   
   @Override
