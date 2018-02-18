@@ -24,6 +24,7 @@ public class DriverControlSplitArcade extends DriverInput {
 	
 	public DriverControlSplitArcade(DriveControl pDriveControl, Intake intake, Data pData) {
 		super(pDriveControl, intake, pData);
+		this.mData = pData;
 	}
 	
 	@Override

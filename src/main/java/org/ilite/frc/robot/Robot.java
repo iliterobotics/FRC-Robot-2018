@@ -175,17 +175,16 @@ public class Robot extends IterativeRobot {
   }
   
   public void receiveDriverControlMode() {
-	  int receivedControlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry(EDriverControlMode.class.getSimpleName()).getNumber(1).intValue();
+	  int receivedControlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry(EDriverControlMode.class.getSimpleName()).getNumber(0).intValue();
 	  numControlMode = receivedControlMode;
-	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(1);
+	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
 		  switchDriverControlModes (new DriverInput(driveControl, mIntake, mData));
-		  controllerMode = "Arcade";
 		  break;
 	  case SPLIT_ARCADE:
 		  switchDriverControlModes(new DriverControlSplitArcade(driveControl, mIntake, mData));
-		  controllerMode = "Split arcade";
+		  break;
 	  }
 	  
   }
