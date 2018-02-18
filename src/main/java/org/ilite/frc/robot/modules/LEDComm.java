@@ -1,6 +1,6 @@
 package org.ilite.frc.robot.modules;
 
-import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
+import org.ilite.frc.robot.DriverInput;
 
 public class LEDComm implements IModule{
 

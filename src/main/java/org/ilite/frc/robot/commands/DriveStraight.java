@@ -7,9 +7,9 @@ import static org.ilite.frc.common.types.EPigeon.YAW;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
-import org.ilite.frc.robot.modules.drivetrain.DriveControl;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.DriveMode;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -20,7 +20,7 @@ public class DriveStraight implements ICommand{
   private static final double PROPORTION = 0.05;
   private static final double INITIAL_POWER = 0.4;
   
-  private final DriveControl driveTrain;
+  private final DrivetrainControl driveTrain;
   private final Data mData;
   private final double distanceToTravel;
   
@@ -30,7 +30,7 @@ public class DriveStraight implements ICommand{
   private double initialYaw;
 
   
-  public DriveStraight(DriveControl dt, Data pData, double inches){
+  public DriveStraight(DrivetrainControl dt, Data pData, double inches){
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = (int)Utils.inchesToTicks(inches);
@@ -47,17 +47,17 @@ public class DriveStraight implements ICommand{
   public boolean update(double pNow){
     
     if( getAverageDistanceTravel() >= distanceToTravel){
-      driveTrain.setDriveMessage(new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake));
+      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       DriverStation.reportError("I AM STOPPING", false);
       System.out.printf("FinalL:%s FinalR:%s DistTravelled:%s Target:%s\n", mData.drivetrain.get(LEFT_POSITION_TICKS), mData.drivetrain.get(RIGHT_POSITION_TICKS), getAverageDistanceTravel(), distanceToTravel);
       return true;
     }
 
     double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), initialYaw);
-    driveTrain.setDriveMessage(new DriveMessage(
+    driveTrain.setDriveMessage(new DrivetrainMessage(
                                INITIAL_POWER + (yawError * PROPORTION), 
                                INITIAL_POWER - (yawError * PROPORTION),
-                               DriveMode.PercentOutput, NeutralMode.Brake));
+                               DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     return false;
   }

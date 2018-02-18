@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
-public class ElevatorModule implements IModule {
+public class Elevator implements IModule {
 	private TalonSRX masterElevator, followerElevator;
 	private double mPower;
 	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
@@ -19,11 +19,11 @@ public class ElevatorModule implements IModule {
 	private TalonTach talonTach;
 	private Solenoid solenoid;
 	private ElevatorState elevatorState;
-	private ElevatorPosition elevatorPosition;
+	ElevatorPosition elevatorPosition;
 	private boolean gearState;
 	private int tickPosition;
 
-	public ElevatorModule(Hardware pHardware) {
+	public Elevator(Hardware pHardware) {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
 		bottomLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH);

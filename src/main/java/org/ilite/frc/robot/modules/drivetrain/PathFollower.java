@@ -9,7 +9,7 @@ import jaci.pathfinder.followers.EncoderFollower;
 
 public class PathFollower {
   
-  public static DriveMessage calculateOutputs(EncoderFollower leftFollower, EncoderFollower rightFollower, int leftPosition, int rightPosition, double angle, boolean isBackwards) {
+  public static DrivetrainMessage calculateOutputs(EncoderFollower leftFollower, EncoderFollower rightFollower, int leftPosition, int rightPosition, double angle, boolean isBackwards) {
     
     double turnOutput = calculateAngleOutput(leftFollower, angle, isBackwards);
     double leftOutput = (leftFollower.calculate(leftPosition) + turnOutput);
@@ -20,7 +20,7 @@ public class PathFollower {
       rightOutput *= -1;
     }
     
-    return new DriveMessage(leftOutput, rightOutput, DriveMode.Pathfinder, NeutralMode.Brake);
+    return new DrivetrainMessage(leftOutput, rightOutput, DrivetrainMode.Pathfinder, NeutralMode.Brake);
   }
   
   public static double calculateAngleOutput(EncoderFollower follower, double angle, boolean isBackwards) {

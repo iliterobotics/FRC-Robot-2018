@@ -1,4 +1,4 @@
-package org.ilite.frc.robot.modules.drivetrain;
+package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
@@ -7,7 +7,11 @@ import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
 import org.ilite.frc.robot.controlloop.IControlLoop;
-import org.ilite.frc.robot.modules.TalonFactory;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainProfilingMessage;
+import org.ilite.frc.robot.modules.drivetrain.PathFollower;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -25,18 +29,18 @@ import jaci.pathfinder.Pathfinder;
 public class DriveTrain implements IControlLoop {
 	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
-	private DriveControl driveControl;
+	private DrivetrainControl driveControl;
 	private Data data;
 	//private PDM g;
 	
 	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
 	
-	private DriveMode driveMode;
+	private DrivetrainMode driveMode;
 	private ControlMode controlMode; 
 	
 	private int leftPositionTicks, rightPositionTicks, leftVelocityTicks, rightVelocityTicks, leftMaxVelocityTicks, rightMaxVelocityTicks = 0;
 	
-	public DriveTrain(DriveControl driveControl, Data data)
+	public DriveTrain(DrivetrainControl driveControl, Data data)
 	{
 		this.driveControl = driveControl;
 		this.data = data;
@@ -54,7 +58,7 @@ public class DriveTrain implements IControlLoop {
 		leftFollower2.follow(leftMaster);
 		
 		controlMode = ControlMode.PercentOutput;
-		driveMode = DriveMode.PercentOutput;
+		driveMode = DrivetrainMode.PercentOutput;
 		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
@@ -77,7 +81,7 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public void initialize(double pNow) {
-		setMode(new DriveMessage(0, 0, DriveMode.PercentOutput, NeutralMode.Brake));
+		setMode(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		leftMaster.set(controlMode, 0);
 		rightMaster.set(controlMode, 0);
 		leftMaster.setSelectedSensorPosition(0, 0, 10);
@@ -86,8 +90,8 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public boolean update(double pNow) {
-	  DriveMessage driveMessage = driveControl.getDriveMessage();
-	  ProfilingMessage profilingMessage = driveControl.getProfilingMessage();
+	  DrivetrainMessage driveMessage = driveControl.getDriveMessage();
+	  DrivetrainProfilingMessage profilingMessage = driveControl.getProfilingMessage();
 	  
 	  setMode(driveMessage);
     
@@ -124,7 +128,7 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.neutralOutput();
 	}
 	
-	public void setMode(DriveMessage driveMessage)
+	public void setMode(DrivetrainMessage driveMessage)
 	{
 	  if(driveMessage.driveMode == driveMode && driveMessage.initMode != true) return;
 	  this.driveMode = driveMessage.driveMode;
@@ -180,7 +184,7 @@ public class DriveTrain implements IControlLoop {
 	  return rightMaster;
 	}
 	
-	public DriveMode getDriveMode() {
+	public DrivetrainMode getDriveMode() {
 	  return driveMode;
 	}
 	

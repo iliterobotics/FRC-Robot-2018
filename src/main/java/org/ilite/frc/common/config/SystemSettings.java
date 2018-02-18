@@ -90,6 +90,10 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_RIGHT_kA = 0;
   public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
   
+  // =============================================================================
+  // Elevator Constants
+  // =============================================================================  
+  public static int     ELEV_TACH_ID = 4;
   
   // =============================================================================
   // Controllers

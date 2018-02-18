@@ -1,8 +1,8 @@
 package org.ilite.frc.common.types;
 
 import org.ilite.frc.robot.Utils;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
+import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -54,7 +54,7 @@ public enum EDriveTrain implements CodexOf<Double> {
   TALON_VBUS,
   TALON_CONTROL_MODE;
   
-  public static void map(Codex<Double, EDriveTrain> pCodex, DriveTrain driveTrain, DriveMessage driveMessage, double pTimestampNow) {
+  public static void map(Codex<Double, EDriveTrain> pCodex, DriveTrain driveTrain, DrivetrainMessage driveMessage, double pTimestampNow) {
     double leftPositionTicks = driveTrain.getLeftMaster().getSelectedSensorPosition(0);
     double rightPositionTicks = driveTrain.getRightMaster().getSelectedSensorPosition(0);
     double leftVelocityTicks = driveTrain.getLeftMaster().getSelectedSensorVelocity(0);

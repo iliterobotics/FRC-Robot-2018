@@ -1,18 +1,19 @@
 	package org.ilite.frc.robot;
 
 import java.util.concurrent.Executor;
-import com.ctre.phoenix.CANifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.sensors.TalonTach;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class Hardware {
@@ -25,7 +26,7 @@ public class Hardware {
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
   private CANifier mCanifier;
-  private UsbCamera mVisionCamera;
+  private VideoCamera mVisionCamera;
   private Data data;
   private TalonTach mTalonTach;
   
@@ -38,8 +39,10 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
+      PigeonIMU pPigeon,
       TalonTach pTalonTach,
-      CANifier pCanifier
+      CANifier pCanifier,
+      VideoCamera pVisionCamera
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
@@ -81,7 +84,7 @@ public class Hardware {
 	  return mPigeonWrapper;
   }
   
-  public UsbCamera getVisionCamera() {
+  public VideoCamera getVisionCamera() {
     return mVisionCamera;
   }
   public TalonTach getTalonTach()

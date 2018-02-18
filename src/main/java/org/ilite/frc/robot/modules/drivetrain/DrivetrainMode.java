@@ -1,6 +1,6 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
-public enum DriveMode {
+public enum DrivetrainMode {
 
   Velocity, 
   PercentOutput, 

@@ -4,16 +4,16 @@ import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.drivetrain.DriveControl;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.DriveMode;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 import org.ilite.frc.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class VisionGyroTurn implements ICommand {
   
-  private DriveControl mDriveControl;
+  private DrivetrainControl mDriveControl;
   private Data mData;
   
   private static final int kMIN_ALIGNED_COUNT = 5;
@@ -28,7 +28,7 @@ public class VisionGyroTurn implements ICommand {
   private final Double mAllowableError;
   private Double mLeftPower, mRightPower, mOutput = 0.0;
 
-  public VisionGyroTurn(DriveControl pDriveControl, Data pData, double pAllowableError) {
+  public VisionGyroTurn(DrivetrainControl pDriveControl, Data pData, double pAllowableError) {
     this.mDriveControl = pDriveControl;
     this.mData = pData;
     Double visionAngle = mData.vision.get(ECubeTarget.DELTA_ANGLE);
@@ -73,7 +73,7 @@ public class VisionGyroTurn implements ICommand {
     mLeftPower = mOutput;
     mRightPower = -mOutput;
     
-    mDriveControl.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DriveMode.PercentOutput, NeutralMode.Brake));
+    mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     mLastError = mError;
     

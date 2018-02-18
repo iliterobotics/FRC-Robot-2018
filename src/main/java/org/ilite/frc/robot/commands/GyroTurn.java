@@ -4,16 +4,16 @@ import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.drivetrain.DriveControl;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.DriveMode;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 import org.ilite.frc.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class GyroTurn implements ICommand {
   
-  private DriveControl mDriveControl;
+  private DrivetrainControl mDriveControl;
   private Data mData;	
   
   private static final int kMIN_ALIGNED_COUNT = 5;
@@ -41,7 +41,7 @@ public class GyroTurn implements ICommand {
 //    this.mAllowableError = pAllowableError;
 //  }
   
-  public GyroTurn(DriveControl pDriveControl, Data pData, double angle, double pAllowableError, String pDirection) {
+  public GyroTurn(DrivetrainControl pDriveControl, Data pData, double angle, double pAllowableError, String pDirection) {
 	    this.mDriveControl = pDriveControl;
 	    this.mData = pData;
 	    turnAngle = angle;
@@ -84,12 +84,12 @@ public class GyroTurn implements ICommand {
     mLeftPower = mOutput;
     mRightPower = -mOutput;
     
-    mDriveControl.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DriveMode.PercentOutput, NeutralMode.Brake));
+    mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     mLastError = mError;
     
     if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
-      mDriveControl.setDriveMessage(new DriveMessage(0.0, 0.0, DriveMode.PercentOutput, NeutralMode.Brake));
+      mDriveControl.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
     

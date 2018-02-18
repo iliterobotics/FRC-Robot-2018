@@ -8,10 +8,10 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.drivetrain.DriveControl;
-import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
-import org.ilite.frc.robot.modules.drivetrain.DriveMode;
-import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainProfilingMessage;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -24,7 +24,7 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class FollowPath implements ICommand {
 	
-	private DriveControl mDriveControl;
+	private DrivetrainControl mDriveControl;
 	private Data data;
 	
 	private Config mConfig;
@@ -33,7 +33,7 @@ public class FollowPath implements ICommand {
 	
 	private boolean mIsBackwards;
 	
-	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
+	public FollowPath(DrivetrainControl pDriveControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
 		this.mDriveControl = pDriveControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
@@ -45,11 +45,11 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriveControl pDriveControl, Data pData, File pLeftTrajectoryFile, File pRightTrajectoryFile, boolean pIsBackwards) {
+	public FollowPath(DrivetrainControl pDriveControl, Data pData, File pLeftTrajectoryFile, File pRightTrajectoryFile, boolean pIsBackwards) {
 		this(pDriveControl, pData, Pathfinder.readFromCSV(pLeftTrajectoryFile), Pathfinder.readFromCSV(pRightTrajectoryFile), pIsBackwards);
 	}
 	
-	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
+	public FollowPath(DrivetrainControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
 		this.mDriveControl = pDriveControl;
 		this.data = data;
 		this.mIsBackwards = pIsBackwards;
@@ -59,16 +59,16 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriveControl pDriveControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
+	public FollowPath(DrivetrainControl pDriveControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
 		this(pDriveControl, data, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
 	}
 	
-	public FollowPath(DriveControl pDriveControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
+	public FollowPath(DrivetrainControl pDriveControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
 		this(pDriveControl, data, new Trajectory(pSegments), pIsBackwards);
 	}
 	
 	public void initialize(double pNow) {
-		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
+		mDriveControl.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.Pathfinder, NeutralMode.Brake));
 		
 		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER_FEET);
 		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
@@ -79,7 +79,7 @@ public class FollowPath implements ICommand {
 	
 	public boolean update(double pNow) {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
-		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, mIsBackwards));
+		mDriveControl.setProfilingMessage(new DrivetrainProfilingMessage(mLeftFollower, mRightFollower, mIsBackwards));
 		return false;
 	}
 

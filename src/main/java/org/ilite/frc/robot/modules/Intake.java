@@ -31,7 +31,7 @@ public class Intake implements IModule{
 	private final double MIN_RATIO = .7;
 	
 	
-	public Intake(ElevatorModule pElevator){
+	public Intake(Elevator pElevator){
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		leftExtender = new Solenoid(0);
