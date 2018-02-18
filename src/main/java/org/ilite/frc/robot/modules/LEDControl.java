@@ -62,8 +62,9 @@ public class LEDControl implements IModule {
 	}
 
 	@Override
-	public void update(double pNow) {
+	public boolean update(double pNow) {
 		SmartDashboard.putNumber("time", Timer.getFPGATimestamp());
+		return false;
 	}
 	
 

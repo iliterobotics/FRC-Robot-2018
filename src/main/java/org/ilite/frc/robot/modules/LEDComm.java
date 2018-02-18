@@ -1,16 +1,18 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
+
 public class LEDComm implements IModule{
 
 	
 	private DriveTrain driveTrain;
-	private DriverControl driverControl;
+	private DriverInput driverInput;
 	private LEDControl controller;
 	
-	public LEDComm(DriveTrain driveTrain, DriverControl driverControl, LEDControl controller)
+	public LEDComm(DriveTrain driveTrain, DriverInput driverInput, LEDControl controller)
 	{
 		this.driveTrain = driveTrain;
-		this.driverControl = driverControl;
+		this.driverInput = driverInput;
 		this.controller = controller;
 	}
 	@Override
