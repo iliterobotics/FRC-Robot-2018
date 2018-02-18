@@ -112,6 +112,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
   public static int     JOYSTICK_PORT_DRIVER = 0;
   public static int     JOYSTICK_PORT_OPERATOR = 1;
+  public static int 	SHIFT_SOLENOID = 1;
 
   // =============================================================================
   // Controller Mapping
@@ -146,7 +147,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   public static final int INTAKE_BEAM_BREAK = 0;
   public static final int HALL_EFFECT = 1;
-  
+  public static final int DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 3;
+  public static final int DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 4;
   // =============================================================================
   // Vision Constants
   // =============================================================================
