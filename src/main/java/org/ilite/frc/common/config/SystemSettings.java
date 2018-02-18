@@ -159,7 +159,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
   public static double	AUTO_TURN_TIMEOUT = 5000;
-  
+  // =============================================================================
+  // Pneumatics
+  // =============================================================================
+  public static int DIO_PRESSURE_SWITCH = 9;
+  public static int RELAY_COMPRESSOR_PORT = 0;
   // =============================================================================
   // Sensors
   // =============================================================================

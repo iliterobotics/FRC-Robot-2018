@@ -49,6 +49,7 @@ public class DriverInput implements IModule{
 		double rotate = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
+		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
 		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
 	      rotate /= 3;
@@ -87,7 +88,6 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
-		
 	}
 	
 	@Override

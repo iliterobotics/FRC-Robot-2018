@@ -104,10 +104,11 @@ public class Elevator implements IModule {
 //		mAtBottom = bottomLimitSwitch.get();
 		direction = mPower > 0 ? true : false;
 		tickPosition = masterElevator.getSelectedSensorPosition(0);
-		if(!talonTach.getSensor())
+		/*if(!talonTach.getSensor())
 		{
 			elevatorState = ElevatorState.NORMAL;
 		}
+		*/
 		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor() )
 		{
 			elevatorState = ElevatorState.DECELERATE_BOTTOM;

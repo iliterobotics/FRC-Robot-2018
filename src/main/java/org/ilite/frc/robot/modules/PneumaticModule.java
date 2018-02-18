@@ -11,21 +11,8 @@ public class PneumaticModule implements IModule {
   private boolean mIsCompressorOn = false;
   private boolean mOverrideCompressor = false;
 
-  private Compressor mCompressorOverCAN = null;
-
-  // NOTE - these are not used if we use the PCM to control the compressor
   private Relay mCompressorRelay = null;
   private DigitalInput mCutoffSwitch = null;
-
-  /**
-   * Create a Pneumatic Module that is controlled by the PCM
-   * 
-   * @param pPCMId
-   *          - the CAN id of the PCM which will control the compressor
-   */
-  public PneumaticModule(int pPCMId) {
-    mCompressorOverCAN = new Compressor(pPCMId);
-  }
 
   /**
    * Create a Pneumatic Module that is controlled by a relay and switch plugged
@@ -48,24 +35,27 @@ public class PneumaticModule implements IModule {
 
   @Override
   public void initialize(double pNow) {
-    if (mCompressorOverCAN != null) {
-      mCompressorOverCAN.start();
-    }
   }
 
   @Override
   public boolean update(double pNow) {
 
-    if (mCompressorOverCAN == null) {
-      updateRelayControl();
+    // In an override state, the compressor can turn off but it cannot turn on.
+    if (mOverrideCompressor) {
+      System.out.println("Overriding compressor off");
+      mIsCompressorOn = false;
     } else {
-      updatePCMControl();
+      System.out.println("Pressure switch state: " + mCutoffSwitch.get());
+      // This sensor returns true if pressure >= its threshold.
+      mIsCompressorOn = !mCutoffSwitch.get();
     }
 
-    if (!mOverrideCompressor) {
-      if (mCompressorOverCAN == null) {
-      } else {
-      }
+    if (mIsCompressorOn) {
+      mCompressorRelay.set(Relay.Value.kForward);
+      System.out.println("ON");
+    } else {
+      mCompressorRelay.set(Relay.Value.kOff);
+      System.out.println("OFF");
     }
     // System.out.println("Voltage: " + aio.getVoltage() + "v");
     // System.out.println("Pressure: " + ((250 * ( voltageReadout/5 )) - 25));
@@ -77,10 +67,6 @@ public class PneumaticModule implements IModule {
    */
   public void clearCompressorOverride() {
     mOverrideCompressor = false;
-
-    if (mCompressorOverCAN != null) {
-      mCompressorOverCAN.start();
-    }
   }
 
   /**
@@ -89,10 +75,6 @@ public class PneumaticModule implements IModule {
   public void forceCompressorOff() {
     mOverrideCompressor = true;
     mIsCompressorOn = false;
-
-    if (mCompressorOverCAN != null) {
-      mCompressorOverCAN.stop();
-    }
   }
 
   /**
@@ -102,23 +84,9 @@ public class PneumaticModule implements IModule {
     return mIsCompressorOn;
   }
 
-  private void updatePCMControl() {
-    mIsCompressorOn = mCompressorOverCAN.getCompressorCurrent() > 1d;
+  public void forceCompressorOn() {
+    mOverrideCompressor = false;
+    mIsCompressorOn = true;
   }
 
-  private void updateRelayControl() {
-    // In an override state, the compressor can turn off but it cannot turn on.
-    if (mOverrideCompressor) {
-      mIsCompressorOn = false;
-    } else {
-      // This sensor returns true if pressure >= its threshold.
-      mIsCompressorOn = !mCutoffSwitch.get();
-    }
-
-    if (mIsCompressorOn) {
-      mCompressorRelay.set(Relay.Value.kForward);
-    } else {
-      mCompressorRelay.set(Relay.Value.kOff);
-    }
-  }
 }

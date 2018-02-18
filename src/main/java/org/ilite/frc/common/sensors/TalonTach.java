@@ -14,7 +14,8 @@ public class TalonTach {
 	//true for reflective surfaces (powdercoat) false for non-reflective (tape)
 	public boolean getSensor()
 	{
-		return talonTachSensor.get();
+		//return talonTachSensor.get();
+	  return false;
 	}
 	
 	

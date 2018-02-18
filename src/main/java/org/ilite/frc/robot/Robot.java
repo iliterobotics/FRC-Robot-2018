@@ -20,6 +20,7 @@ import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
+import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.vision.GripPipeline;
@@ -57,6 +58,7 @@ public class Robot extends IterativeRobot {
   private final Carriage mCarriage;
   private final Elevator mElevator;
   private final Intake mIntake;
+  private final PneumaticModule mPneumaticControl;
   private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
@@ -69,7 +71,7 @@ public class Robot extends IterativeRobot {
   public Robot() {
   	mControlLoop = new ControlLoopManager(mData, mHardware);
     mDrivetrainControl = new DrivetrainControl();
-  	
+  	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
     mCarriage = new Carriage(mData, mHardware);
   	mElevator = new Elevator(mHardware);
   	mIntake = new Intake(mElevator);
@@ -153,7 +155,9 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDriverInput, mDrivetrain);
+	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, 
+	      new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator, mPneumaticControl)
+    );
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -180,7 +184,7 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
-//      ELogitech310.map(mData.tester, testJoystick);
+      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
