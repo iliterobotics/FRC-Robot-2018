@@ -149,12 +149,12 @@ public class Robot extends IterativeRobot {
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
             
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);	
-      SystemUtils.writeCodexToSmartDashboard(mData.driverinput);
-      SystemUtils.writeCodexToSmartDashboard(mData.operator);
-      SystemUtils.writeCodexToSmartDashboard(mData.pdp);
-      SystemUtils.writeCodexToSmartDashboard(mData.navx);
-      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon, mCurrentTime);	
+      SystemUtils.writeCodexToSmartDashboard(mData.driverinput, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.operator, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.pdp, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.navx, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
   }
   
   /**
