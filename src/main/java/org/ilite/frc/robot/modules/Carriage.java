@@ -22,25 +22,26 @@ public class Carriage implements IModule{
   private Data mData;
   private boolean isScheduled;
   private static DigitalInput beamBreak;
-  private carriageState currentState;
+  private CarriageState currentState;
   private double kickStartTime;
   
   private static final ILog log = Logger.createLog(Carriage.class);
     
+  private Intake intake;
   
-  
-  public Carriage(Data pData, Hardware mHardware)
+  public Carriage(Data pData, Hardware mHardware, Intake pIntake)
   {
     Carriage.beamBreak = mHardware.getCarriageBeamBreak();
     mData = pData;
+    intake = pIntake;
     isScheduled = false;
     solenoidGrab = new Solenoid(SystemSettings.SOLENOID_GRAB);
     solenoidPop = new Solenoid(SystemSettings.SOLENOID_POP);
     setNoCube();
-    currentState = carriageState.CUBE;
+    currentState = CarriageState.CUBE;
   }
   
-  public enum carriageState
+  public enum CarriageState
   {
     NOCUBE,
     CUBE,
@@ -56,11 +57,14 @@ public class Carriage implements IModule{
   public void initialize(double pNow) {
     setHaveCube();
   }
+  
   @Override
   public boolean update(double pNow)
   {
     log.debug(currentState.toString());
     currentTime = pNow;
+    
+    if(intake.getAveragePower() > 0 && !getBeamBreak()) setState(CarriageState.NOCUBE);
     
     switch(currentState)
     {
@@ -69,7 +73,7 @@ public class Carriage implements IModule{
     if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
     {
       kickStartTime = pNow;
-      currentState = carriageState.KICKING;
+      currentState = CarriageState.KICKING;
     }
     break;
     
@@ -81,7 +85,7 @@ public class Carriage implements IModule{
       setNoCube();
       if(getBeamBreak())
       {
-        currentState = carriageState.CUBE;
+        currentState = CarriageState.CUBE;
       }
     }
     
@@ -116,6 +120,8 @@ public class Carriage implements IModule{
   public void reset()
   {
     setNoCube();
+    currentState = CarriageState.NOCUBE;
+    kickStartTime = 0;
     //undo kick and release
   }
   
@@ -141,6 +147,18 @@ public class Carriage implements IModule{
   {
     solenoidGrab.set(false);
     solenoidPop.set(true);
+  }
+  
+  public boolean isGrabbing() {
+    return solenoidGrab.get();
+  }
+  
+  public boolean isKicking() {
+    return solenoidPop.get();
+  }
+  
+  public void setState(CarriageState state) {
+    currentState = state;
   }
 	
 }

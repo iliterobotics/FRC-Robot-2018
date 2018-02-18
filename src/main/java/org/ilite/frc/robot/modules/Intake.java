@@ -2,6 +2,8 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.modules.Carriage.CarriageState;
+import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -31,13 +33,17 @@ public class Intake implements IModule{
 	private final double MAX_RATIO = 3;
 	private final double MIN_RATIO = .7;
 	
+	private Elevator elevator;
+	private Carriage carriage;
 	
-	public Intake(Elevator pElevator){
-		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_LEFT);
-		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_RIGHT);
-		beamBreak = new DigitalInput(SystemSettings.DIO_INTAKE_BEAM_BREAK);
-		extender = new DoubleSolenoid(SystemSettings.SOLENOID_INTAKE_A, SystemSettings.SOLENOID_INTAKE_B);
-		
+	public Intake(Elevator pElevator, Carriage pCarriage) {
+		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
+		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
+		leftExtender = new Solenoid(0);
+		rightExtender = new Solenoid(1);
+		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
+		elevator = pElevator;
+		carriage = pCarriage;
 	}
 
 	@Override
@@ -60,6 +66,9 @@ public class Intake implements IModule{
 
 	public void intakeIn(double inPower) {
 			
+	  if(carriage.getBeamBreak() || elevator.getElevatorPosition() != ElevatorPosition.BOTTOM || !solOut || carriage.isGrabbing()) return;
+	  
+	  
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 
@@ -100,16 +109,24 @@ public class Intake implements IModule{
 	{
 		solOut = out;
 	}
+	
 	public boolean beamBreak(){
 		return beamBreak.get();
 	}
+	
 	public void intakeOut(double inPower) 
 	{
+	  if(!solOut) return;
 		leftPower = inPower;
-		rightPower= inPower;
+		rightPower = inPower;
 	}
+	
 	@Override
 	public void shutdown(double pNow) {	
+	}
+	
+	public double getAveragePower() {
+	  return (leftPower + rightPower) / 2;
 	}
 	
 
