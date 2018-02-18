@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DriverInput implements IModule{
 
 	
-  private DriveControl driveControl;
+  protected DriveControl driveControl;
   private Carriage mCarriage;
   private ElevatorModule mElevatorModule;
   private Intake mIntake;
@@ -59,6 +59,8 @@ public class DriverInput implements IModule{
 		int rightScalar = desiredRightOutput < 0 ? -1 : 1;
 		desiredLeftOutput =  leftScalar * Math.min(Math.abs(desiredLeftOutput), 1);
 		desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 1);
+		
+		System.out.println(desiredLeftOutput + desiredRightOutput + "");
 		
 		driveControl.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, DriveMode.PercentOutput, NeutralMode.Brake));
 		

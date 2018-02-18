@@ -29,6 +29,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -47,6 +48,9 @@ public class AutonConfigDisplay extends Application {
   private Integer[] preferredCubeActions;
   private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
+	private double mDelay = -1;
+	private static Integer mCross = -1;
+	private static Integer mStartingPosition = -1;
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -70,6 +74,10 @@ public class AutonConfigDisplay extends Application {
     Button send = new Button("Send");
     send.setOnAction(e -> {
       SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+      SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
+      SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
+      SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+     
     });
     
     Button mode = new Button("Enhanced Mode");
@@ -84,16 +92,22 @@ public class AutonConfigDisplay extends Application {
         scene.getStylesheets().add(awesomeCss);
         setFieldImage("./field.png");
       }
+      
     });
-    
+    TextField delayText = new TextField();
+    Label delayLabel = new Label("Delay");
     
     HBox selectionBoxes = new HBox(
     		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
     		labeledDropdown(EStartingPosition.class),
     		labeledDropdown(ECross.class),
-    		labeledDropdown(EDriverControlMode.class)
-    );
-    
+    		labeledDropdown(EDriverControlMode.class),
+    		delayLabel,
+    		delayText);
+    delayText.setOnAction(e -> {
+    	mDelay = Double.parseDouble(delayText.getText());
+    	SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
+    });
     HBox modeOptions = new HBox(mode, send);
    
     modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
@@ -115,8 +129,15 @@ public class AutonConfigDisplay extends Application {
 	    label.setTextAlignment(TextAlignment.CENTER);
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
-	        event -> 
-		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal())
+	        event -> {
+		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal());
+	        if(pEnumeration.getSimpleName() == "ECross") {
+	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
+	        }
+	        else {
+	        	mStartingPosition =combo.getSelectionModel().getSelectedItem().ordinal();
+	        }
+	        }
 	    );
 	    combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);

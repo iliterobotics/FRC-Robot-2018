@@ -24,6 +24,12 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Comms
   // =============================================================================
   public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+  public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
+	  @Override
+	  public void initKeys() {
+		  getInstance().getEntry("Driver Control Mode").setDefaultString("ARCADE");
+	  }
+  };
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";
@@ -44,11 +50,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
   public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
   public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
-  public static int INTAKE_TALONID_FRONT_LEFT = 13;
   public static int INTAKE_TALONID_FRONT_RIGHT = 14;
   public static int ELEVATOR_TALONID_LEFT = 11;
-  public static int ELEVATOR_TALONID_RIGHT = 12;
+  public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
+  public static int ELEVATOR_TALONID_RIGHT = 12;
 	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
