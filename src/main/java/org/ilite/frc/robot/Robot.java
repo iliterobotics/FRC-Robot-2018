@@ -31,6 +31,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -71,7 +72,7 @@ public class Robot extends IterativeRobot {
   	mControlLoop = new ControlLoopManager(mData, mHardware);
     mDrivetrainControl = new DrivetrainControl();
   	
-    mCarriage = new Carriage(mData);
+    mCarriage = new Carriage(mData, mHardware);
   	mElevator = new Elevator(mHardware);
   	mIntake = new Intake(mElevator);
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
@@ -91,7 +92,8 @@ public class Robot extends IterativeRobot {
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.ELEV_TACH_ID),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
-        CameraServer.getInstance().startAutomaticCapture()
+        CameraServer.getInstance().startAutomaticCapture(),
+        new DigitalInput(SystemSettings.CARRIAGE_BEAM_BREAK_ID)
         // Sensors
         // Custom hw
         // Spike relays

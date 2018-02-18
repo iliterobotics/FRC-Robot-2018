@@ -96,6 +96,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int     ELEV_TACH_ID = 4;
   
   // =============================================================================
+  // Carriage Constants
+  // =============================================================================  
+  public static int     CARRIAGE_BEAM_BREAK_ID = 0;
+  
+  // =============================================================================
   // Controllers
   // =============================================================================  
   public static double PIGEON_COLLISION_THRESHOLD = 10;

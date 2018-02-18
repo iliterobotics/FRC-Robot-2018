@@ -2,6 +2,7 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.Hardware;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -27,9 +28,9 @@ public class Carriage implements IModule{
     
   
   
-  public Carriage(Data pData, DigitalInput beamBreak)
+  public Carriage(Data pData, Hardware mHardware)
   {
-    Carriage.beamBreak = beamBreak;
+    Carriage.beamBreak = mHardware.getCarriageBeamBreak();
     mData = pData;
     isScheduled = false;
     solenoidGrab = new Solenoid(11, 2);
