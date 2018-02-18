@@ -155,14 +155,6 @@ public class Robot extends IterativeRobot {
       SystemUtils.writeCodexToSmartDashboard(mData.pdp);
       SystemUtils.writeCodexToSmartDashboard(mData.navx);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
-      
-      
-    	  System.out.println("Solenoid Error");
-      
-      
-      //SystemUtils.writeCodexToSmartDashboard(mData.talons);
-//      DisplayApplication.matrixInit();
-//      DisplayApplication.dumpToCSV();
   }
   
   /**
@@ -228,6 +220,7 @@ public class Robot extends IterativeRobot {
   public void disabledPeriodic() {
 	  System.out.println("Getting autonomous...");
 	  getAutonomous.getAutonomousCommands();
+	  mapInputsAndCachedSensors();
 	  Timer.delay(1);
   }
   

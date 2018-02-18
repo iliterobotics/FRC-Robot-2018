@@ -4,8 +4,11 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -33,6 +36,14 @@ public class SystemUtils {
     }
     
     return addrs;
+  }
+  
+  public static String toCsvRow(List<String> l) {
+    return l.stream()
+            .map(value -> value.toString())
+            .map(value -> value.replaceAll("\"", "\"\""))
+            .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
+            .collect(Collectors.joining(","));
   }
   
   /**

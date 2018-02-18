@@ -1,22 +1,25 @@
 package org.ilite.frc.display.frclog.display;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.ilite.frc.common.input.DriverInputUtils;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.types.EPowerDistPanel;
-import org.ilite.frc.common.types.ETalonSRX;
-import org.ilite.frc.display.frclog.data.RobotDataElementCache;
+import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.display.frclog.data.RobotDataStream;
-import org.ilite.frc.display.frclog.data.RobotDataStream;
+import org.ilite.frc.robot.SimpleNetworkTable;
 
+import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
 //import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
@@ -34,7 +37,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
@@ -47,11 +49,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.File;
-import java.io.BufferedWriter;
 
 public class DisplayApplication extends Application{
 
@@ -65,43 +62,39 @@ public class DisplayApplication extends Application{
   static List<String> operatorKeys = new ArrayList<String>();
   static List<String> pigeonKeys = new ArrayList<String>();
   static List<String> pdpKeys = new ArrayList<String>();
-  //static List<String> navxKeys = new ArrayList<String>();
   static List<String> drivetrainKeys = new ArrayList<String>();
   static List<String> talonKeys = new ArrayList<String>();
-  static List<List<String>> dataMatrix = new ArrayList<>();
-
+  static Map<String, List<String>> dataMatrix = new HashMap<>();
+  
+  static SimpleNetworkTable smartDashboard = new SimpleNetworkTable("SmartDashboard");
 
   // Color definitions for positive colors
   Color[] positiveColors = { Color.web("#FEE090"), Color.web("#FDAE61"), Color.web("#F46D43"), Color.web("#D73027") };
   Class<?> mSelectedCodexToLoad = null;
   
-  public static void addKeys() {
-	  for(EPigeon e : EPigeon.values()) {
-		  pigeonKeys.add(e.toString());
-	  }
-	  for(EPowerDistPanel e : EPowerDistPanel.values()) {
-		  pdpKeys.add(e.toString());
-	  }
-	  for(EDriveTrain e : EDriveTrain.values()) {
-		  drivetrainKeys.add(e.toString());
-	  }
-	  for(ETalonSRX e : ETalonSRX.values()) {
-		  talonKeys.add(e.toString());
-	  }
+  public DisplayApplication() {
   }
+  
+  public static <E extends Enum<E>> List<String> getKeys(Class<E> pEnum) {
+    List<String> keys = new ArrayList<>();
+    EnumUtils.getEnums(pEnum).forEach(e -> keys.add(e.toString()));
+    return keys;
+  }
+  
+  public static <E extends Enum<E>> void putInMatrix(Class<E> pEnum) {
+    dataMatrix.put(pEnum.getSimpleName(), getKeys(pEnum));
+  }
+  
   public static void matrixInit() {
-	  addKeys();
-	  dataMatrix.add(driverInputKeys);
-	  dataMatrix.add(operatorKeys);
-	  //dataMatrix.add(pigeonKeys);
-	  dataMatrix.add(pdpKeys);
-	  //dataMatrix.add(navxKeys);
-	  dataMatrix.add(drivetrainKeys);
-	  dataMatrix.add(talonKeys);
+	  dataMatrix.put("operator", getKeys(ELogitech310.class));
+	  dataMatrix.put("driver", getKeys(ELogitech310.class));
+	  dataMatrix.put("pigeon", getKeys(EPigeon.class));
+	  dataMatrix.put("pdp", getKeys(EPowerDistPanel.class));
+	  dataMatrix.put("drivetrain", getKeys(EDriveTrain.class));;
   }
   
   @SuppressWarnings("unchecked")
-@Override
+  @Override
   public void start(Stage primaryStage) throws Exception {
 //
     GridPane root = new GridPane();
@@ -127,8 +120,8 @@ public class DisplayApplication extends Application{
 //       }
 //      });
       Label l = new Label(e.name());
-     l.setTextAlignment(TextAlignment.RIGHT);
-     root.add(l, 0, e.ordinal());
+      l.setTextAlignment(TextAlignment.RIGHT);
+      root.add(l, 0, e.ordinal());
       root.add(chart, 1, e.ordinal());
    }
     
@@ -164,34 +157,32 @@ public class DisplayApplication extends Application{
       
     });
     
-    //root.setBottom(graphconfig);
+//    root.add(graphconfig, 0, 0);
     primaryStage.setTitle("Test");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
   
   private void loadChart() {
-    
   }
   
-  public static void dumpToCSV() {
-	  File file = new File("./log.csv");
+  public static void dumpToCSV(Entry<String, List<String>> entry) {
+	  File file = new File(String.format("./logs/%s-log.csv", entry.getKey()));
 	  BufferedWriter bWriter = null;
 	  try {
-	  if(!file.exists()){
-		  file.createNewFile();
-	  }
-	  bWriter = new BufferedWriter(new PrintWriter(file));
-	  for(List<String> xs : dataMatrix)
-	  { 
-		  for(String s : xs) {
-			  System.out.println("Getting: " + s);
-			  String thing = NetworkTableInstance.getDefault().getTable("SmartDashboard").getEntry(s).getDouble(-99) + "";
-			  bWriter.write(thing);
-		  }
-	  }
-	  bWriter.close();
-	  
+	    
+  	  if(!file.exists()) file.createNewFile();
+  	  
+  	  bWriter = new BufferedWriter(new PrintWriter(file));
+  	  
+  	  bWriter.append(SystemUtils.toCsvRow(entry.getValue()) + "\n");
+  	  
+  	  String csvRow = SystemUtils.toCsvRow(entry.getValue().stream()
+  	                             .map(entryKey -> smartDashboard.getEntry(entryKey).getNumber(-99).toString())
+  	                             .collect(Collectors.toList()));
+  	  bWriter.append(csvRow + "\n");
+  	  bWriter.flush();
+  	  bWriter.close();
 	  }
 	  catch (Exception e) {
 		  System.err.println("Error xd");
@@ -200,15 +191,11 @@ public class DisplayApplication extends Application{
   }
   
   public static void main(String[] pArgs) throws InterruptedException {
-//	launch(pArgs);
+    launch(pArgs);
     matrixInit();
     Logger.setLevel(ELevel.DEBUG);
-    RobotDataStream.inst();
-    Thread.sleep(1000);
-    dumpToCSV();
-    //System.out.println(", " + SmartDashboard.getEntry("A_BTN") + "\n");
+    dataMatrix.entrySet().forEach(entry -> dumpToCSV(entry));
 
-//    Logger.setLevel(ELevel.INFO);
     
   }
 }
