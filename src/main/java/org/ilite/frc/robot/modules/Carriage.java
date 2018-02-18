@@ -106,16 +106,16 @@ public class Carriage implements IModule{
       if((currentTime - kickStartTime) >= releaseTimer)
       {
         //release
-        setNoCube();
         reset();
-        currentState = carriageState.NOCUBE;
-        kickStartTime = 0;
+        
       }
     }
   }
   public void reset()
   {
     setNoCube();
+    currentState = carriageState.NOCUBE;
+    kickStartTime = 0;
     //undo kick and release
   }
   
