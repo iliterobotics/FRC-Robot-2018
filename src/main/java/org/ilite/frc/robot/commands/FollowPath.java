@@ -2,11 +2,18 @@ package org.ilite.frc.robot.commands;
 
 import java.io.File;
 
+import org.controlsfx.tools.Utils;
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.sensors.Pigeon;
-import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.modules.drivetrain.DriveControl;
+import org.ilite.frc.robot.modules.drivetrain.DriveMessage;
+import org.ilite.frc.robot.modules.drivetrain.DriveMode;
+import org.ilite.frc.robot.modules.drivetrain.ProfilingMessage;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
@@ -17,8 +24,8 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class FollowPath implements ICommand {
 	
-	private DriveTrain mDrivetrain;
-	private Pigeon mPigeon;
+	private DriveControl mDriveControl;
+	private Data data;
 	
 	private Config mConfig;
 	private Trajectory mLeftTrajectory, mRightTrajectory;
@@ -26,15 +33,9 @@ public class FollowPath implements ICommand {
 	
 	private boolean mIsBackwards;
 	
-	private double mDesiredLeftOutput, mDesiredRightOutput;
-	private double mActualLeftOutput, mActualRightOutput;
-	
-	double mActualHeading, mDesiredHeading, mHeadingError;
-	double mLeftProfileOutput, mRightProfileOutput, mTurnOutput;
-	
-	public FollowPath(DriveTrain pDrivetrain, Pigeon pPigeon, Trajectory pTrajectory, boolean pIsBackwards) {
-		this.mDrivetrain = pDrivetrain;
-		this.mPigeon = pPigeon;
+	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pTrajectory, boolean pIsBackwards) {
+		this.mDriveControl = pDriveControl;
+		this.data = data;
 		this.mIsBackwards = pIsBackwards;
 		
 		TankModifier mTankModifier = new TankModifier(pTrajectory);
@@ -44,9 +45,13 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriveTrain pDrivetrain, Pigeon pPigeon, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
-		this.mDrivetrain = pDrivetrain;
-		this.mPigeon = pPigeon;
+	public FollowPath(DriveControl pDriveControl, Data pData, File pLeftTrajectoryFile, File pRightTrajectoryFile, boolean pIsBackwards) {
+		this(pDriveControl, pData, Pathfinder.readFromCSV(pLeftTrajectoryFile), Pathfinder.readFromCSV(pRightTrajectoryFile), pIsBackwards);
+	}
+	
+	public FollowPath(DriveControl pDriveControl, Data data, Trajectory pLeftTrajectory, Trajectory pRightTrajectory, boolean pIsBackwards) {
+		this.mDriveControl = pDriveControl;
+		this.data = data;
 		this.mIsBackwards = pIsBackwards;
 		this.mLeftTrajectory = pLeftTrajectory;
 		this.mRightTrajectory = pRightTrajectory;
@@ -54,48 +59,32 @@ public class FollowPath implements ICommand {
 		this.mRightFollower = new EncoderFollower(mRightTrajectory);
 	}
 	
-	public FollowPath(DriveTrain pDrivetrain, Pigeon pNavx, File pTrajectoryFile, boolean pIsBackwards) {
-		this(pDrivetrain, pNavx, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
+	public FollowPath(DriveControl pDriveControl, Data data, File pTrajectoryFile, boolean pIsBackwards) {
+		this(pDriveControl, data, Pathfinder.readFromCSV(pTrajectoryFile), pIsBackwards);
 	}
 	
-	public FollowPath(DriveTrain pDrivetrain, Pigeon pNavx, boolean pIsBackwards, Segment ... pSegments) {
-		this(pDrivetrain, pNavx, new Trajectory(pSegments), pIsBackwards);
+	public FollowPath(DriveControl pDriveControl, Data data, boolean pIsBackwards, Segment ... pSegments) {
+		this(pDriveControl, data, new Trajectory(pSegments), pIsBackwards);
 	}
 	
-	public void initialize() {
-		mDrivetrain.initMode(ControlMode.PercentOutput);
+	public void initialize(double pNow) {
+		mDriveControl.setDriveMessage(new DriveMessage(0, 0, DriveMode.Pathfinder, NeutralMode.Brake));
 		
-		mLeftFollower.configureEncoder(mDrivetrain.getLeftPosition(), SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
-		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
+		mLeftFollower.configureEncoder(data.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER_FEET);
+		mLeftFollower.configurePIDVA(SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kP, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kI, SystemSettings.DRIVETRAIN_LEFT_VELOCITY_kD, SystemSettings.DRIVETRAIN_LEFT_kV, SystemSettings.DRIVETRAIN_LEFT_kA);
 		
-		mRightFollower.configureEncoder(mDrivetrain.getRightPosition(), SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER);
-		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_VELOCITY_kP, SystemSettings.DRIVETRAIN_VELOCITY_kI, SystemSettings.DRIVETRAIN_VELOCITY_kD, SystemSettings.DRIVETRAIN_kV, SystemSettings.DRIVETRAIN_kA);
+		mRightFollower.configureEncoder(data.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS).intValue(), (int)SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN, SystemSettings.DRIVETRAIN_WHEEL_DIAMETER_FEET);
+		mRightFollower.configurePIDVA(SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kP, SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kI, SystemSettings.DRIVETRAIN_RIGHT_VELOCITY_kD, SystemSettings.DRIVETRAIN_RIGHT_kV, SystemSettings.DRIVETRAIN_RIGHT_kA);
 	}
 	
-	public boolean update() {
+	public boolean update(double pNow) {
 		if(mLeftFollower.isFinished() && mRightFollower.isFinished()) return true;
-		
-		mLeftProfileOutput = mLeftFollower.calculate(mDrivetrain.getLeftPosition());
-		mRightProfileOutput = mRightFollower.calculate(mDrivetrain.getRightPosition());
-		
-		mActualHeading = (mIsBackwards) ? Pathfinder.boundHalfDegrees(mPigeon.getYaw() + 180): mPigeon.getYaw();
-		mDesiredHeading = Pathfinder.r2d(mLeftFollower.getHeading()); //Only need to use 1 side because both sides are parallel
-		mHeadingError = Pathfinder.boundHalfDegrees(mDesiredHeading - mActualHeading);
-		mTurnOutput = SystemSettings.DRIVETRAIN_ANGLE_kP * mHeadingError;
-		
-		mDesiredLeftOutput = (mLeftProfileOutput + mTurnOutput);
-		mDesiredRightOutput = (mRightProfileOutput - mTurnOutput);
-		
-		mActualLeftOutput = (mIsBackwards) ? mDesiredRightOutput : -mDesiredLeftOutput;
-		mActualRightOutput = (mIsBackwards) ? mDesiredLeftOutput : -mDesiredRightOutput;
-		
-		mDrivetrain.set(mActualLeftOutput, mActualRightOutput);
-		
+		mDriveControl.setProfilingMessage(new ProfilingMessage(mLeftFollower, mRightFollower, mIsBackwards));
 		return false;
 	}
 
 	@Override
-	public void shutdown() {
+	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub
 		
 	}
