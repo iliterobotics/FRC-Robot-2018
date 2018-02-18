@@ -3,17 +3,17 @@ package org.ilite.frc.robot;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.sensors.UltraSonicSensor;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-
-import com.ctre.phoenix.sensors.PigeonIMU;
 public class Hardware {
   private ILog mLog = Logger.createLog(Hardware.class);
 
@@ -24,6 +24,8 @@ public class Hardware {
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
   private UltraSonicSensor mUltraSonic;
+  private UsbCamera mVisionCamera;
+  private Data data;
   
   Hardware() {
     
@@ -36,12 +38,16 @@ public class Hardware {
       PowerDistributionPanel pPDP,
       PigeonIMU pPigeon,
       UltraSonicSensor pUltraSonic
+      UsbCamera pVisionCamera,
+      Data data
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
-    mPigeonWrapper = new Pigeon(mPigeon);
+    mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
+    mVisionCamera = pVisionCamera;
+    mVisionCamera.setFPS(30);
     mUltraSonic = pUltraSonic;
 
 //    pInitializationPool.execute(() -> {
@@ -73,10 +79,13 @@ public class Hardware {
   {
 	  return mPigeonWrapper;
   }
-  
   public UltraSonicSensor getUltraSonicSensor()
   {
 	  return mUltraSonic;
+  }
+  
+  public UsbCamera getVisionCamera() {
+    return mVisionCamera;
   }
 
 }

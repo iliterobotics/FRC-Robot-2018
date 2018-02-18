@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import org.ilite.frc.common.config.SystemSettings;
@@ -38,7 +40,10 @@ import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.lang.IConverter;
 import com.flybotix.hfr.util.lang.IUpdate;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 
 /**
  */
@@ -49,6 +54,8 @@ public class RobotDataStream {
   private Map<Integer, List<Codex<?,?>>> mCSVCache = new HashMap<>();
   private final Timer t = new Timer("File writer");
   private String mCurrentFolder = "";
+  
+  private final Executor mFileLoadExecutor = Executors.newSingleThreadExecutor();
   
   private static final DateTimeFormatter DATE_FORMAT = 
     DateTimeFormatter.ofPattern( "uuuuMMMdd-hhmma" )
@@ -63,26 +70,51 @@ public class RobotDataStream {
     if(pValue == null) { 
       return;
     }
+    NetworkTableEntry entry = mTable.getEntry(pData);
     switch(pType) {
     case BOOLEAN:
-      mTable.putBoolean(pData, Boolean.parseBoolean(pValue));
+      entry.setBoolean(Boolean.parseBoolean(pValue));
       break;
     case DOUBLE:
     case INTEGER:
     case LONG:
-      mTable.putNumber(pData, Double.parseDouble(pValue));
+      entry.setNumber(Double.parseDouble(pValue));
       break;
     case STRING:
     case UNSUPPORTED:
     default:
-      mTable.putString(pData, pValue);
-      System.out.println("Putting string " + pData + " " + pValue);
+      entry.setString(pValue);
       break;
     }
   }
   
+  public void sendDataToRobot(String pData, ESupportedTypes pType, Object[] pValue) {
+	  if(pValue == null) { 
+	      return;
+	    }
+	    NetworkTableEntry entry = mTable.getEntry(pData);
+	    switch(pType) {
+	    case BOOLEAN:
+	      entry.setBooleanArray((Boolean[])pValue);
+	      break;
+	    case DOUBLE:
+	    case INTEGER:
+	    case LONG:
+	      entry.setNumberArray((Number[])pValue);
+	      break;
+	    case STRING:
+	    case UNSUPPORTED:
+	    default:
+	      entry.setStringArray((String[])pValue);
+	      break;
+	    }
+  }
+  
   private RobotDataStream() {
-    mTable = NetworkTable.getTable("Generic Config Data");
+    mTable = NetworkTableInstance.getDefault().getTable("Generic Config Data");
+  }
+  
+  public void registerEnums() {
     createNewFolder();
     IReceiveProtocol receiver = MessageProtocols.createReceiver(SystemSettings.CODEX_DATA_PROTOCOL, SystemSettings.DRIVER_STATION_CODEX_DATA_RECEIVER_PORT, "");
     registerEnum(EPowerDistPanel.class, receiver);
@@ -99,23 +131,28 @@ public class RobotDataStream {
    * @param pConverter A converter that converts from a string to a codex element
    */
   public <V, E extends Enum<E> & CodexOf<V>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile, final IConverter<String, V> pConverter) {
-    if(!mCodexClasses.containsKey(pEnum)) return;
+    final int hash = EnumUtils.hashOf(pEnum);
+    if(!mCodexClasses.containsKey(hash)) {
+      initEnum(pEnum);
+    }
     
     RobotDataElementCache.inst().clearHistoryFor(pEnum);
-    RobotDataElementCache.inst().registerEnum(pEnum);
     
-    try (Stream<String> stream = Files.lines(pFile)) {
-      stream
-        .map(line -> new Codex<V,E>(pEnum).fillFromCSV(line, pConverter))
-        .forEach(codex -> {
-          Map<E, CodexElementHistory<V,E>> map = RobotDataElementCache.inst().getHistoryOf(pEnum);
-          for(E e : EnumSet.allOf(pEnum)) {
-            map.get(e).add(codex.meta().timestamp(), codex.get(e));
-          }
-        });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    mFileLoadExecutor.execute(() -> {
+      try (Stream<String> stream = Files.lines(pFile)) {
+        stream
+          .skip(2)
+          .map(line -> new Codex<V,E>(pEnum).fillFromCSV(line, pConverter))
+          .forEach(codex -> {
+            Map<E, CodexElementHistory<V,E>> map = RobotDataElementCache.inst().getHistoryOf(pEnum);
+            for(E e : EnumSet.allOf(pEnum)) {
+              map.get(e).add(codex.meta().timestamp(), codex.get(e));
+            }
+          });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
   
   /**
@@ -126,6 +163,18 @@ public class RobotDataStream {
   public <E extends Enum<E> & CodexOf<Double>> void loadCodexHistoryFromFile(Class<E> pEnum, Path pFile) {
     loadCodexHistoryFromFile(pEnum, pFile, str -> str == null ? null : Double.parseDouble(str));
   }
+  
+  /**
+   * Loads a codex of doubles from file
+   * @param pEnum enumeration that backs the codex
+   * @param pFile location of the csv file
+   */
+  public <E extends Enum<E> & CodexOf<Double>> void loadUnsafeCodexHistoryFromFile(Class<E> pEnum, Path pFile) {
+    Class<E> clazz = (Class<E>) pEnum;
+    loadCodexHistoryFromFile(clazz, pFile, str -> str == null || str.equals(EMPTY) ? null : Double.parseDouble(str));
+  }
+  
+  private static final String EMPTY = "";
 
 
   /**
@@ -171,12 +220,19 @@ public class RobotDataStream {
     new File(mCurrentFolder).mkdirs();
   }
   
-  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
+  private <V, E extends Enum<E> & CodexOf<V>> void initEnum(Class<E> pEnum) {
     final int hash = EnumUtils.hashOf(pEnum);
     mCodexClasses.put(hash, pEnum.getCanonicalName());
+    RobotDataElementCache.inst().registerEnum(pEnum);
+  }
+  
+  public <V, E extends Enum<E> & CodexOf<V>> void registerEnum( Class<E> pEnum, IReceiveProtocol pReceiver) {
+    final int hash = EnumUtils.hashOf(pEnum);
+    initEnum(pEnum);
+//    mCodexClasses.put(hash, pEnum.getCanonicalName());
     CodexReceiver<V, E> r = new CodexReceiver<>(pEnum, pReceiver);
     mReceivers.put(hash, r);
-    RobotDataElementCache.inst().registerEnum(pEnum);
+//    RobotDataElementCache.inst().registerEnum(pEnum);
     
     mCSVCache.put(hash, new ArrayList<>());
     r.addListener(codex -> {

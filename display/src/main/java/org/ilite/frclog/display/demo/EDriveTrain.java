@@ -1,0 +1,22 @@
+package org.ilite.frclog.display.demo;
+
+import com.flybotix.hfr.codex.CodexOf;
+
+public enum EDriveTrain implements CodexOf<Double> {
+  DESIRED_LEFT_POWER,
+  DESIRED_RIGHT_POWER,
+  
+  LEFT_TALON_MASTER_VOLTAGE,
+  LEFT_TALON_FOLLOW_VOLTAGE,
+  LEFT_TALON_MASTER_CURRENT,
+  LEFT_TALON_FOLLOW_CURRENT,
+  RIGHT_TALON_MASTER_VOLTAGE,
+  RIGHT_TALON_FOLLOW_VOLTAGE,
+  RIGHT_TALON_MASTER_CURRENT,
+  RIGHT_TALON_FOLLOW_CURRENT,
+  
+  TALON_VBUS,
+  DT,
+  VEL,
+  VEL_PER_VOLT
+}
