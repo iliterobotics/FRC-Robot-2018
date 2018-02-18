@@ -35,7 +35,7 @@ public class Intake implements IModule{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
 		leftExtender = new Solenoid(0);
-		rightExtender = new Solenoid(1);
+		rightExtender = new Solenoid(2);
 		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
 		
 	}

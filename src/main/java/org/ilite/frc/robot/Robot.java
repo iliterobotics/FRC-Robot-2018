@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
   	mIntake = new Intake(mElevator);
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
   	
-  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mData);
+  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mData, mElevator);
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.ELEV_TACH_ID),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
-        CameraServer.getInstance().startAutomaticCapture(),
+        //CameraServer.getInstance().startAutomaticCapture(),
         new DigitalInput(SystemSettings.CARRIAGE_BEAM_BREAK_ID)
         // Sensors
         // Custom hw
@@ -140,10 +140,10 @@ public class Robot extends IterativeRobot {
 	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
-		  switchDriverControlModes (new DriverInput(mDrivetrainControl, mIntake, mData));
+		  switchDriverControlModes (new DriverInput(mDrivetrainControl, mIntake, mData, mElevator));
 		  break;
 	  case SPLIT_ARCADE:
-		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mData));
+		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mData, mElevator));
 		  break;
 	  }
 	  
@@ -153,7 +153,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDrivetrain, mDriverInput);
+	  setRunningModules(mDrivetrain, mDriverInput, mElevator);
 	  
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();

@@ -43,7 +43,7 @@ public class Hardware {
       PigeonIMU pPigeon,
       TalonTach pTalonTach,
       CANifier pCanifier,
-      VideoCamera pVisionCamera,
+      //VideoCamera pVisionCamera,
       DigitalInput mCarriageBeamBreak
   ) {
     mDriverJoystick = pDriverJoystick;
@@ -51,8 +51,8 @@ public class Hardware {
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
-    mVisionCamera = pVisionCamera;
-    mVisionCamera.setFPS(30);
+    //mVisionCamera = pVisionCamera;
+    //mVisionCamera.setFPS(30);
     mTalonTach = pTalonTach;
 
 //    pInitializationPool.execute(() -> {

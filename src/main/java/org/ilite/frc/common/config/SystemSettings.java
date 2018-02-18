@@ -51,10 +51,10 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
   public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
   public static int INTAKE_TALONID_FRONT_RIGHT = 14;
-  public static int ELEVATOR_TALONID_LEFT = 11;
+  public static int ELEVATOR_TALONID_LEFT = 1;
   public static int INTAKE_TALONID_FRONT_LEFT = 13;
 	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
-  public static int ELEVATOR_TALONID_RIGHT = 12;
+  public static int ELEVATOR_TALONID_RIGHT = 3;
 	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
@@ -62,7 +62,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // CANifier Constants
   // =============================================================================
-  public static int 	CANIFIER_DEVICE_ID = 1;
+  public static int 	CANIFIER_DEVICE_ID = 3;
 
   // =============================================================================
   // Drive Train Constants
@@ -98,7 +98,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
-  public static int     CARRIAGE_BEAM_BREAK_ID = 0;
+  public static int     CARRIAGE_BEAM_BREAK_ID = 6;
   
   // =============================================================================
   // Controllers
@@ -160,10 +160,10 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Sensors
   // =============================================================================
-  public static final int INTAKE_BEAM_BREAK = 0;
+  public static final int INTAKE_BEAM_BREAK = 5;
   public static final int HALL_EFFECT = 1;
-  public static final int DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 3;
-  public static final int DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 4;
+  public static final int DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 0;
+  public static final int DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 1;
   // =============================================================================
   // Vision Constants
   // =============================================================================

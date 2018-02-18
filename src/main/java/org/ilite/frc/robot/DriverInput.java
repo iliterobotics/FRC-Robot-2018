@@ -22,11 +22,12 @@ public class DriverInput implements IModule{
   
 	private Data mData;
 	
-	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Data pData)
+	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Data pData, Elevator pElevatorModule)
 	{
 	  this.driveControl = pDriveControl;
 	  this.mIntake = pIntake;
 		this.mData = pData;
+		this.mElevatorModule = pElevatorModule;
 	}
 	
 	@Override
@@ -85,7 +86,8 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
-		
+	  double power = (-mData.operator.get(ELogitech310.LEFT_TRIGGER_AXIS) + mData.operator.get(ELogitech310.RIGHT_TRIGGER_AXIS)); 
+	  mElevatorModule.setPower(power);
 	}
 	
 	@Override

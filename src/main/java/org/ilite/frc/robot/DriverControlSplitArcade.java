@@ -3,6 +3,7 @@ package org.ilite.frc.robot;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
@@ -22,8 +23,8 @@ public class DriverControlSplitArcade extends DriverInput {
 	private NeutralMode desiredNeutralMode;
 	private ControlMode desiredControlMode; 
 	
-	public DriverControlSplitArcade(DrivetrainControl pDriveControl, Intake intake, Data pData) {
-		super(pDriveControl, intake, pData);
+	public DriverControlSplitArcade(DrivetrainControl pDriveControl, Intake intake, Data pData, Elevator pElevator) {
+		super(pDriveControl, intake, pData, pElevator);
 		this.mData = pData;
 	}
 	

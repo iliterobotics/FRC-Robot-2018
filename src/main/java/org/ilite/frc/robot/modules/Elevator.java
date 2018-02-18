@@ -104,22 +104,22 @@ public class Elevator implements IModule {
 
 	@Override
 	public boolean update(double pNow) {
-//		mAtTop = topLimitSwitch.get();
-//		mAtBottom = bottomLimitSwitch.get();
+		mAtTop = topLimitSwitch.get();
+		mAtBottom = bottomLimitSwitch.get();
+		System.out.printf("Top switch: %s Bottom Switch: %s\n", mAtTop, mAtBottom);
 		direction = mPower > 0 ? true : false;
-		tickPosition = masterElevator.getSelectedSensorPosition(0);
-		if(!talonTach.getSensor())
+		tickPosition = -1;
+//		    masterElevator.getSelectedSensorPosition(0);
+		
+		System.out.println(mPower + " PRE CHECK");
+		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) )//&& !talonTach.getSensor() )
 		{
 			elevatorState = ElevatorState.NORMAL;
 		}
-		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor() )
-		{
-			elevatorState = ElevatorState.DECELERATE_BOTTOM;
-		}
 
-		if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor())
+		if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2))// && !talonTach.getSensor())
 		{
-			elevatorState = ElevatorState.DECELERATE_TOP;
+			elevatorState = ElevatorState.NORMAL;
 		}
 		if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
 		{
@@ -148,6 +148,8 @@ public class Elevator implements IModule {
 				elevatorState = ElevatorState.STOP;
 			}
 		}
+		
+		System.out.println(mPower + " PRE CHECK");
 
 //		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
 		
@@ -180,7 +182,7 @@ public class Elevator implements IModule {
 			masterElevator.set(ControlMode.PercentOutput, ElevatorState.STOP.getPower());
 			break;
 		}
-
+		System.out.println(mPower + "POST CHECK");
 		return true;
 	}
 
