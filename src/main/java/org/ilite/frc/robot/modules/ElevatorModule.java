@@ -104,31 +104,6 @@ public class ElevatorModule implements IModule {
 
 	@Override
 	public boolean update(double pNow) {
-		//		if(bottomLimitSwitch.get() == topLimitSwitch.get())
-		//		{
-		//			mAtBottom = bottomLimitSwitch.get();
-		//			mAtTop = topLimitSwitch.get();
-		//			leftElevator.set(ControlMode.PercentOutput, mPower);
-		//			rightElevator.set(ControlMode.PercentOutput, mPower);
-		//			return true;
-		//		}
-		//		if ((bottomLimitSwitch.get())) {
-		//			mAtBottom = true;
-		//		} else {
-		//			mAtBottom = false;
-		//		}
-		//		if ((topLimitSwitch.get())) {
-		//			mAtTop = true;
-		//		} else {
-		//			mAtTop = false;
-		//		}
-		//		System.out.println("Bottom " + mAtBottom + " Top " + mAtTop);
-		//		System.out.println("Power: " + mPower);
-		//		leftElevator.set(ControlMode.PercentOutput, mPower);
-		//		return true;
-
-//		topSpeedLimitTripped = topTripSwitch.get();
-//		bottomSpeedLimitTripped = bottomTripSwitch.get();
 //		mAtTop = topLimitSwitch.get();
 //		mAtBottom = bottomLimitSwitch.get();
 		direction = mPower > 0 ? true : false;
@@ -206,27 +181,7 @@ public class ElevatorModule implements IModule {
 	}
 
 	public void setPower(double power) {
-		//		if(mAtBottom == mAtTop)
-		//		{
-		//			mPower = power;
-		//			return;
-		//		}
-		//		if(mAtBottom)
-		//			if(power < 0)
-		//				mPower = 0;
-		//			else
-		//				mPower = power;
-		//		else if(mAtTop)
-		//			if(power > 0)
-		//				mPower = 0;
-		//			else
-		//				mPower = power;
-		//		else
-		//			mPower = power;
-
-
 		mPower = power;
-
 	}
 
 	public void shiftGear(boolean gear)
@@ -276,3 +231,6 @@ public class ElevatorModule implements IModule {
 		return elevatorState;
 	}
 }
+
+//		topSpeedLimitTripped = topTripSwitch.get();
+//		bottomSpeedLimitTripped = bottomTripSwitch.get();

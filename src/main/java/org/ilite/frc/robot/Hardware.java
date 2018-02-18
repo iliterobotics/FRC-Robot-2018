@@ -36,9 +36,6 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      PigeonIMU pPigeon,
-      UsbCamera pVisionCamera,
-      Data data,
       TalonTach pTalonTach
   ) {
     mDriverJoystick = pDriverJoystick;
@@ -83,7 +80,6 @@ public class Hardware {
   public UsbCamera getVisionCamera() {
     return mVisionCamera;
   }
-  
   public TalonTach getTalonTach()
   {
 	  return mTalonTach;
