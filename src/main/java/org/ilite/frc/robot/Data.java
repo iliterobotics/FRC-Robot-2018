@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.ENavX;
@@ -20,10 +21,11 @@ public class Data {
   public final Codex<Double, ENavX> navx = Codex.of.thisEnum(ENavX.class);
   public final Codex<Double, EPigeon> pigeon = Codex.of.thisEnum(EPigeon.class);
   public final Codex<Double, EDriveTrain> drivetrain = new Codex<>(EDriveTrain.class);
+  public final Codex<Double, ECubeTarget> vision = new Codex<>(ECubeTarget.class);
   public final List<Codex<Double, ETalonSRX>> talons = new ArrayList<>();
   
   private final Codex<?,?>[] all = {
-    driverinput,operator,pdp,pigeon,drivetrain
+    driverinput,operator,pdp,pigeon,drivetrain,vision
   };
   
   Data() {
@@ -35,8 +37,9 @@ public class Data {
     for(Codex<?,?> c : all) {
       c.reset();
       c.meta().setTimestamp(pTimestamp);
-    }
-    
+    } 
   }
+  
+  
 
 }
