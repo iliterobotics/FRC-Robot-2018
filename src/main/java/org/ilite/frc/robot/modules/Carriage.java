@@ -1,5 +1,6 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Carriage implements IModule{
 
-  private Solenoid solenoidGrab, solenoidPop;
+  Solenoid solenoidGrab, solenoidPop;
   private double kickTimer;
   private static final int KICK_DELAY = 1;
   private static final int RELEASE_DELAY = 5;
@@ -33,8 +34,8 @@ public class Carriage implements IModule{
     Carriage.beamBreak = mHardware.getCarriageBeamBreak();
     mData = pData;
     isScheduled = false;
-    solenoidGrab = new Solenoid(11, 2);
-    solenoidPop = new Solenoid(11, 3);
+    solenoidGrab = new Solenoid(SystemSettings.SOLENOID_GRAB);
+    solenoidPop = new Solenoid(SystemSettings.SOLENOID_POP);
     setNoCube();
     currentState = carriageState.CUBE;
   }

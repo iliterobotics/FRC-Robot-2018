@@ -7,19 +7,20 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
 	
-	private final TalonSRX leftIntakeTalon;
-	private final TalonSRX rightIntakeTalon;
+	final TalonSRX leftIntakeTalon;
+	final TalonSRX rightIntakeTalon;
 	private double rightCurrent;
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	public Solenoid leftExtender;
-	public Solenoid rightExtender;
+	public DoubleSolenoid extender;
 	public boolean solOut;
 	private double leftPower;
 	private double rightPower;
@@ -32,11 +33,10 @@ public class Intake implements IModule{
 	
 	
 	public Intake(Elevator pElevator){
-		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
-		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		leftExtender = new Solenoid(0);
-		rightExtender = new Solenoid(1);
-		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
+		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_LEFT);
+		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_RIGHT);
+		beamBreak = new DigitalInput(SystemSettings.DIO_INTAKE_BEAM_BREAK);
+		extender = new DoubleSolenoid(SystemSettings.SOLENOID_INTAKE_A, SystemSettings.SOLENOID_INTAKE_B);
 		
 	}
 
@@ -51,8 +51,7 @@ public class Intake implements IModule{
 		leftCurrent = leftIntakeTalon.getOutputCurrent();
 		rightVoltage = rightIntakeTalon.getBusVoltage();
 		leftVoltage = leftIntakeTalon.getBusVoltage();
-		leftExtender.set(solOut);
-		rightExtender.set(solOut);
+		extender.set(Value.kReverse);
 		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
 		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);
 		return true;

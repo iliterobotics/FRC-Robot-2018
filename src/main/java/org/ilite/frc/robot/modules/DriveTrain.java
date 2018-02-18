@@ -2,6 +2,7 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
+import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
@@ -18,6 +19,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.flybotix.hfr.codex.Codex;
 
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,10 +32,11 @@ public class DriveTrain implements IControlLoop {
 	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
 	private DrivetrainControl driveControl;
+
 	private Data data;
 	//private PDM g;
 	
-	private final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
+	final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
 	
 	private DrivetrainMode driveMode;
 	private ControlMode controlMode; 
@@ -44,13 +47,13 @@ public class DriveTrain implements IControlLoop {
 	{
 		this.driveControl = driveControl;
 		this.data = data;
-		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT1);
-		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT2);
-    	leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT3);
+		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_MASTER);
+		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_FOLLOW1);
+    	leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_FOLLOW2);
     
-		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT1);
-		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT2);
-		rightFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT3);
+		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_MASTER);
+		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_FOLLOW1);
+		rightFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_FOLLOW2);
 		
 		rightFollower.follow(rightMaster);
 		rightFollower2.follow(rightMaster);
@@ -112,8 +115,8 @@ public class DriveTrain implements IControlLoop {
       break;
     }
     
-    leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, getLeftMaster().getSelectedSensorVelocity(0));
-    rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, getRightMaster().getSelectedSensorVelocity(0));
+    leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, leftMaster.getSelectedSensorVelocity(0));
+    rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, rightMaster.getSelectedSensorVelocity(0));
     
     SmartDashboard.putNumber("Highest Left Velocity", Utils.ticksToFPS(leftMaxVelocityTicks));
     SmartDashboard.putNumber("Highest Right Velocity", Utils.ticksToFPS(rightMaxVelocityTicks));
@@ -176,14 +179,6 @@ public class DriveTrain implements IControlLoop {
 	  update(pNow);
 	}
 	
-	public TalonSRX getLeftMaster() {
-	  return leftMaster;
-	}
-	
-	public TalonSRX getRightMaster() {
-	  return rightMaster;
-	}
-	
 	public DrivetrainMode getDriveMode() {
 	  return driveMode;
 	}
@@ -191,7 +186,7 @@ public class DriveTrain implements IControlLoop {
 	public ControlMode getControlMode() {
 	  return controlMode;
 	}
-	
+
 }
 	
 	

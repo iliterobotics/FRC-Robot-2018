@@ -20,6 +20,7 @@ import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
+import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.vision.GripPipeline;
 import org.ilite.frc.robot.vision.Processing;
@@ -52,16 +53,13 @@ public class Robot extends IterativeRobot {
   private Queue<ICommand> mCommandQueue = new LinkedList<>();
   private ICommand mCurrentCommand;
   
-  private VisionThread visionThread;
-  private GripPipeline pipeline;
-  private Processing processing;
-  
   private final DriveTrain mDrivetrain;
   private final Carriage mCarriage;
   private final Elevator mElevator;
   private final Intake mIntake;
   private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
+  private Joystick testJoystick;
   
   private GetAutonomous getAutonomous;
   
@@ -76,6 +74,7 @@ public class Robot extends IterativeRobot {
   	mElevator = new Elevator(mHardware);
   	mIntake = new Intake(mElevator);
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
+  	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	
   	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mData);
   	Logger.setLevel(ELevel.INFO);
@@ -88,12 +87,13 @@ public class Robot extends IterativeRobot {
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-        new PowerDistributionPanel(), 
+//        new PowerDistributionPanel(SystemSettings.PDP_DEVICE_ID), 
+        null,
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
-        new TalonTach(SystemSettings.ELEV_TACH_ID),
+        new TalonTach(SystemSettings.DIO_TALON_TACH),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
         CameraServer.getInstance().startAutomaticCapture(),
-        new DigitalInput(SystemSettings.CARRIAGE_BEAM_BREAK_ID)
+        new DigitalInput(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
         // Sensors
         // Custom hw
         // Spike relays
@@ -153,7 +153,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDrivetrain, mDriverInput);
+	  setRunningModules(mDrivetrain, mDriverInput, new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator));
 	  
 	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
@@ -185,6 +185,7 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
+      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros

@@ -8,28 +8,24 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
-	private TalonSRX masterElevator, followerElevator;
+	TalonSRX masterElevator, followerElevator;
 	private double mPower;
 	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
-	private DigitalInput bottomLimitSwitch, topLimitSwitch;
 	private TalonTach talonTach;
-	private Solenoid solenoid;
+	Solenoid solenoid;
 	private ElevatorState elevatorState;
 	ElevatorPosition elevatorPosition;
 	private boolean gearState;
 	private int tickPosition;
 
 	public Elevator(Hardware pHardware) {
-		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
-		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
-		bottomLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH);
-		topLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH);
+		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_MASTER);
+		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_FOLLOWER);
 		followerElevator.follow(masterElevator);
-		solenoid = new Solenoid(SystemSettings.SHIFT_SOLENOID);
+		solenoid = new Solenoid(SystemSettings.SOLENOID_ELEVATOR_SHIFTER);
 		direction = true;
 		//beamBreak = new DigitalInput(SystemSettings.BEAM_BREAK_FRONT);
 		elevatorState = ElevatorState.STOP;

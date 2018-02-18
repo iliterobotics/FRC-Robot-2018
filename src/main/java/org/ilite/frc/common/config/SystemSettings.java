@@ -41,21 +41,23 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   
   public static int     ROBOT_CODEX_DATA_SENDER_PORT = 7778;
   
+  public static int SOLENOID_INTAKE_A = 1;
+  public static int SOLENOID_INTAKE_B= 2;
+  public static int SOLENOID_ELEVATOR_SHIFTER= 0;
+  
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
-  public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
-  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
-  public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
-  public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
-  public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
-  public static int INTAKE_TALONID_FRONT_RIGHT = 14;
-  public static int ELEVATOR_TALONID_LEFT = 11;
-  public static int INTAKE_TALONID_FRONT_LEFT = 13;
-	public static int ELEVATOR_TALONID_LEFT_RESERVED = 15;
-  public static int ELEVATOR_TALONID_RIGHT = 12;
-	public static int ELEVATOR_TALONID_RIGHT_RESERVED = 16;
+  public static  int kDRIVETRAIN_TALONID_LEFT_MASTER = 10;
+  public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW1 = 11;
+  public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW2 = 12;
+  public static  int kDRIVETRAIN_TALONID_RIGHT_MASTER = 5;
+  public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW1 = 6;
+  public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW2 = 7;
+  public static int ELEVATOR_TALONID_MASTER = 8;
+  public static int ELEVATOR_TALONID_FOLLOWER = 9;
+  public static int INTAKE_TALONID_RIGHT = 14;
+  public static int INTAKE_TALONID_LEFT = 13;
 	
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
 	public static int kCONTROLLER_ID = 0;
@@ -70,7 +72,6 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
   public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
-  public static double  DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
@@ -93,21 +94,23 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Elevator Constants
   // =============================================================================  
-  public static int     ELEV_TACH_ID = 4;
+  public static int     DIO_TALON_TACH = 8;
   
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
-  public static int     CARRIAGE_BEAM_BREAK_ID = 0;
+  public static int     DIO_CARRIAGE_BEAM_BREAK_ID = 0;
+  public static final int SOLENOID_GRAB = 3;
+  public static final int SOLENOID_POP = 4;
   
   // =============================================================================
   // Controllers
   // =============================================================================  
   public static double PIGEON_COLLISION_THRESHOLD = 10;
-  public static int PIGEON_DEVICE_ID = 5;
-  public static int PCM_DEVICE_ID = 2;
+  public static int PIGEON_DEVICE_ID = 3;
+  public static int PCM_DEVICE_ID = 0;
   public static int VRM_DEVICE_ID = 1;
-  public static int PDP_DEVICE_ID = 0;
+  public static int PDP_DEVICE_ID = 20;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================
@@ -127,7 +130,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
   public static int     JOYSTICK_PORT_DRIVER = 0;
   public static int     JOYSTICK_PORT_OPERATOR = 1;
-  public static int 	SHIFT_SOLENOID = 1;
+  public static int     JOYSTICK_PORT_TESTER = 2;
 
   // =============================================================================
   // Controller Mapping
@@ -160,10 +163,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Sensors
   // =============================================================================
-  public static final int INTAKE_BEAM_BREAK = 0;
-  public static final int HALL_EFFECT = 1;
-  public static final int DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 3;
-  public static final int DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 4;
+  public static final int DIO_INTAKE_BEAM_BREAK = 1;
   // =============================================================================
   // Vision Constants
   // =============================================================================
