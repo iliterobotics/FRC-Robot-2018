@@ -1,18 +1,19 @@
-package org.ilite.frc.robot;
+	package org.ilite.frc.robot;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
-
-import com.flybotix.hfr.util.log.ILog;
-import com.flybotix.hfr.util.log.Logger;
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import org.ilite.frc.common.sensors.TalonTach;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class Hardware {
   private ILog mLog = Logger.createLog(Hardware.class);
 
@@ -22,6 +23,9 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  private UsbCamera mVisionCamera;
+  private Data data;
+  private TalonTach mTalonTach;
   
   Hardware() {
     
@@ -32,13 +36,19 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      PigeonIMU pPigeon
+      PigeonIMU pPigeon,
+      UsbCamera pVisionCamera,
+      Data data,
+      TalonTach pTalonTach
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
-    mPigeonWrapper = new Pigeon(mPigeon);
+    mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
+    mVisionCamera = pVisionCamera;
+    mVisionCamera.setFPS(30);
+    mTalonTach = pTalonTach;
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -68,6 +78,15 @@ public class Hardware {
   public Pigeon getPigeon()
   {
 	  return mPigeonWrapper;
+  }
+  
+  public UsbCamera getVisionCamera() {
+    return mVisionCamera;
+  }
+  
+  public TalonTach getTalonTach()
+  {
+	  return mTalonTach;
   }
 
 }

@@ -2,6 +2,7 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.robot.Hardware;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -22,7 +23,7 @@ public class ElevatorModule implements IModule {
 	private boolean gearState;
 	private int tickPosition;
 
-	public ElevatorModule(TalonTach talonTach) {
+	public ElevatorModule(Hardware pHardware) {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_LEFT);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_RIGHT);
 		bottomLimitSwitch = new DigitalInput(SystemSettings.DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH);
@@ -35,7 +36,7 @@ public class ElevatorModule implements IModule {
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		gearState = false;
 		masterElevator.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		this.talonTach = talonTach;
+		talonTach = pHardware.getTalonTach();
 		
 		masterElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
 		masterElevator.config_kP(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);

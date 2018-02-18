@@ -136,7 +136,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int     BEAM_BREAK_FRONT = 11;
   public static int     ULTRASONIC_PORT = 10;
   public static final int SHIFT_SOLENOID = 0;
-
+  public static int 	TALON_TACH_PORT = 4;
 
 
   @Override
