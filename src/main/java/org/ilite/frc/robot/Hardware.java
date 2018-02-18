@@ -38,8 +38,8 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      TalonTach pTalonTach
-      CANifier pCanifier,
+      TalonTach pTalonTach,
+      CANifier pCanifier
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
