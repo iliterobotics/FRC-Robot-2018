@@ -15,8 +15,13 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
+//import org.ilite.frc.robot.commands.TurnLeft;
+//import org.ilite.frc.robot.commands.TurnRight;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -33,6 +38,8 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -46,6 +53,7 @@ public class Robot extends IterativeRobot {
   private double mCurrentTime = 0;
   
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
+  private SystemSettings settings;
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
   
@@ -131,6 +139,10 @@ public class Robot extends IterativeRobot {
     setRunningModules();
     mControlLoop.setRunningControlLoops(mDrive);
     mControlLoop.start();
+//    settings.setConstant("kP", 0.2);
+//    settings.setConstant("kI", 0.0000001);
+//    settings.setConstant("kD", 0.0);
+//    settings.saveToFile();
     
     mHardware.getPigeon().zeroAll();
     try {
@@ -141,6 +153,8 @@ public class Robot extends IterativeRobot {
     }
     mapInputsAndCachedSensors();
     
+    settings.loadFromFile();
+    mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
     mCommandQueue.add(new FollowPath(driveControl, mData, 
@@ -256,6 +270,10 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+//	    settings.setConstant("kP", 0.2);
+//	    settings.setConstant("kI", 0.0000001);
+//	    settings.setConstant("kD", 0.0000000000000001);
+//	    settings.saveToFile();
   }
   
   public void disabledPeriodic() {
