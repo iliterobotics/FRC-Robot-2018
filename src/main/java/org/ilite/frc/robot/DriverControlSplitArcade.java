@@ -42,7 +42,6 @@ public class DriverControlSplitArcade extends DriverInput {
 		desiredLeftOutput = throttle - rotate;
 		desiredRightOutput = throttle + rotate;
 		driveControl.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
-		System.out.println(""+ throttle1 + throttle2);
 		return false;
 	}
 	

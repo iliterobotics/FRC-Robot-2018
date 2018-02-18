@@ -12,10 +12,14 @@ import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveStraight implements ICommand{
+	
+	private ILog mLog = Logger.createLog(DriveStraight.class);
   
   private static final double PROPORTION = 0.05;
   private static final double INITIAL_POWER = 0.4;
@@ -40,8 +44,8 @@ public class DriveStraight implements ICommand{
     initialYaw = IMU.clampDegrees(mData.pigeon.get(YAW));
     initialLeftPosition = mData.drivetrain.get(LEFT_POSITION_TICKS);
     initialRightPosition = mData.drivetrain.get(RIGHT_POSITION_TICKS);
-    System.out.println("Initial Yaw:" + IMU.clampDegrees(mData.pigeon.get(YAW)));
-    System.out.printf("InitL:%s InitR:%s\n", initialLeftPosition, initialRightPosition);
+    mLog.debug("Initial Yaw:" + IMU.clampDegrees(mData.pigeon.get(YAW)));
+//    System.out.printf("InitL:%s InitR:%s\n", initialLeftPosition, initialRightPosition);
   }
   
   public boolean update(double pNow){
@@ -49,7 +53,7 @@ public class DriveStraight implements ICommand{
     if( getAverageDistanceTravel() >= distanceToTravel){
       driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       DriverStation.reportError("I AM STOPPING", false);
-      System.out.printf("FinalL:%s FinalR:%s DistTravelled:%s Target:%s\n", mData.drivetrain.get(LEFT_POSITION_TICKS), mData.drivetrain.get(RIGHT_POSITION_TICKS), getAverageDistanceTravel(), distanceToTravel);
+//      System.out.printf("FinalL:%s FinalR:%s DistTravelled:%s Target:%s\n", mData.drivetrain.get(LEFT_POSITION_TICKS), mData.drivetrain.get(RIGHT_POSITION_TICKS), getAverageDistanceTravel(), distanceToTravel);
       return true;
     }
 

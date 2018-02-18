@@ -153,9 +153,8 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDrivetrain, mDriverInput, new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator));
+	  setRunningModules(mDriverInput, mDrivetrain);
 	  
-	  initializeRunningModules();
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
@@ -169,11 +168,7 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     updateRunningModules();
     
-      mCurrentTime = Timer.getFPGATimestamp();
 //      mData.resetAll(mCurrentTime);
-      mapInputsAndCachedSensors();
-      System.out.println("Yaw: " + mHardware.getPigeon().getYaw());
-      updateRunningModules();
     }
   
   
@@ -183,9 +178,9 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, false);
+      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
-      ELogitech310.map(mData.tester, testJoystick);
+//      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros

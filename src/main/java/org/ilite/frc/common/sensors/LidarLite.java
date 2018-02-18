@@ -82,19 +82,12 @@ public class LidarLite
 	{
 		if(lidari2c.write(LIDAR_CONFIG_REGISTER, 0x04b))
 		{
-			if(mCount++ > 50) {
-				System.out.println("Still no lidar...");
-				mCount = 0;
-			}
 			hasSignal = false;
 			return;
 		}
 		edu.wpi.first.wpilibj.Timer.delay(0.05);
 		if(!lidari2c.read(LIDAR_DISTANCE_REGISTER, 2, distance))
 		{
-			if(mCount++ > 50) {
-				System.out.println("NO LIDAR!");
-			}
 			return;
 		} else {
 			hasSignal = true;

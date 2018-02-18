@@ -63,7 +63,9 @@ public class DriverInput implements IModule{
 		desiredLeftOutput =  leftScalar * Math.min(Math.abs(desiredLeftOutput), 1);
 		desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 1);
 		
-		System.out.println(desiredLeftOutput + desiredRightOutput + "");
+		if(Math.abs(desiredRightOutput) > 0.01 || Math.abs(desiredLeftOutput) > 0.01) {
+			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
+		}
 		
 		driveControl.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		
