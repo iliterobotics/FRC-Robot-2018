@@ -112,6 +112,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int     JOYSTICK_PORT_DRIVER = 0;
   public static int     JOYSTICK_PORT_OPERATOR = 1;
   public static int     JOYSTICK_PORT_TESTER = 3;
+  public static int     JOYSTICK_PNEUMATICS_TESTER = 4;
+  
 
   // =============================================================================
   // Controller Mapping

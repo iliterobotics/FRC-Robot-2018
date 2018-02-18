@@ -18,6 +18,7 @@ public class Data {
   public final Codex<Double, ELogitech310> driverinput = new Codex<>(ELogitech310.class);
   public final Codex<Double, ELogitech310> operator = new Codex<>(ELogitech310.class);
   public final Codex<Double, ELogitech310> tester = new Codex<>(ELogitech310.class);
+  public final Codex<Double, ELogitech310> pTester = new Codex<>(ELogitech310.class);
   public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
   public final Codex<Double, ENavX> navx = Codex.of.thisEnum(ENavX.class);
   public final Codex<Double, EPigeon> pigeon = Codex.of.thisEnum(EPigeon.class);
@@ -33,6 +34,7 @@ public class Data {
     driverinput.meta().setCompositeKey(SystemSettings.JOYSTICK_PORT_DRIVER);
     operator.meta().setCompositeKey(SystemSettings.JOYSTICK_PORT_OPERATOR);
     tester.meta().setCompositeKey(SystemSettings.JOYSTICK_PORT_TESTER);
+    pTester.meta().setCompositeKey(SystemSettings.JOYSTICK_PNEUMATICS_TESTER);
   }
 
   public void resetAll(double pTimestamp) {
