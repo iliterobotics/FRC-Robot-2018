@@ -44,7 +44,15 @@ public class ElevatorModule implements IModule {
 	public boolean isDown() {
 		return mState;
 	}
-
+	
+	public TalonSRX getLeftElevator()
+	{
+		return leftElevator;
+	}
+	public TalonSRX getRightElevator()
+	{
+		return rightElevator;
+	}
 	@Override
 	public void shutdown(double pNow) {
 

@@ -18,8 +18,7 @@ public class Intake implements IModule{
 	private double rightVoltage;
 	private double leftVoltage;
 	private double leftCurrent;
-	public Solenoid leftExtender;
-	public Solenoid rightExtender;
+	public Solenoid extender;
 	public boolean solOut;
 	private double leftPower;
 	private double rightPower;
@@ -34,8 +33,7 @@ public class Intake implements IModule{
 	public Intake(ElevatorModule pElevator){
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_FRONT_RIGHT);
-		leftExtender = new Solenoid(0);
-		rightExtender = new Solenoid(1);
+		extender = new Solenoid(SystemSettings.INTAKE_EXTENDER);
 		beamBreak = new DigitalInput(SystemSettings.INTAKE_BEAM_BREAK);
 		
 	}
@@ -51,8 +49,7 @@ public class Intake implements IModule{
 		leftCurrent = leftIntakeTalon.getOutputCurrent();
 		rightVoltage = rightIntakeTalon.getBusVoltage();
 		leftVoltage = leftIntakeTalon.getBusVoltage();
-		leftExtender.set(solOut);
-		rightExtender.set(solOut);
+		extender.set(solOut);
 		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
 		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);
 		return true;
@@ -108,6 +105,14 @@ public class Intake implements IModule{
 	{
 		leftPower = inPower;
 		rightPower= inPower;
+	}
+	public TalonSRX getLeftIntake()
+	{
+		return leftIntakeTalon;
+	}
+	public TalonSRX getRightIntake()
+	{
+		return rightIntakeTalon;
 	}
 	@Override
 	public void shutdown(double pNow) {	

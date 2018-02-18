@@ -98,6 +98,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MP_MAX_VEL = 0;
   public static double 	MP_MAX_ACC = 0;
   public static double 	MP_MAX_JERK = 0;
+  // =============================================================================
+  // Solenoids
+  // =============================================================================
+  
+  public static int INTAKE_EXTENDER = 0;
   
   // =============================================================================
   // Input Constants
@@ -106,6 +111,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
   public static int     JOYSTICK_PORT_DRIVER = 0;
   public static int     JOYSTICK_PORT_OPERATOR = 1;
+  public static int     JOYSTICK_PORT_TESTER = 3;
 
   // =============================================================================
   // Controller Mapping
