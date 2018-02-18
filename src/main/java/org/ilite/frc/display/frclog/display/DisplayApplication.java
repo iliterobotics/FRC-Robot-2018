@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
@@ -25,6 +26,7 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
 //import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
+import edu.wpi.first.wpilibj.Timer;
 import eu.hansolo.fx.horizon.Data;
 import eu.hansolo.fx.horizon.HorizonChart;
 import eu.hansolo.fx.horizon.Series;
@@ -61,7 +63,7 @@ public class DisplayApplication extends Application{
   Stage stage = new Stage(StageStyle.UNDECORATED);
   static Map<String, List<String>> dataMatrix = new HashMap<>();
   
-  static SimpleNetworkTable smartDashboard = new SimpleNetworkTable("SmartDashboard");
+
 
   // Color definitions for positive colors
   Color[] positiveColors = { Color.web("#FEE090"), Color.web("#FDAE61"), Color.web("#F46D43"), Color.web("#D73027") };
@@ -94,8 +96,6 @@ public class DisplayApplication extends Application{
 //
     GridPane root = new GridPane();
     Scene scene = new Scene(root, 1920, 800);
-    boolean data;
-    String Sdata;
     
     for(ELogitech310 e : ELogitech310.values()) {
     	
@@ -180,9 +180,9 @@ public class DisplayApplication extends Application{
   	  bWriter = new BufferedWriter(new FileWriter(file, true));
   	  
   	  String csvRow = SystemUtils.toCsvRow(entry.getValue().stream()
-  	                             .map(entryKey -> smartDashboard.getEntry(entryKey).getNumber(-99).toString())
+  	                             .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-99).toString())
   	                             .collect(Collectors.toList()));
-  	  bWriter.append(csvRow + "\n");
+  	  bWriter.append(csvRow + Timer.getFPGATimestamp() + "\n");
   	  bWriter.flush();
 	  }
 	  catch (Exception e) {
