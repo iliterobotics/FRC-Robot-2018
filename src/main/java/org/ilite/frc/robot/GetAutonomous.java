@@ -140,10 +140,25 @@ public class GetAutonomous {
 		System.out.printf("Doing switch autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		case MIDDLE:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		case RIGHT:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		}
 		return new LinkedList<ICommand>();
@@ -158,8 +173,18 @@ public class GetAutonomous {
 		System.out.printf("Doing exchange autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		case MIDDLE:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		}
 		return new LinkedList<ICommand>();
@@ -173,10 +198,25 @@ public class GetAutonomous {
 		System.out.printf("Doing auto line autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		case MIDDLE:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		case RIGHT:
+			switch(mCrossType) {
+			case NONE: break;
+			case CARPET: break;
+			case PLATFORM: break;
+			}
 			break;
 		}
 		return new LinkedList<ICommand>();
