@@ -1,5 +1,8 @@
 package org.ilite.frc.common.sensors;
 
+import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.robot.Data;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 public class Pigeon extends IMU{
@@ -7,16 +10,18 @@ public class Pigeon extends IMU{
 	private double[] ypr;
 	private short[] xyz;
 	private PigeonIMU mPigeon;
+	private Data data;
 
   //TODO - single value for now - could be VERY noisy
   // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
   private static final double[] kCollisionGains = {1.0};
 	
-	public Pigeon(PigeonIMU pHardware, double pCollisionThreshold_DeltaG){
+	public Pigeon(PigeonIMU pPigeon, Data data, double pCollisionThreshold_DeltaG){
 		super(kCollisionGains);
 		ypr = new double[3];
 		xyz = new short[3];
-		mPigeon = pHardware;
+		this.mPigeon = pPigeon;
+		this.data = data;
 		setCollisionThreshold_DeltaG(pCollisionThreshold_DeltaG);
 		//mAccelerationX = new FilteredAverage(kCollisionGains);
 		//mAccelerationY = new FilteredAverage(kCollisionGains);
@@ -80,6 +85,7 @@ public class Pigeon extends IMU{
 		for(int i = 0; i < ypr.length; i++) {
 			ypr[i] = 0;
 		}
+		mPigeon.setYaw(0d, 20);
 		mPigeon.setFusedHeading(0d, 20); //TODO - figure out CAN timeout defaults
 	}
 
