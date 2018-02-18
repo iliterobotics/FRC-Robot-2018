@@ -17,6 +17,11 @@ public class SimpleNetworkTable  {
         netTable.getInstance().setServerTeam(1885);
         netTable.getInstance().startClientTeam(1885);
     }
+    
+    public SimpleNetworkTable(String name, double dateRate) {
+      this(name);
+      //netTable.
+    }
     public synchronized void initKeys() {
     	    netTable.getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1);
       		netTable.getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);

@@ -164,6 +164,7 @@ public class DisplayApplication extends Application{
     for(String key : dataMap.keySet()) {
       File file = new File(String.format("./logs/%s-log.csv", key));
       if(!file.exists()) file.createNewFile();
+      dataMap.get(key).add(0, "TIME");
       writer = new BufferedWriter(new FileWriter(file, true));
       writer.append(SystemUtils.toCsvRow(dataMap.get(key)));
       writer.flush();
@@ -179,13 +180,16 @@ public class DisplayApplication extends Application{
   	  
   	  bWriter = new BufferedWriter(new FileWriter(file, true));
   	  
+//  	  entry.getValue().add(0, SystemSettings.smartDashboard.getEntry("TIME").getNumber(-1).toString());
+  	  
   	  String csvRow = SystemUtils.toCsvRow(entry.getValue().stream()
-  	                             .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-99).toString())
+  	                             .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-1).toString())
   	                             .collect(Collectors.toList()));
-  	  bWriter.append(csvRow + Timer.getFPGATimestamp() + "\n");
+  	  bWriter.append(csvRow + "\n");
   	  bWriter.flush();
 	  }
 	  catch (Exception e) {
+	    e.printStackTrace();
 		  System.err.println("Error xd");
 	  }
 	  
