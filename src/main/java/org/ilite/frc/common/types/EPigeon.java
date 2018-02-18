@@ -17,6 +17,7 @@ public enum EPigeon implements CodexOf<Double>{
   COLLISION;
   
   public static void map(Codex<Double, EPigeon> pCodex, Pigeon pPigeon, double pTimestampNow) {
+    pCodex.reset();
     pPigeon.update(pTimestampNow);
     pCodex.set(YAW, pPigeon.getYaw());
     pCodex.set(FUSED_HEADING, pPigeon.getHeading());

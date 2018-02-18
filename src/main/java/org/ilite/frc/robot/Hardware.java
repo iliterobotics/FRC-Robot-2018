@@ -1,4 +1,4 @@
-package org.ilite.frc.robot;
+	package org.ilite.frc.robot;
 
 import java.util.concurrent.Executor;
 import com.ctre.phoenix.CANifier;
@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
+import org.ilite.frc.common.sensors.TalonTach;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
@@ -26,6 +27,7 @@ public class Hardware {
   private CANifier mCanifier;
   private UsbCamera mVisionCamera;
   private Data data;
+  private TalonTach mTalonTach;
   
   Hardware() {
     
@@ -36,10 +38,8 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
+      TalonTach pTalonTach
       CANifier pCanifier,
-      PigeonIMU pPigeon,
-      UsbCamera pVisionCamera,
-      Data data
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
@@ -48,6 +48,7 @@ public class Hardware {
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
     mVisionCamera = pVisionCamera;
     mVisionCamera.setFPS(30);
+    mTalonTach = pTalonTach;
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -82,6 +83,10 @@ public class Hardware {
   
   public UsbCamera getVisionCamera() {
     return mVisionCamera;
+  }
+  public TalonTach getTalonTach()
+  {
+	  return mTalonTach;
   }
 
   public CANifier getCanifier()

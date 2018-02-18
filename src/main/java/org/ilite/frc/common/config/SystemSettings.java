@@ -84,6 +84,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_RIGHT_kA = 0;
   public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
   
+  
   // =============================================================================
   // Controllers
   // =============================================================================  
@@ -103,6 +104,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MP_MAX_ACC = 0;
   public static double 	MP_MAX_JERK = 0;
   
+  public static int ENCODER_MAX_TICKS = 0;
   // =============================================================================
   // Input Constants
   // =============================================================================
@@ -158,6 +160,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double VISION_DEGREES_PER_PIXEL_Y = VISION_VERT_FOV_DEGREES / VISION_CAMERA_HEIGHT;
   //We calculate this because the coordinate system usually starts from the left, meaning 0 degrees is the leftmost part of the camera's view. We want 0 to be the center of the view.
   public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
+  
+  public static double RES_SCALAR = 1.0;
   
   @Override
   public String getFileLocation() {

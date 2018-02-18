@@ -61,6 +61,14 @@ public class Utils {
     return fps * 12 * (1 / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE) * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN * (1 / 1000) * (1 / 10);
   }
   
+  public static double rotationsToTicks(double rotations) {
+    return rotations * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
+  }
+  
+  public static double inchesToTicks(double inches) {
+    return rotationsToTicks(inches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE);
+  }
+  
   
   
 }
