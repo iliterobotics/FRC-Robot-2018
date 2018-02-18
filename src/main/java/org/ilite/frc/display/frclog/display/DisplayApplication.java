@@ -2,7 +2,8 @@ package org.ilite.frc.display.frclog.display;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,12 +59,6 @@ public class DisplayApplication extends Application{
                                                     CornerRadii.EMPTY, new BorderWidths(0, 0, 1, 0), Insets.EMPTY));
   
   Stage stage = new Stage(StageStyle.UNDECORATED);
-  static List<String> driverInputKeys = new ArrayList<String>();
-  static List<String> operatorKeys = new ArrayList<String>();
-  static List<String> pigeonKeys = new ArrayList<String>();
-  static List<String> pdpKeys = new ArrayList<String>();
-  static List<String> drivetrainKeys = new ArrayList<String>();
-  static List<String> talonKeys = new ArrayList<String>();
   static Map<String, List<String>> dataMatrix = new HashMap<>();
   
   static SimpleNetworkTable smartDashboard = new SimpleNetworkTable("SmartDashboard");
@@ -104,8 +99,6 @@ public class DisplayApplication extends Application{
     
     for(ELogitech310 e : ELogitech310.values()) {
     	
-      driverInputKeys.add(e.toString());
-      operatorKeys.add(e.toString()+"2");
       ObservableList<Data<Long>> items = FXCollections.observableArrayList(new Data<Long>(0l, 1d), new Data<Long>(1l, 1d));
       Series<Long> series = new Series<>(items);
       HorizonChart<Long> chart = new HorizonChart<>(1, series);
@@ -166,23 +159,31 @@ public class DisplayApplication extends Application{
   private void loadChart() {
   }
   
-  public static void dumpToCSV(Entry<String, List<String>> entry) {
+  private static void writeHeaders(Map<String, List<String>> dataMap) throws IOException {
+    BufferedWriter writer = null;
+    for(String key : dataMap.keySet()) {
+      File file = new File(String.format("./logs/%s-log.csv", key));
+      if(!file.exists()) file.createNewFile();
+      writer = new BufferedWriter(new FileWriter(file, true));
+      writer.append(SystemUtils.toCsvRow(dataMap.get(key)));
+      writer.flush();
+    }
+    writer.close();
+  }
+  
+  public static void writeData(Entry<String, List<String>> entry) {
 	  File file = new File(String.format("./logs/%s-log.csv", entry.getKey()));
 	  BufferedWriter bWriter = null;
 	  try {
-	    
   	  if(!file.exists()) file.createNewFile();
   	  
-  	  bWriter = new BufferedWriter(new PrintWriter(file));
-  	  
-  	  bWriter.append(SystemUtils.toCsvRow(entry.getValue()) + "\n");
+  	  bWriter = new BufferedWriter(new FileWriter(file, true));
   	  
   	  String csvRow = SystemUtils.toCsvRow(entry.getValue().stream()
   	                             .map(entryKey -> smartDashboard.getEntry(entryKey).getNumber(-99).toString())
   	                             .collect(Collectors.toList()));
   	  bWriter.append(csvRow + "\n");
   	  bWriter.flush();
-  	  bWriter.close();
 	  }
 	  catch (Exception e) {
 		  System.err.println("Error xd");
@@ -190,12 +191,11 @@ public class DisplayApplication extends Application{
 	  
   }
   
-  public static void main(String[] pArgs) throws InterruptedException {
-    launch(pArgs);
+  public static void main(String[] pArgs) throws Exception {
+    //launch(pArgs);
     matrixInit();
     Logger.setLevel(ELevel.DEBUG);
-    dataMatrix.entrySet().forEach(entry -> dumpToCSV(entry));
-
-    
+    writeHeaders(dataMatrix);
+    while(true) dataMatrix.entrySet().forEach(entry -> writeData(entry));
   }
 }
