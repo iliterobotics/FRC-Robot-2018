@@ -60,6 +60,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
 	public static int kCONTROLLER_ID = 0;
   // =============================================================================
+  // CANifier Constants
+  // =============================================================================
+  public static int 	CANIFIER_DEVICE_ID = 1;
+
+  // =============================================================================
   // Drive Train Constants
   // =============================================================================
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
@@ -85,6 +90,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_RIGHT_kA = 0;
   public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
   
+  
   // =============================================================================
   // Controllers
   // =============================================================================  
@@ -93,7 +99,6 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int PCM_DEVICE_ID = 2;
   public static int VRM_DEVICE_ID = 1;
   public static int PDP_DEVICE_ID = 0;
-  public static int CANIFIER_DEVICE_ID = 4;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================
@@ -105,6 +110,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MP_MAX_ACC = 0;
   public static double 	MP_MAX_JERK = 0;
   
+  public static int ENCODER_MAX_TICKS = 0;
   // =============================================================================
   // Input Constants
   // =============================================================================
@@ -112,6 +118,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
   public static int     JOYSTICK_PORT_DRIVER = 0;
   public static int     JOYSTICK_PORT_OPERATOR = 1;
+  public static int 	SHIFT_SOLENOID = 1;
 
   // =============================================================================
   // Controller Mapping
@@ -146,7 +153,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   public static final int INTAKE_BEAM_BREAK = 0;
   public static final int HALL_EFFECT = 1;
-  
+  public static final int DIO_PORT_BOTTOM_ELEVATION_LIMIT_SWITCH = 3;
+  public static final int DIO_PORT_TOP_ELEVATION_LIMIT_SWITCH = 4;
   // =============================================================================
   // Vision Constants
   // =============================================================================
@@ -160,6 +168,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double VISION_DEGREES_PER_PIXEL_Y = VISION_VERT_FOV_DEGREES / VISION_CAMERA_HEIGHT;
   //We calculate this because the coordinate system usually starts from the left, meaning 0 degrees is the leftmost part of the camera's view. We want 0 to be the center of the view.
   public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
+  
+  public static double RES_SCALAR = 1.0;
   
   @Override
   public String getFileLocation() {

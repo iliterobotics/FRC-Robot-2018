@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
+import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.sensors.LidarLite;
 import org.ilite.frc.common.sensors.Pigeon;
 
@@ -20,8 +21,13 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
+//import org.ilite.frc.robot.commands.TurnLeft;
+//import org.ilite.frc.robot.commands.TurnRight;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
@@ -30,18 +36,23 @@ import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.LEDControl;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 import org.ilite.frc.robot.vision.GripPipeline;
 import org.ilite.frc.robot.vision.Processing;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -53,6 +64,7 @@ public class Robot extends IterativeRobot {
   private double mCurrentTime = 0;
   
   private final Executor mExecutor = Executors.newFixedThreadPool(1);
+  private SystemSettings settings;
   private final Hardware mHardware = new Hardware();
   private final Data mData = new Data();
   
@@ -105,6 +117,7 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
+        new CANifier(SystemSettings.CANIFIER_DEVICE_ID)
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         CameraServer.getInstance().startAutomaticCapture(),
         mData
@@ -141,6 +154,10 @@ public class Robot extends IterativeRobot {
     setRunningModules();
     mControlLoop.setRunningControlLoops(mDrive);
     mControlLoop.start();
+//    settings.setConstant("kP", 0.2);
+//    settings.setConstant("kI", 0.0000001);
+//    settings.setConstant("kD", 0.0);
+//    settings.saveToFile();
     
     mHardware.getPigeon().zeroAll();
 
@@ -152,6 +169,8 @@ public class Robot extends IterativeRobot {
     }
     mapInputsAndCachedSensors();
     
+    settings.loadFromFile();
+    mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
     mCommandQueue.add(new FollowPath(driveControl, mData, 
@@ -199,6 +218,7 @@ public class Robot extends IterativeRobot {
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
+
   }
 
   public void teleopPeriodic() {
@@ -208,6 +228,13 @@ public class Robot extends IterativeRobot {
     System.out.println(controllerMode);
     System.out.println(numControlMode);
     updateRunningModules();
+    
+    SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+    SystemUtils.writeCodexToSmartDashboard(mData.driverinput);
+    SystemUtils.writeCodexToSmartDashboard(mData.operator);
+    SystemUtils.writeCodexToSmartDashboard(mData.pdp);
+    SystemUtils.writeCodexToSmartDashboard(mData.navx);
+    SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
   }
   
   
@@ -225,6 +252,7 @@ public class Robot extends IterativeRobot {
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
+      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
       SystemUtils.writeCodexToSmartDashboard(mData.vision);
@@ -288,6 +316,10 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+//	    settings.setConstant("kP", 0.2);
+//	    settings.setConstant("kI", 0.0000001);
+//	    settings.setConstant("kD", 0.0000000000000001);
+//	    settings.saveToFile();
   }
   
   public void disabledPeriodic() {
