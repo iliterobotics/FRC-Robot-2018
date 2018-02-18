@@ -36,7 +36,7 @@ public class Hardware {
       Joystick pDriverJoystick,
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
-      CANifier pCanifier
+      CANifier pCanifier,
       PigeonIMU pPigeon,
       UsbCamera pVisionCamera,
       Data data

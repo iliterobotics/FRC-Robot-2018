@@ -92,7 +92,6 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int PCM_DEVICE_ID = 2;
   public static int VRM_DEVICE_ID = 1;
   public static int PDP_DEVICE_ID = 0;
-  public static int CANIFIER_DEVICE_ID = 4;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================
