@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
@@ -22,6 +23,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  private UltraSonicSensor mUltraSonic;
   private UsbCamera mVisionCamera;
   private Data data;
   
@@ -35,6 +37,7 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       PigeonIMU pPigeon,
+      UltraSonicSensor pUltraSonic
       UsbCamera pVisionCamera,
       Data data
   ) {
@@ -45,6 +48,7 @@ public class Hardware {
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
     mVisionCamera = pVisionCamera;
     mVisionCamera.setFPS(30);
+    mUltraSonic = pUltraSonic;
 
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
@@ -74,6 +78,10 @@ public class Hardware {
   public Pigeon getPigeon()
   {
 	  return mPigeonWrapper;
+  }
+  public UltraSonicSensor getUltraSonicSensor()
+  {
+	  return mUltraSonic;
   }
   
   public UsbCamera getVisionCamera() {

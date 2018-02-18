@@ -8,9 +8,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.UltraSonicSensor;
 import org.ilite.frc.common.sensors.LidarLite;
-import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 
@@ -96,6 +98,7 @@ public class Robot extends IterativeRobot {
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         CameraServer.getInstance().startAutomaticCapture(),
         mData
+        new UltraSonicSensor(SystemSettings.ULTRASONIC_PORT_ID)
         // Sensors
         // Custom hw
         // Spike relays
@@ -163,9 +166,11 @@ public class Robot extends IterativeRobot {
 	  setRunningModules(mDrive, mDriverInput);
 	  
 	  mHardware.getPigeon().zeroAll();
-	  
+	  //mHardware.getUltraSonicSensor().setEnabled(true);
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
+	  
+	 System.out.println("Ultrasonic: " + mHardware.getUltraSonicSensor().getInches());
   }
 
   public void teleopPeriodic() {
@@ -174,7 +179,6 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     updateRunningModules();
   }
-  
   
   /**
    * 1. Map joysticks to codexes
