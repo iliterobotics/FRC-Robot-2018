@@ -54,6 +54,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
 	public static int TALON_CONFIG_TIMEOUT_MS = 50;
 	public static int kCONTROLLER_ID = 0;
   // =============================================================================
+  // CANifier Constants
+  // =============================================================================
+  public static int 	CANIFIER_DEVICE_ID = 1;
+
+  // =============================================================================
   // Drive Train Constants
   // =============================================================================
   public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
@@ -88,7 +93,6 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int PCM_DEVICE_ID = 2;
   public static int VRM_DEVICE_ID = 1;
   public static int PDP_DEVICE_ID = 0;
-  public static int CANIFIER_DEVICE_ID = 4;
   // =============================================================================
   // Motion Profiling Constants
   // =============================================================================

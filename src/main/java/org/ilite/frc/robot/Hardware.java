@@ -1,6 +1,7 @@
 	package org.ilite.frc.robot;
 
 import java.util.concurrent.Executor;
+import com.ctre.phoenix.CANifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.ilite.frc.common.config.SystemSettings;
@@ -23,6 +24,7 @@ public class Hardware {
   public final AtomicBoolean mNavxReady = new AtomicBoolean(false);
   private PigeonIMU mPigeon;
   private Pigeon mPigeonWrapper;
+  private CANifier mCanifier;
   private UsbCamera mVisionCamera;
   private Data data;
   private TalonTach mTalonTach;
@@ -37,6 +39,7 @@ public class Hardware {
       Joystick pOperatorJoystick,
       PowerDistributionPanel pPDP,
       TalonTach pTalonTach
+      CANifier pCanifier,
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
@@ -58,6 +61,7 @@ public class Hardware {
 //      mNavxReady.set(true);
 //      mLog.info(System.currentTimeMillis() + " NAVX Calibrated");
 //    });
+    mCanifier = pCanifier;
   }
   
   public Joystick getDriverJoystick() { 
@@ -85,4 +89,9 @@ public class Hardware {
 	  return mTalonTach;
   }
 
+  public CANifier getCanifier()
+  {
+	  return mCanifier;
+  }
 }
+

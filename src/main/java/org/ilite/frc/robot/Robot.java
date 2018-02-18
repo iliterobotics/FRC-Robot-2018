@@ -27,12 +27,14 @@ import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
 import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.LEDControl;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 import org.ilite.frc.robot.vision.GripPipeline;
 import org.ilite.frc.robot.vision.Processing;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -103,6 +105,7 @@ public class Robot extends IterativeRobot {
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
         new PowerDistributionPanel(), 
+        new CANifier(SystemSettings.CANIFIER_DEVICE_ID)
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         CameraServer.getInstance().startAutomaticCapture(),
         mData
