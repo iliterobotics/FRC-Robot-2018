@@ -8,6 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.sensors.LidarLite;
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
@@ -33,6 +34,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -166,6 +168,7 @@ public class Robot extends IterativeRobot {
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
+
   }
 
   public void teleopPeriodic() {

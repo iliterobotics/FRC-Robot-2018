@@ -79,6 +79,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  DRIVETRAIN_RIGHT_kA = 0;
   public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
   
+  
   // =============================================================================
   // Controllers
   // =============================================================================  
@@ -99,6 +100,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	MP_MAX_ACC = 0;
   public static double 	MP_MAX_JERK = 0;
   
+  public static int ENCODER_MAX_TICKS = 0;
   // =============================================================================
   // Input Constants
   // =============================================================================
