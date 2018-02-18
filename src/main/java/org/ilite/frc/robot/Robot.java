@@ -17,12 +17,16 @@ import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.GyroTurn;
+import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 //import org.ilite.frc.robot.commands.TurnLeft;
 //import org.ilite.frc.robot.commands.TurnRight;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
+import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
+import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DriveControl;
 import org.ilite.frc.robot.modules.drivetrain.DriveTrain;
 import org.ilite.frc.robot.vision.GripPipeline;
@@ -62,27 +66,36 @@ public class Robot extends IterativeRobot {
   private GripPipeline pipeline;
   private Processing processing;
   
-  private final DriveTrain dt;
+  private final DriveTrain mDrive;
+  private final Carriage mCarriage;
+  private final ElevatorModule mElevator;
+  private final Intake mIntake;
   private final DriveControl driveControl;
-  private final DriverInput drivetraincontrol;
+  private final DriverInput mDriverInput;
   
   private LidarLite lidar = new LidarLite();
   
   public Robot() {
-	settings = new SystemSettings();
+    Logger.setLevel(ELevel.INFO);
+    
     mControlLoop = new ControlLoopManager(mData, mHardware);
     driveControl = new DriveControl();
-	drivetraincontrol = new DriverInput(driveControl, mData);
-    dt = new DriveTrain(driveControl, mData);
+    
+    mElevator = new ElevatorModule();
+    mCarriage = new Carriage(mData);
+    mIntake = new Intake(mElevator);
+    mDrive = new DriveTrain(driveControl, mData);
+
+    mDriverInput = new DriverInput(driveControl, mIntake, mData);
+    
     getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
-    Logger.setLevel(ELevel.INFO);
+    mCommandQueue = new LinkedList<>();
+   
   }
   
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-    settings.saveToFile();
-    NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
-    limelight.getEntry("ledMode").setNumber(1.0);
+    
     mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
@@ -121,8 +134,8 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
     mLog.info("AUTONOMOUS");
 
-    setRunningModules(dt);
-    mControlLoop.setRunningControlLoops();
+    setRunningModules();
+    mControlLoop.setRunningControlLoops(mDrive);
     mControlLoop.start();
 //    settings.setConstant("kP", 0.2);
 //    settings.setConstant("kI", 0.0000001);
@@ -136,19 +149,16 @@ public class Robot extends IterativeRobot {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    mapInputsAndCachedSensors();
     
     settings.loadFromFile();
     mapInputsAndCachedSensors();
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new DriveStraight(driveControl, mData, 168));
-    mCommandQueue.add(new GyroTurn(driveControl, mData, 90, 2, "left"));
-    mCommandQueue.add(new DriveStraight(driveControl, mData, 60));
-   // mCommandQueue.add(new GyroTurn(driveControl, mData, 90.0, 3, "Left"));
-//    mCommandQueue.add(new FollowPath(driveControl, mData, 
-//                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-//                      new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
-//                      false));
+    mCommandQueue.add(new FollowPath(driveControl, mData, 
+                      new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
+                      new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
+                      false));
     // Add commands here
     updateCommandQueue(true);
   }
@@ -164,7 +174,7 @@ public class Robot extends IterativeRobot {
   {
 	  mLog.info("TELEOP");
 
-	  setRunningModules(dt, drivetraincontrol);
+	  setRunningModules(mDrive, mDriverInput);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
@@ -188,7 +198,7 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
-      EDriveTrain.map(mData.drivetrain, dt, driveControl.getDriveMessage(), mCurrentTime);
+      EDriveTrain.map(mData.drivetrain, mDrive, driveControl.getDriveMessage(), mCurrentTime);
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       ECubeTarget.map(mData.vision, processing);
     // Any input processing goes here, such as 'split arcade driver'
