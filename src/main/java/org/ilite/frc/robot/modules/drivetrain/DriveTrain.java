@@ -12,6 +12,7 @@ import org.ilite.frc.robot.modules.TalonFactory;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.MotorSafety;
@@ -57,6 +58,8 @@ public class DriveTrain implements IControlLoop {
 		
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		
+		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 100, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		
 		rightMaster.setInverted(true);
 		rightFollower.setInverted(true);

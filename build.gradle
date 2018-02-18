@@ -21,7 +21,7 @@ deploy {
             targets << "roborio"
         }
         fileCollectionArtifact('paths') {
-            files = project.fileTree(dir: 'src/paths', include: '*.csv')
+            files = project.fileTree(dir: 'src/paths', include: '**/*.csv')
             directory = '/home/lvuser/paths'
             targets << "roborio"
         }

@@ -9,6 +9,7 @@ import org.ilite.frc.robot.Utils;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Trajectory.FitMethod;
 
@@ -61,7 +62,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
-  public static double  DRIVETRAIN_WHEEL_DIAMETER = 4.875;
+  public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
   public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
   public static double  DRIVETRAIN_SHIFT_SOLENOID_ID = 2;
@@ -72,18 +73,17 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
-  public static double	DRIVETRAIN_ANGLE_kP = 0.005;
-  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 0.001;
+  public static double	DRIVETRAIN_ANGLE_kP = 0.00;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 1;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kD = 0;
   public static double	DRIVETRAIN_LEFT_kA = 0;
-  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 11.913739525964548;
-  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 0.001;
+  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 14.239176663548465;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 1;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
   public static double  DRIVETRAIN_RIGHT_kA = 0;
-  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 11.989394835736277;
-  
+  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
   
   // =============================================================================
   // Controllers
