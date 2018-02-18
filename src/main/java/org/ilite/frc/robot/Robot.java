@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import java.util.Arrays;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +9,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.common.sensors.LidarLite;
+import org.ilite.frc.common.sensors.Pigeon;
+
+
 import org.ilite.frc.common.sensors.LidarLite;
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
@@ -25,6 +31,9 @@ import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.DriverInput;
+import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.modules.DriverInput;
+import org.ilite.frc.robot.modules.DriverControlSplitArcade;
 import org.ilite.frc.robot.modules.ElevatorModule;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.LEDControl;
@@ -75,7 +84,10 @@ public class Robot extends IterativeRobot {
   private final ElevatorModule mElevator;
   private final Intake mIntake;
   private final DriveControl driveControl;
-  private final DriverInput mDriverInput;
+  private DriverInput mDriverInput;
+  
+  private String controllerMode;
+  private int numControlMode;
   
   private LidarLite lidar = new LidarLite();
   
@@ -148,6 +160,7 @@ public class Robot extends IterativeRobot {
 //    settings.saveToFile();
     
     mHardware.getPigeon().zeroAll();
+
     try {
       Thread.sleep(100);
     } catch (InterruptedException e) {
@@ -166,6 +179,7 @@ public class Robot extends IterativeRobot {
                       false));
     // Add commands here
     updateCommandQueue(true);
+    
   }
   
   public void autonomousPeriodic() {
@@ -174,10 +188,29 @@ public class Robot extends IterativeRobot {
     updateCommandQueue(false);
     updateRunningModules();
   }
+ 
+  public void switchDriverControlModes(DriverInput dc) {
+	  this.mDriverInput = dc;
+  }
   
+  public void receiveDriverControlMode() {
+	  int receivedControlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry(EDriverControlMode.class.getSimpleName()).getNumber(0).intValue();
+	  numControlMode = receivedControlMode;
+	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
+	  switch (controlMode) {
+	  case ARCADE:
+		  switchDriverControlModes (new DriverInput(driveControl, mIntake, mData));
+		  break;
+	  case SPLIT_ARCADE:
+		  switchDriverControlModes(new DriverControlSplitArcade(driveControl, mIntake, mData));
+		  break;
+	  }
+	  
+  }
   public void teleopInit()
   {
 	  mLog.info("TELEOP");
+	   receiveDriverControlMode();
 
 	  setRunningModules(mDrive, mDriverInput);
 	  
@@ -192,6 +225,8 @@ public class Robot extends IterativeRobot {
     // Remember that DriverControl classes don't go here. They aren't Modules.
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
+    System.out.println(controllerMode);
+    System.out.println(numControlMode);
     updateRunningModules();
     
     SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
