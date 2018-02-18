@@ -46,6 +46,8 @@ public enum ELogitech310 implements CodexOf<Double>{
     if(pHandleDeadband) {
       pCodex.set(LEFT_X_AXIS, DriverInputUtils.handleDeadband(pJoystick, 0));
       pCodex.set(LEFT_Y_AXIS, DriverInputUtils.handleDeadband(pJoystick, 1));
+      pCodex.set(LEFT_TRIGGER_AXIS,  DriverInputUtils.handleDeadband(pJoystick, 2));
+      pCodex.set(RIGHT_TRIGGER_AXIS,  DriverInputUtils.handleDeadband(pJoystick, 3));
       pCodex.set(COMBINED_TRIGGER_AXIS, DriverInputUtils.handleDeadbandOfDifference(pJoystick, 2, 3));
       pCodex.set(RIGHT_X_AXIS, DriverInputUtils.handleDeadband(pJoystick, 4));
       pCodex.set(RIGHT_Y_AXIS, DriverInputUtils.handleDeadband(pJoystick, 5));
