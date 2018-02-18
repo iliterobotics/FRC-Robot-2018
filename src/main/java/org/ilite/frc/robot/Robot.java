@@ -158,6 +158,7 @@ public class Robot extends IterativeRobot {
   
   public void teleopInit()
   {
+	  mapInputsAndCachedSensors();
 	  mLog.info("TELEOP");
 
 	  setRunningModules(mDrive, mDriverInput);
@@ -190,9 +191,14 @@ public class Robot extends IterativeRobot {
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
-      SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
-      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
-      SystemUtils.writeCodexToSmartDashboard(mData.vision);
+      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+            
+      SystemUtils.writeCodexToSmartDashboard(mData.pigeon, mCurrentTime);	
+      SystemUtils.writeCodexToSmartDashboard(mData.driverinput, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.operator, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.pdp, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.navx, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
   }
   
   /**
@@ -256,8 +262,10 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
-    SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
-    SystemUtils.writeCodexToSmartDashboard(mData.pigeon);
+	  System.out.println("Getting autonomous...");
+	  getAutonomous.getAutonomousCommands();
+	  mapInputsAndCachedSensors();
+	  Timer.delay(1);
   }
   
 }
