@@ -11,13 +11,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
-	TalonSRX masterElevator, followerElevator;
+	private TalonSRX masterElevator, followerElevator;
+	private TalonTach talonTach;
+	private Solenoid shiftSolenoid;
 	private double mPower;
 	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
-	private TalonTach talonTach;
-	Solenoid solenoid;
 	private ElevatorState elevatorState;
-	ElevatorPosition elevatorPosition;
+	private ElevatorPosition elevatorPosition;
 	private boolean gearState;
 	private int tickPosition;
 
@@ -25,7 +25,7 @@ public class Elevator implements IModule {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_MASTER);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_FOLLOWER);
 		followerElevator.follow(masterElevator);
-		solenoid = new Solenoid(SystemSettings.SOLENOID_ELEVATOR_SHIFTER);
+		shiftSolenoid = new Solenoid(SystemSettings.SOLENOID_ELEVATOR_SHIFTER);
 		direction = true;
 		//beamBreak = new DigitalInput(SystemSettings.BEAM_BREAK_FRONT);
 		elevatorState = ElevatorState.STOP;
@@ -95,7 +95,16 @@ public class Elevator implements IModule {
 	}
 	@Override
 	public void initialize(double pNow) {
-
+	  masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	  tickPosition = 0;
+	  gearState = shiftSolenoid.get();
+	  elevatorState = ElevatorState.STOP;
+	  elevatorPosition = ElevatorPosition.BOTTOM;
+	  mAtBottom = true;
+	  mAtTop = false;
+	  topSpeedLimitTripped = false;
+	  bottomSpeedLimitTripped = false;
+	  direction = true;
 	}
 
 	@Override
@@ -187,7 +196,7 @@ public class Elevator implements IModule {
 
 	public void shiftGear(boolean gear)
 	{
-		solenoid.set(gear);
+		shiftSolenoid.set(gear);
 		gearState = gear;
 	}
 
