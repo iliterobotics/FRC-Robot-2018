@@ -66,7 +66,7 @@ public class Intake implements IModule{
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		
-		if(beamBreak.get())
+		if(beamBreak.get() && !mExtendIntake)
 		{
 			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
@@ -108,8 +108,11 @@ public class Intake implements IModule{
 	
 	public void intakeOut(double inPower) 
 	{
-		leftDesiredPower = inPower;
-		rightDesiredPower= inPower;
+		if (!mExtendIntake)
+		{
+			leftDesiredPower = inPower;
+			rightDesiredPower= inPower;
+		}
 	}
 	
 	@Override
