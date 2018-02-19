@@ -110,87 +110,87 @@ public class Elevator implements IModule {
 
 	@Override
 	public boolean update(double pNow) {
-//		mAtTop = topLimitSwitch.get();
-//		mAtBottom = bottomLimitSwitch.get();
-    shiftSolenoid.set(gearState);
-		direction = mDesiredPower > 0 ? true : false;
-		tickPosition = masterElevator.getSelectedSensorPosition(0);
+
+		mAtTop = topLimitSwitch.get();
+		mAtBottom = bottomLimitSwitch.get();
+		System.out.printf("Top switch: %s Bottom Switch: %s\n", mAtTop, mAtBottom);
+		direction = mPower > 0 ? true : false;
+		tickPosition = -1;
+//		    masterElevator.getSelectedSensorPosition(0);
 		
-		/*if(!talonTach.getSensor())
+		System.out.println(mPower + " PRE CHECK");
+		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) )//&& !talonTach.getSensor() )
 		{
 			elevatorState = ElevatorState.NORMAL;
 		}
-		*/
-//		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor() )
-//		{
-//			elevatorState = ElevatorState.DECELERATE_BOTTOM;
-//		}
-//
-//		if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2) && !talonTach.getSensor())
-//		{
-//			elevatorState = ElevatorState.DECELERATE_TOP;
-//		}
-//		if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
-//		{
-//			elevatorState = ElevatorState.NORMAL;
-//		}
-//		if(mAtBottom)
-//		{
-//			if(mDesiredPower > 0)
-//			{
-//				elevatorState = ElevatorState.NORMAL;
-//			}
-//			else
-//			{
-//				elevatorState = ElevatorState.STOP;
-//			}
-//			zeroEncoder();
-//		}
-//		if(mAtTop)
-//		{
-//			if(mDesiredPower < 0)
-//			{
-//				elevatorState = ElevatorState.NORMAL;
-//			}
-//			else {
-//
-//				elevatorState = ElevatorState.STOP;
-//			}
-//		}
+
+		if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2))// && !talonTach.getSensor())
+		{
+			elevatorState = ElevatorState.NORMAL;
+		}
+		if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
+		{
+			elevatorState = ElevatorState.NORMAL;
+		}
+		if(mAtBottom)
+		{
+			if(mPower > 0)
+			{
+				elevatorState = ElevatorState.NORMAL;
+			}
+			else
+			{
+				elevatorState = ElevatorState.STOP;
+			}
+			zeroEncoder();
+		}
+		if(mAtTop)
+		{
+			if(mPower < 0)
+			{
+				elevatorState = ElevatorState.NORMAL;
+			}
+			else {
+
+				elevatorState = ElevatorState.STOP;
+			}
+		}
+		
+		System.out.println(mPower + " PRE CHECK");
 
 //		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
 		
-//		switch(elevatorState){
-//
-//		case NORMAL: 
-//			masterElevator.set(ControlMode.PercentOutput, mDesiredPower);
-//			break;
-//
-//		case DECELERATE_BOTTOM: 
-//			masterElevator.set(ControlMode.PercentOutput, Math.max(mDesiredPower, elevatorState.getPower()));
-//			break;
-//
-//		case DECELERATE_TOP: 
-//			masterElevator.set(ControlMode.PercentOutput, Math.min(mDesiredPower, elevatorState.getPower()));
-//			break;
-//			
-//		case HOLD:
-////			masterElevator.set(ControlMode., demand);
-//
-//		case BOTTOM:
-//			 masterElevator.set(ControlMode.PercentOutput, Math.max(mDesiredPower, elevatorState.getPower()));
-//			 break;
-//			 
-//		case STOP: 
-//			masterElevator.set(ControlMode.PercentOutput, elevatorState.getPower());
-//			break;
-//
-//		default: 
-//			masterElevator.set(ControlMode.PercentOutput, ElevatorState.STOP.getPower());
-//			break;
-//		}
-		masterElevator.set(ControlMode.PercentOutput, mDesiredPower);
-		
+		switch(elevatorState){
+
+		case NORMAL: 
+			masterElevator.set(ControlMode.PercentOutput, mPower);
+			break;
+
+		case DECELERATE_BOTTOM: 
+			masterElevator.set(ControlMode.PercentOutput, Math.max(mPower, elevatorState.getPower()));
+			break;
+
+		case DECELERATE_TOP: 
+			masterElevator.set(ControlMode.PercentOutput, Math.min(mPower, elevatorState.getPower()));
+			break;
+			
+		case HOLD:
+//			masterElevator.set(ControlMode., demand);
+
+		case BOTTOM:
+			 masterElevator.set(ControlMode.PercentOutput, Math.max(mPower, elevatorState.getPower()));
+			 break;
+			 
+		case STOP: 
+			masterElevator.set(ControlMode.PercentOutput, elevatorState.getPower());
+			break;
+
+		default: 
+			masterElevator.set(ControlMode.PercentOutput, ElevatorState.STOP.getPower());
+			break;
+		}
+		System.out.println(mPower + "POST CHECK");
+
 		return true;
 	}
 

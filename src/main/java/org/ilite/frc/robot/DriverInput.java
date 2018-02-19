@@ -23,13 +23,21 @@ public class DriverInput implements IModule{
   
 	private Data mData;
 	
+<<<<<<< HEAD
 	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
+=======
+	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Data pData, Elevator pElevatorModule)
+>>>>>>> talontach-logic-testing
 	{
 	  this.driveControl = pDriveControl;
 	  this.mIntake = pIntake;
 		this.mData = pData;
+<<<<<<< HEAD
 		mCarriage = pCarriage;
 		mElevatorModule = pElevator;
+=======
+		this.mElevatorModule = pElevatorModule;
+>>>>>>> talontach-logic-testing
 	}
 	
 	@Override
@@ -92,7 +100,12 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
+<<<<<<< HEAD
 	  mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_OPEN_LOOP_CONTROL_AXIS));
+=======
+	  double power = (-mData.operator.get(ELogitech310.LEFT_TRIGGER_AXIS) + mData.operator.get(ELogitech310.RIGHT_TRIGGER_AXIS)); 
+	  mElevatorModule.setPower(power);
+>>>>>>> talontach-logic-testing
 	}
   
   private void updateCarriage() {
