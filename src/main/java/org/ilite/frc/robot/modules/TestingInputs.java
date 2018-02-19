@@ -98,11 +98,11 @@ public class TestingInputs implements IModule {
 			
 			if (mData.tester.isSet(ELogitech310.Y_BTN))
 			{
-				mElevator.solenoid.set(true);
+				mElevator.shiftSolenoid.set(true);
 			}
 			else
 			{
-				mElevator.solenoid.set(false);
+				mElevator.shiftSolenoid.set(false);
 			}
 		}
 		

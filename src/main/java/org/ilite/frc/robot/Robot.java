@@ -155,9 +155,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, 
-	      new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator, mPneumaticControl)
-    );
+	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  

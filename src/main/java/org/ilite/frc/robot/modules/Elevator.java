@@ -11,9 +11,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
-	private TalonSRX masterElevator, followerElevator;
+	TalonSRX masterElevator, followerElevator;
 	private TalonTach talonTach;
-	private Solenoid shiftSolenoid;
+	Solenoid shiftSolenoid;
 	private double mPower;
 	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
 	private ElevatorState elevatorState;
@@ -156,7 +156,7 @@ public class Elevator implements IModule {
 		}
 
 //		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
-		
+		System.out.printf("State: %s Power %s\n", elevatorState.name(), mPower);
 		switch(elevatorState){
 
 		case NORMAL: 
