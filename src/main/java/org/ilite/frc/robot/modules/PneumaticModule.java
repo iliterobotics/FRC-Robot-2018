@@ -42,20 +42,16 @@ public class PneumaticModule implements IModule {
 
     // In an override state, the compressor can turn off but it cannot turn on.
     if (mOverrideCompressor) {
-      System.out.println("Overriding compressor off");
       mIsCompressorOn = false;
     } else {
-      System.out.println("Pressure switch state: " + mCutoffSwitch.get());
       // This sensor returns true if pressure >= its threshold.
       mIsCompressorOn = !mCutoffSwitch.get();
     }
 
     if (mIsCompressorOn) {
       mCompressorRelay.set(Relay.Value.kForward);
-      System.out.println("ON");
     } else {
       mCompressorRelay.set(Relay.Value.kOff);
-      System.out.println("OFF");
     }
     // System.out.println("Voltage: " + aio.getVoltage() + "v");
     // System.out.println("Pressure: " + ((250 * ( voltageReadout/5 )) - 25));

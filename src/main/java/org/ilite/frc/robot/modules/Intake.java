@@ -21,9 +21,9 @@ public class Intake implements IModule{
 	private double leftVoltage;
 	private double leftCurrent;
 	public DoubleSolenoid extender;
-	public boolean solOut;
-	private double leftPower;
-	private double rightPower;
+	public boolean mExtendIntake;
+	private double leftDesiredPower;
+	private double rightDesiredPower;
 	private boolean startCurrentLimiting;
 	private DigitalInput beamBreak;
 	private final double LEFT_LIMITER = .7;
@@ -47,67 +47,71 @@ public class Intake implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		rightCurrent = rightIntakeTalon.getOutputCurrent();
-		leftCurrent = leftIntakeTalon.getOutputCurrent();
-		rightVoltage = rightIntakeTalon.getBusVoltage();
-		leftVoltage = leftIntakeTalon.getBusVoltage();
-		extender.set(Value.kReverse);
-		leftIntakeTalon.set(ControlMode.PercentOutput, -leftPower );
-		rightIntakeTalon.set(ControlMode.PercentOutput, rightPower);
+		if(mExtendIntake) {
+		  extender.set(Value.kForward);
+		} else {
+	    extender.set(Value.kReverse);
+		}
+		leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
+		rightIntakeTalon.set(ControlMode.PercentOutput, rightDesiredPower);
 		return true;
 		
 	}
 
 	public void intakeIn(double inPower) {
-			
+    rightCurrent = rightIntakeTalon.getOutputCurrent();
+    leftCurrent = leftIntakeTalon.getOutputCurrent();
+    rightVoltage = rightIntakeTalon.getBusVoltage();
+    leftVoltage = leftIntakeTalon.getBusVoltage();
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
-
-		
 		
 		if(beamBreak.get())
 		{
 			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
 				startCurrentLimiting = true;
-				leftPower = -inPower * LEFT_LIMITER;
-				rightPower = -inPower * RIGHT_LIMITER;
+				leftDesiredPower = -inPower * LEFT_LIMITER;
+				rightDesiredPower = -inPower * RIGHT_LIMITER;
 			}
 			else if (rightRatio < MIN_RATIO && leftRatio < MIN_RATIO)
 			{
 				startCurrentLimiting = false;
-				leftPower = inPower;
-				rightPower = inPower;
+				leftDesiredPower = inPower;
+				rightDesiredPower = inPower;
 			}
 			else if (startCurrentLimiting)
 			{
-				leftPower = -inPower * LEFT_LIMITER;
-				rightPower = -inPower * RIGHT_LIMITER;
+				leftDesiredPower = -inPower * LEFT_LIMITER;
+				rightDesiredPower = -inPower * RIGHT_LIMITER;
 			}
 			else
 			{
-				leftPower = inPower;
-				rightPower = inPower;
+				leftDesiredPower = inPower;
+				rightDesiredPower = inPower;
 			}
 		}
 		else
 		{
-			leftPower = 0;
-			rightPower = 0;
+			leftDesiredPower = 0;
+			rightDesiredPower = 0;
 		}	
 	}
-	public void setIntakePneumaticsOut(boolean out)
+	public void setIntakeExtended(boolean out)
 	{
-		solOut = out;
+		mExtendIntake = out;
 	}
+	
 	public boolean beamBreak(){
 		return beamBreak.get();
 	}
+	
 	public void intakeOut(double inPower) 
 	{
-		leftPower = inPower;
-		rightPower= inPower;
+		leftDesiredPower = inPower;
+		rightDesiredPower= inPower;
 	}
+	
 	@Override
 	public void shutdown(double pNow) {	
 	}

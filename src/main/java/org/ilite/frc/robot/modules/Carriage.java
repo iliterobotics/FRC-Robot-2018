@@ -142,5 +142,9 @@ public class Carriage implements IModule{
     solenoidGrab.set(false);
     solenoidPop.set(true);
   }
+  
+  public void kick() {
+    currentState = carriageState.KICKING;
+  }
 	
 }

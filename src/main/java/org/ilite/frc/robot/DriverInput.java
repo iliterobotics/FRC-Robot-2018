@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import org.ilite.frc.common.config.DriveTeamInputMap;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.modules.Carriage;
@@ -15,18 +16,20 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DriverInput implements IModule{
 
 	
-  protected DrivetrainControl driveControl;
-  private Carriage mCarriage;
-  private Elevator mElevatorModule;
-  private Intake mIntake;
+  protected final DrivetrainControl driveControl;
+  private final Carriage mCarriage;
+  private final Elevator mElevatorModule;
+  private final Intake mIntake;
   
 	private Data mData;
 	
-	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Data pData)
+	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
 	{
 	  this.driveControl = pDriveControl;
 	  this.mIntake = pIntake;
 		this.mData = pData;
+		mCarriage = pCarriage;
+		mElevatorModule = pElevator;
 	}
 	
 	@Override
@@ -40,18 +43,19 @@ public class DriverInput implements IModule{
 		updateDriveTrain();
 		updateIntake();
 		updateElevator();
+		updateCarriage();
 		return false;
 	}
 	
 	private void updateDriveTrain() {
 		double desiredLeftOutput, desiredRightOutput;
 	  
-		double rotate = mData.driverinput.get(ELogitech310.RIGHT_X_AXIS);
+		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-		double throttle = -mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
+		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
-		if(mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5) {
+		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      rotate /= 3;
 	      rotate /= 3;
 		}
@@ -73,12 +77,12 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateIntake() {
-	    double intakeSpeed = mData.operator.get(ELogitech310.RIGHT_Y_AXIS);
+	    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS);
 	    
-	    if (mData.operator.get(ELogitech310.DPAD_DOWN) != null)
-	      mIntake.setIntakePneumaticsOut(false);
-	    if (mData.operator.get(ELogitech310.DPAD_UP) != null)
-	      mIntake.setIntakePneumaticsOut(true);
+	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN))
+	      mIntake.setIntakeExtended(false);
+	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN))
+	      mIntake.setIntakeExtended(true);
 	    
 	    if(intakeSpeed > 0) {
 	      mIntake.intakeIn(intakeSpeed);
@@ -88,7 +92,14 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
+	  mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_OPEN_LOOP_CONTROL_AXIS));
 	}
+  
+  private void updateCarriage() {
+    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
+      mCarriage.kick();
+    }
+  }
 	
 	@Override
 	public void shutdown(double pNow) {

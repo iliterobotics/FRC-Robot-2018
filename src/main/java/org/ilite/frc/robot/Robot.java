@@ -23,8 +23,6 @@ import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
-import org.ilite.frc.robot.vision.GripPipeline;
-import org.ilite.frc.robot.vision.Processing;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -36,9 +34,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.vision.VisionThread;
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -78,7 +74,7 @@ public class Robot extends IterativeRobot {
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	
-  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mData);
+  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -142,10 +138,10 @@ public class Robot extends IterativeRobot {
 	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
-		  switchDriverControlModes (new DriverInput(mDrivetrainControl, mIntake, mData));
+		  switchDriverControlModes (mDriverInput);
 		  break;
 	  case SPLIT_ARCADE:
-		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mData));
+		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mCarriage, mElevator, mData));
 		  break;
 	  }
 	  
@@ -181,7 +177,7 @@ public class Robot extends IterativeRobot {
    */
   private void mapInputsAndCachedSensors() {
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
-      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, false);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
       ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
@@ -241,8 +237,20 @@ public class Robot extends IterativeRobot {
 	  }
   }
   
-  public void test() {
+  public void testInit() {
+    setRunningModules(mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator,
+                      new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator, mPneumaticControl));
+    mHardware.getPigeon().zeroAll();
+    
+    mControlLoop.setRunningControlLoops();
+    mControlLoop.start();
+  }
+  
+  public void testPeriodic() {
 	  mLog.info("TEST");
+	  mCurrentTime = Timer.getFPGATimestamp();
+    mapInputsAndCachedSensors();
+    updateRunningModules();
   }
 
   public void disabledInit() {
