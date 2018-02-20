@@ -51,8 +51,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static  int kDRIVETRAIN_TALONID_LEFT_MASTER = 10;
   public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW1 = 11;
   public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW2 = 12;
-  public static  int kDRIVETRAIN_TALONID_RIGHT_MASTER = 5;
-  public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW1 = 6;
+  public static  int kDRIVETRAIN_TALONID_RIGHT_MASTER = 6;
+  public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW1 = 5;
   public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW2 = 7;
   public static int ELEVATOR_TALONID_MASTER = 8;
   public static int ELEVATOR_TALONID_FOLLOWER = 9;
@@ -69,27 +69,36 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
-  public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
+  public static double  DRIVETRAIN_WHEEL_DIAMETER = 4.875;
   public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
-  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
+  public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 2.125;
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
   public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
-  public static double	DRIVETRAIN_ANGLE_kP = 0.00;
-  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 1;
-  public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_ANGLE_kP = 0.0008;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kP = 0.003;
+  public static double	DRIVETRAIN_LEFT_VELOCITY_kI = 0.000001;
   public static double	DRIVETRAIN_LEFT_VELOCITY_kD = 0;
   public static double	DRIVETRAIN_LEFT_kA = 0;
-  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 14.239176663548465;
-  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 1;
-  public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0;
+  public static double	DRIVETRAIN_LEFT_kV = 1.0 / 10.980426227283903; 
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kP = 0.003;
+  public static double  DRIVETRAIN_RIGHT_VELOCITY_kI = 0.000001;
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
   public static double  DRIVETRAIN_RIGHT_kA = 0;
-  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
+  public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 10.743617943154058;
+  
+  // =============================================================================
+  // Robot Dimensions - These include bumpers, all units in feet
+  // =============================================================================
+  public static double  ROBOT_LENGTH = 3.197916666666667;
+  public static double  ROBOT_WIDTH = 2.791666666666667;
+  public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
+  public static double  ROBOT_CENTER_TO_FRONT = 0;
+  public static double  ROBOT_CENTER_TO_BACK = 0;
   
   // =============================================================================
   // Elevator Constants
@@ -117,10 +126,10 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static String 	MP_WRITE_DIRECTORY = "";
   public static FitMethod 	MP_FIT_METHOD = FitMethod.HERMITE_QUINTIC;
   public static int		MP_SAMPLES = Config.SAMPLES_HIGH;
-  public static double 	MP_DELTA_TIME = 0;
-  public static double 	MP_MAX_VEL = 0;
-  public static double 	MP_MAX_ACC = 0;
-  public static double 	MP_MAX_JERK = 0;
+  public static double 	MP_DELTA_TIME = 0.01;
+  public static double 	MP_MAX_VEL = 12.4;
+  public static double 	MP_MAX_ACC = 3;
+  public static double 	MP_MAX_JERK = 60;
   
   public static int ENCODER_MAX_TICKS = 0;
   // =============================================================================
