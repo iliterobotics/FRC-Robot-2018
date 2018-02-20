@@ -16,11 +16,10 @@ public class Elevator implements IModule {
 	private final Hardware mHardware;
 	private TalonTach talonTach;
 	private boolean lastTachState, currentTachState;
-	private int mTalonTachTicks = 0;
 	private int currentTachLevel;
 	Solenoid shiftSolenoid;
 	private double mDesiredPower;
-	private boolean mAtBottom, mAtTop, topSpeedLimitTripped, bottomSpeedLimitTripped, direction; //up = true down = false
+	private boolean mAtBottom, mAtTop, direction; //up = true down = false
 	private ElevatorState elevatorState;
 	private ElevatorPosition elevatorPosition;
 	private boolean gearState;
@@ -37,6 +36,9 @@ public class Elevator implements IModule {
 		elevatorState = ElevatorState.STOP;
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		gearState = false;
+		
+		masterElevator.configContinuousCurrentLimit(20, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.enableCurrentLimit(true);
 //		masterElevator.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		
 //		masterElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
@@ -78,12 +80,27 @@ public class Elevator implements IModule {
 		CLIMB(0),
 		BOTTOM(0),
 		SWITCH(0),
+		FIRST_TAPE(0.7, 1),
+		SECOND_TAPE(0.7, 2),
+		THIRD_TAPE(0.7, 3),
 		SCALE(0);
 		
 		double inches;
+		double power;
+		int tapeMark;
+		private ElevatorPosition(double power, int tapeMark)
+		{
+		  this.power = power;
+		  this.tapeMark = tapeMark;
+		}
 		private ElevatorPosition(double inches)
 		{
 			this.inches = inches;
+		}
+		
+		private boolean isTapeMarker()
+		{
+		  return power != 0;
 		}
 	}
 	
@@ -109,8 +126,6 @@ public class Elevator implements IModule {
 	  elevatorPosition = ElevatorPosition.BOTTOM;
 	  mAtBottom = true;
 	  mAtTop = false;
-	  topSpeedLimitTripped = false;
-	  bottomSpeedLimitTripped = false;
 	  direction = true;
 	  currentTachLevel = 0;
 	  currentTachState = talonTach.getSensor();
@@ -121,12 +136,11 @@ public class Elevator implements IModule {
 	public boolean update(double pNow) {
 	  currentTachState = talonTach.getSensor();
 		direction = mDesiredPower > 0 ? true : false;
-//		tickPosition = masterElevator.getSelectedSensorPosition(0);
-		tickPosition = -1;
+		tickPosition = masterElevator.getSelectedSensorPosition(0);
+		System.out.println(tickPosition + " ELEVATOR ENCODER TICKS");
+		mAtTop = isCurrentLimitTripped() && tickPosition > SystemSettings.ENCODER_MAX_TICKS / 2;
+		mAtBottom = isCurrentLimitTripped() && tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
 		
-//		mAtTop = tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
-//		mAtBottom = tickPosition > SystemSettings.ENCODER_MAX_TICKS / 2;
-		mAtTop = mAtBottom = false;
 
     boolean shouldstop = mAtBottom || mAtTop || isCurrentLimitTripped();
 		
@@ -141,54 +155,58 @@ public class Elevator implements IModule {
 		    currentTachLevel += (int)Math.floor(mDesiredPower);
 		  }		  
 		}
-		//bottom
-		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 1 )
-    {
-      elevatorState = ElevatorState.DECELERATE_BOTTOM;
-    }
-    //top
-    if(direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 3)
-    {
-      elevatorState = ElevatorState.DECELERATE_TOP;
-    }
-		//Testing logic
-//		if(direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == -1 )
-//		{
-//			elevatorState = ElevatorState.DECELERATE_BOTTOM;
-//		}
-//		
-//		if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == -3)
-//		{
-//			elevatorState = ElevatorState.DECELERATE_TOP;
-//		}
-		if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
-		{
-			elevatorState = ElevatorState.NORMAL;
-		}
-		if(mAtBottom)
-		{
-			if(mDesiredPower > 0)
-			{
-				elevatorState = ElevatorState.NORMAL;
-			}
-			else
-			{
-				elevatorState = ElevatorState.STOP;
-			}
-			zeroEncoder();
-		}
-		if(mAtTop)
-		{
-			if(mDesiredPower < 0)
-			{
-				elevatorState = ElevatorState.NORMAL;
-			}
-			else {
-
-				elevatorState = ElevatorState.STOP;
-			}
-		}
 		
+		if(elevatorPosition.isTapeMarker())
+		{
+		  if(currentTachLevel != elevatorPosition.tapeMark)
+		  {
+		    mDesiredPower = elevatorPosition.power;
+		    elevatorState = ElevatorState.NORMAL;
+		  }
+		  else
+		  {
+		    elevatorState = ElevatorState.STOP;
+		  }
+		}
+		else {
+		  //bottom
+		  if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 1 )
+		  {
+		    elevatorState = ElevatorState.DECELERATE_BOTTOM;
+		  }
+		  //top
+		  if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 3)
+		  {
+		    elevatorState = ElevatorState.DECELERATE_TOP;
+		  }
+		  if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
+		  {
+		    elevatorState = ElevatorState.NORMAL;
+		  }
+		  if(mAtBottom)
+		  {
+		    if(mDesiredPower > 0)
+		    {
+		      elevatorState = ElevatorState.NORMAL;
+		    }
+		    else
+		    {
+		      elevatorState = ElevatorState.STOP;
+		    }
+		    zeroEncoder();
+		  }
+		  if(mAtTop)
+		  {
+		    if(mDesiredPower < 0)
+		    {
+		      elevatorState = ElevatorState.NORMAL;
+		    }
+		    else {
+
+		      elevatorState = ElevatorState.STOP;
+		    }
+		  }
+		}
 //		if(shouldstop) {
 //		  elevatorState = ElevatorState.STOP;
 //		}
@@ -238,7 +256,6 @@ public class Elevator implements IModule {
 		return true;
 	}
 	
-
 	public void setPower(double power) {
 		mDesiredPower = power;
 	}
@@ -296,7 +313,7 @@ public class Elevator implements IModule {
 	}
 	
 	private boolean isCurrentLimitTripped() {
-	  return masterElevator.getOutputCurrent() / masterElevator.getBusVoltage() >= 3d;
+	  return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= 2d;
 	}
 }
 

@@ -14,6 +14,7 @@ public class LEDControl implements IModule {
 	private CANifier mCanifier;
 	private long blinkStartTime;
 	private boolean isOn;
+	private Hardware mHardware;
 	
 	public enum LEDColor {
 		PURPLE(255, 0, 200), 
@@ -39,7 +40,7 @@ public class LEDControl implements IModule {
 		
 	//pulse speed = 100, slow flash = 300, solid = 0
 	public enum Message{
-		EXAMPLE_MESSAGE(LEDColor.WHITE, 100);
+		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100);
 
 		final LEDColor color;
 		final int delay;
@@ -53,11 +54,12 @@ public class LEDControl implements IModule {
 	
 	public LEDControl(Hardware pHardware)
 	{
-		mCanifier = pHardware.getCanifier();
+		mHardware = pHardware;
 		this.isOn = true;
 	}
 	public void initialize(double pNow) {
-		turnOffLED();
+    mCanifier = mHardware.getCanifier();
+	  turnOffLED();
 		blinkStartTime = System.currentTimeMillis();
 	}
 

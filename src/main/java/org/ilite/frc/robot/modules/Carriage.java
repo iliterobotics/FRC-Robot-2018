@@ -25,14 +25,15 @@ public class Carriage implements IModule{
   private carriageState currentState;
   private double kickStartTime;
   private boolean kickerState, grabberState;
-  
+  private Hardware mHardware;
   private static final ILog log = Logger.createLog(Carriage.class);
-    
+  private Intake mIntake;
   
   
-  public Carriage(Data pData, Hardware mHardware)
+  public Carriage(Data pData, Hardware pHardware, Intake pIntake)
   {
-    beamBreak = mHardware.getCarriageBeamBreak();
+    mHardware = pHardware;
+    mIntake = pIntake;
     mData = pData;
     isScheduled = false;
     solenoidKicker = new Solenoid(SystemSettings.SOLENOID_GRAB);
@@ -56,6 +57,8 @@ public class Carriage implements IModule{
   @Override
   public void initialize(double pNow) {
 //    setHaveCube();
+    beamBreak = mHardware.getCarriageBeamBreak();
+
     kickerState = false;
     grabberState = false;
     solenoidKicker.set(kickerState);
@@ -70,10 +73,12 @@ public class Carriage implements IModule{
     log.debug(currentState.toString());
     currentTime = pNow;
    //When we get the cube/beam break breaks
-    if(mData.operator.isSet(ELogitech310.A_BTN))
+    if(mData.operator.isSet(ELogitech310.A_BTN) || !beamBreak.get())
     {
       solenoidGrabberRelease.set(false);
       solenoidKicker.set(false);
+      mIntake.setIntakeRetracted(true);
+      //mElevator.setPower(0.3)
     }
     //switch
     else if (mData.operator.isSet(ELogitech310.B_BTN))
@@ -116,6 +121,7 @@ public class Carriage implements IModule{
 //      }
 //    }
 //    System.out.println(beamBreak.get());
+    
     return false;
   } 
     

@@ -10,8 +10,10 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
@@ -20,6 +22,8 @@ import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
+import org.ilite.frc.robot.modules.LEDControl;
+import org.ilite.frc.robot.modules.LEDControl.Message;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
@@ -58,6 +62,8 @@ public class Robot extends IterativeRobot {
   private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
+  private  LEDControl ledController;
+
   
   private GetAutonomous getAutonomous;
   
@@ -65,16 +71,16 @@ public class Robot extends IterativeRobot {
   private int numControlMode;
   
   public Robot() {
+    mElevator = new Elevator(mHardware);
+    mIntake = new Intake(mElevator);
   	mControlLoop = new ControlLoopManager(mData, mHardware);
     mDrivetrainControl = new DrivetrainControl();
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
-    mCarriage = new Carriage(mData, mHardware);
-  	mElevator = new Elevator(mHardware);
-  	mIntake = new Intake(mElevator);
+    mCarriage = new Carriage(mData, mHardware, mIntake);
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
-  	
   	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
+  	ledController = new LEDControl(mHardware);
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -85,7 +91,7 @@ public class Robot extends IterativeRobot {
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-//        new PowerDistributionPanel(SystemSettings.PDP_DEVICE_ID), 
+//        new PowerDistributionPanel(SystemSettisngs.PDP_DEVICE_ID), 
         null,
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.DIO_TALON_TACH),
@@ -99,7 +105,6 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
-
   }
 
   public void autonomousInit() {
@@ -151,13 +156,13 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator);
+	   setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, ledController);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
-
+	  ledController.setLED(Message.EXAMPLE_MESSAGE);
   }
 
   public void teleopPeriodic() {
@@ -183,6 +188,8 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage(), mCurrentTime, mDrivetrain.getLeftMaster(), mDrivetrain.getRightMaster());
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
   }
   
   /**
@@ -197,10 +204,10 @@ public class Robot extends IterativeRobot {
 	    //If this command is finished executing
 	    if(mCurrentCommand.update(mCurrentTime)) {
 	      mCommandQueue.poll(); //Discard the command and initialize the next one
-	    }
-	    if(mCommandQueue.peek() != null) {
-	      mCommandQueue.peek().initialize(mCurrentTime);
-	      return true;
+	      if(mCommandQueue.peek() != null) {
+	        mCommandQueue.peek().initialize(mCurrentTime);
+	        return true;
+	      }
 	    }
 	  }
 	  return false;

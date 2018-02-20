@@ -26,10 +26,10 @@ public class Intake implements IModule{
 	private double rightDesiredPower;
 	private boolean startCurrentLimiting;
 	private DigitalInput beamBreak;
-	private final double LEFT_LIMITER = .7;
+	private final double LEFT_LIMITER = .8;
 	private final double RIGHT_LIMITER = .2;
 	private final double MAX_RATIO = 3;
-	private final double MIN_RATIO = .7;
+	private final double MIN_RATIO = .5;
 	
 	
 	public Intake(Elevator pElevator){
@@ -97,7 +97,7 @@ public class Intake implements IModule{
 			rightDesiredPower = 0;
 		}	
 	}
-	public void setIntakeExtended(boolean out)
+	public void setIntakeRetracted(boolean out)
 	{
 		mExtendIntake = out;
 	}

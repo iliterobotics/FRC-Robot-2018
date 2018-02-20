@@ -80,9 +80,9 @@ public class DriverInput implements IModule{
 	    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS);
 	    
 	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN))
-	      mIntake.setIntakeExtended(false);
+	      mIntake.setIntakeRetracted(false);
 	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN))
-	      mIntake.setIntakeExtended(true);
+	      mIntake.setIntakeRetracted(true);
 	    
 	    if(intakeSpeed > 0) {
 	      mIntake.intakeIn(intakeSpeed);
