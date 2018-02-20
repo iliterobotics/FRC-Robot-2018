@@ -56,6 +56,7 @@ public enum EDriveTrain implements CodexOf<Double> {
   TALON_CONTROL_MODE;
   
   public static void map(Codex<Double, EDriveTrain> pCodex, DriveTrain driveTrain, DrivetrainMessage driveMessage, double pTimestampNow, TalonSRX rightMaster, TalonSRX leftMaster) {
+    pCodex.reset();
     double leftPositionTicks = leftMaster.getSelectedSensorPosition(0);
     double rightPositionTicks = rightMaster.getSelectedSensorPosition(0);
     double leftVelocityTicks = leftMaster.getSelectedSensorVelocity(0);

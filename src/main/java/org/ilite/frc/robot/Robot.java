@@ -10,8 +10,11 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.auto.PathGenerator;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
@@ -35,6 +38,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import jaci.pathfinder.Trajectory;
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -65,16 +69,15 @@ public class Robot extends IterativeRobot {
   private int numControlMode;
   
   public Robot() {
-  	mControlLoop = new ControlLoopManager(mData, mHardware);
     mDrivetrainControl = new DrivetrainControl();
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
     mCarriage = new Carriage(mData, mHardware);
   	mElevator = new Elevator(mHardware);
   	mIntake = new Intake(mElevator);
-  	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
+  	mDrivetrain = new DriveTrain(mDrivetrainControl, mHardware, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
-  	
-  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
+    mControlLoop = new ControlLoopManager(mDrivetrainControl, mDrivetrain, mData, mHardware);
+  	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -90,7 +93,7 @@ public class Robot extends IterativeRobot {
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.DIO_TALON_TACH),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
-        CameraServer.getInstance().startAutomaticCapture(),
+        CameraServer.getInstance().addAxisCamera("10.18.85.11:5800"),
         new DigitalInput(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
         // Sensors
         // Custom hw
@@ -108,16 +111,27 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
-    mCommandQueue = getAutonomous.getAutonomousCommands();
+    setRunningModules();
+    mControlLoop.setRunningControlLoops(mDrivetrain);
+    mControlLoop.start();
+    
+    //mCommandQueue = getAutonomous.getAutonomousCommands();
+//    PathGenerator pathGen = new PathGenerator();
+//    Trajectory trajectory = pathGen.getTrajectory(pathGen.getCrossAutoline());
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(mDrivetrainControl, mData, 
+//    mCommandQueue.add(new FollowPath(mDrivetrainControl, mData, trajectory, false));
+    mCommandQueue.add(new FollowPath(mDrivetrain, mData, 
                       new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
                       new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
                       false));
+//    mCommandQueue.add(new FollowPath(mDrivetrain, mData, 
+//        new File("/home/lvuser/paths/testPath_left_detailed.csv"), 
+//        new File("/home/lvuser/paths/testPath_right_detailed.csv"), 
+//        false));
     // Add commands here
     updateCommandQueue(true);
-    
   }
+  
   public void autonomousPeriodic() {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
@@ -125,7 +139,6 @@ public class Robot extends IterativeRobot {
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
     updateRunningModules();
-      
   }
  
   public void switchDriverControlModes(DriverInput dc) {
@@ -141,7 +154,7 @@ public class Robot extends IterativeRobot {
 		  switchDriverControlModes (mDriverInput);
 		  break;
 	  case SPLIT_ARCADE:
-		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mCarriage, mElevator, mData));
+		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrain, mIntake, mCarriage, mElevator, mData));
 		  break;
 	  }
 	  
@@ -183,6 +196,8 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage(), mCurrentTime, mDrivetrain.getLeftMaster(), mDrivetrain.getRightMaster());
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
   }
   
   /**
@@ -197,10 +212,10 @@ public class Robot extends IterativeRobot {
 	    //If this command is finished executing
 	    if(mCurrentCommand.update(mCurrentTime)) {
 	      mCommandQueue.poll(); //Discard the command and initialize the next one
-	    }
-	    if(mCommandQueue.peek() != null) {
-	      mCommandQueue.peek().initialize(mCurrentTime);
-	      return true;
+	      if(mCommandQueue.peek() != null) {
+	        mCommandQueue.peek().initialize(mCurrentTime);
+	        return true;
+	      }
 	    }
 	  }
 	  return false;
