@@ -1,7 +1,6 @@
 package org.ilite.frc.common.sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
 
 public class TalonTach {
 
@@ -14,9 +13,12 @@ public class TalonTach {
 	//true for reflective surfaces (powdercoat) false for non-reflective (tape)
 	public boolean getSensor()
 	{
-		//return talonTachSensor.get();
-	  return false;
+	  if(talonTachSensor == null) {
+	    System.err.println("talon tach is null...");
+	    return false;
+	  } else {
+	    return talonTachSensor.get();
+	  }
 	}
-	
 	
 }

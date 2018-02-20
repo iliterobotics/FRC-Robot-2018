@@ -13,17 +13,18 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Carriage implements IModule{
 
-  Solenoid solenoidGrab, solenoidPop;
+  Solenoid solenoidKicker, solenoidGrabberRelease;
   private double kickTimer;
-  private static final int KICK_DELAY = 1;
-  private static final int RELEASE_DELAY = 5;
+  private static final double KICK_DELAY = .1;
+  private static final double  RELEASE_DELAY = .2;
   private double releaseTimer;
   private double currentTime;
   private Data mData;
   private boolean isScheduled;
-  private static DigitalInput beamBreak;
+  private DigitalInput beamBreak;
   private carriageState currentState;
   private double kickStartTime;
+  private boolean kickerState, grabberState;
   
   private static final ILog log = Logger.createLog(Carriage.class);
     
@@ -31,12 +32,12 @@ public class Carriage implements IModule{
   
   public Carriage(Data pData, Hardware mHardware)
   {
-    Carriage.beamBreak = mHardware.getCarriageBeamBreak();
+    beamBreak = mHardware.getCarriageBeamBreak();
     mData = pData;
     isScheduled = false;
-    solenoidGrab = new Solenoid(SystemSettings.SOLENOID_GRAB);
-    solenoidPop = new Solenoid(SystemSettings.SOLENOID_POP);
-    setNoCube();
+    solenoidKicker = new Solenoid(SystemSettings.SOLENOID_GRAB);
+    solenoidGrabberRelease = new Solenoid(SystemSettings.SOLENOID_POP);
+    //setNoCube();
     currentState = carriageState.CUBE;
   }
   
@@ -54,97 +55,129 @@ public class Carriage implements IModule{
   }
   @Override
   public void initialize(double pNow) {
-    setHaveCube();
+//    setHaveCube();
+    kickerState = false;
+    grabberState = false;
+    solenoidKicker.set(kickerState);
+    solenoidGrabberRelease.set(grabberState);
   }
+  
+  //kicker true = out
+  //grabber true = closed
   @Override
   public boolean update(double pNow)
   {
     log.debug(currentState.toString());
     currentTime = pNow;
-    
-    switch(currentState)
+   //When we get the cube/beam break breaks
+    if(mData.operator.isSet(ELogitech310.A_BTN))
     {
-    case CUBE:
-    setHaveCube();
-    if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
+      solenoidGrabberRelease.set(false);
+      solenoidKicker.set(false);
+    }
+    //switch
+    else if (mData.operator.isSet(ELogitech310.B_BTN))
     {
-      kickStartTime = pNow;
-      currentState = carriageState.KICKING;
+      solenoidGrabberRelease.set(true);
+      solenoidKicker.set(true);
+    }  
+    //scale
+    else if(mData.operator.isSet(ELogitech310.Y_BTN))
+    {
+      solenoidGrabberRelease.set(true);
+      solenoidKicker.set(false); 
     }
-    break;
-    
-    case KICKING:
-      isKicking(pNow);
-    break;
-    
-    case NOCUBE:
-      setNoCube();
-      if(getBeamBreak())
-      {
-        currentState = carriageState.CUBE;
-      }
+    //kicker should not kick unless button is clicked
+    else
+    {
+      solenoidKicker.set(false);
     }
-    
+    System.out.println(beamBreak.get());
+//    switch(currentState)
+//    {
+//    case CUBE:
+//    setHaveCube();
+//    if(mData.operator.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
+//    {
+//      kickStartTime = pNow;
+//      currentState = carriageState.KICKING;
+//    }
+//    break;
+//    
+//    case KICKING:
+//      isKicking(pNow);
+//    break;
+//    
+//    case NOCUBE:
+//      setNoCube();
+//      if(getBeamBreak() || mData.operator.isSet(ELogitech310.A_BTN))
+//      {
+//        currentState = carriageState.CUBE;
+//      }
+//    }
+//    System.out.println(beamBreak.get());
     return false;
   } 
     
-  public void isKicking(double pNow)
-  {
-    if(!isScheduled)
-    {
-      kickTimer = pNow + KICK_DELAY;
-      releaseTimer = pNow + RELEASE_DELAY;
-      isScheduled = true;
-    }
-    else
-    {
-      log.debug("CurrTime: " + currentTime + " kickStartTime= " + kickStartTime + " kickTimer= " + kickTimer + " releaseTime= " + releaseTimer);
-      if((currentTime - kickStartTime) >= kickTimer)
-      {
-        //kick
-      }
-      if((currentTime - kickStartTime) >= releaseTimer)
-      {
-        //release
-        setNoCube();
-        reset();
-        currentState = carriageState.NOCUBE;
-        kickStartTime = 0;
-      }
-    }
-  }
-  public void reset()
-  {
-    setNoCube();
-    //undo kick and release
-  }
-  
-  public boolean getBeamBreak()
-  {
-    boolean returnVal = false;
-    
-    if(beamBreak != null) {
-    returnVal = beamBreak.get(); 
-    }
-    
-    return returnVal;
-    
-  }
-  
-  private void setHaveCube()
-  {
-    solenoidGrab.set(true);
-    solenoidPop.set(false);
-  }
-  
-  private void setNoCube()
-  {
-    solenoidGrab.set(false);
-    solenoidPop.set(true);
-  }
-  
-  public void kick() {
-    currentState = carriageState.KICKING;
-  }
+//  public void isKicking(double pNow)
+//  {
+//    if(!isScheduled)
+//    {
+//      kickTimer = pNow + KICK_DELAY;
+//      releaseTimer = pNow + RELEASE_DELAY;
+//      isScheduled = true;
+//    }
+//    else
+//    {
+//      log.debug("CurrTime: " + currentTime + " kickStartTime= " + kickStartTime + " kickTimer= " + kickTimer + " releaseTime= " + releaseTimer);
+//      if((currentTime - kickStartTime) >= kickTimer)
+//      {
+//        //kick
+//        solenoidGrabberRelease.set(false);
+//      }
+//      if((currentTime - kickStartTime) >= releaseTimer)
+//      {
+//        //release
+//        setNoCube();
+//        reset();
+//        currentState = carriageState.NOCUBE;
+//        kickStartTime = 0;
+//      }
+//    }
+//    
+//  }
+//  public void reset()
+//  {
+//    setNoCube();
+//    //undo kick and release
+//  }
+//  
+//  public boolean getBeamBreak()
+//  {
+//    boolean returnVal = false;
+//    
+//    if(beamBreak != null) {
+//    returnVal = beamBreak.get(); 
+//    }
+//    
+//    return returnVal;
+//    
+//  }
+//  
+//  private void setHaveCube()
+//  {
+//    solenoidKicker.set(true);
+//    solenoidGrabberRelease.set(false);
+//  }
+//  
+//  private void setNoCube()
+//  {
+//    solenoidKicker.set(false);
+//    solenoidGrabberRelease.set(true);
+//  }
+//  
+//  public void kick() {
+//    currentState = carriageState.KICKING;
+//  }
 	
 }

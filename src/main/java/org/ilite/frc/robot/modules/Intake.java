@@ -42,7 +42,7 @@ public class Intake implements IModule{
 
 	@Override
 	public void initialize(double pNow) {
-		
+		extender.set(Value.kForward);
 	}
 
 	@Override

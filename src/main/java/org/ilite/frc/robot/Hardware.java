@@ -44,7 +44,7 @@ public class Hardware {
       TalonTach pTalonTach,
       CANifier pCanifier,
       //VideoCamera pVisionCamera,
-      DigitalInput mCarriageBeamBreak
+      DigitalInput pCarriageBeamBreak
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
@@ -54,7 +54,8 @@ public class Hardware {
     //mVisionCamera = pVisionCamera;
     //mVisionCamera.setFPS(30);
     mTalonTach = pTalonTach;
-
+    mLog.debug("Talon tach is null: " + mTalonTach == null);
+    mCarriageBeamBreak = pCarriageBeamBreak;
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
 //        try {

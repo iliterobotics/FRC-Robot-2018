@@ -74,11 +74,7 @@ public class Robot extends IterativeRobot {
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	
-<<<<<<< HEAD
   	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
-=======
-  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mData, mElevator);
->>>>>>> talontach-logic-testing
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -94,13 +90,8 @@ public class Robot extends IterativeRobot {
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.DIO_TALON_TACH),
         new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
-<<<<<<< HEAD
-        CameraServer.getInstance().startAutomaticCapture(),
-        new DigitalInput(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
-=======
         //CameraServer.getInstance().startAutomaticCapture(),
-        new DigitalInput(SystemSettings.CARRIAGE_BEAM_BREAK_ID)
->>>>>>> talontach-logic-testing
+        new DigitalInput(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
         // Sensors
         // Custom hw
         // Spike relays
@@ -147,17 +138,10 @@ public class Robot extends IterativeRobot {
 	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
-<<<<<<< HEAD
 		  switchDriverControlModes (mDriverInput);
 		  break;
 	  case SPLIT_ARCADE:
 		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mCarriage, mElevator, mData));
-=======
-		  switchDriverControlModes (new DriverInput(mDrivetrainControl, mIntake, mData, mElevator));
-		  break;
-	  case SPLIT_ARCADE:
-		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mData, mElevator));
->>>>>>> talontach-logic-testing
 		  break;
 	  }
 	  
@@ -167,11 +151,7 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-<<<<<<< HEAD
 	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator);
-=======
-	  setRunningModules(mDrivetrain, mDriverInput, mElevator);
->>>>>>> talontach-logic-testing
 	  
 	  mHardware.getPigeon().zeroAll();
 	  

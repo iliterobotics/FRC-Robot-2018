@@ -2,10 +2,7 @@ package org.ilite.frc.robot;
 
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
-<<<<<<< HEAD
 import org.ilite.frc.robot.modules.Carriage;
-=======
->>>>>>> talontach-logic-testing
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
@@ -26,13 +23,8 @@ public class DriverControlSplitArcade extends DriverInput {
 	private NeutralMode desiredNeutralMode;
 	private ControlMode desiredControlMode; 
 	
-<<<<<<< HEAD
 	public DriverControlSplitArcade(DrivetrainControl pDriveControl, Intake intake, Carriage pCarriage, Elevator pElevator, Data pData) {
 		super(pDriveControl, intake, pCarriage, pElevator, pData);
-=======
-	public DriverControlSplitArcade(DrivetrainControl pDriveControl, Intake intake, Data pData, Elevator pElevator) {
-		super(pDriveControl, intake, pData, pElevator);
->>>>>>> talontach-logic-testing
 		this.mData = pData;
 	}
 	

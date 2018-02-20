@@ -69,6 +69,9 @@ public class Utils {
     return rotationsToTicks(inches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE);
   }
   
-  
-  
+  public static double clamp(double pValue, double pMaxMagnitude) {
+    double val = Math.abs(pValue);
+    val = Math.min(val, pMaxMagnitude);
+    return val * (pValue > 0d ? 1d : -1d);
+  }
 }
