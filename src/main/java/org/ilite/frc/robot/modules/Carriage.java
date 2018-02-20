@@ -73,12 +73,17 @@ public class Carriage implements IModule{
     log.debug(currentState.toString());
     currentTime = pNow;
    //When we get the cube/beam break breaks
-    if(mData.operator.isSet(ELogitech310.A_BTN) || !beamBreak.get())
+    if(mData.operator.isSet(ELogitech310.A_BTN) /*|| !beamBreak.get()*/)
     {
       solenoidGrabberRelease.set(false);
       solenoidKicker.set(false);
       mIntake.setIntakeRetracted(true);
       //mElevator.setPower(0.3)
+    } 
+    else if (mData.operator.isSet(ELogitech310.DPAD_UP)) 
+    {
+      solenoidGrabberRelease.set(true);
+      solenoidKicker.set(false);
     }
     //switch
     else if (mData.operator.isSet(ELogitech310.B_BTN))
@@ -158,17 +163,17 @@ public class Carriage implements IModule{
 //    //undo kick and release
 //  }
 //  
-//  public boolean getBeamBreak()
-//  {
-//    boolean returnVal = false;
-//    
-//    if(beamBreak != null) {
-//    returnVal = beamBreak.get(); 
-//    }
-//    
-//    return returnVal;
-//    
-//  }
+  public boolean getBeamBreak()
+  {
+    boolean returnVal = true;
+    
+    if(beamBreak != null) {
+      returnVal = beamBreak.get(); 
+    }
+    
+    return returnVal;
+    
+  }
 //  
 //  private void setHaveCube()
 //  {

@@ -62,7 +62,7 @@ public class Robot extends IterativeRobot {
   private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
-  private  LEDControl ledController;
+  private  LEDControl mLedController;
 
   
   private GetAutonomous getAutonomous;
@@ -80,7 +80,7 @@ public class Robot extends IterativeRobot {
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
-  	ledController = new LEDControl(mHardware);
+  	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
   	Logger.setLevel(ELevel.INFO);
   }
 
@@ -156,13 +156,12 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	   setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, ledController);
+	   setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
-	  ledController.setLED(Message.EXAMPLE_MESSAGE);
   }
 
   public void teleopPeriodic() {

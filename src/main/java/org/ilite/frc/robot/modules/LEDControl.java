@@ -14,6 +14,9 @@ public class LEDControl implements IModule {
 	private CANifier mCanifier;
 	private long blinkStartTime;
 	private boolean isOn;
+	private Message mCurrentMessage;
+	private Carriage mCarriage;
+	private Intake mIntake;
 	private Hardware mHardware;
 	
 	public enum LEDColor {
@@ -28,7 +31,8 @@ public class LEDControl implements IModule {
 		BLUE(0, 0, 255),
 		RED_HSV(0, 255, 255),
 		YELLOW_HSV(20, 255, 255),
-		PURPLE_HSV(212, 255, 255);
+		PURPLE_HSV(212, 255, 255),
+		NONE(0, 0, 0);
 		
 		final int r, g, b;
 		LEDColor(int r, int g, int b) {
@@ -40,7 +44,10 @@ public class LEDControl implements IModule {
 		
 	//pulse speed = 100, slow flash = 300, solid = 0
 	public enum Message{
-		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100);
+		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100),
+	  HAS_CUBE(LEDColor.YELLOW, 100),
+	  INTAKE_LIMITING(LEDColor.RED, 100),
+	  NONE(LEDColor.NONE, 0);
 
 		final LEDColor color;
 		final int delay;
@@ -52,20 +59,25 @@ public class LEDControl implements IModule {
 	}
 
 	
-	public LEDControl(Hardware pHardware)
+	public LEDControl(Intake pIntake, Carriage pCarriage, Hardware pHardware)
 	{
+	  mIntake = pIntake;
+	  mCarriage = pCarriage;
 		mHardware = pHardware;
 		this.isOn = true;
 	}
 	public void initialize(double pNow) {
     mCanifier = mHardware.getCanifier();
-	  turnOffLED();
+	  mCurrentMessage = Message.NONE;
 		blinkStartTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public boolean update(double pNow) {
-		SmartDashboard.putNumber("time", Timer.getFPGATimestamp());
+	  mCurrentMessage = Message.NONE;
+	  if(mIntake.beamBreak()) mCurrentMessage = Message.INTAKE_LIMITING;
+	  if(!mCarriage.getBeamBreak()) mCurrentMessage = Message.HAS_CUBE;
+	  setLED(mCurrentMessage);
 		return false;
 	}
 	

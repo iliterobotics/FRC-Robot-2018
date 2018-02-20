@@ -68,6 +68,9 @@ public class DriveTrain implements IControlLoop {
 		
 //		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 100, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		
+		rightMaster.configOpenloopRamp(0.5, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		leftMaster.configOpenloopRamp(0.5, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		
 		rightMaster.setInverted(true);
 		rightFollower.setInverted(true);
 		rightFollower2.setInverted(true);

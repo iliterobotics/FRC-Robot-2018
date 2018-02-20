@@ -29,7 +29,7 @@ public class Intake implements IModule{
 	private final double LEFT_LIMITER = .8;
 	private final double RIGHT_LIMITER = .2;
 	private final double MAX_RATIO = 3;
-	private final double MIN_RATIO = .5;
+	private final double MIN_RATIO = .40;
 	
 	
 	public Intake(Elevator pElevator){
@@ -37,12 +37,12 @@ public class Intake implements IModule{
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_RIGHT);
 		beamBreak = new DigitalInput(SystemSettings.DIO_INTAKE_BEAM_BREAK);
 		extender = new DoubleSolenoid(SystemSettings.SOLENOID_INTAKE_A, SystemSettings.SOLENOID_INTAKE_B);
-		
+		mExtendIntake = false;
 	}
 
 	@Override
 	public void initialize(double pNow) {
-		extender.set(Value.kForward);
+		extender.set(Value.kReverse);
 	}
 
 	@Override
@@ -104,6 +104,10 @@ public class Intake implements IModule{
 	
 	public boolean beamBreak(){
 		return beamBreak.get();
+	}
+	
+	public boolean isCurrentLimiting() {
+	  return startCurrentLimiting;
 	}
 	
 	public void intakeOut(double inPower) 

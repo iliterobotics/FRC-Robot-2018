@@ -64,7 +64,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // CANifier Constants
   // =============================================================================
-  public static int 	CANIFIER_DEVICE_ID = 3;
+  public static int 	CANIFIER_DEVICE_ID = 4;
 
   // =============================================================================
   // Drive Train Constants
