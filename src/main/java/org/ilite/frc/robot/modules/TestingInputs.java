@@ -71,11 +71,11 @@ public class TestingInputs implements IModule {
 		{
 			if (mData.tester.isSet(ELogitech310.A_BTN))
 			{
-				mCarriage.solenoidGrabberRelease.set(true);
+//				mCarriage.solenoidGrabberRelease.set(true);
 			}
 			else
 			{
-				mCarriage.solenoidGrabberRelease.set(false);
+//				mCarriage.solenoidGrabberRelease.set(false);
 			}
 			
 			if (mData.tester.isSet(ELogitech310.B_BTN))

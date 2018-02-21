@@ -99,9 +99,9 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
-  public static int DIO_CARRIAGE_BEAM_BREAK_ID = 7;
-  public static final int SOLENOID_GRAB = 3;
-  public static final int SOLENOID_POP = 4;
+  public static final int DIO_CARRIAGE_BEAM_BREAK_ID = 6;
+  public static final int CARRIAGE_KICKER_ID = 3;
+  public static final int CARRIAGE_GRABBER_ID = 4;
   
   // =============================================================================
   // Controllers
@@ -168,7 +168,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Sensors
   // =============================================================================
 
-  public static final int DIO_INTAKE_BEAM_BREAK = 1;
+//  public static final int DIO_INTAKE_BEAM_BREAK = 7;
 
   // =============================================================================
   // Vision Constants

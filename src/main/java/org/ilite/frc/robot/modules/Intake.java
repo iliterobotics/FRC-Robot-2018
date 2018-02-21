@@ -2,18 +2,18 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.Hardware;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake implements IModule{
 	
+  private Hardware mHardware;
 	final TalonSRX leftIntakeTalon;
 	final TalonSRX rightIntakeTalon;
 	private double rightCurrent;
@@ -32,16 +32,17 @@ public class Intake implements IModule{
 	private final double MIN_RATIO = .40;
 	
 	
-	public Intake(Elevator pElevator){
+	public Intake(Elevator pElevator, Hardware pHardware){
+	  mHardware = pHardware;
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_RIGHT);
-		beamBreak = new DigitalInput(SystemSettings.DIO_INTAKE_BEAM_BREAK);
 		extender = new DoubleSolenoid(SystemSettings.SOLENOID_INTAKE_A, SystemSettings.SOLENOID_INTAKE_B);
 		mExtendIntake = false;
 	}
 
 	@Override
 	public void initialize(double pNow) {
+	  beamBreak = mHardware.getCarriageBeamBreak();
 		extender.set(Value.kReverse);
 	}
 
@@ -66,7 +67,7 @@ public class Intake implements IModule{
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		
-		if(beamBreak.get() && !mExtendIntake)
+		if(beamBreak() && !mExtendIntake)
 		{
 			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
@@ -103,9 +104,13 @@ public class Intake implements IModule{
 	}
 	
 	public boolean beamBreak(){
+	  boolean returnVal = true;
+	  if(beamBreak != null) {
 		return beamBreak.get();
+	  }
+	  
+	  return returnVal;
 	}
-	
 	public boolean isCurrentLimiting() {
 	  return startCurrentLimiting;
 	}

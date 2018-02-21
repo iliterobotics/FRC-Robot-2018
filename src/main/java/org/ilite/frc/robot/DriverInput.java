@@ -4,6 +4,7 @@ import org.ilite.frc.common.config.DriveTeamInputMap;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
@@ -97,7 +98,19 @@ public class DriverInput implements IModule{
 	}
   
   private void updateCarriage() {
+    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
+//      mCarriage.solenoidGrabber.set(true);
+//      mCarriage.solenoidKicker.set(true);
+      mCarriage.kick();
+    } 
+//      else if(mData.operator.isSet(ELogitech310.B_BTN)) {
+//      mCarriage.setHaveCube();
+//    } else {
+//      mCarriage.setNoCube();
+//    }
 //    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
+//      mCarriage.solenoidGrabber.set(true);
+//      mCarriage.solenoidKicker.set(true);
 //      mCarriage.kick();
 //    }
   }

@@ -13,36 +13,33 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Carriage implements IModule{
 
-  Solenoid solenoidKicker, solenoidGrabberRelease;
+  public Solenoid solenoidGrabber, solenoidKicker;
+  public Hardware mHardware;
   private double kickTimer;
-  private static final double KICK_DELAY = .1;
-  private static final double  RELEASE_DELAY = .2;
-  private double releaseTimer;
-  private double currentTime;
+  private static final double KICK_DELAY = .02;
+  private static final double RELEASE_DELAY = .01;
   private Data mData;
   private boolean isScheduled;
-  private DigitalInput beamBreak;
-  private carriageState currentState;
+  private static DigitalInput beamBreak;
+  private CarriageState currentState;
   private double kickStartTime;
-  private boolean kickerState, grabberState;
-  private Hardware mHardware;
+  
   private static final ILog log = Logger.createLog(Carriage.class);
-  private Intake mIntake;
+    
   
   
-  public Carriage(Data pData, Hardware pHardware, Intake pIntake)
+  public Carriage(Data pData, Hardware pHardware)
   {
-    mHardware = pHardware;
-    mIntake = pIntake;
     mData = pData;
+    mHardware = pHardware;
     isScheduled = false;
-    solenoidKicker = new Solenoid(SystemSettings.SOLENOID_GRAB);
-    solenoidGrabberRelease = new Solenoid(SystemSettings.SOLENOID_POP);
-    //setNoCube();
-    currentState = carriageState.CUBE;
+    solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
+    solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
+    setNoCube();
+    currentState = CarriageState.CUBE;
   }
   
-  public enum carriageState
+  public enum CarriageState
   {
     NOCUBE,
     CUBE,
@@ -56,139 +53,95 @@ public class Carriage implements IModule{
   }
   @Override
   public void initialize(double pNow) {
-//    setHaveCube();
+    isScheduled = false;
     beamBreak = mHardware.getCarriageBeamBreak();
-
-    kickerState = false;
-    grabberState = false;
-    solenoidKicker.set(kickerState);
-    solenoidGrabberRelease.set(grabberState);
+    currentState = CarriageState.CUBE;
   }
-  
-  //kicker true = out
-  //grabber true = closed
   @Override
   public boolean update(double pNow)
   {
     log.debug(currentState.toString());
-    currentTime = pNow;
-   //When we get the cube/beam break breaks
-    if(mData.operator.isSet(ELogitech310.A_BTN) /*|| !beamBreak.get()*/)
-    {
-      solenoidGrabberRelease.set(false);
-      solenoidKicker.set(false);
-      mIntake.setIntakeRetracted(true);
-      //mElevator.setPower(0.3)
-    } 
-    else if (mData.operator.isSet(ELogitech310.DPAD_UP)) 
-    {
-      solenoidGrabberRelease.set(true);
-      solenoidKicker.set(false);
-    }
-    //switch
-    else if (mData.operator.isSet(ELogitech310.B_BTN))
-    {
-      solenoidGrabberRelease.set(true);
-      solenoidKicker.set(true);
-    }  
-    //scale
-    else if(mData.operator.isSet(ELogitech310.Y_BTN))
-    {
-      solenoidGrabberRelease.set(true);
-      solenoidKicker.set(false); 
-    }
-    //kicker should not kick unless button is clicked
-    else
-    {
-      solenoidKicker.set(false);
-    }
-    System.out.println(beamBreak.get());
-//    switch(currentState)
-//    {
-//    case CUBE:
-//    setHaveCube();
-//    if(mData.operator.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
-//    {
-//      kickStartTime = pNow;
-//      currentState = carriageState.KICKING;
-//    }
-//    break;
-//    
-//    case KICKING:
-//      isKicking(pNow);
-//    break;
-//    
-//    case NOCUBE:
-//      setNoCube();
-//      if(getBeamBreak() || mData.operator.isSet(ELogitech310.A_BTN))
-//      {
-//        currentState = carriageState.CUBE;
-//      }
-//    }
-//    System.out.println(beamBreak.get());
     
+    switch(currentState)
+    {
+    case CUBE:
+    setHaveCube();
+    if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
+    {
+      currentState = CarriageState.KICKING;
+    }
+    break;
+    
+    case KICKING:
+      isKicking(pNow);
+    break;
+    
+    case NOCUBE:
+      if(!getBeamBreak())
+      {
+        currentState = CarriageState.CUBE;
+        break;
+      }
+      setNoCube();
+      break;
+    }
+    System.out.println(getBeamBreak());
     return false;
   } 
     
-//  public void isKicking(double pNow)
-//  {
-//    if(!isScheduled)
-//    {
-//      kickTimer = pNow + KICK_DELAY;
-//      releaseTimer = pNow + RELEASE_DELAY;
-//      isScheduled = true;
-//    }
-//    else
-//    {
-//      log.debug("CurrTime: " + currentTime + " kickStartTime= " + kickStartTime + " kickTimer= " + kickTimer + " releaseTime= " + releaseTimer);
-//      if((currentTime - kickStartTime) >= kickTimer)
-//      {
-//        //kick
-//        solenoidGrabberRelease.set(false);
-//      }
-//      if((currentTime - kickStartTime) >= releaseTimer)
-//      {
-//        //release
-//        setNoCube();
-//        reset();
-//        currentState = carriageState.NOCUBE;
-//        kickStartTime = 0;
-//      }
-//    }
-//    
-//  }
-//  public void reset()
-//  {
-//    setNoCube();
-//    //undo kick and release
-//  }
-//  
+  public void isKicking(double pNow)
+  {
+    if(!isScheduled)
+    {
+      kickStartTime = pNow;
+      isScheduled = true;
+    }
+    else
+    {
+      if((pNow - kickStartTime) >= KICK_DELAY)
+      {
+        solenoidKicker.set(true);
+      }
+      if((pNow - kickStartTime) >= RELEASE_DELAY)
+      {
+        reset();
+      }
+    }
+  }
+  public void reset()
+  {
+    setNoCube();
+    currentState = CarriageState.NOCUBE;
+    kickStartTime = 0;
+    isScheduled = false;
+    //undo kick and release
+  }
+  
   public boolean getBeamBreak()
   {
-    boolean returnVal = true;
+    boolean returnVal = false;
     
     if(beamBreak != null) {
       returnVal = beamBreak.get(); 
     }
     
     return returnVal;
-    
   }
-//  
-//  private void setHaveCube()
-//  {
-//    solenoidKicker.set(true);
-//    solenoidGrabberRelease.set(false);
-//  }
-//  
-//  private void setNoCube()
-//  {
-//    solenoidKicker.set(false);
-//    solenoidGrabberRelease.set(true);
-//  }
-//  
-//  public void kick() {
-//    currentState = carriageState.KICKING;
-//  }
-	
+  
+  public void setHaveCube()
+  {
+    solenoidGrabber.set(false);
+    solenoidKicker.set(false);
+  }
+  
+  public void setNoCube()
+  {
+    solenoidGrabber.set(true);
+    solenoidKicker.set(false);
+  }
+  
+  public void kick() {
+    currentState = CarriageState.KICKING;
+  }
+  
 }

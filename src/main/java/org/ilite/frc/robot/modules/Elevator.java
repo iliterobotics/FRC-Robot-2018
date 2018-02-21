@@ -138,6 +138,7 @@ public class Elevator implements IModule {
 		direction = mDesiredPower > 0 ? true : false;
 		tickPosition = masterElevator.getSelectedSensorPosition(0);
 		System.out.println(tickPosition + " ELEVATOR ENCODER TICKS");
+		System.out.println((masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage()) + " CURRENT");
 		mAtTop = isCurrentLimitTripped() && tickPosition > SystemSettings.ENCODER_MAX_TICKS / 2;
 		mAtBottom = isCurrentLimitTripped() && tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
 		
@@ -248,7 +249,7 @@ public class Elevator implements IModule {
 			actualPower = ElevatorState.STOP.getPower();
 			break;
 		}
-    System.out.println(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + direction + " stop=" + shouldstop + " talonTach=" + currentTachLevel);
+    System.out.println("elevatorState=" + elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + direction + " stop=" + shouldstop + " talonTach=" + currentTachLevel);
     
     masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
 		//System.out.println(mDesiredPower + "POST CHECK");
