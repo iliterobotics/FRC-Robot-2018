@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
@@ -24,6 +25,7 @@ public class Elevator implements IModule {
 	private ElevatorPosition elevatorPosition;
 	private boolean gearState;
 	private int tickPosition;
+	private DigitalInput bottomLimit;
 
 	public Elevator(Hardware pHardware) {
 	  mHardware = pHardware;
@@ -36,6 +38,8 @@ public class Elevator implements IModule {
 		elevatorState = ElevatorState.STOP;
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		gearState = false;
+		
+		bottomLimit = new DigitalInput(SystemSettings.DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH);
 		
 		masterElevator.configContinuousCurrentLimit(20, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
@@ -58,10 +62,9 @@ public class Elevator implements IModule {
 	public enum ElevatorState
 	{
 		NORMAL(0.3),
-		DECELERATE_TOP(0.03),
-		DECELERATE_BOTTOM(-0.03),
+		DECELERATE_TOP(0.2),
+		DECELERATE_BOTTOM(-0.15),
 		HOLD(1.1),
-		BOTTOM(0),
 		STOP(0);
 		double power;
 		private ElevatorState(double power)
@@ -96,6 +99,7 @@ public class Elevator implements IModule {
 		private ElevatorPosition(double inches)
 		{
 			this.inches = inches;
+			this.power = 0;
 		}
 		
 		private boolean isTapeMarker()
@@ -136,10 +140,10 @@ public class Elevator implements IModule {
 	public boolean update(double pNow) {
 	  currentTachState = talonTach.getSensor();
 		direction = mDesiredPower > 0 ? true : false;
-		tickPosition = masterElevator.getSelectedSensorPosition(0);
+		tickPosition = -1;
 		System.out.println(tickPosition + " ELEVATOR ENCODER TICKS");
 		mAtTop = isCurrentLimitTripped() && tickPosition > SystemSettings.ENCODER_MAX_TICKS / 2;
-		mAtBottom = isCurrentLimitTripped() && tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
+		mAtBottom = bottomLimit.get() && tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
 		
 
     boolean shouldstop = mAtBottom || mAtTop || isCurrentLimitTripped();
@@ -167,6 +171,7 @@ public class Elevator implements IModule {
 		  {
 		    elevatorState = ElevatorState.STOP;
 		  }
+		  System.out.println("TAPE MARKER");
 		}
 		else {
 		  //bottom
@@ -206,11 +211,11 @@ public class Elevator implements IModule {
 		      elevatorState = ElevatorState.STOP;
 		    }
 		  }
+		  System.out.println("ELEVATOR STATE SET SUCCESSFULLY");
 		}
 //		if(shouldstop) {
 //		  elevatorState = ElevatorState.STOP;
 //		}
-
 //		double power = ElevatorState.HOLD.power / 12 * masterElevator.getBusVoltage();
 		
 		double actualPower = 0;
@@ -233,10 +238,6 @@ public class Elevator implements IModule {
 			
 		case HOLD:
 //		  actualPower = elevatorState.power / masterElevator.getBusVoltage()
-
-		case BOTTOM:
-		  actualPower = Math.max(mDesiredPower, elevatorState.getPower());
-//			 masterElevator.set(ControlMode.PercentOutput, Math.max(mDesiredPower, elevatorState.getPower()));
 			 break;
 			 
 		case STOP: 
@@ -287,7 +288,7 @@ public class Elevator implements IModule {
 	
 	public void goToBottom()
 	{
-		elevatorState = ElevatorState.BOTTOM;
+		elevatorPosition = ElevatorPosition.BOTTOM;
 	}
 
 	public double getHeightInches()
