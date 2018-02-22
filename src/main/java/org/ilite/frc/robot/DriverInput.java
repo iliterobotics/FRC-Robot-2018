@@ -79,9 +79,9 @@ public class DriverInput implements IModule{
 	    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS);
 	    
 	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN))
-	      mIntake.setIntakeExtended(false);
+	      mIntake.setIntakeRetracted(false);
 	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN))
-	      mIntake.setIntakeExtended(true);
+	      mIntake.setIntakeRetracted(true);
 	    
 	    if(intakeSpeed > 0) {
 	      mIntake.intakeIn(intakeSpeed);
@@ -91,13 +91,14 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
-	  mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_OPEN_LOOP_CONTROL_AXIS));
+	  mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) + 
+	                            mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
 	}
   
   private void updateCarriage() {
-    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
-      mCarriage.kick();
-    }
+//    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
+//      mCarriage.kick();
+//    }
   }
 	
 	@Override

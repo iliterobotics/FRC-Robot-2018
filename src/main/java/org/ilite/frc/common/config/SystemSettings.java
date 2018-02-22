@@ -64,7 +64,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // CANifier Constants
   // =============================================================================
-  public static int 	CANIFIER_DEVICE_ID = 1;
+  public static int 	CANIFIER_DEVICE_ID = 4;
 
   // =============================================================================
   // Drive Train Constants
@@ -108,7 +108,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
-  public static int     DIO_CARRIAGE_BEAM_BREAK_ID = 0;
+  public static int DIO_CARRIAGE_BEAM_BREAK_ID = 7;
   public static final int SOLENOID_GRAB = 3;
   public static final int SOLENOID_POP = 4;
   
@@ -176,7 +176,9 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Sensors
   // =============================================================================
+
   public static final int DIO_INTAKE_BEAM_BREAK = 1;
+
   // =============================================================================
   // Vision Constants
   // =============================================================================

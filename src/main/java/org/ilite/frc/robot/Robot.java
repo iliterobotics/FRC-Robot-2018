@@ -23,6 +23,8 @@ import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
+import org.ilite.frc.robot.modules.LEDControl;
+import org.ilite.frc.robot.modules.LEDControl.Message;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
@@ -62,6 +64,8 @@ public class Robot extends IterativeRobot {
   private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
+  private  LEDControl mLedController;
+
   
   private GetAutonomous getAutonomous;
   
@@ -88,7 +92,7 @@ public class Robot extends IterativeRobot {
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-//        new PowerDistributionPanel(SystemSettings.PDP_DEVICE_ID), 
+//        new PowerDistributionPanel(SystemSettisngs.PDP_DEVICE_ID), 
         null,
         new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
         new TalonTach(SystemSettings.DIO_TALON_TACH),
@@ -102,7 +106,6 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
-
   }
 
   public void autonomousInit() {
@@ -164,13 +167,12 @@ public class Robot extends IterativeRobot {
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
-	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator);
+	   setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
 	  
 	  mHardware.getPigeon().zeroAll();
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
-
   }
 
   public void teleopPeriodic() {

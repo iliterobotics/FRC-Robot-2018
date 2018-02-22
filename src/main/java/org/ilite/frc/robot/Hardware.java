@@ -43,18 +43,19 @@ public class Hardware {
       PigeonIMU pPigeon,
       TalonTach pTalonTach,
       CANifier pCanifier,
-      VideoCamera pVisionCamera,
-      DigitalInput mCarriageBeamBreak
+      //VideoCamera pVisionCamera,
+      DigitalInput pCarriageBeamBreak
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
-    mVisionCamera = pVisionCamera;
-    mVisionCamera.setFPS(30);
+    //mVisionCamera = pVisionCamera;
+    //mVisionCamera.setFPS(30);
     mTalonTach = pTalonTach;
-
+    mLog.debug("Talon tach is null: " + mTalonTach == null);
+    mCarriageBeamBreak = pCarriageBeamBreak;
 //    pInitializationPool.execute(() -> {
 //      while(mAHRS.isCalibrating()) {
 //        try {
