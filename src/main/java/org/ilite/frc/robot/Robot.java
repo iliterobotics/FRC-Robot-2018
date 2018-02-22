@@ -66,10 +66,7 @@ public class Robot extends IterativeRobot {
 
   
   private GetAutonomous getAutonomous;
-  
-  private String controllerMode;
-  private int numControlMode;
-  
+
   public Robot() {
     mElevator = new Elevator(mHardware);
     mIntake = new Intake(mElevator);
@@ -139,8 +136,7 @@ public class Robot extends IterativeRobot {
   
   public void receiveDriverControlMode() {
 	  int receivedControlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry(EDriverControlMode.class.getSimpleName()).getNumber(0).intValue();
-	  numControlMode = receivedControlMode;
-	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
+	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(receivedControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
 		  switchDriverControlModes (mDriverInput);

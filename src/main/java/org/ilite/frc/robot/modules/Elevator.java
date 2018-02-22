@@ -42,6 +42,7 @@ public class Elevator implements IModule {
 		
 		masterElevator.configContinuousCurrentLimit(20, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
+		masterElevator.configOpenloopRamp(0.5, 0);
 //		masterElevator.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		
 //		masterElevator.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
@@ -207,7 +208,6 @@ public class Elevator implements IModule {
 		      elevatorState = ElevatorState.STOP;
 		    }
 		  }
-		  System.out.println("ELEVATOR STATE SET SUCCESSFULLY");
 		}
 //		if(shouldstop) {
 //		  elevatorState = ElevatorState.STOP;
@@ -245,9 +245,10 @@ public class Elevator implements IModule {
 			actualPower = ElevatorState.STOP.getPower();
 			break;
 		}
+		System.out.println("BOTTOM LIMIT =" + bottomLimit.get());
     System.out.println(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + direction + " stop=" + shouldstop + " talonTach=" + currentTachLevel);
-    
-    masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
+//    masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
+		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
 		lastTachState = currentTachState;
 		return true;
@@ -287,14 +288,10 @@ public class Elevator implements IModule {
 	{
 		elevatorPosition = ElevatorPosition.BOTTOM;
 	}
-
-	public double getHeightInches()
+	public boolean decelerateHeight()
 	{
-		//convert current ticks to inches for DriveTrain
-//		return tickPosition /
-		return 0.0;
+	  return currentTachLevel >= 2;
 	}
-	
 	public boolean getDirection()
 	{
 		return direction;

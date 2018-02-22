@@ -64,11 +64,16 @@ public class DriverInput implements IModule{
 		
 		throttle = scaleInputs ? throttle = DriverInputUtils.scale(throttle, 0.33) : EInputScale.EXPONENTIAL.map(throttle, 2);
 
+		if(mElevatorModule.decelerateHeight())
+		{
+		  throttle = Utils.clamp(throttle, 0.5);
+		}
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      rotate /= 3;
 	      rotate /= 3;
 		}
 		
+		System.out.println("ENGINE THROTTLE " + throttle);
 		desiredLeftOutput = throttle + rotate;
 		desiredRightOutput = throttle - rotate;
 		
