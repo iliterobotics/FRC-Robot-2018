@@ -24,7 +24,6 @@ public class Elevator implements IModule {
 	private ElevatorState elevatorState;
 	private ElevatorPosition elevatorPosition;
 	private boolean gearState;
-	private int tickPosition;
 	private DigitalInput bottomLimit;
 
 	public Elevator(Hardware pHardware) {
@@ -120,13 +119,13 @@ public class Elevator implements IModule {
 		//double desiredTick = some regression to convert inches to ticks
 		//masterElevator.set(ControlMode.MotionMagic, desiredTick);
 	}
+	
 	@Override
 	public void initialize(double pNow) {
     talonTach = mHardware.getTalonTach();
 	  masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-	  tickPosition = 0;
 	  gearState = shiftSolenoid.get();
-	  elevatorState = ElevatorState.STOP;
+	   elevatorState = ElevatorState.STOP;
 	  elevatorPosition = ElevatorPosition.BOTTOM;
 	  mAtBottom = true;
 	  mAtTop = false;
@@ -140,10 +139,8 @@ public class Elevator implements IModule {
 	public boolean update(double pNow) {
 	  currentTachState = talonTach.getSensor();
 		direction = mDesiredPower > 0 ? true : false;
-		tickPosition = -1;
-		System.out.println(tickPosition + " ELEVATOR ENCODER TICKS");
-		mAtTop = isCurrentLimitTripped() && tickPosition > SystemSettings.ENCODER_MAX_TICKS / 2;
-		mAtBottom = bottomLimit.get() && tickPosition < SystemSettings.ENCODER_MAX_TICKS / 2;
+		mAtTop = isCurrentLimitTripped() && currentTachLevel == 3;
+		mAtBottom = bottomLimit.get();
 		
 
     boolean shouldstop = mAtBottom || mAtTop || isCurrentLimitTripped();
@@ -173,18 +170,19 @@ public class Elevator implements IModule {
 		  }
 		  System.out.println("TAPE MARKER");
 		}
+		
 		else {
 		  //bottom
-		  if(!direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 1 )
+		  if(!direction && currentTachLevel == 1 )
 		  {
 		    elevatorState = ElevatorState.DECELERATE_BOTTOM;
 		  }
 		  //top
-		  if(direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2) && currentTachLevel == 3)
+		  if(direction && currentTachLevel == 3)
 		  {
 		    elevatorState = ElevatorState.DECELERATE_TOP;
 		  }
-		  if((direction && tickPosition < (SystemSettings.ENCODER_MAX_TICKS / 2)) ||  (!direction && tickPosition > (SystemSettings.ENCODER_MAX_TICKS / 2)))
+		  if((direction && currentTachLevel == 0 && currentTachState != lastTachState) ||  (!direction && currentTachLevel == 3 && currentTachState != lastTachState ))
 		  {
 		    elevatorState = ElevatorState.NORMAL;
 		  }
@@ -198,7 +196,6 @@ public class Elevator implements IModule {
 		    {
 		      elevatorState = ElevatorState.STOP;
 		    }
-		    zeroEncoder();
 		  }
 		  if(mAtTop)
 		  {

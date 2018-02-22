@@ -20,6 +20,7 @@ public class DriverInput implements IModule{
   private final Carriage mCarriage;
   private final Elevator mElevatorModule;
   private final Intake mIntake;
+  private boolean scaleInputs;
   
 	private Data mData;
 	
@@ -30,6 +31,7 @@ public class DriverInput implements IModule{
 		this.mData = pData;
 		mCarriage = pCarriage;
 		mElevatorModule = pElevator;
+		scaleInputs = false;
 	}
 	
 	@Override
@@ -40,7 +42,15 @@ public class DriverInput implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		updateDriveTrain();
+		if(!scaleInputs && mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE))
+		{
+		  scaleInputs = true;
+		}
+		else if(scaleInputs && mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE));
+		{
+		  scaleInputs = false;
+		}
+	  updateDriveTrain();
 		updateIntake();
 		updateElevator();
 		updateCarriage();
@@ -53,8 +63,15 @@ public class DriverInput implements IModule{
 		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
-		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
+		if(scaleInputs)
+		{
+		  throttle = Utils.scale(throttle, 0.33);
+		}
+		else
+		{
+      throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+		}
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      rotate /= 3;
 	      rotate /= 3;
