@@ -14,7 +14,9 @@ import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.CubeStraight;
 import org.ilite.frc.robot.commands.FollowPath;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
@@ -32,11 +34,15 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 
 public class Robot extends IterativeRobot {
@@ -87,6 +93,8 @@ public class Robot extends IterativeRobot {
   
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
+//    NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+      SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
     
     mHardware.init(
         mExecutor,
@@ -141,10 +149,12 @@ public class Robot extends IterativeRobot {
     
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(driveControl, mData, 
-                      new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
-                      new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
-                      false));
+    mCommandQueue.add(new GyroTurn(driveControl, mData, 3));
+    mCommandQueue.add(new CubeStraight(mData, driveControl));
+//    mCommandQueue.add(new FollowPath(driveControl, mData, 
+//                      new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
+//                      new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
+//                      false));
     // Add commands here
     updateCommandQueue(true);
   }

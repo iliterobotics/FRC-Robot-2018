@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
@@ -88,6 +90,7 @@ public class DisplayApplication extends Application{
 	  dataMatrix.put("pigeon", getKeys(EPigeon.class));
 	  dataMatrix.put("pdp", getKeys(EPowerDistPanel.class));
 	  dataMatrix.put("drivetrain", getKeys(EDriveTrain.class));;
+	  dataMatrix.put("vision", getKeys(ECubeTarget.class));
   }
   
   @SuppressWarnings("unchecked")
@@ -125,7 +128,6 @@ public class DisplayApplication extends Application{
     Button loadLogs = new Button("Choose Log to Import");
     HBox graphconfig = new HBox(25d, resetlogs, combo, loadLogs);
     graphconfig.setAlignment(Pos.CENTER);
-        
     combo.setOnAction(event -> {
       mSelectedCodexToLoad = combo.getSelectionModel().getSelectedItem();
       loadLogs.setDisable(mSelectedCodexToLoad == null);

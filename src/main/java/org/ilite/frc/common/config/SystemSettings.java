@@ -9,6 +9,8 @@ import org.ilite.frc.robot.Utils;
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Trajectory.FitMethod;
@@ -145,6 +147,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Vision Constants
   // =============================================================================
+  public static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   public static double VISION_CUBE_WIDTH_INCHES = 12; // Average of possible cube widths
   public static int		 VISION_TWO_CUBE_WIDTH = 50;
   public static double VISION_HORIZ_FOV_DEGREES = 60;

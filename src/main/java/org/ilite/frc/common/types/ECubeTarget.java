@@ -1,5 +1,6 @@
 package org.ilite.frc.common.types;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.robot.vision.Processing;
 import org.ilite.frc.robot.vision.Target;
 

@@ -11,13 +11,15 @@ import org.ilite.frc.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.networktables.NetworkTable;
+
 public class GyroTurn implements ICommand {
   
   private DriveControl mDriveControl;
   private Data mData;
   
   private static final int kMIN_ALIGNED_COUNT = 5;
-  private static final Double kP = 0.025;
+  private static final Double kP = 0.010;
   private static final Double kD = 0.0;
   private static final Double kI = 0.0;
   private static final Double kMIN_POWER = 0.05;
@@ -31,6 +33,7 @@ public class GyroTurn implements ICommand {
   public GyroTurn(DriveControl pDriveControl, Data pData, double pAllowableError) {
     this.mDriveControl = pDriveControl;
     this.mData = pData;
+//    NetworkTable table = System
     Double visionAngle = mData.vision.get(ECubeTarget.DELTA_ANGLE);
     this.mSetpointDegrees = visionAngle == null ? 0 : visionAngle;
     this.mAlignedCount = 0.0;
@@ -45,9 +48,17 @@ public class GyroTurn implements ICommand {
     this.mTotalError = this.mError;
   }
 
+  @SuppressWarnings("static-access")
   public boolean update(double pNow) {
-    updateValues();
     
+    if(isFinished()) { 
+      System.out.println("YER DON!");
+      return true;
+    
+    }
+//    System.out.println("tx: " +SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99));
+    System.out.println("area: " + SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("ta").getDouble(-99));
+    updateValues();
     mError = getError(); // Update error value
     this.mTotalError += this.mError; // Update running error total
     if ((Math.abs(mError) < mAllowableError)) mAlignedCount++;
@@ -68,8 +79,8 @@ public class GyroTurn implements ICommand {
         .setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DriveMode.PercentOutput, NeutralMode.Brake));
     
     mLastError = mError;
-    
-    System.out.printf("Target: %s Yaw: %s\n", mSetpointDegrees, mData.pigeon.get(EPigeon.YAW));
+    System.out.println("vision: " + mVisionAngle);
+    //System.out.printf("Target: %s Yaw: %s\n", mSetpointDegrees, mData.pigeon.get(EPigeon.YAW));
     return false;
   }
 
@@ -77,15 +88,26 @@ public class GyroTurn implements ICommand {
     return IMU.getAngleDistance(IMU.clampDegrees(mCurrentYaw), mTargetYaw);
   }
 
+  @SuppressWarnings("static-access")
   private void updateValues() {
     mCurrentYaw = mData.pigeon.get(EPigeon.YAW);
     mCurrentYaw = mCurrentYaw == null ? 0 : mCurrentYaw;
-    mVisionAngle = mData.vision.get(ECubeTarget.DELTA_ANGLE);
+    System.out.println(SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99) + "");
+    double modifiedAngle = SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99);
+    if(modifiedAngle<0)
+    {
+      modifiedAngle -= 30.0;
+    }
+    mVisionAngle = modifiedAngle;//SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99);//mData.vision.get(ECubeTarget.DELTA_ANGLE);
     mTargetYaw = mVisionAngle == null ? mCurrentYaw : -mVisionAngle;
   }
   
   @Override
   public void shutdown(double pNow) {
     // TODO Auto-generated method stub
+  }
+  
+  public boolean isFinished() {
+    return mVisionAngle <= 12.0;
   }
 }
