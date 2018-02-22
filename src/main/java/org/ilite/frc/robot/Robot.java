@@ -75,9 +75,9 @@ public class Robot extends IterativeRobot {
   public Robot() {
     mDrivetrainControl = new DrivetrainControl();
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
-    mCarriage = new Carriage(mData, mHardware);
   	mElevator = new Elevator(mHardware);
   	mIntake = new Intake(mElevator);
+    mCarriage = new Carriage(mData, mHardware, mIntake);
   	mDrivetrain = new DriveTrain(mDrivetrainControl, mHardware, mData);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
     mControlLoop = new ControlLoopManager(mDrivetrainControl, mDrivetrain, mData, mHardware);

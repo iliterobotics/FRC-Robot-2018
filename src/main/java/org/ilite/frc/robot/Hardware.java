@@ -43,7 +43,7 @@ public class Hardware {
       PigeonIMU pPigeon,
       TalonTach pTalonTach,
       CANifier pCanifier,
-      //VideoCamera pVisionCamera,
+      VideoCamera pVisionCamera,
       DigitalInput pCarriageBeamBreak
   ) {
     mDriverJoystick = pDriverJoystick;
