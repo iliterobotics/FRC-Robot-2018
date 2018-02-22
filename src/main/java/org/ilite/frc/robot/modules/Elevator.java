@@ -170,10 +170,9 @@ public class Elevator implements IModule {
 		  }
 		  System.out.println("TAPE MARKER");
 		}
-		
 		else {
 		  //bottom
-		  if(!direction && currentTachLevel == 1 )
+		  if(!direction && currentTachLevel == 0 )
 		  {
 		    elevatorState = ElevatorState.DECELERATE_BOTTOM;
 		  }
@@ -182,7 +181,7 @@ public class Elevator implements IModule {
 		  {
 		    elevatorState = ElevatorState.DECELERATE_TOP;
 		  }
-		  if((direction && currentTachLevel == 0 && currentTachState != lastTachState) ||  (!direction && currentTachLevel == 3 && currentTachState != lastTachState ))
+		  if((direction && currentTachLevel == 0) ||  (!direction && currentTachLevel == 3))
 		  {
 		    elevatorState = ElevatorState.NORMAL;
 		  }
@@ -273,6 +272,7 @@ public class Elevator implements IModule {
 		return mAtBottom;
 	}
 	
+	//obsolete?
 	public void zeroEncoder()
 	{
 		masterElevator.setSelectedSensorPosition(0, 0, 0);

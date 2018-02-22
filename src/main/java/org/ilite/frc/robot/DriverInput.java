@@ -1,10 +1,12 @@
 package org.ilite.frc.robot;
 
 import org.ilite.frc.common.config.DriveTeamInputMap;
+import org.ilite.frc.common.input.DriverInputUtils;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
@@ -42,14 +44,10 @@ public class DriverInput implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		if(!scaleInputs && mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE))
-		{
+		if(mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE))
 		  scaleInputs = true;
-		}
-		else if(scaleInputs && mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE));
-		{
+		else
 		  scaleInputs = false;
-		}
 	  updateDriveTrain();
 		updateIntake();
 		updateElevator();
@@ -64,14 +62,8 @@ public class DriverInput implements IModule{
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 		
-		if(scaleInputs)
-		{
-		  throttle = Utils.scale(throttle, 0.33);
-		}
-		else
-		{
-      throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
-		}
+		throttle = scaleInputs ? throttle = DriverInputUtils.scale(throttle, 0.33) : EInputScale.EXPONENTIAL.map(throttle, 2);
+
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      rotate /= 3;
 	      rotate /= 3;
@@ -109,6 +101,11 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
+	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
+	  {
+	    mElevatorModule.setPosition(ElevatorPosition.FIRST_TAPE);
+	  }
+	  
 	  mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) + 
 	                            mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
 	}

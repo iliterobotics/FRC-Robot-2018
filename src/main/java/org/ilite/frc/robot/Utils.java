@@ -75,8 +75,4 @@ public class Utils {
     return val * (pValue > 0d ? 1d : -1d);
   }
   
-  public static double scale(double pValue, double pScaleFactor)
-  {
-    return pValue * pScaleFactor;
-  }
 }
