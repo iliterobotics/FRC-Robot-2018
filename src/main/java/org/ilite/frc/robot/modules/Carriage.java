@@ -22,12 +22,13 @@ public class Carriage implements IModule{
   private boolean isScheduled;
   private static DigitalInput beamBreak;
   private CarriageState currentState;
+  private GrabberState grabberState;
+  private KickerState kickerState;
   private double kickStartTime;
   
   private static final ILog log = Logger.createLog(Carriage.class);
     
-  
-  
+  //constructs necessary variables and sets default state to cube
   public Carriage(Data pData, Hardware pHardware)
   {
     mData = pData;
@@ -35,10 +36,13 @@ public class Carriage implements IModule{
     isScheduled = false;
     solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
     solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
-    setNoCube();
+    setHaveCube();
     currentState = CarriageState.CUBE;
+    grabberState = GrabberState.ISGRABBING;
+    kickerState = KickerState.ISNOTKICKING;
   }
   
+  //creates new enum with states for no cube, cube, and kicking
   public enum CarriageState
   {
     NOCUBE,
@@ -46,12 +50,45 @@ public class Carriage implements IModule{
     KICKING;
   }
   
+  public enum GrabberState
+  { 
+    ISGRABBING(false),
+    ISNOTGRABBING(true);
+    
+    private boolean grabber;
+
+    private GrabberState(boolean grabber)
+    {
+      this.grabber = grabber;
+    }
+  }
+  
+  public enum KickerState
+  {
+    ISKICKING(true),
+    ISNOTKICKING(false);
+    
+    private boolean kicker;
+    
+    private KickerState(boolean kicker)
+    {
+      this.kicker = kicker;
+    }
+  }
+  
   @Override
   public void shutdown(double pNow) {
     
     
   }
+  
+//  public void setGrabberState(GrabberState grabberState)
+//  {
+//    if(grabberState == GrabberState.
+//  }
+  
   @Override
+  //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
     isScheduled = false;
     beamBreak = mHardware.getCarriageBeamBreak();
@@ -60,12 +97,15 @@ public class Carriage implements IModule{
   @Override
   public boolean update(double pNow)
   {
+    //displays the current state
     log.debug(currentState.toString());
     
+    //cycles through enum states
     switch(currentState)
     {
     case CUBE:
     setHaveCube();
+    //if pressed, start kick sequence
     if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
     {
       currentState = CarriageState.KICKING;
@@ -76,6 +116,7 @@ public class Carriage implements IModule{
       isKicking(pNow);
     break;
     
+    //if the beamBreak is broken, set the current state to cube
     case NOCUBE:
       if(!getBeamBreak())
       {
@@ -91,6 +132,7 @@ public class Carriage implements IModule{
     
   public void isKicking(double pNow)
   {
+    //if the kick sequence is not scheduled to start, set the boolean value to true and record the start time
     if(!isScheduled)
     {
       kickStartTime = pNow;
@@ -98,16 +140,20 @@ public class Carriage implements IModule{
     }
     else
     {
+      //if the kick sequence is scheduled to start, wait the specified amount of time and then kick
       if((pNow - kickStartTime) >= KICK_DELAY)
       {
         solenoidKicker.set(true);
       }
+      //after kicking, wait the specified amount of time to allow for release and then reset
       if((pNow - kickStartTime) >= RELEASE_DELAY)
       {
         reset();
       }
     }
   }
+  //set the current state to no cube, reset the start time of the kick sequence
+  //to 0, and make sure that the kick sequence is not scheduled to start
   public void reset()
   {
     setNoCube();
@@ -116,7 +162,7 @@ public class Carriage implements IModule{
     isScheduled = false;
     //undo kick and release
   }
-  
+  //verify that the beamBreak is functioning
   public boolean getBeamBreak()
   {
     boolean returnVal = false;
@@ -127,21 +173,16 @@ public class Carriage implements IModule{
     
     return returnVal;
   }
-  
+  //set the solenoids to the state that they will be in when the robot holds a cube
   public void setHaveCube()
   {
     solenoidGrabber.set(false);
     solenoidKicker.set(false);
   }
-  
+//set the solenoids to the state that they will be in when the robot does not hold a cube
   public void setNoCube()
   {
     solenoidGrabber.set(true);
     solenoidKicker.set(false);
   }
-  
-  public void kick() {
-    currentState = CarriageState.KICKING;
-  }
-  
 }
