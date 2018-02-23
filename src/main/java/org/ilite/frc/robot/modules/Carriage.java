@@ -9,18 +9,20 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Solenoid;
+import wrappers.IDigitalInput;
+import wrappers.ISolenoid;
+import wrappers.SolenoidWrapper;
 
 public class Carriage implements IModule{
 
-  public Solenoid solenoidGrabber, solenoidKicker;
+  public ISolenoid solenoidGrabber, solenoidKicker;
+  public IDigitalInput beamBreak;
   public Hardware mHardware;
   private double kickTimer;
   private static final double KICK_DELAY = .02;
   private static final double RELEASE_DELAY = .01;
   private Data mData;
   private boolean isScheduled;
-  private static DigitalInput beamBreak;
   private CarriageState currentState;
   private GrabberState grabberState;
   private KickerState kickerState;
@@ -90,8 +92,8 @@ public class Carriage implements IModule{
   @Override
   //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
-    isScheduled = false;
     beamBreak = mHardware.getCarriageBeamBreak();
+    isScheduled = false;
     currentState = CarriageState.CUBE;
   }
   @Override
@@ -165,13 +167,7 @@ public class Carriage implements IModule{
   //verify that the beamBreak is functioning
   public boolean getBeamBreak()
   {
-    boolean returnVal = false;
-    
-    if(beamBreak != null) {
-      returnVal = beamBreak.get(); 
-    }
-    
-    return returnVal;
+    return beamBreak.get();
   }
   //set the solenoids to the state that they will be in when the robot holds a cube
   public void setHaveCube()
