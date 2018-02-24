@@ -15,19 +15,17 @@ public class Carriage implements IModule{
 
   public Solenoid solenoidGrabber, solenoidKicker;
   public Hardware mHardware;
-  private double kickTimer;
-  private static final double KICK_DELAY = .02;
-  private static final double RELEASE_DELAY = .01;
+  private static final double RELEASE_DELAY = .02; // KICK first, then release after this amount of time (seconds)
+  private static final double RESET_DELAY = 1.0; // reset after all cylinders have fully extended.
   private Data mData;
   private boolean isScheduled;
-  private static DigitalInput beamBreak;
-  private CarriageState currentState;
-  private GrabberState grabberState;
-  private KickerState kickerState;
-  private double kickStartTime;
-  
+  private DigitalInput beamBreak;
+  private CarriageState mCurrentState;
+  private double releaseTime;
+  private double resetTime;
+
   private static final ILog log = Logger.createLog(Carriage.class);
-    
+
   //constructs necessary variables and sets default state to cube
   public Carriage(Data pData, Hardware pHardware)
   {
@@ -36,25 +34,14 @@ public class Carriage implements IModule{
     isScheduled = false;
     solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
     solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
-    setHaveCube();
-    currentState = CarriageState.CUBE;
-    grabberState = GrabberState.ISGRABBING;
-    kickerState = KickerState.ISNOTKICKING;
+    mCurrentState = CarriageState.GRAB_CUBE;
   }
-  
-  //creates new enum with states for no cube, cube, and kicking
-  public enum CarriageState
-  {
-    NOCUBE,
-    CUBE,
-    KICKING;
-  }
-  
+
   public enum GrabberState
   { 
-    ISGRABBING(false),
-    ISNOTGRABBING(true);
-    
+    GRAB_EXTEND(false),
+    RELEASE_RETRACT(true);
+
     private boolean grabber;
 
     private GrabberState(boolean grabber)
@@ -62,127 +49,122 @@ public class Carriage implements IModule{
       this.grabber = grabber;
     }
   }
-  
+
   public enum KickerState
   {
-    ISKICKING(true),
-    ISNOTKICKING(false);
-    
+    KICK_EXTEND(true),
+    RESET(false);
+
     private boolean kicker;
-    
+
     private KickerState(boolean kicker)
     {
       this.kicker = kicker;
     }
   }
-  
+
+  //creates new enum with states for no cube, cube, and kicking
+  public enum CarriageState
+  {
+    RESET(GrabberState.RELEASE_RETRACT, KickerState.RESET),
+    GRAB_CUBE(GrabberState.GRAB_EXTEND, KickerState.RESET),
+    KICKING(null, null); // this is a sequence
+
+    GrabberState mGrab;
+    KickerState mKick;
+    private CarriageState(GrabberState pGrab, KickerState pKick) {
+      mGrab = pGrab;
+      mKick = pKick;
+    }
+  }
+
   @Override
   public void shutdown(double pNow) {
-    
-    
+
   }
-  
-//  public void setGrabberState(GrabberState grabberState)
-//  {
-//    if(grabberState == GrabberState.
-//  }
-  
+
+  public void setCarriageState(CarriageState pCarriageState)
+  {
+    mCurrentState = pCarriageState;
+    isScheduled = false;
+  }
+
   @Override
   //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
     isScheduled = false;
     beamBreak = mHardware.getCarriageBeamBreak();
-    currentState = CarriageState.CUBE;
+    mCurrentState = CarriageState.GRAB_CUBE;
   }
   @Override
   public boolean update(double pNow)
   {
-    //displays the current state
-    log.debug(currentState.toString());
-    
-    //cycles through enum states
-    switch(currentState)
-    {
-    case CUBE:
-    setHaveCube();
-    //if pressed, start kick sequence
-    if(mData.driverinput.isSet(ELogitech310.DPAD_LEFT) || isScheduled)
-    {
-      currentState = CarriageState.KICKING;
+    if(mCurrentState != CarriageState.KICKING && getBeamBreak()) {
+      mCurrentState = CarriageState.GRAB_CUBE;
     }
-    break;
-    
+    //cycles through enum states
+    switch(mCurrentState)
+    {
     case KICKING:
       isKicking(pNow);
-    break;
-    
-    //if the beamBreak is broken, set the current state to cube
-    case NOCUBE:
-      if(!getBeamBreak())
-      {
-        currentState = CarriageState.CUBE;
-        break;
-      }
-      setNoCube();
+      break;
+
+      //if the beamBreak is broken, set the current state to cube
+    case RESET:
+    case GRAB_CUBE:
+    default:
+      solenoidKicker.set(mCurrentState.mKick.kicker);
+      solenoidGrabber.set(mCurrentState.mGrab.grabber);
       break;
     }
+    log.debug(mCurrentState.toString());
     System.out.println(getBeamBreak());
     return false;
   } 
-    
-  public void isKicking(double pNow)
+
+  private void isKicking(double pNow)
   {
     //if the kick sequence is not scheduled to start, set the boolean value to true and record the start time
     if(!isScheduled)
     {
-      kickStartTime = pNow;
+      releaseTime = pNow + RELEASE_DELAY;
+      resetTime = pNow + RESET_DELAY;
       isScheduled = true;
     }
-    else
+
+    solenoidKicker.set(KickerState.KICK_EXTEND.kicker);
+    
+    //if the kick sequence is scheduled to start, wait the specified amount of time and then kick
+    if(pNow >= releaseTime)
     {
-      //if the kick sequence is scheduled to start, wait the specified amount of time and then kick
-      if((pNow - kickStartTime) >= KICK_DELAY)
-      {
-        solenoidKicker.set(true);
-      }
-      //after kicking, wait the specified amount of time to allow for release and then reset
-      if((pNow - kickStartTime) >= RELEASE_DELAY)
-      {
-        reset();
-      }
+      solenoidGrabber.set(GrabberState.RELEASE_RETRACT.grabber);
+    }
+    //after kicking, wait the specified amount of time to allow for release and then reset
+    if(pNow >= resetTime)
+    {
+      reset();
     }
   }
   //set the current state to no cube, reset the start time of the kick sequence
   //to 0, and make sure that the kick sequence is not scheduled to start
-  public void reset()
+  private void reset()
   {
-    setNoCube();
-    currentState = CarriageState.NOCUBE;
-    kickStartTime = 0;
+    setCarriageState(CarriageState.RESET);
+    releaseTime = 0d;
+    resetTime = 0d;
     isScheduled = false;
     //undo kick and release
   }
   //verify that the beamBreak is functioning
-  public boolean getBeamBreak()
+  private boolean getBeamBreak()
   {
     boolean returnVal = false;
-    
+
     if(beamBreak != null) {
       returnVal = beamBreak.get(); 
     }
-    
+
     return returnVal;
   }
-  //set the solenoids to the state that they will be in when the robot holds a cube
-  public void setHaveCube()
-  {
-    solenoidGrabber.set(false);
-    solenoidKicker.set(false);
-  }
-//set the solenoids to the state that they will be in when the robot does not hold a cube
-  public void setNoCube()
-  {
-    solenoidGrabber.set(true);
-    solenoidKicker.set(false);
-  }
+
 }
