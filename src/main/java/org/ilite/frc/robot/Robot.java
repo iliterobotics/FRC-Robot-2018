@@ -169,6 +169,7 @@ public class Robot extends IterativeRobot {
     mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
     updateRunningModules();
+    mHardware.compressor.start();
     
 //      mData.resetAll(mCurrentTime);
     }

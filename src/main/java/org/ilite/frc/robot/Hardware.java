@@ -13,10 +13,13 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.cscore.VideoCamera;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class Hardware {
+  private static final int PCM_ADDRESS = 11;
+
   private ILog mLog = Logger.createLog(Hardware.class);
 
   private Joystick mDriverJoystick;
@@ -30,6 +33,7 @@ public class Hardware {
   private Data data;
   private TalonTach mTalonTach;
   private DigitalInput mCarriageBeamBreak;
+  Compressor compressor;
   
   Hardware() {
     
@@ -46,6 +50,8 @@ public class Hardware {
       //VideoCamera pVisionCamera,
       DigitalInput pCarriageBeamBreak
   ) {
+    compressor = new Compressor(SystemSettings.PCM_DEVICE_ID);
+    compressor.setClosedLoopControl(true);
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
     mPDP = pPDP;

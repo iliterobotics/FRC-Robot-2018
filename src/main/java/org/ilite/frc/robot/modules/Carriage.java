@@ -1,7 +1,6 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 
@@ -16,13 +15,15 @@ public class Carriage implements IModule{
   public Solenoid solenoidGrabber, solenoidKicker;
   public Hardware mHardware;
   private static final double RELEASE_DELAY = .02; // KICK first, then release after this amount of time (seconds)
-  private static final double RESET_DELAY = 1.0; // reset after all cylinders have fully extended.
+  private static final double RESET_DELAY = .03; // reset after all cylinders have fully extended.
   private Data mData;
   private boolean isScheduled;
   private DigitalInput beamBreak;
   private CarriageState mCurrentState;
   private double releaseTime;
   private double resetTime;
+  
+  
 
   private static final ILog log = Logger.createLog(Carriage.class);
 
