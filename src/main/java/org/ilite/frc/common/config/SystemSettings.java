@@ -41,11 +41,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT1 = 8;
-  public static  int kDRIVETRAIN_TALONID_LEFT2 = 9;
-  public static  int kDRIVETRAIN_TALONID_LEFT3 = 10;
-  public static  int kDRIVETRAIN_TALONID_RIGHT1 = 6;
-  public static  int kDRIVETRAIN_TALONID_RIGHT2 = 5;
+  public static  int kDRIVETRAIN_TALONID_LEFT1 = 10;
+  public static  int kDRIVETRAIN_TALONID_LEFT2 = 11;
+  public static  int kDRIVETRAIN_TALONID_LEFT3 = 12;
+  public static  int kDRIVETRAIN_TALONID_RIGHT1 = 5;
+  public static  int kDRIVETRAIN_TALONID_RIGHT2 = 6;
   public static  int kDRIVETRAIN_TALONID_RIGHT3 = 7;
   public static int INTAKE_TALONID_FRONT_LEFT = 13;
   public static int INTAKE_TALONID_FRONT_RIGHT = 14;

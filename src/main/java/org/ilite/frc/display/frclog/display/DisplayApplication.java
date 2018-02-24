@@ -56,6 +56,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class DisplayApplication extends Application{
+  
+  //List<Color> positiveColors = new 
 
   // Just a bottom border to separate the charts visually
   Border bottomBorder = new Border(new BorderStroke(Color.TRANSPARENT, Color.TRANSPARENT, Color.BLACK, Color.TRANSPARENT,
