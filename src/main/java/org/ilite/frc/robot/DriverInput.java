@@ -99,20 +99,12 @@ public class DriverInput implements IModule{
   
   private void updateCarriage() {
     if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
-//      mCarriage.solenoidGrabber.set(true);
-//      mCarriage.solenoidKicker.set(true);
-      mCarriage.kick();
-    } 
-//      else if(mData.operator.isSet(ELogitech310.B_BTN)) {
-//      mCarriage.setHaveCube();
-//    } else {
-//      mCarriage.setNoCube();
-//    }
-//    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
-//      mCarriage.solenoidGrabber.set(true);
-//      mCarriage.solenoidKicker.set(true);
-//      mCarriage.kick();
-//    }
+      mCarriage.setCarriageState(CarriageState.KICKING);
+    }  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_RESET)) {
+      mCarriage.setCarriageState(CarriageState.RESET);
+    } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_GRAB)) {
+      mCarriage.setCarriageState(CarriageState.GRAB_CUBE);
+    }
   }
 	
 	@Override

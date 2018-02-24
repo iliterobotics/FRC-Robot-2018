@@ -76,7 +76,7 @@ public class LEDControl implements IModule {
 	public boolean update(double pNow) {
 	  mCurrentMessage = Message.NONE;
 	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.INTAKE_LIMITING;
-	  if(!mCarriage.getBeamBreak()) mCurrentMessage = Message.HAS_CUBE;
+	  if(!mHardware.getCarriageBeamBreak().get()) mCurrentMessage = Message.HAS_CUBE;
 	  setLED(mCurrentMessage);
 		return false;
 	}
