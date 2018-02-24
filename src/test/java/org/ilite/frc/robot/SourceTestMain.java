@@ -1,18 +1,31 @@
 package org.ilite.frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ilite.frc.common.types.*;
-
-import jaci.pathfinder.Pathfinder;
-import openrio.powerup.MatchData.OwnedSide;
+import org.ilite.frc.robot.modules.Carriage;
 
 
 public class SourceTestMain {
 	
+  private static Data data;
+  
 	public static void main(String[] args) {
-		System.out.println(Pathfinder.boundHalfDegrees(0 - -0.0024));
+		testCarriage(data);
+	}
+	
+	public static void testCarriage(Data data) {
+	  TestDigitalInput beamBreak = new TestDigitalInput(false);
+	  TestSolenoid grabber = new TestSolenoid(false);
+	  TestSolenoid kicker = new TestSolenoid(true);
+	  
+	  beamBreak.onChange(e -> System.out.println("Has cube: " + beamBreak));
+	  grabber.onChange(e -> System.out.println("Grabber is: " + grabber));
+	  kicker.onChange(e -> System.out.println("Kicker is: " + kicker));
+	  
+	  Carriage carriage = new Carriage(data, beamBreak, grabber, kicker);
+	  
+	  carriage.setHaveCube();
+	  System.out.println();
+	  carriage.setNoCube();
+	  
 	}
 
 }

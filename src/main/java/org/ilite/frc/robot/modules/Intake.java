@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import wrappers.IDigitalInput;
 
 public class Intake implements IModule{
 	
@@ -25,7 +26,7 @@ public class Intake implements IModule{
 	private double leftDesiredPower;
 	private double rightDesiredPower;
 	private boolean startCurrentLimiting;
-	private DigitalInput beamBreak;
+	private IDigitalInput beamBreak;
 	private final double LEFT_LIMITER = .8;
 	private final double RIGHT_LIMITER = .2;
 	private final double MAX_RATIO = 3;

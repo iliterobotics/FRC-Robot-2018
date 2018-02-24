@@ -80,11 +80,11 @@ public class TestingInputs implements IModule {
 			
 			if (mData.tester.isSet(ELogitech310.B_BTN))
 			{
-				mCarriage.mKickerSolenoid.set(true);
+				mCarriage.solenoidKicker.set(true);
 			}
 			else
 			{
-				mCarriage.mKickerSolenoid.set(false);
+				mCarriage.solenoidKicker.set(false);
 			}
 			
 			if (mData.tester.isSet(ELogitech310.X_BTN))

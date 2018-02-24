@@ -23,7 +23,6 @@ import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;
-import org.ilite.frc.robot.modules.LEDControl.Message;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
@@ -34,11 +33,10 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import wrappers.DigitalInputWrapper;
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -71,6 +69,7 @@ public class Robot extends IterativeRobot {
   private int numControlMode;
   
   public Robot() {
+    initHardware();
     mElevator = new Elevator(mHardware);
     mIntake = new Intake(mElevator, mHardware);
   	mControlLoop = new ControlLoopManager(mData, mHardware);
@@ -86,25 +85,7 @@ public class Robot extends IterativeRobot {
 
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
-      
-       mHardware.init(
-        mExecutor,
-        new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
-        new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
-//        new PowerDistributionPanel(SystemSettisngs.PDP_DEVICE_ID), 
-        null,
-        new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
-        new TalonTach(SystemSettings.DIO_TALON_TACH),
-        new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
-        //CameraServer.getInstance().startAutomaticCapture(),
-        new DigitalInput(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
-        // Sensors
-        // Custom hw
-        // Spike relays
-        // etc
-        
-        // Talons TBD ... they're somewhat picky.
-    );
+    initHardware();
   }
 
   public void autonomousInit() {
@@ -241,6 +222,27 @@ public class Robot extends IterativeRobot {
 	  for(IModule m : mRunningModules) {
 		  m.initialize(Timer.getFPGATimestamp());
 	  }
+  }
+  
+  private void initHardware() {
+    mHardware.init(
+     mExecutor,
+     new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
+     new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
+//     new PowerDistributionPanel(SystemSettisngs.PDP_DEVICE_ID), 
+     null,
+     new PigeonIMU(SystemSettings.PIGEON_DEVICE_ID),
+     new TalonTach(SystemSettings.DIO_TALON_TACH),
+     new CANifier(SystemSettings.CANIFIER_DEVICE_ID),
+     //CameraServer.getInstance().startAutomaticCapture(),
+     new DigitalInputWrapper(SystemSettings.DIO_CARRIAGE_BEAM_BREAK_ID)
+     // Sensors
+     // Custom hw
+     // Spike relays
+     // etc
+     
+     // Talons TBD ... they're somewhat picky.
+ );
   }
   
   public void testInit() {

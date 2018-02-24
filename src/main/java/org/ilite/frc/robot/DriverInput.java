@@ -101,7 +101,7 @@ public class DriverInput implements IModule{
     if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
 //      mCarriage.solenoidGrabber.set(true);
 //      mCarriage.solenoidKicker.set(true);
-      mCarriage.kick();
+//      mCarriage.kick();
     } 
 //      else if(mData.operator.isSet(ELogitech310.B_BTN)) {
 //      mCarriage.setHaveCube();

@@ -8,7 +8,6 @@ import org.ilite.frc.robot.Hardware;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import wrappers.IDigitalInput;
 import wrappers.ISolenoid;
 import wrappers.SolenoidWrapper;
@@ -17,7 +16,6 @@ public class Carriage implements IModule{
 
   public ISolenoid solenoidGrabber, solenoidKicker;
   public IDigitalInput beamBreak;
-  public Hardware mHardware;
   private double kickTimer;
   private static final double KICK_DELAY = .02;
   private static final double RELEASE_DELAY = .01;
@@ -33,15 +31,19 @@ public class Carriage implements IModule{
   //constructs necessary variables and sets default state to cube
   public Carriage(Data pData, Hardware pHardware)
   {
-    mData = pData;
-    mHardware = pHardware;
+    this(pData, pHardware.getCarriageBeamBreak(), new SolenoidWrapper(SystemSettings.CARRIAGE_GRABBER_ID), new SolenoidWrapper(SystemSettings.CARRIAGE_KICKER_ID));
+  }
+  
+  public Carriage(Data pData, IDigitalInput pBeamBreak, ISolenoid pGrabberSolenoid, ISolenoid pKickerSolenoid) {
     isScheduled = false;
-    solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
-    solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
-    setHaveCube();
+    mData = pData;
+    beamBreak = pBeamBreak;
+    solenoidGrabber = pGrabberSolenoid;
+    solenoidKicker = pKickerSolenoid;
     currentState = CarriageState.CUBE;
     grabberState = GrabberState.ISGRABBING;
     kickerState = KickerState.ISNOTKICKING;
+    setHaveCube();
   }
   
   //creates new enum with states for no cube, cube, and kicking
@@ -92,9 +94,10 @@ public class Carriage implements IModule{
   @Override
   //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
-    beamBreak = mHardware.getCarriageBeamBreak();
     isScheduled = false;
     currentState = CarriageState.CUBE;
+    grabberState = GrabberState.ISGRABBING;
+    kickerState = KickerState.ISNOTKICKING;
   }
   @Override
   public boolean update(double pNow)
@@ -181,4 +184,10 @@ public class Carriage implements IModule{
     solenoidGrabber.set(true);
     solenoidKicker.set(false);
   }
+  
+  // Provide a way for other classes to check our state
+  public CarriageState getState() {
+    return currentState;
+  }
+  
 }

@@ -16,6 +16,7 @@ import edu.wpi.cscore.VideoCamera;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import wrappers.IDigitalInput;
 public class Hardware {
   private ILog mLog = Logger.createLog(Hardware.class);
 
@@ -29,7 +30,7 @@ public class Hardware {
   private VideoCamera mVisionCamera;
   private Data data;
   private TalonTach mTalonTach;
-  private DigitalInput mCarriageBeamBreak;
+  private IDigitalInput mCarriageBeamBreak;
   
   Hardware() {
     
@@ -44,7 +45,7 @@ public class Hardware {
       TalonTach pTalonTach,
       CANifier pCanifier,
       //VideoCamera pVisionCamera,
-      DigitalInput pCarriageBeamBreak
+      IDigitalInput pCarriageBeamBreak
   ) {
     mDriverJoystick = pDriverJoystick;
     mOperatorJoystick = pOperatorJoystick;
@@ -100,7 +101,7 @@ public class Hardware {
 	  return mCanifier;
   }
   
-  public DigitalInput getCarriageBeamBreak() {
+  public IDigitalInput getCarriageBeamBreak() {
     return mCarriageBeamBreak;
   }
   
