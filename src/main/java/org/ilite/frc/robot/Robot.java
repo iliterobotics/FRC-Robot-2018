@@ -11,6 +11,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
@@ -184,6 +185,7 @@ public class Robot extends IterativeRobot {
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage(), mCurrentTime, mDrivetrain.getLeftMaster(), mDrivetrain.getRightMaster());
+      EElevator.map(mData.elevator, mElevator, mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
   }
   

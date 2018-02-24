@@ -108,9 +108,24 @@ public class DriverInput implements IModule{
 	private void updateElevator() {
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
 	  {
+	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
 	    mElevatorModule.setPosition(ElevatorPosition.FIRST_TAPE);
 	  }
-	  
+	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
+    {
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+      mElevatorModule.setPosition(ElevatorPosition.THIRD_TAPE);
+    }
+    else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
+    {
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+      mElevatorModule.setPosition(ElevatorPosition.BOTTOM);
+    }
+	  else
+    {
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
+    }
+
 	  mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) + 
 	                            mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
 	}
