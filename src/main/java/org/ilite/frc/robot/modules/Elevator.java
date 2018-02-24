@@ -18,7 +18,7 @@ public class Elevator implements IModule {
 	private final Hardware mHardware;
 	private TalonTach talonTach;
 	private boolean lastTachState, currentTachState;
-	private int currentTachLevel;
+	private int currentTachLevel, currentEncoderTicks;
 	Solenoid shiftSolenoid;
 	private double mDesiredPower;
 	private boolean mAtBottom, mAtTop, isDirectionUp;
@@ -153,6 +153,7 @@ public class Elevator implements IModule {
 		mAtTop = isTopCurrentTripped() && currentTachLevel == 3;
 		mAtBottom = isBottomCurrentTripped() && currentTachLevel == 0;
 
+	  currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 		currentTachLevel = getTachLevel(currentTachState, lastTachState);
 
 		switch(elevControlMode) {
@@ -344,6 +345,10 @@ public class Elevator implements IModule {
 	public int getCurrentTachLevel()
   {
     return currentTachLevel;
+  }
+
+  public int getCurrentEncoderTicks() {
+    return currentEncoderTicks;
   }
 
   public double getDesiredPower()

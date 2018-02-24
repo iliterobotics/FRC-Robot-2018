@@ -10,6 +10,7 @@ public enum EElevator implements CodexOf<Double> {
   CONTROL_MODE,
   STATE,
   DESIRED_POWER,
+  CURRENT_ENCODER_TICKS,
   CURRENT_TOP_RATIO,
   CURRENT_BOTTOM_RATIO;
 
@@ -20,6 +21,7 @@ public enum EElevator implements CodexOf<Double> {
     pCodex.set(CONTROL_MODE, (double)pElevator.getElevControlMode().ordinal());
     pCodex.set(STATE, (double)pElevator.getElevatorState().ordinal());
     pCodex.set(DESIRED_POWER, pElevator.getDesiredPower());
+    pCodex.set(CURRENT_ENCODER_TICKS, (double)pElevator.getCurrentEncoderTicks());
     pCodex.set(CURRENT_TOP_RATIO, 30d/12d);
     pCodex.set(CURRENT_BOTTOM_RATIO, 10d/12d);
   }
