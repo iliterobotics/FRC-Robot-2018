@@ -27,6 +27,7 @@ public class Elevator implements IModule {
 	private ElevatorGearState elevGearState;
 	private DigitalInput bottomLimit;
 	private ElevatorControlMode elevControlMode;
+	private ElevDirection elevatorDirection;
   private static final ILog log = Logger.createLog(Elevator.class);
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
 
@@ -89,14 +90,41 @@ public class Elevator implements IModule {
 			this.power = power;
 			this.tapeMark = tapeMark;
 		}
-		ElevatorPosition(double inches)
-		{
-			this.inches = inches;
-			this.power = 0;
-		}
 		private boolean isTapeMarker()
 		{
 			return power != 0;
+		}
+	}
+
+	public enum ElevDirection
+	{
+		UP(true, 30d/12d, 3),
+		DOWN(false, 11d/12d, 0);
+
+		boolean isPositiveDirection;
+		double mCurrentLimitRatio;
+		int tapeMark;
+
+		ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int tapeMark)
+		{
+			this.isPositiveDirection = isPositiveDirection;
+			mCurrentLimitRatio = pCurrentLimitRatio;
+			this.tapeMark = tapeMark;
+		}
+
+		public static ElevDirection getDirection(double pDesiredPower)
+		{
+			return pDesiredPower > 0 ? UP : DOWN;
+		}
+
+		public boolean isCurrentLimited(TalonSRX pMasterTalon)
+		{
+			return pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage() >= mCurrentLimitRatio;
+		}
+
+		public boolean isDecelerated(int currentTapeMark)
+		{
+			return currentTapeMark == tapeMark;
 		}
 	}
 
@@ -153,7 +181,11 @@ public class Elevator implements IModule {
 		mAtTop = isTopCurrentTripped() && currentTachLevel == 3;
 		mAtBottom = isBottomCurrentTripped() && currentTachLevel == 0;
 
-	  currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
+		elevatorDirection = ElevDirection.getDirection(mDesiredPower);
+		boolean isCurrentLimited = elevatorDirection.isCurrentLimited(masterElevator);
+
+		currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
+
 		currentTachLevel = getTachLevel(currentTachState, lastTachState);
 
 		switch(elevControlMode) {
@@ -173,6 +205,29 @@ public class Elevator implements IModule {
         break;
 
       case MANUAL:
+
+//      	switch(elevatorDirection)
+//				{
+//					case UP:
+//						if(elevatorDirection.isDecelerated(currentTachLevel))
+//						{
+//							elevatorState = ElevatorState.DECELERATE_TOP;
+//						}
+//						if(elevatorDirection.isCurrentLimited(masterElevator))
+//						{
+//							elevatorState = ElevatorState.STOP;
+//						}
+//						break;
+//					case DOWN:
+//						if(elevatorDirection.isDecelerated(currentTachLevel))
+//						{
+//							elevatorState = ElevatorState.DECELERATE_BOTTOM;
+//						}
+//						if(elevatorDirection.isCurrentLimited(masterElevator))
+//						{
+//							elevatorState = ElevatorState.STOP;
+//						}
+//				}
         //bottom
         if (!isDirectionUp && currentTachLevel == 0) {
           elevatorState = ElevatorState.DECELERATE_BOTTOM;
