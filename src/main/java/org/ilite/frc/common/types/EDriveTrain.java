@@ -8,8 +8,6 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 
 public enum EDriveTrain implements CodexOf<Double> {
-  TIME_SECONDS,
-  
   DRIVE_MODE,
   DESIRED_LEFT_OUTPUT,
   DESIRED_RIGHT_OUTPUT,
@@ -32,8 +30,6 @@ public enum EDriveTrain implements CodexOf<Double> {
   
   OPEN_LOOP_THROTTLE, 
   OPEN_LOOP_TURN,
-  OPEN_LOOP_CALC_LEFT_POWER,
-  OPEN_LOOP_CALC_RIGHT_POWER,
   
   LEFT_TALON_MASTER_VOLTAGE,
   LEFT_TALON_FOLLOW1_VOLTAGE,
@@ -59,9 +55,10 @@ public enum EDriveTrain implements CodexOf<Double> {
     double rightPositionTicks = driveTrain.getRightMaster().getSelectedSensorPosition(0);
     double leftVelocityTicks = driveTrain.getLeftMaster().getSelectedSensorVelocity(0);
     double rightVelocityTicks = driveTrain.getRightMaster().getSelectedSensorVelocity(0);
+    pCodex.set(DRIVE_MODE, (double)driveTrain.getDriveMode().ordinal());
+    
     pCodex.set(DESIRED_LEFT_OUTPUT, driveMessage.leftOutput);
     pCodex.set(DESIRED_RIGHT_OUTPUT, driveMessage.rightOutput);
-    pCodex.set(DRIVE_MODE, (double)driveTrain.getDriveMode().ordinal());
     
     pCodex.set(LEFT_POSITION_TICKS, (double)leftPositionTicks);
     pCodex.set(LEFT_POSITION_ROT, Utils.ticksToRotations(leftPositionTicks));
@@ -78,6 +75,14 @@ public enum EDriveTrain implements CodexOf<Double> {
     pCodex.set(RIGHT_VELOCITY_TICKS, (double)rightVelocityTicks);
     pCodex.set(RIGHT_VELOCITY_RPM, Utils.ticksToRPM(rightVelocityTicks));
     pCodex.set(RIGHT_VELOCITY_FPS, Utils.ticksToFPS(rightVelocityTicks));
+    
+    pCodex.set(LEFT_TALON_MASTER_VOLTAGE, driveTrain.getLeftMaster().getMotorOutputVoltage());
+    pCodex.set(LEFT_TALON_FOLLOW1_VOLTAGE, driveTrain.getLeftFollower1().getMotorOutputVoltage());
+    pCodex.set(LEFT_TALON_FOLLOW2_VOLTAGE, driveTrain.getLeftFollower2().getMotorOutputVoltage());
+    
+    pCodex.set(RIGHT_TALON_MASTER_VOLTAGE, driveTrain.getRightMaster().getMotorOutputVoltage());
+    pCodex.set(RIGHT_TALON_FOLLOW1_VOLTAGE, driveTrain.getRightFollower1().getMotorOutputVoltage());
+    pCodex.set(RIGHT_TALON_FOLLOW2_VOLTAGE, driveTrain.getRightFollower2().getMotorOutputVoltage());
     
     pCodex.set(TALON_CONTROL_MODE, (double)driveTrain.getControlMode().ordinal());  
   }

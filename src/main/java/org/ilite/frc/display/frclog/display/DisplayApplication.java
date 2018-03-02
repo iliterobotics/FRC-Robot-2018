@@ -1,34 +1,8 @@
 package org.ilite.frc.display.frclog.display;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.ECubeAction;
-import org.ilite.frc.common.types.ECubeTarget;
-import org.ilite.frc.common.types.EDriveTrain;
-import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.common.types.EPigeon;
-import org.ilite.frc.common.types.EPowerDistPanel;
-import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.display.frclog.data.RobotDataStream;
-import org.ilite.frc.robot.SimpleNetworkTable;
-
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
-//import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-
-import edu.wpi.first.wpilibj.Timer;
 import eu.hansolo.fx.horizon.Data;
 import eu.hansolo.fx.horizon.HorizonChart;
 import eu.hansolo.fx.horizon.Series;
@@ -41,19 +15,30 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.*;
+import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.display.frclog.data.RobotDataStream;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+//import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 public class DisplayApplication extends Application{
   
@@ -169,8 +154,9 @@ public class DisplayApplication extends Application{
       File file = new File(String.format("./logs/%s-log.csv", key));
       if(!file.exists()) file.createNewFile();
       dataMap.get(key).add(0, "TIME");
+      dataMap.get(key).add(0, "TIME RECEIVED");
       writer = new BufferedWriter(new FileWriter(file, true));
-      writer.append(SystemUtils.toCsvRow(dataMap.get(key)));
+      writer.append(SystemUtils.toCsvRow(dataMap.get(key)) + "\n");
       writer.flush();
     }
     writer.close();
@@ -185,10 +171,11 @@ public class DisplayApplication extends Application{
   	  bWriter = new BufferedWriter(new FileWriter(file, true));
   	  
 //  	  entry.getValue().add(0, SystemSettings.smartDashboard.getEntry("TIME").getNumber(-1).toString());
-  	  
-  	  String csvRow = SystemUtils.toCsvRow(entry.getValue().stream()
-  	                             .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-1).toString())
-  	                             .collect(Collectors.toList()));
+  	  List<String> rowList = entry.getValue().stream()
+              .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-1).toString())
+              .collect(Collectors.toList());
+  	  rowList.add(0, Long.toString(System.currentTimeMillis()));
+  	  String csvRow = SystemUtils.toCsvRow(rowList);
   	  bWriter.append(csvRow + "\n");
   	  bWriter.flush();
 	  }
