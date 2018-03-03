@@ -30,4 +30,7 @@ hs_err_pid*
 **DS_Store
 
 .idea/
+out/
 *.iml
+*.ipr
+*.iws
