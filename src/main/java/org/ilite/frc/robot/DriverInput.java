@@ -124,10 +124,11 @@ public class DriverInput implements IModule{
 	  else
     {
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
+      mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) +
+              mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
     }
 
-	  mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) + 
-	                            mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
+
 	}
   
   private void updateCarriage() {

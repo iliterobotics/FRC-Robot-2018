@@ -78,9 +78,9 @@ public class Elevator implements IModule {
 	public enum ElevatorPosition
 	{
 		BOTTOM(0, 0),
-		FIRST_TAPE(0.3, 1),
-		SECOND_TAPE(0.3, 2),
-		THIRD_TAPE(0.3, 3);
+		FIRST_TAPE(1, 1),
+		SECOND_TAPE(1, 2),
+		THIRD_TAPE(1, 3);
 
 		double inches;
 		double power;
@@ -129,19 +129,18 @@ public class Elevator implements IModule {
 	}
 
 	public enum ElevatorControlMode
-  {
-    MANUAL,
-    POSITION,
-    CURRENT_LIMITING;
-  }
+	{
+		MANUAL,
+		POSITION;
+	}
 
-  public enum ElevatorGearState
-  {
-    NORMAL(false),
-    CLIMBING(true);
+	public enum ElevatorGearState
+	{
+		NORMAL(false),
+		CLIMBING(true);
 
-    boolean gearState;
-    ElevatorGearState(boolean gearState)
+		boolean gearState;
+		ElevatorGearState(boolean gearState)
     {
       this.gearState = gearState;
     }
@@ -186,8 +185,7 @@ public class Elevator implements IModule {
 
 		currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 
-		currentTachLevel = getTachLevel(currentTachState, lastTachState);
-
+    currentTachLevel = getTachLevel(currentTachState, lastTachState);
 		switch(elevControlMode) {
 
       case POSITION:
@@ -198,9 +196,10 @@ public class Elevator implements IModule {
         }
         else
         {
-          elevatorState = ElevatorState.HOLD;
+					elevatorState = ElevatorState.HOLD;
         }
         log.debug("TAPE MARKER " + elevatorPosition);
+
 
         break;
 
@@ -328,15 +327,13 @@ public class Elevator implements IModule {
       {
         currentTachLevel += (int)Math.floor(mDesiredPower);
       }
-    }
+		}
     return currentTachLevel;
   }
 
-  public void setPower(double power)
-  {
-		mDesiredPower = power;
+  public void setPower(double power) {
+			mDesiredPower = power;
 	}
-
 	public void setElevControlMode(ElevatorControlMode elevControlMode)
   {
     this.elevControlMode = elevControlMode;
@@ -417,7 +414,6 @@ public class Elevator implements IModule {
 
 	private boolean isBottomCurrentTripped()
   {
-
     return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= BOTTOM_LIMIT;
   }
 }

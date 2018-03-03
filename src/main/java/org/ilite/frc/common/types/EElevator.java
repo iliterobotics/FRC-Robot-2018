@@ -25,5 +25,4 @@ public enum EElevator implements CodexOf<Double> {
     pCodex.set(CURRENT_TOP_RATIO, 30d/12d);
     pCodex.set(CURRENT_BOTTOM_RATIO, 10d/12d);
   }
-
 }
