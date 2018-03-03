@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
     mCommandQueue.add(new GyroTurn(driveControl, mData, 3));
-    mCommandQueue.add(new CubeStraight(mData, driveControl));
+    //mCommandQueue.add(new CubeStraight(mData, driveControl));
 //    mCommandQueue.add(new FollowPath(driveControl, mData, 
 //                      new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
 //                      new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 

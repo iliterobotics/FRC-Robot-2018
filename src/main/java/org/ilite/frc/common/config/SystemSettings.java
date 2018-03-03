@@ -143,6 +143,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   public static final int INTAKE_BEAM_BREAK = 0;
   public static final int HALL_EFFECT = 1;
+public static double RES_SCALAR = 1.0;
   
   // =============================================================================
   // Vision Constants

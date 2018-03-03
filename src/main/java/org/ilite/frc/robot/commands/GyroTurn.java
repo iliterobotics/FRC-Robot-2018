@@ -94,10 +94,10 @@ public class GyroTurn implements ICommand {
     mCurrentYaw = mCurrentYaw == null ? 0 : mCurrentYaw;
     System.out.println(SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99) + "");
     double modifiedAngle = SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99);
-    if(modifiedAngle<0)
-    {
-      modifiedAngle -= 30.0;
-    }
+//    if(modifiedAngle<0)
+//    {
+//      modifiedAngle -= 30.0;
+//    }
     mVisionAngle = modifiedAngle;//SystemSettings.limelight.getInstance().getDefault().getTable("limelight").getEntry("tx").getDouble(-99);//mData.vision.get(ECubeTarget.DELTA_ANGLE);
     mTargetYaw = mVisionAngle == null ? mCurrentYaw : -mVisionAngle;
   }

@@ -65,5 +65,7 @@ public class CubeStraight implements ICommand{
     gTurn.update(0);
     return true;
   }
+  
+  
 
 }
