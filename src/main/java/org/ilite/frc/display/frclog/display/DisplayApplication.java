@@ -59,6 +59,7 @@ public class DisplayApplication extends Application{
   Class<?> mSelectedCodexToLoad = null;
   
   public DisplayApplication() {
+    SystemSettings.smartDashboard.getInstance().setUpdateRate(0.01);
   }
   
   public static <E extends Enum<E>> List<String> getKeys(Class<E> pEnum) {
@@ -154,7 +155,7 @@ public class DisplayApplication extends Application{
       File file = new File(String.format("./logs/%s-log.csv", key));
       if(!file.exists()) file.createNewFile();
       dataMap.get(key).add(0, "TIME");
-      dataMap.get(key).add(0, "TIME RECEIVED");
+      dataMap.get(key).add(1, "TIME RECEIVED");
       writer = new BufferedWriter(new FileWriter(file, true));
       writer.append(SystemUtils.toCsvRow(dataMap.get(key)) + "\n");
       writer.flush();
@@ -174,14 +175,15 @@ public class DisplayApplication extends Application{
   	  List<String> rowList = entry.getValue().stream()
               .map(entryKey -> SystemSettings.smartDashboard.getEntry(entryKey).getNumber(-1).toString())
               .collect(Collectors.toList());
-  	  rowList.add(0, Long.toString(System.currentTimeMillis()));
+  	  rowList.add(0, SystemSettings.smartDashboard.getEntry("TIME").getNumber(-1).toString());
+  	  rowList.add(1, Long.toString(System.currentTimeMillis() / 1000));
   	  String csvRow = SystemUtils.toCsvRow(rowList);
   	  bWriter.append(csvRow + "\n");
   	  bWriter.flush();
 	  }
 	  catch (Exception e) {
 	    e.printStackTrace();
-		  System.err.println("Error xd");
+		  System.err.println("Error writing to " + file.getAbsolutePath());
 	  }
 	  
   }
