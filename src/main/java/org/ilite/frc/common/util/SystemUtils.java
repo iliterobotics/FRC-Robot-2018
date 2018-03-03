@@ -6,6 +6,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -35,15 +37,25 @@ public class SystemUtils {
     return addrs;
   }
   
+  public static String toCsvRow(List<String> l) {
+    return l.stream()
+            .map(value -> value.toString())
+            .map(value -> value.replaceAll("\"", "\"\""))
+            .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
+            .collect(Collectors.joining(","));
+  }
+  
   /**
    * Provides a way to write every value of a codex to the smart dashboard.
    * @param pCodex
    */
-  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex) {
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex, double pTime) {
     List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
     for(E e : enums) {
       Double value = (Double) pCodex.get(e);
       if(e != null) SmartDashboard.putNumber(e.toString(), (value == null) ? 0 : value);
     }
+    SmartDashboard.putNumber("TIME", pTime);
   }
+  
 }

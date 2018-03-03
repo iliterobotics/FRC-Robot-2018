@@ -30,6 +30,9 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
 		  getInstance().getEntry("Driver Control Mode").setDefaultString("ARCADE");
 	  }
   };
+  public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
+  public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
+  
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";

@@ -194,9 +194,25 @@ public class DriveTrain implements IControlLoop {
 	  return leftMaster;
 	}
 	
-	public TalonSRX getRightMaster() {
-	  return rightMaster;
+	public TalonSRX getLeftFollower1() {
+	  return leftFollower;
 	}
+	
+	public TalonSRX getLeftFollower2() {
+    return leftFollower2;
+  }
+	
+	public TalonSRX getRightMaster() {
+    return rightMaster;
+  }
+  
+  public TalonSRX getRightFollower1() {
+    return rightFollower;
+  }
+  
+  public TalonSRX getRightFollower2() {
+    return rightFollower2;
+  }
 
 }
 	

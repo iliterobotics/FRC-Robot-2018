@@ -124,7 +124,6 @@ public class Robot extends IterativeRobot {
     
   }
   public void autonomousPeriodic() {
-    mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
     
     //TODO put updateCommandQueue into autoninit
@@ -166,7 +165,6 @@ public class Robot extends IterativeRobot {
 
   public void teleopPeriodic() {
     // Remember that DriverControl classes don't go here. They aren't Modules.
-    mCurrentTime = Timer.getFPGATimestamp();
     mapInputsAndCachedSensors();
     updateRunningModules();
     
@@ -180,6 +178,8 @@ public class Robot extends IterativeRobot {
    * 3. Sets DriveTrain outputs based on processed input
    */
   private void mapInputsAndCachedSensors() {
+      mCurrentTime = Timer.getFPGATimestamp();
+    
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
       ELogitech310.map(mData.tester, testJoystick);
@@ -187,8 +187,8 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage(), mCurrentTime, mDrivetrain.getLeftMaster(), mDrivetrain.getRightMaster());
-      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
+      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage());
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
   }
   
   /**

@@ -1,5 +1,6 @@
 package org.ilite.frc.robot;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
@@ -12,6 +13,7 @@ public class SimpleNetworkTable  {
     private NetworkTable netTable;
     
     public SimpleNetworkTable(String name) {
+        NetworkTableInstance.getDefault().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
         netTable = NetworkTableInstance.getDefault().getTable(name);
         netTable.getInstance().startClient("1885");//Init 
         netTable.getInstance().setServerTeam(1885);
