@@ -81,7 +81,7 @@ public class Robot extends IterativeRobot {
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
-  	Logger.setLevel(ELevel.INFO);
+  	Logger.setLevel(ELevel.DEBUG);
   }
 
   public void robotInit() {

@@ -5,6 +5,7 @@ import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 
+import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
@@ -16,11 +17,11 @@ public class Carriage implements IModule{
   public Solenoid solenoidGrabber, solenoidKicker;
   public Hardware mHardware;
   private static final double RELEASE_DELAY = .02; // KICK first, then release after this amount of time (seconds)
-  private static final double RESET_DELAY = 1.0; // reset after all cylinders have fully extended.
+  private static final double RESET_DELAY = 0.1; // reset after all cylinders have fully extended.
   private Data mData;
   private boolean isScheduled;
   private DigitalInput beamBreak;
-  private CarriageState mCurrentState;
+  private CarriageState mCurrentState, mDesiredState;
   private double releaseTime;
   private double resetTime;
 
@@ -34,7 +35,7 @@ public class Carriage implements IModule{
     isScheduled = false;
     solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
     solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
-    mCurrentState = CarriageState.GRAB_CUBE;
+    mDesiredState = mCurrentState = CarriageState.GRAB_CUBE;
   }
 
   public enum GrabberState
@@ -52,8 +53,8 @@ public class Carriage implements IModule{
 
   public enum KickerState
   {
-    KICK_EXTEND(true),
-    RESET(false);
+    KICK_EXTEND(false),
+    RESET(true);
 
     private boolean kicker;
 
@@ -83,9 +84,13 @@ public class Carriage implements IModule{
 
   }
 
-  public void setCarriageState(CarriageState pCarriageState)
+  public void setDesiredState(CarriageState pDesiredState)
   {
-    mCurrentState = pCarriageState;
+    mDesiredState = pDesiredState;
+  }
+  
+  public void setCurrentState(CarriageState pCurrentState) {
+    mCurrentState = pCurrentState;
     isScheduled = false;
   }
 
@@ -94,13 +99,19 @@ public class Carriage implements IModule{
   public void initialize(double pNow) {
     isScheduled = false;
     beamBreak = mHardware.getCarriageBeamBreak();
-    mCurrentState = CarriageState.GRAB_CUBE;
+    mDesiredState = mCurrentState = CarriageState.GRAB_CUBE;
   }
   @Override
   public boolean update(double pNow)
   {
-    if(mCurrentState != CarriageState.KICKING && getBeamBreak()) {
-      mCurrentState = CarriageState.GRAB_CUBE;
+    if(mCurrentState != CarriageState.KICKING) {
+      // If we have a cube and we aren't overriding the beam break, grab the cube
+      if(getBeamBreak() && mDesiredState == null) setCurrentState(CarriageState.GRAB_CUBE);
+      // If we haven't already set the desired state, set it
+      if(mDesiredState != null) {
+        mCurrentState = mDesiredState; 
+        mDesiredState = null; // Reset our desired state
+      }
     }
     //cycles through enum states
     switch(mCurrentState)
@@ -108,17 +119,17 @@ public class Carriage implements IModule{
     case KICKING:
       isKicking(pNow);
       break;
-
-      //if the beamBreak is broken, set the current state to cube
     case RESET:
+      solenoidKicker.set(mCurrentState.mKick.kicker);
+      solenoidGrabber.set(mCurrentState.mGrab.grabber);
+      break;
     case GRAB_CUBE:
     default:
       solenoidKicker.set(mCurrentState.mKick.kicker);
       solenoidGrabber.set(mCurrentState.mGrab.grabber);
       break;
     }
-    log.debug(mCurrentState.toString());
-    System.out.println(getBeamBreak());
+    log.debug(String.format("State: %s Scheduled: %s Desired State: %s", mCurrentState.toString(), isScheduled, mDesiredState));
     return false;
   } 
 
@@ -149,7 +160,7 @@ public class Carriage implements IModule{
   //to 0, and make sure that the kick sequence is not scheduled to start
   private void reset()
   {
-    setCarriageState(CarriageState.RESET);
+    setCurrentState(CarriageState.RESET);
     releaseTime = 0d;
     resetTime = 0d;
     isScheduled = false;

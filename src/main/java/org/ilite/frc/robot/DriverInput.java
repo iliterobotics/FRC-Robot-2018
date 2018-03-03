@@ -99,11 +99,11 @@ public class DriverInput implements IModule{
   
   private void updateCarriage() {
     if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
-      mCarriage.setCarriageState(CarriageState.KICKING);
+      mCarriage.setDesiredState(CarriageState.KICKING);
     }  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_RESET)) {
-      mCarriage.setCarriageState(CarriageState.RESET);
+      mCarriage.setDesiredState(CarriageState.RESET);
     } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_GRAB)) {
-      mCarriage.setCarriageState(CarriageState.GRAB_CUBE);
+      mCarriage.setDesiredState(CarriageState.GRAB_CUBE);
     }
   }
 	

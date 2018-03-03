@@ -249,7 +249,7 @@ public class Elevator implements IModule {
 			actualPower = ElevatorState.STOP.getPower();
 			break;
 		}
-    System.out.println("elevatorState=" + elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + direction + " stop=" + shouldstop + " talonTach=" + currentTachLevel);
+//    System.out.println("elevatorState=" + elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + direction + " stop=" + shouldstop + " talonTach=" + currentTachLevel);
     
     masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
 		//System.out.println(mDesiredPower + "POST CHECK");
