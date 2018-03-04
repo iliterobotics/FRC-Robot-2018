@@ -168,6 +168,10 @@ public class Robot extends IterativeRobot {
   public void teleopPeriodic() {
     // Remember that DriverControl classes don't go here. They aren't Modules.
     mapInputsAndCachedSensors();
+    
+    if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
+    if(mDriverInput.canRunCommandQueue()) updateCommandQueue(mDriverInput.shouldInitializeCommandQueue());
+    
     updateRunningModules();
     
 //      mData.resetAll(mCurrentTime);

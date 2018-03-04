@@ -58,7 +58,7 @@ public class CubeSearch implements ICommand{
 	
 	public void search() {
 		
-//		System.out.println(!(SystemSettings.limelight.getInstance().getTable("limelight").getEntry("tv").getNumber(-1).equals(1.0)));
+		System.out.println("IS SEARCHING \n\n\n\n\n");
 		
 		if(!(SystemSettings.limelight.getInstance().getTable("limelight").getEntry("tv").getNumber(-1)).equals(1.0)) {
 			mDriveTrain.setDriveMessage(new DrivetrainMessage(cubeSearchType.turnScalar * TURN_POWER,cubeSearchType.turnScalar * -TURN_POWER, DrivetrainMode.PercentOutput, NeutralMode.Brake));	

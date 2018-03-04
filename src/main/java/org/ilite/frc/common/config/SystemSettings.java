@@ -162,7 +162,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
   public static double	AUTO_TURN_TIMEOUT = 5000;
-  public static double ALLOWABLE_ERROR = 3;
+  public static double ALLOWABLE_ERROR = .5;
   // =============================================================================
   // Pneumatics
   // =============================================================================

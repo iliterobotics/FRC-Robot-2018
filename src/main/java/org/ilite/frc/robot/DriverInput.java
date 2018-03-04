@@ -55,7 +55,7 @@ public class DriverInput implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		updateDriveTrain();
+		if(!canRunCommandQueue) updateDriveTrain();
 		updateIntake();
 		updateElevator();
 		updateCarriage();
