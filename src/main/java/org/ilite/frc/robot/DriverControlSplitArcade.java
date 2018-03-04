@@ -3,9 +3,9 @@ package org.ilite.frc.robot;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.Intake;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
@@ -23,8 +23,8 @@ public class DriverControlSplitArcade extends DriverInput {
 	private NeutralMode desiredNeutralMode;
 	private ControlMode desiredControlMode; 
 	
-	public DriverControlSplitArcade(DrivetrainControl pDriveControl, Intake intake, Carriage pCarriage, Elevator pElevator, Data pData) {
-		super(pDriveControl, intake, pCarriage, pElevator, pData);
+	public DriverControlSplitArcade(DriveTrain pDrivetrain, Intake intake, Carriage pCarriage, Elevator pElevator, Data pData) {
+		super(pDrivetrain, intake, pCarriage, pElevator, pData);
 		this.mData = pData;
 	}
 	
@@ -42,7 +42,7 @@ public class DriverControlSplitArcade extends DriverInput {
 		
 		desiredLeftOutput = throttle - rotate;
 		desiredRightOutput = throttle + rotate;
-		driveControl.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+		driveTrain.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		return false;
 	}
 	

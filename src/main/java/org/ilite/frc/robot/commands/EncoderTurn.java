@@ -5,14 +5,11 @@ import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.Utils;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
-import edu.wpi.first.wpilibj.Timer;
 
 public class EncoderTurn implements ICommand {
 	
@@ -23,13 +20,13 @@ public class EncoderTurn implements ICommand {
 	private double mLeftTargetPosition, mRightTargetPosition;
 	private double mLeftPosition, mRightPosition;
 	
-	private DrivetrainControl mDriveControl;
+	private DriveTrain mDrivetrain;
 	private Data mData;
 	
-	public EncoderTurn(double pDegrees, double pDegreeTolerance, DrivetrainControl pDriveControl, Data pData) {
+	public EncoderTurn(double pDegrees, double pDegreeTolerance, DriveTrain pDrivetrain, Data pData) {
 		this.mSetpointDegrees = pDegrees;
 		this.kDegreeTolerance = pDegreeTolerance;
-		this.mDriveControl = pDriveControl;
+		this.mDrivetrain = pDrivetrain;
 		this.mData = pData;
 	}
 	
@@ -48,7 +45,7 @@ public class EncoderTurn implements ICommand {
 		mLeftTargetPosition += mLeftPosition;
 		mRightTargetPosition += mRightPosition;
 		
-		mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
+		mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
 	}
 	
 	public boolean update(double pNow) {
@@ -57,13 +54,13 @@ public class EncoderTurn implements ICommand {
 				
 		if(pNow - mStartTime > SystemSettings.AUTO_TURN_TIMEOUT) {
 			System.out.println("EncoderTurn timed out.");
-			mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
+			mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
 	    	return true;
 		}
 		
 		if(isFinished()) {
 			System.out.println("EncoderTurn completed.");
-			mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
+			mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
 	    	return true;
 		}
 		System.out.printf("Left: %s Left Target: %s Right: %s Right Target: %s Yaw: %s Target Yaw: %s\n", mLeftPosition, mLeftTargetPosition, mRightPosition, mRightTargetPosition, IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)), IMU.getAngleSum(mSetpointDegrees, mInitialYaw));

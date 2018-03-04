@@ -7,7 +7,7 @@ import static org.ilite.frc.common.types.EPigeon.YAW;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
@@ -24,7 +24,7 @@ public class DriveStraight implements ICommand{
   private static final double PROPORTION = 0.05;
   private static final double INITIAL_POWER = 0.4;
   
-  private final DrivetrainControl driveTrain;
+  private final DriveTrain driveTrain;
   private final Data mData;
   private final double distanceToTravel;
   
@@ -34,7 +34,7 @@ public class DriveStraight implements ICommand{
   private double initialYaw;
 
   
-  public DriveStraight(DrivetrainControl dt, Data pData, double inches){
+  public DriveStraight(DriveTrain dt, Data pData, double inches){
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = (int)Utils.inchesToTicks(inches);

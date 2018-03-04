@@ -23,10 +23,8 @@ import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;
-import org.ilite.frc.robot.modules.LEDControl.Message;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -34,7 +32,6 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -59,7 +56,6 @@ public class Robot extends IterativeRobot {
   private final Elevator mElevator;
   private final Intake mIntake;
   private final PneumaticModule mPneumaticControl;
-  private final DrivetrainControl mDrivetrainControl;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
   private  LEDControl mLedController;
@@ -73,14 +69,14 @@ public class Robot extends IterativeRobot {
   public Robot() {
     mElevator = new Elevator(mHardware);
     mIntake = new Intake(mElevator, mHardware);
-  	mControlLoop = new ControlLoopManager(mData, mHardware);
-    mDrivetrainControl = new DrivetrainControl();
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
     mCarriage = new Carriage(mData, mHardware );
-  	mDrivetrain = new DriveTrain(mDrivetrainControl, mData);
+  	mDrivetrain = new DriveTrain(mData, mHardware);
+    mControlLoop = new ControlLoopManager(mDrivetrain, mData, mHardware);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
-  	mDriverInput = new DriverInput(mDrivetrainControl, mIntake, mCarriage, mElevator, mData);
+  	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
+  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
   	Logger.setLevel(ELevel.DEBUG);
   }
 
@@ -113,9 +109,13 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
+    setRunningModules();
+    mControlLoop.setRunningControlLoops(mDrivetrain);
+    mControlLoop.start();
+    
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(mDrivetrainControl, mData, 
+    mCommandQueue.add(new FollowPath(mDrivetrain, mData, 
                       new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
                       new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
                       false));
@@ -145,7 +145,7 @@ public class Robot extends IterativeRobot {
 		  switchDriverControlModes (mDriverInput);
 		  break;
 	  case SPLIT_ARCADE:
-		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrainControl, mIntake, mCarriage, mElevator, mData));
+		  switchDriverControlModes(new DriverControlSplitArcade(mDrivetrain, mIntake, mCarriage, mElevator, mData));
 		  break;
 	  }
 	  
@@ -187,7 +187,7 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage());
+      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
   }
   

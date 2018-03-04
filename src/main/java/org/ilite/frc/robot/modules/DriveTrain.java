@@ -2,13 +2,12 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
-import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.Utils;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
 import org.ilite.frc.robot.controlloop.IControlLoop;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainProfilingMessage;
@@ -19,11 +18,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.flybotix.hfr.codex.Codex;
 
-import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Pathfinder;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -31,22 +27,23 @@ import jaci.pathfinder.Pathfinder;
 public class DriveTrain implements IControlLoop {
 	//private final ILog mLog = Logger.createLog(DriveTrain.class);
 
-	private DrivetrainControl driveControl;
-
 	private Data data;
+	private Hardware hardware;
 	//private PDM g;
 	
 	final TalonSRX leftMaster, rightMaster, leftFollower, rightFollower, leftFollower2, rightFollower2;
 	
+	private DrivetrainMessage currentDrivetrainMessage;
+	private DrivetrainProfilingMessage currentProfilingMessage;
 	private DrivetrainMode driveMode;
 	private ControlMode controlMode; 
 	
 	private int leftPositionTicks, rightPositionTicks, leftVelocityTicks, rightVelocityTicks, leftMaxVelocityTicks, rightMaxVelocityTicks = 0;
 	
-	public DriveTrain(DrivetrainControl driveControl, Data data)
+	public DriveTrain(Data data, Hardware hardware)
 	{
-		this.driveControl = driveControl;
 		this.data = data;
+		this.hardware = hardware;
 		leftMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_MASTER);
 		leftFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_FOLLOW1);
     	leftFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_LEFT_FOLLOW2);
@@ -63,10 +60,15 @@ public class DriveTrain implements IControlLoop {
 		controlMode = ControlMode.PercentOutput;
 		driveMode = DrivetrainMode.PercentOutput;
 		
-//		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
-//		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, (int)MotorSafety.DEFAULT_SAFETY_EXPIRATION);
+		currentDrivetrainMessage = new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake);
+		currentProfilingMessage = new DrivetrainProfilingMessage(null, null, false);
 		
-//		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 100, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		
+		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+    leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
 		
 		rightMaster.configOpenloopRamp(0.5, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		leftMaster.configOpenloopRamp(0.5, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
@@ -96,34 +98,28 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public boolean update(double pNow) {
-	  DrivetrainMessage driveMessage = driveControl.getDriveMessage();
-	  DrivetrainProfilingMessage profilingMessage = driveControl.getProfilingMessage();
 	  
-	  setMode(driveMessage);
+	  setMode(currentDrivetrainMessage);
     
     switch(driveMode) {
     case Pathfinder:
-      driveMessage = PathFollower.calculateOutputs(profilingMessage.leftFollower, profilingMessage.rightFollower, 
+      currentDrivetrainMessage = PathFollower.calculateOutputs(currentProfilingMessage.leftFollower, currentProfilingMessage.rightFollower, 
                                     leftPositionTicks, rightPositionTicks,
-                                    IMU.clampDegrees(data.pigeon.get(EPigeon.YAW)), 
-                                    profilingMessage.isBackwards);
-      leftMaster.set(controlMode, driveMessage.leftOutput);
-      rightMaster.set(controlMode, driveMessage.rightOutput);
+                                    IMU.clampDegrees(hardware.getPigeon().getYaw()), 
+                                    currentProfilingMessage.isBackwards);
+      leftMaster.set(controlMode, currentDrivetrainMessage.leftOutput);
+      rightMaster.set(controlMode, currentDrivetrainMessage.rightOutput);
       break;
     default:
-      leftMaster.setNeutralMode(driveMessage.neutralMode);
-      rightMaster.setNeutralMode(driveMessage.neutralMode);
-      leftMaster.set(controlMode, driveMessage.leftOutput);
-      rightMaster.set(controlMode, driveMessage.rightOutput);
+      leftMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
+      rightMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
+      leftMaster.set(controlMode, currentDrivetrainMessage.leftOutput);
+      rightMaster.set(controlMode, currentDrivetrainMessage.rightOutput);
       break;
     }
     
     leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, leftMaster.getSelectedSensorVelocity(0));
     rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, rightMaster.getSelectedSensorVelocity(0));
-    
-    SmartDashboard.putNumber("Highest Left Velocity", Utils.ticksToFPS(leftMaxVelocityTicks));
-    SmartDashboard.putNumber("Highest Right Velocity", Utils.ticksToFPS(rightMaxVelocityTicks));
-    SmartDashboard.putString("Drive Mode", driveMode.name());
     
 		return false;
 	}
@@ -173,13 +169,27 @@ public class DriveTrain implements IControlLoop {
 		default:
 			break;
 		}
-		
-		
-		
 	}
+
 	@Override
 	public void loop(double pNow) {
 	  update(pNow);
+	}
+	
+	public synchronized void setDriveMessage(DrivetrainMessage drivetrainMessage) {
+	  this.currentDrivetrainMessage = drivetrainMessage;
+	}
+	
+	public synchronized void setProfilingMessage(DrivetrainProfilingMessage profilingMessage) {
+	  this.currentProfilingMessage = profilingMessage;
+	}
+	
+	public DrivetrainMessage getDriveMessage() {
+	  return currentDrivetrainMessage;
+	}
+	
+	public DrivetrainProfilingMessage getProfilingMessage() {
+	  return currentProfilingMessage;
 	}
 	
 	public DrivetrainMode getDriveMode() {

@@ -1,19 +1,17 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.sensors.IMU;
-import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
-import org.ilite.frc.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class GyroTurn implements ICommand {
   
-  private DrivetrainControl mDriveControl;
+  private DriveTrain mDrivetrain;
   private Data mData;	
   
   private static final int kMIN_ALIGNED_COUNT = 5;
@@ -41,8 +39,8 @@ public class GyroTurn implements ICommand {
 //    this.mAllowableError = pAllowableError;
 //  }
   
-  public GyroTurn(DrivetrainControl pDriveControl, Data pData, double angle, double pAllowableError, String pDirection) {
-	    this.mDriveControl = pDriveControl;
+  public GyroTurn(DriveTrain pDrivetrain, Data pData, double angle, double pAllowableError, String pDirection) {
+	    this.mDrivetrain = pDrivetrain;
 	    this.mData = pData;
 	    turnAngle = angle;
 	    this.mSetpointDegrees = turnAngle;//== null ? 0 : visionAngle;
@@ -84,12 +82,12 @@ public class GyroTurn implements ICommand {
     mLeftPower = mOutput;
     mRightPower = -mOutput;
     
-    mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+    mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     mLastError = mError;
     
     if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
-      mDriveControl.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
     

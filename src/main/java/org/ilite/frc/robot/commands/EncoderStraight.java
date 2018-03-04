@@ -3,8 +3,7 @@ package org.ilite.frc.robot.commands;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.robot.Data;
-import org.ilite.frc.robot.Utils;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
@@ -16,11 +15,11 @@ public class EncoderStraight implements ICommand{
   private double mLeftTargetPosition, mRightTargetPosition;
   private double mLeftPosition, mRightPosition;
   
-  private DrivetrainControl mDriveControl;
+  private DriveTrain mDrivetrain;
   private Data mData;
   
-  public EncoderStraight(double pInches, DrivetrainControl pDriveControl, Data pData) {
-    this.mDriveControl = pDriveControl;
+  public EncoderStraight(double pInches, DriveTrain pDrivetrain, Data pData) {
+    this.mDrivetrain = pDrivetrain;
     this.mSetpointInches = pInches;
     this.mData = pData;
   }
@@ -33,7 +32,7 @@ public class EncoderStraight implements ICommand{
     mRightTargetPosition = mSetpointInches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
     
     System.out.println("Right Target: " + mRightTargetPosition + " Left Target: " + mLeftTargetPosition);
-    mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
+    mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPosition + mLeftTargetPosition, mRightPosition + mRightTargetPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
   }
   
   public boolean update(double pNow) {
@@ -42,7 +41,7 @@ public class EncoderStraight implements ICommand{
     
     if(isFinished()) {
     	System.out.println("EncoderStraight Finished");
-    	mDriveControl.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
+    	mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPosition, mRightPosition, DrivetrainMode.MotionMagic, NeutralMode.Brake));
     	return true;
     }
     

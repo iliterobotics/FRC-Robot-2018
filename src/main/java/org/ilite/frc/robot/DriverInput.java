@@ -2,13 +2,12 @@ package org.ilite.frc.robot;
 
 import org.ilite.frc.common.config.DriveTeamInputMap;
 import org.ilite.frc.common.input.EInputScale;
-import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
+import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
@@ -17,16 +16,16 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DriverInput implements IModule{
 
 	
-  protected final DrivetrainControl driveControl;
+  protected final DriveTrain driveTrain;
   private final Carriage mCarriage;
   private final Elevator mElevatorModule;
   private final Intake mIntake;
   
 	private Data mData;
 	
-	public DriverInput(DrivetrainControl pDriveControl, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
+	public DriverInput(DriveTrain pDrivetrain, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
 	{
-	  this.driveControl = pDriveControl;
+	  this.driveTrain = pDrivetrain;
 	  this.mIntake = pIntake;
 		this.mData = pData;
 		mCarriage = pCarriage;
@@ -73,7 +72,7 @@ public class DriverInput implements IModule{
 			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
 		}
 		
-		driveControl.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+		driveTrain.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		
 	}
 	

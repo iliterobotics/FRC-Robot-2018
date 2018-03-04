@@ -26,8 +26,11 @@ public class FilteredAverage {
       
       int g = 0;
       for (int i = mNumbers.size()-1; i >= 0; i--) {
-        result += mGains[g] * mNumbers.get(i);
-        g++;
+        if(g >= 0 && g < mGains.length) {
+          result += mGains[g] * mNumbers.get(i);
+          g++;
+        }
+        
       }
 
       return result;

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.ENavX;
+import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
+import org.ilite.frc.robot.modules.DriveTrain;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -26,12 +28,16 @@ public class ControlLoopManager implements Runnable{
   private boolean mIsRunning = false;
   private final List<IControlLoop> mControlLoops = new ArrayList<>();
   
+  private DriveTrain mDrivetrain;
   private final Data mData;
   private final Hardware mHardware;
   
+  private long mLastUpdate = 0;
+  
   private double mLatestTime = 0d;
   
-  public ControlLoopManager(Data pRobotData, Hardware pRobotHardware) {
+  public ControlLoopManager(DriveTrain pDrivetrain, Data pRobotData, Hardware pRobotHardware) {
+    mDrivetrain = pDrivetrain;
     mWpiNotifier = new Notifier(this);
     mHardware = pRobotHardware;
     mData = pRobotData;
@@ -72,7 +78,9 @@ public class ControlLoopManager implements Runnable{
       try {
         if(mIsRunning) {
           mLatestTime = Timer.getFPGATimestamp();
-          mapSensors();
+          System.out.println("CLoop: " + (System.currentTimeMillis() - mLastUpdate));
+          mLastUpdate = System.currentTimeMillis();
+          //mapSensors(mLatestTime);
           for(IControlLoop c : mControlLoops) {
             c.loop(mLatestTime);
           }
@@ -83,8 +91,8 @@ public class ControlLoopManager implements Runnable{
     }
   }
   
-  private void mapSensors() {
-    //TODO change timestamp to mLatestTime
-//    ENavX.map(mData.navx, mHardware.getNavX());
+  private void mapSensors(double pNow) {
+    EPigeon.map(mData.pigeon, mHardware.getPigeon(), pNow);
+    EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
   }
 }
