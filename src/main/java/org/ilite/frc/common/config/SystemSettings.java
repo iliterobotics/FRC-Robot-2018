@@ -4,12 +4,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
-import org.ilite.frc.robot.Utils;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import jaci.pathfinder.Trajectory.Config;
 import jaci.pathfinder.Trajectory.FitMethod;
 
@@ -162,6 +162,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
   public static double	AUTO_TURN_TIMEOUT = 5000;
+  public static double ALLOWABLE_ERROR = 3;
   // =============================================================================
   // Pneumatics
   // =============================================================================
@@ -188,6 +189,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
   
   public static double RES_SCALAR = 1.0;
+  public static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   
   @Override
   public String getFileLocation() {
