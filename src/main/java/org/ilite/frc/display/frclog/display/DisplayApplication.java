@@ -3,6 +3,8 @@ package org.ilite.frc.display.frclog.display;
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
 import eu.hansolo.fx.horizon.Data;
 import eu.hansolo.fx.horizon.HorizonChart;
 import eu.hansolo.fx.horizon.Series;
@@ -192,6 +194,6 @@ public class DisplayApplication extends Application{
     matrixInit();
     Logger.setLevel(ELevel.DEBUG);
     writeHeaders(dataMatrix);
-    while(true) dataMatrix.entrySet().forEach(entry -> writeData(entry));
+    while(true) if(NetworkTableInstance.getDefault().isConnected()) dataMatrix.entrySet().forEach(entry -> writeData(entry));
   }
 }
