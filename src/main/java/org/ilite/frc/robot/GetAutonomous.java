@@ -1,7 +1,5 @@
 package org.ilite.frc.robot;
 
-import javax.swing.JOptionPane;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -10,14 +8,16 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
-import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.robot.auto.FieldAdapter;
 import org.ilite.frc.robot.commands.Delay;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainControl;
 
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import openrio.powerup.MatchData;
 import openrio.powerup.MatchData.OwnedSide;
@@ -29,6 +29,11 @@ public class GetAutonomous {
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
 	private NetworkTableEntry nDelayEntry;
+	
+	private FieldAdapter mFieldAdapter;
+	
+	private DrivetrainControl mDriveTrainControl;
+	private Data mData;
 
 	// Decision variables to be set by networktable entries.
 	private List<ECubeAction> mCubeActionPrefs;
@@ -40,6 +45,8 @@ public class GetAutonomous {
 	// Game Data - Jaci's API
 	private OwnedSide mScaleSide;
 	private OwnedSide mSwitchSide;
+	
+  private Queue<ICommand> mCommands;
 
 	// Used for turning. Starting on left side = 1, starting on right side = -1;
 	// Unknown or middle = 0
@@ -50,7 +57,12 @@ public class GetAutonomous {
 	 * @param pAutonTable
 	 *            - Autonomous network table to be passed in from Robot.java
 	 */
-	public GetAutonomous(SimpleNetworkTable pAutonTable) {
+	public GetAutonomous(SimpleNetworkTable pAutonTable, DrivetrainControl pDrivetrainControl, Data pData) {
+	  this.mDriveTrainControl = pDrivetrainControl;
+	  this.mData = pData;
+	  
+	  this.mFieldAdapter = new FieldAdapter();
+	  
 		this.nAutonTable = pAutonTable;
 		nAutonTable.initKeys();
 		doComplexAutonomous = true;
@@ -64,6 +76,8 @@ public class GetAutonomous {
 		}
 		mScaleSide = getScaleOwnedSide();
 		mSwitchSide = getSwitchOwnedSide();
+		
+		mCommands = new LinkedList<ICommand>();
 	}
 
 	/**
@@ -73,44 +87,37 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
 		parseEntries();
-		Queue<ICommand> commands = new LinkedList<ICommand>();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
 		
-		if (doComplexAutonomous) {
-
-			if (!mCubeActionPrefs.isEmpty()) {
-				ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
-				System.out.println("Autonomous chose: " + prefAction.toString());
-				if(mDelay > 15) {
-					mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
-				}
-				commands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
-				nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-						mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
-				switch (prefAction) {
-				case SCALE:
-					commands.addAll(doScale());
-					break;
-				case SWITCH:
-					commands.addAll(doSwitch());
-					break;
-				case EXCHANGE:
-					commands.addAll(doExchange());
-					break;
-				case NONE:
-					commands.addAll(crossAutoLine());
-					break;
-				}
-			} else {
-				commands.addAll(crossAutoLine());// Default
+		if (!mCubeActionPrefs.isEmpty()) {
+			ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
+			System.out.println("Autonomous chose: " + prefAction.toString());
+			if(mDelay > 15) {
+				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
 			}
-
-		} else {
-			// Drive forward > minimum necessary autonomous for ranking point.
+			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
+			switch (prefAction) {
+			case SCALE:
+				mCommands.addAll(doScale());
+				break;
+			case SWITCH:
+				mCommands.addAll(doSwitch());
+				break;
+			case EXCHANGE:
+				mCommands.addAll(doExchange());
+				break;
+			case NONE:
+				mCommands.addAll(crossAutoLine());
+				break;
+			}
 		}
+		
+		if(mCommands.isEmpty()) mCommands.addAll(crossAutoLine());
 
-		return commands;
+		return mCommands;
 
 	}
 
