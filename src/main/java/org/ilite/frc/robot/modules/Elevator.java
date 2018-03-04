@@ -25,7 +25,6 @@ public class Elevator implements IModule {
 	private ElevatorState elevatorState;
 	private ElevatorPosition elevatorPosition;
 	private ElevatorGearState elevGearState;
-	private DigitalInput bottomLimit;
 	private ElevatorControlMode elevControlMode;
 	private ElevDirection elevatorDirection;
   private static final ILog log = Logger.createLog(Elevator.class);
@@ -44,7 +43,6 @@ public class Elevator implements IModule {
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		elevGearState = ElevatorGearState.NORMAL;
 
-		bottomLimit = new DigitalInput(SystemSettings.DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH);
 
 		elevControlMode = ElevatorControlMode.MANUAL;
 
@@ -119,7 +117,11 @@ public class Elevator implements IModule {
 
 		public boolean isCurrentLimited(TalonSRX pMasterTalon)
 		{
-			return pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage() >= mCurrentLimitRatio;
+		  if(pMasterTalon.getMotorOutputVoltage() != 0)
+		  {
+	      return pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage() >= mCurrentLimitRatio;
+		  }
+		  else return false;
 		}
 
 		public boolean isDecelerated(int currentTapeMark)
@@ -205,59 +207,68 @@ public class Elevator implements IModule {
 
       case MANUAL:
 
-//      	switch(elevatorDirection)
-//				{
-//					case UP:
-//						if(elevatorDirection.isDecelerated(currentTachLevel))
-//						{
-//							elevatorState = ElevatorState.DECELERATE_TOP;
-//						}
-//						if(elevatorDirection.isCurrentLimited(masterElevator))
-//						{
-//							elevatorState = ElevatorState.STOP;
-//						}
-//						break;
-//					case DOWN:
-//						if(elevatorDirection.isDecelerated(currentTachLevel))
-//						{
-//							elevatorState = ElevatorState.DECELERATE_BOTTOM;
-//						}
-//						if(elevatorDirection.isCurrentLimited(masterElevator))
-//						{
-//							elevatorState = ElevatorState.STOP;
-//						}
-//				}
+      	switch(elevatorDirection)
+				{
+					case UP:
+						if(elevatorDirection.isCurrentLimited(masterElevator))
+						{
+							elevatorState = ElevatorState.STOP;
+						}
+						else if(elevatorDirection.isDecelerated(currentTachLevel))
+						{
+							elevatorState = ElevatorState.DECELERATE_TOP;
+						}
+						
+						else
+						{
+						  elevatorState = ElevatorState.NORMAL;
+						}
+						break;
+					case DOWN:
+						if(elevatorDirection.isCurrentLimited(masterElevator))
+						{
+							elevatorState = ElevatorState.STOP;
+						}
+						else if(elevatorDirection.isDecelerated(currentTachLevel))
+						{
+							elevatorState = ElevatorState.DECELERATE_BOTTOM;
+						}
+						else
+            {
+              elevatorState = ElevatorState.NORMAL;
+            }
+				}
         //bottom
-        if (!isDirectionUp && currentTachLevel == 0) {
-          elevatorState = ElevatorState.DECELERATE_BOTTOM;
-        }
-        //top
-        if (isDirectionUp && currentTachLevel == 3) {
-          elevatorState = ElevatorState.DECELERATE_TOP;
-        }
-        if ((isDirectionUp && currentTachLevel == 0) || (!isDirectionUp && currentTachLevel == 3)) {
-          elevatorState = ElevatorState.NORMAL;
-        }
-        if (mAtBottom) {
-          if (mDesiredPower > 0)
-          {
-            elevatorState = ElevatorState.NORMAL;
-          }
-          else {
-            elevatorState = ElevatorState.STOP;
-          }
-        }
-        if (mAtTop)
-        {
-          if (mDesiredPower < 0)
-          {
-            elevatorState = ElevatorState.NORMAL;
-          }
-          else {
-
-            elevatorState = ElevatorState.STOP;
-          }
-        }
+//        if (!isDirectionUp && currentTachLevel == 0) {
+//          elevatorState = ElevatorState.DECELERATE_BOTTOM;
+//        }
+//        //top
+//        if (isDirectionUp && currentTachLevel == 3) {
+//          elevatorState = ElevatorState.DECELERATE_TOP;
+//        }
+//        if ((isDirectionUp && currentTachLevel == 0) || (!isDirectionUp && currentTachLevel == 3)) {
+//          elevatorState = ElevatorState.NORMAL;
+//        }
+//        if (mAtBottom) {
+//          if (mDesiredPower > 0)
+//          {
+//            elevatorState = ElevatorState.NORMAL;
+//          }
+//          else {
+//            elevatorState = ElevatorState.STOP;
+//          }
+//        }
+//        if (mAtTop)
+//        {
+//          if (mDesiredPower < 0)
+//          {
+//            elevatorState = ElevatorState.NORMAL;
+//          }
+//          else {
+//
+//            elevatorState = ElevatorState.STOP;
+//          }
+//        }
         break;
     }
 //		if(shouldstop) {
