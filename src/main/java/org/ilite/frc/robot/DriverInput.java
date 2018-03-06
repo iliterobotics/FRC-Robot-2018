@@ -1,7 +1,14 @@
 package org.ilite.frc.robot;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.ilite.frc.common.config.DriveTeamInputMap;
 import org.ilite.frc.common.input.EInputScale;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.robot.commands.CubeSearch;
+import org.ilite.frc.robot.commands.CubeSearch.CubeSearchType;
+import org.ilite.frc.robot.commands.ICommand;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
@@ -21,31 +28,60 @@ public class DriverInput implements IModule{
   private final Elevator mElevatorModule;
   private final Intake mIntake;
   
+  private Queue<ICommand> desiredCommandQueue;
+  private boolean lastCanRunCommandQueue;
+  private boolean canRunCommandQueue;
+  
+  
 	private Data mData;
 	
 	public DriverInput(DriveTrain pDrivetrain, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
 	{
-	  this.driveTrain = pDrivetrain;
-	  this.mIntake = pIntake;
+	    this.driveTrain = pDrivetrain;
+	    this.mIntake = pIntake;
 		this.mData = pData;
 		mCarriage = pCarriage;
 		mElevatorModule = pElevator;
+		this.desiredCommandQueue = new LinkedList<>();
 	}
 	
 	@Override
 	public void initialize(double pNow) {
 		// TODO Auto-generated method stub
 		
+		canRunCommandQueue = lastCanRunCommandQueue == false;
+		
 	}
 
 	@Override
 	public boolean update(double pNow) {
-		updateDriveTrain();
+		if(!canRunCommandQueue) updateDriveTrain();
 		updateIntake();
 		updateElevator();
 		updateCarriage();
+		updateCommands();
 		return false;
 	}
+	
+	private void updateCommands() {
+		boolean leftButton = mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SEARCH_CUBE_LEFT_BTN);
+		boolean rightButton = mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SEARCH_CUBE_RIGHT_BTN);
+		
+		canRunCommandQueue = leftButton || rightButton;
+
+		if(shouldInitializeCommandQueue()) {
+			System.out.println("shouldInitializeCommandQueue() = true \\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nsearching...!");
+			desiredCommandQueue.clear();
+			if(leftButton) {
+				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.LEFT));
+			} else if(rightButton) {
+				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.RIGHT));
+			}
+		}
+		lastCanRunCommandQueue = canRunCommandQueue;
+	}
+	
+	
 	
 	private void updateDriveTrain() {
 		double desiredLeftOutput, desiredRightOutput;
@@ -56,8 +92,8 @@ public class DriverInput implements IModule{
 		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
-	      rotate /= 3;
-	      rotate /= 3;
+	      throttle /= 4;
+	      rotate /= 4;
 		}
 		
 		desiredLeftOutput = throttle + rotate;
@@ -110,6 +146,20 @@ public class DriverInput implements IModule{
 	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	
+
+	public boolean shouldInitializeCommandQueue() {
+		return lastCanRunCommandQueue == false && canRunCommandQueue == true;
+	}
+	
+	public boolean canRunCommandQueue() {
+		return canRunCommandQueue;
+	}
+	
+	public Queue<ICommand> getDesiredCommandQueue() {
+		return desiredCommandQueue;
 	}
 	
 

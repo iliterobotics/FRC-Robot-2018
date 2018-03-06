@@ -82,6 +82,7 @@ public class Robot extends IterativeRobot {
 
   public void robotInit() {
     mLog.info(System.currentTimeMillis() + " INIT");
+    SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
       
        mHardware.init(
         mExecutor,
@@ -152,6 +153,7 @@ public class Robot extends IterativeRobot {
   }
   public void teleopInit()
   {
+	  SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
 	  mLog.info("TELEOP");
 	   receiveDriverControlMode();
 
@@ -166,6 +168,10 @@ public class Robot extends IterativeRobot {
   public void teleopPeriodic() {
     // Remember that DriverControl classes don't go here. They aren't Modules.
     mapInputsAndCachedSensors();
+    
+    if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
+    if(mDriverInput.canRunCommandQueue()) updateCommandQueue(mDriverInput.shouldInitializeCommandQueue());
+    
     updateRunningModules();
     
 //      mData.resetAll(mCurrentTime);
