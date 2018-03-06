@@ -89,6 +89,7 @@ public class DriveTrain implements IControlLoop {
 
 	@Override
 	public void initialize(double pNow) {
+	  setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		setMode(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 		leftMaster.set(controlMode, 0);
 		rightMaster.set(controlMode, 0);
