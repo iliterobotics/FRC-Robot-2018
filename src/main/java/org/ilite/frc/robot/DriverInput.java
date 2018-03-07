@@ -45,7 +45,7 @@ public class DriverInput implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		if(mData.driverinput.isSet(DriveTeamInputMap.DRIVE_SNAIL_MODE))
+		if(mData.driverinput.get(DriveTeamInputMap.DRIVE_SNAIL_MODE) > 0.5)
 		  scaleInputs = true;
 		else
 		  scaleInputs = false;
