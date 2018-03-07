@@ -23,7 +23,7 @@ public class ElevatorToPosition implements ICommand {
 
   @Override
   public boolean update(double pNow) {
-    if(pNow - mStartTime >= pNow) {
+    if(pNow - mStartTime >= mTimeout) {
       return true;
     }
     return false;

@@ -178,7 +178,8 @@ public class GetAutonomous {
 			}
 			break;
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())));
+		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())),
+      new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchY() - mField.getRightStartingPosY())));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
