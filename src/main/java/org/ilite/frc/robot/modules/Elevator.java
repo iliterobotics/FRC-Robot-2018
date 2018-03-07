@@ -133,6 +133,7 @@ public class Elevator implements IModule {
 	public enum ElevatorControlMode
 	{
 		MANUAL,
+		CLIMBER,
 		POSITION;
 	}
 
@@ -205,6 +206,20 @@ public class Elevator implements IModule {
 
         break;
 
+        
+      case CLIMBER:
+        if(currentTachLevel != 2)
+        {
+          mDesiredPower = -ElevatorState.NORMAL.power;
+          elevatorState = ElevatorState.NORMAL;
+        }
+        else
+        {
+         elevatorState = ElevatorState.HOLD;
+        }
+         
+        break;
+        
       case MANUAL:
 
       	switch(elevatorDirection)
@@ -354,6 +369,7 @@ public class Elevator implements IModule {
   {
     elevGearState = newState;
   }
+	
 	public ElevatorGearState getGearState()
 	{
 	  return elevGearState;
@@ -367,7 +383,6 @@ public class Elevator implements IModule {
 	//obsolete?
 	public void zeroEncoder()
 	{
-
 	  masterElevator.setSelectedSensorPosition(0, 0, 0);
 	}
 

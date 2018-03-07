@@ -190,9 +190,10 @@ public class Robot extends IterativeRobot {
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrainControl.getDriveMessage(), mCurrentTime, mDrivetrain.getLeftMaster(), mDrivetrain.getRightMaster());
+      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain);
+      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.elevator, mCurrentTime);
   }
   
   /**
