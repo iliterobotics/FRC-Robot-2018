@@ -72,7 +72,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Robot Dimensions - These include bumpers, all units in feet
   // =============================================================================
-  public static double  ROBOT_LENGTH = 3.197916666666667;
+  public static double  ROBOT_LENGTH = 3.083;
   public static double  ROBOT_WIDTH = 2.791666666666667;
   public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
   public static double  ROBOT_CENTER_TO_FRONT = 0;
@@ -107,7 +107,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Elevator Constants
   // =============================================================================  
   public static int     DIO_TALON_TACH = 8;
-  
+  public static int     DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH = 6;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  

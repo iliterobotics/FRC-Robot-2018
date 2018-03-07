@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.ilite.frc.common.config.DriveTeamInputMap;
+import org.ilite.frc.common.input.DriverInputUtils;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.commands.CubeSearch;
@@ -13,6 +14,7 @@ import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
@@ -27,6 +29,7 @@ public class DriverInput implements IModule{
   private final Carriage mCarriage;
   private final Elevator mElevatorModule;
   private final Intake mIntake;
+  private boolean scaleInputs;
   
   private Queue<ICommand> desiredCommandQueue;
   private boolean lastCanRunCommandQueue;
@@ -43,6 +46,7 @@ public class DriverInput implements IModule{
 		mCarriage = pCarriage;
 		mElevatorModule = pElevator;
 		this.desiredCommandQueue = new LinkedList<>();
+		scaleInputs = false;
 	}
 	
 	@Override
@@ -55,6 +59,10 @@ public class DriverInput implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
+		if(mData.driverinput.get(DriveTeamInputMap.DRIVE_SNAIL_MODE) > 0.5)
+		  scaleInputs = true;
+		else
+		  scaleInputs = false;
 		if(!canRunCommandQueue) updateDriveTrain();
 		updateIntake();
 		updateElevator();
@@ -89,13 +97,19 @@ public class DriverInput implements IModule{
 		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
-		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
+		throttle = scaleInputs ? throttle = DriverInputUtils.scale(throttle, 0.33) : EInputScale.EXPONENTIAL.map(throttle, 2);
+
+		if(mElevatorModule.decelerateHeight())
+		{
+		  throttle = Utils.clamp(throttle, 0.5);
+		}
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      throttle /= 4;
 	      rotate /= 4;
 		}
 		
+		System.out.println("ENGINE THROTTLE " + throttle);
 		desiredLeftOutput = throttle + rotate;
 		desiredRightOutput = throttle - rotate;
 		
@@ -128,8 +142,40 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateElevator() {
-	  mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) + 
-	                            mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
+	  
+	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
+	  {
+	    mElevatorModule.setPower(0);
+	  }
+	  
+	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
+	  {
+	      mElevatorModule.setCurrentTachLevel(1); 
+//	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+//	    mElevatorModule.setPosition(ElevatorPosition.FIRST_TAPE);
+	  }
+	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
+    {
+      mElevatorModule.setCurrentTachLevel(3);
+
+//      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+//      mElevatorModule.setPosition(ElevatorPosition.THIRD_TAPE);
+    }
+    else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
+    {
+      mElevatorModule.setCurrentTachLevel(0);
+
+//      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+//      mElevatorModule.setPosition(ElevatorPosition.BOTTOM);
+    }
+	  else
+    {
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
+      mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) +
+              mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
+    }
+
+
 	}
   
   private void updateCarriage() {

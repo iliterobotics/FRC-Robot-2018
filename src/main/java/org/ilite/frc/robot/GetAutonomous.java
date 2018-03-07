@@ -129,14 +129,14 @@ public class GetAutonomous {
 
 	/**
 	 * Do scale autonomous; switch based on starting position.
-	 */
+	 */ 
 	public void doScale() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftScaleX() - mField.getLeftStartingPosX())),
-		                                     new ElevatorToPosition(mElevator, ElevatorPosition.SCALE, 4)));
+		                                     new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 45, 3));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
@@ -144,7 +144,7 @@ public class GetAutonomous {
 			break;
 		case RIGHT:
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightScaleX() - mField.getRightStartingPosX())),
-          new ElevatorToPosition(mElevator, ElevatorPosition.SCALE, 4)));
+          new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -45, 3));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
@@ -160,7 +160,7 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 			mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftSideSwitchX() - mField.getLeftStartingPosX())),
-			                                   new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
+			                                   new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY())));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
@@ -172,14 +172,14 @@ public class GetAutonomous {
 			  break;
 			case RIGHT:
 			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getMiddleStartingPosX())),
-			                                     new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
+			                                     new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			}
 			break;
 		case RIGHT:
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())),
-      new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
+      new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchY() - mField.getRightStartingPosY())));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
@@ -218,7 +218,7 @@ public class GetAutonomous {
 	public void crossAutoLine() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing auto line autonomous starting on %s\n", mStartingPos);
-		mCommands.add(new DriveStraight(mDriveTrain, mData, mField.getRightFrontSwitchX() - mField.getRightStartingPosX()));
+		mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getRightStartingPosX())));
 	}
 
 	/**

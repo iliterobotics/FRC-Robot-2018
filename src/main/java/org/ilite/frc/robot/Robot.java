@@ -11,6 +11,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
@@ -62,10 +63,7 @@ public class Robot extends IterativeRobot {
 
   
   private GetAutonomous getAutonomous;
-  
-  private String controllerMode;
-  private int numControlMode;
-  
+
   public Robot() {
     
     mHardware.init(
@@ -135,8 +133,7 @@ public class Robot extends IterativeRobot {
   
   public void receiveDriverControlMode() {
 	  int receivedControlMode = SystemSettings.DRIVER_CONTROL_TABLE.getEntry(EDriverControlMode.class.getSimpleName()).getNumber(0).intValue();
-	  numControlMode = receivedControlMode;
-	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(numControlMode);
+	  EDriverControlMode controlMode = EDriverControlMode.intToEnum(receivedControlMode);
 	  switch (controlMode) {
 	  case ARCADE:
 		  switchDriverControlModes (mDriverInput);
@@ -190,6 +187,7 @@ public class Robot extends IterativeRobot {
     // Such as using a button to reset the gyros
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
+      EElevator.map(mData.elevator, mElevator, mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
   }
   

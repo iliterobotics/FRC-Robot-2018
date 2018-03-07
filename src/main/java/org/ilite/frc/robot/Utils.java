@@ -78,4 +78,5 @@ public class Utils {
     val = Math.min(val, pMaxMagnitude);
     return val * (pValue > 0d ? 1d : -1d);
   }
+  
 }

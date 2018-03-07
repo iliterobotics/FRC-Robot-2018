@@ -23,4 +23,8 @@ public class DriverInputUtils {
     if(res <= sMAX_DEAD_BAND_NEG) return -1d;
     return res;
   }
+  public static double scale(double pValue, double pScaleFactor)
+  {
+    return pValue * pScaleFactor;
+  }
 }
