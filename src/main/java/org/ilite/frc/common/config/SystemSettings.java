@@ -98,7 +98,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // Elevator Constants
   // =============================================================================  
   public static int     DIO_TALON_TACH = 8;
-  
+  public static int     DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH = 6;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
