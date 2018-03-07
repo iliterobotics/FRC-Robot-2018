@@ -15,12 +15,16 @@ import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.ElevatorToPosition;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.commands.ReleaseCube;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;
@@ -85,7 +89,7 @@ public class Robot extends IterativeRobot {
         // Talons TBD ... they're somewhat picky.
     );
     
-    mElevator = new Elevator(mHardware);
+    mElevator = new Elevator(mHardware, mData);
     mIntake = new Intake(mElevator, mHardware);
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
     mCarriage = new Carriage(mData, mHardware );
@@ -109,11 +113,10 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
-    setRunningModules(mDrivetrain);
+    setRunningModules(mDrivetrain, mElevator, mCarriage);
     
     mCommandQueue.clear();
     mCommandQueue = getAutonomous.getAutonomousCommands();
-
     // Add commands here
     updateCommandQueue(true);
     
@@ -148,18 +151,18 @@ public class Robot extends IterativeRobot {
   {
 	  SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
 	  mLog.info("TELEOP");
-	   receiveDriverControlMode();
+	  receiveDriverControlMode();
 
-	   setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
-	  
-	  mHardware.getPigeon().zeroAll();
+    mHardware.getPigeon().zeroAll();
+    mapInputsAndCachedSensors();
+	   
+	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
   }
 
   public void teleopPeriodic() {
-    // Remember that DriverControl classes don't go here. They aren't Modules.
     mapInputsAndCachedSensors();
     
     if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();

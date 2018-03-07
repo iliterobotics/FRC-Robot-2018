@@ -2,8 +2,11 @@ package org.ilite.frc.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+
+import org.ilite.frc.common.config.DriveTeamInputMap;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.Utils;
 
@@ -14,6 +17,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
+  private Data mData;
 	TalonSRX masterElevator, followerElevator;
 	private final Hardware mHardware;
 	private TalonTach talonTach;
@@ -31,8 +35,9 @@ public class Elevator implements IModule {
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
 
 
-  public Elevator(Hardware pHardware) {
+  public Elevator(Hardware pHardware, Data pData) {
 		mHardware = pHardware;
+		mData = pData;
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_MASTER);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_FOLLOWER);
 		followerElevator.follow(masterElevator);
@@ -69,7 +74,7 @@ public class Elevator implements IModule {
 
 		private double getPower()
 		{
-			return power;
+		  return power;
 		}
 	}
 
@@ -187,6 +192,7 @@ public class Elevator implements IModule {
 
 		currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 
+		
     currentTachLevel = getTachLevel(currentTachState, lastTachState);
 		switch(elevControlMode) {
 
@@ -338,6 +344,7 @@ public class Elevator implements IModule {
       {
         currentTachLevel += (int)Math.floor(mDesiredPower);
       }
+      System.out.println("CHANGED LEVEL SUCCESS ");
 		}
     return currentTachLevel;
   }

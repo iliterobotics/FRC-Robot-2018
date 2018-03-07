@@ -9,17 +9,17 @@ import org.ilite.frc.common.config.SystemSettings;
  */
 public class FieldDimensions {
   
-  public static final double FIELD_LENGTH = 0;
-  public static final double FIELD_WIDTH = 0;
+  public static final double FIELD_LENGTH = 54;
+  public static final double FIELD_WIDTH = 27;
   
   public static final double PORTAL_CORNER_TO_FIELD_EDGE = 2.474166666666667;
   public static final double EXCHANGE_TAPE_TO_FIELD_EDGE = 14.5;
   
-  public static final double LEFT_STARTING_POS_X = SystemSettings.ROBOT_LENGTH;
+  public static final double LEFT_STARTING_POS_X = SystemSettings.ROBOT_LENGTH - SystemSettings.ROBOT_CENTER_TO_FRONT;
   public static final double LEFT_STARTING_POS_Y = FIELD_WIDTH - PORTAL_CORNER_TO_FIELD_EDGE - SystemSettings.ROBOT_CENTER_TO_SIDE;
-  public static final double RIGHT_STARTING_POS_X = SystemSettings.ROBOT_LENGTH;
+  public static final double RIGHT_STARTING_POS_X = SystemSettings.ROBOT_LENGTH - SystemSettings.ROBOT_CENTER_TO_FRONT;
   public static final double RIGHT_STARTING_POS_Y = PORTAL_CORNER_TO_FIELD_EDGE + SystemSettings.ROBOT_CENTER_TO_SIDE;
-  public static final double MIDDLE_STARTING_POS_X = SystemSettings.ROBOT_LENGTH;
+  public static final double MIDDLE_STARTING_POS_X = SystemSettings.ROBOT_LENGTH - SystemSettings.ROBOT_CENTER_TO_FRONT;
   public static final double MIDDLE_STARTING_POS_Y = EXCHANGE_TAPE_TO_FIELD_EDGE - SystemSettings.ROBOT_CENTER_TO_SIDE;
   
   public static final double LEFT_SWITCH_FRONT_X = 12;

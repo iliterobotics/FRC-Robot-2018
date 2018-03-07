@@ -8,6 +8,7 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
@@ -162,7 +163,7 @@ public class GetAutonomous {
 			mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftSideSwitchX() - mField.getLeftStartingPosX())),
 			                                   new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY())));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, 2));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		case MIDDLE:
@@ -178,10 +179,11 @@ public class GetAutonomous {
 			}
 			break;
 		case RIGHT:
+		  System.out.println(Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX()));
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())),
       new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchY() - mField.getRightStartingPosY())));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 2));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		}

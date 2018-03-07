@@ -75,7 +75,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  ROBOT_LENGTH = 3.083;
   public static double  ROBOT_WIDTH = 2.791666666666667;
   public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
-  public static double  ROBOT_CENTER_TO_FRONT = 0;
+  public static double  ROBOT_CENTER_TO_FRONT = 1.5833333333333333333333333333333;
   public static double  ROBOT_CENTER_TO_BACK = 0;
   
   // =============================================================================

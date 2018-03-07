@@ -32,8 +32,6 @@ public class ControlLoopManager implements Runnable{
   private final Data mData;
   private final Hardware mHardware;
   
-  private long mLastUpdate = 0;
-  
   private double mLatestTime = 0d;
   
   public ControlLoopManager(DriveTrain pDrivetrain, Data pRobotData, Hardware pRobotHardware) {
@@ -78,8 +76,6 @@ public class ControlLoopManager implements Runnable{
       try {
         if(mIsRunning) {
           mLatestTime = Timer.getFPGATimestamp();
-          System.out.println("CLoop: " + (System.currentTimeMillis() - mLastUpdate));
-          mLastUpdate = System.currentTimeMillis();
           //mapSensors(mLatestTime);
           for(IControlLoop c : mControlLoops) {
             c.loop(mLatestTime);

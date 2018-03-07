@@ -150,23 +150,18 @@ public class DriverInput implements IModule{
 	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
 	  {
-	      mElevatorModule.setCurrentTachLevel(1); 
-//	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-//	    mElevatorModule.setPosition(ElevatorPosition.FIRST_TAPE);
+	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+	    mElevatorModule.setPosition(ElevatorPosition.FIRST_TAPE);
 	  }
 	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
     {
-      mElevatorModule.setCurrentTachLevel(3);
-
-//      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-//      mElevatorModule.setPosition(ElevatorPosition.THIRD_TAPE);
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+      mElevatorModule.setPosition(ElevatorPosition.THIRD_TAPE);
     }
     else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
     {
-      mElevatorModule.setCurrentTachLevel(0);
-
-//      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-//      mElevatorModule.setPosition(ElevatorPosition.BOTTOM);
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
+      mElevatorModule.setPosition(ElevatorPosition.BOTTOM);
     }
 	  else
     {

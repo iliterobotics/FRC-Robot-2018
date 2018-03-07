@@ -1,6 +1,7 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
 import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 
 public class ElevatorToPosition implements ICommand {
@@ -19,13 +20,14 @@ public class ElevatorToPosition implements ICommand {
   @Override
   public void initialize(double pNow) {
     mStartTime = pNow;
+    mElevator.setElevControlMode(ElevatorControlMode.POSITION);
   }
 
   @Override
   public boolean update(double pNow) {
-    if(pNow - mStartTime >= mTimeout) {
-      return true;
-    }
+    mElevator.setPosition(mPosition);
+    if(mElevator.getElevatorPosition() == mPosition) return true;
+    if(pNow - mStartTime >= mTimeout) return true;
     return false;
   }
 
