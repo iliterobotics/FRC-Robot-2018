@@ -67,24 +67,8 @@ public class Robot extends IterativeRobot {
   private int numControlMode;
   
   public Robot() {
-    mElevator = new Elevator(mHardware);
-    mIntake = new Intake(mElevator, mHardware);
-  	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
-    mCarriage = new Carriage(mData, mHardware );
-  	mDrivetrain = new DriveTrain(mData, mHardware);
-    mControlLoop = new ControlLoopManager(mDrivetrain, mData, mHardware);
-  	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
-  	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
-  	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
-  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE);
-  	Logger.setLevel(ELevel.DEBUG);
-  }
-
-  public void robotInit() {
-    mLog.info(System.currentTimeMillis() + " INIT");
-    SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
-      
-       mHardware.init(
+    
+    mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
         new Joystick(SystemSettings.JOYSTICK_PORT_OPERATOR), 
@@ -102,6 +86,23 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
+    
+    mElevator = new Elevator(mHardware);
+    mIntake = new Intake(mElevator, mHardware);
+  	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
+    mCarriage = new Carriage(mData, mHardware );
+  	mDrivetrain = new DriveTrain(mData, mHardware);
+    mControlLoop = new ControlLoopManager(mDrivetrain, mData, mHardware);
+  	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
+  	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
+  	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
+  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
+  	Logger.setLevel(ELevel.DEBUG);
+  }
+
+  public void robotInit() {
+    mLog.info(System.currentTimeMillis() + " INIT");
+    SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
   }
 
   public void autonomousInit() {
@@ -110,16 +111,11 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
-    setRunningModules();
-    mControlLoop.setRunningControlLoops(mDrivetrain);
-    mControlLoop.start();
+    setRunningModules(mDrivetrain);
     
-    mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new FollowPath(mDrivetrain, mData, 
-                      new File("/home/lvuser/paths/to-right-switch-curve_left_detailed.csv"), 
-                      new File("/home/lvuser/paths/to-right-switch-curve_right_detailed.csv"), 
-                      false));
+    mCommandQueue = getAutonomous.getAutonomousCommands();
+
     // Add commands here
     updateCommandQueue(true);
     
@@ -271,6 +267,9 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+    mCommandQueue.clear();
+    mCommandQueue = getAutonomous.getAutonomousCommands();
+    System.out.println(mCommandQueue);
   }
   
   

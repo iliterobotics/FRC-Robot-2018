@@ -69,6 +69,10 @@ public class Utils {
     return rotationsToTicks(inches / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE);
   }
   
+  public static double feetToInches(double feet) {
+    return feet * 12;
+  }
+  
   public static double clamp(double pValue, double pMaxMagnitude) {
     double val = Math.abs(pValue);
     val = Math.min(val, pMaxMagnitude);

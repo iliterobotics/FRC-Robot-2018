@@ -1,7 +1,5 @@
 package org.ilite.frc.robot;
 
-import javax.swing.JOptionPane;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -10,14 +8,24 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
-import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.robot.auto.FieldAdapter;
 import org.ilite.frc.robot.commands.Delay;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.ElevatorToPosition;
+import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.commands.ParallelCommand;
+import org.ilite.frc.robot.commands.ReleaseCube;
+import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.modules.Carriage.CarriageState;
+import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import openrio.powerup.MatchData;
 import openrio.powerup.MatchData.OwnedSide;
@@ -29,6 +37,15 @@ public class GetAutonomous {
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
 	private NetworkTableEntry nDelayEntry;
+	
+	private FieldAdapter mField;
+	
+	private Elevator mElevator;
+	private Carriage mCarriage;
+	
+	private DriveTrain mDriveTrain;
+	private Pigeon mPigeon;
+	private Data mData;
 
 	// Decision variables to be set by networktable entries.
 	private List<ECubeAction> mCubeActionPrefs;
@@ -40,6 +57,8 @@ public class GetAutonomous {
 	// Game Data - Jaci's API
 	private OwnedSide mScaleSide;
 	private OwnedSide mSwitchSide;
+	
+  private Queue<ICommand> mCommands;
 
 	// Used for turning. Starting on left side = 1, starting on right side = -1;
 	// Unknown or middle = 0
@@ -50,20 +69,20 @@ public class GetAutonomous {
 	 * @param pAutonTable
 	 *            - Autonomous network table to be passed in from Robot.java
 	 */
-	public GetAutonomous(SimpleNetworkTable pAutonTable) {
+	public GetAutonomous(SimpleNetworkTable pAutonTable, Elevator pElevator, Carriage pCarriage, Pigeon pPigeon, DriveTrain pDriveTrain, Data pData) {
+	  this.mElevator = pElevator;
+	  this.mCarriage = pCarriage;
+	  this.mPigeon = pPigeon;
+	  this.mDriveTrain = pDriveTrain;
+	  this.mData = pData;
+	  
+	  this.mField = new FieldAdapter();
+	  
 		this.nAutonTable = pAutonTable;
 		nAutonTable.initKeys();
 		doComplexAutonomous = true;
-		try {
-			nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
-			nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
-			nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
-			nDelayEntry = nAutonTable.getEntry("Delay");
-		} catch (Exception e) {
-
-		}
-		mScaleSide = getScaleOwnedSide();
-		mSwitchSide = getSwitchOwnedSide();
+		
+		mCommands = new LinkedList<ICommand>();
 	}
 
 	/**
@@ -72,103 +91,106 @@ public class GetAutonomous {
 	 * @return Command Queue of autonomous commands.
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
+	  getSides();
 		parseEntries();
-		Queue<ICommand> commands = new LinkedList<ICommand>();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
 		
-		if (doComplexAutonomous) {
-
-			if (!mCubeActionPrefs.isEmpty()) {
-				ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
-				System.out.println("Autonomous chose: " + prefAction.toString());
-				if(mDelay > 15) {
-					mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
-				}
-				commands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
-				nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-						mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
-				switch (prefAction) {
-				case SCALE:
-					commands.addAll(doScale());
-					break;
-				case SWITCH:
-					commands.addAll(doSwitch());
-					break;
-				case EXCHANGE:
-					commands.addAll(doExchange());
-					break;
-				case NONE:
-					commands.addAll(crossAutoLine());
-					break;
-				}
-			} else {
-				commands.addAll(crossAutoLine());// Default
+		if (!mCubeActionPrefs.isEmpty()) {
+			ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
+			System.out.println("Autonomous chose: " + prefAction.toString());
+			if(mDelay > 15) {
+				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
 			}
-
-		} else {
-			// Drive forward > minimum necessary autonomous for ranking point.
+			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
+			switch (prefAction) {
+			case SCALE:
+				doScale();
+				break;
+			case SWITCH:
+				doSwitch();
+				break;
+			case EXCHANGE:
+				doExchange();
+				break;
+			case NONE:
+				crossAutoLine();
+				break;
+			}
 		}
+		
+		if(mCommands.isEmpty()) crossAutoLine();
 
-		return commands;
+		return mCommands;
 
 	}
 
 	/**
 	 * Do scale autonomous; switch based on starting position.
 	 */
-	public Queue<ICommand> doScale() {
+	public void doScale() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
+		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftScaleX() - mField.getLeftStartingPosX())),
+		                                     new ElevatorToPosition(mElevator, ElevatorPosition.SCALE, 4)));
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 45, 3));
+		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		case MIDDLE:
 			break;
 		case RIGHT:
+		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightScaleX() - mField.getRightStartingPosX())),
+          new ElevatorToPosition(mElevator, ElevatorPosition.SCALE, 4)));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -45, 3));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		}
-
-		return new LinkedList<ICommand>();
 	}
 
 	/**
 	 * Do switch autonomous; switch based on starting position.
 	 */
-	public Queue<ICommand> doSwitch() {
+	public void doSwitch() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing switch autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
+			mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftSideSwitchX() - mField.getLeftStartingPosX())),
+			                                   new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY())));
+			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		case MIDDLE:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
+			switch(mSwitchSide) {
+			case LEFT:
+			  // TODO
+			  break;
+			case RIGHT:
+			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getMiddleStartingPosX())),
+			                                     new ElevatorToPosition(mElevator, ElevatorPosition.SWITCH, 3)));
+			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			  break;
 			}
 			break;
 		case RIGHT:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchY() - mField.getRightStartingPosY())));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		}
-		return new LinkedList<ICommand>();
 	}
 
 	/**
 	 * Place cube in exchange autonomous; switch based on starting position.
 	 */
 	@SuppressWarnings("all")
-	public Queue<ICommand> doExchange() {
+	public void doExchange() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing exchange autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
@@ -187,39 +209,15 @@ public class GetAutonomous {
 			}
 			break;
 		}
-		return new LinkedList<ICommand>();
 	}
 
 	/**
 	 * Crosses autonomous line based on starting position.
 	 */
-	public Queue<ICommand> crossAutoLine() {
+	public void crossAutoLine() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing auto line autonomous starting on %s\n", mStartingPos);
-		switch (mStartingPos) {
-		case LEFT:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
-			break;
-		case MIDDLE:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
-			break;
-		case RIGHT:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
-			break;
-		}
-		return new LinkedList<ICommand>();
+		mCommands.add(new DriveStraight(mDriveTrain, mData, mField.getRightFrontSwitchX() - mField.getRightStartingPosX()));
 	}
 
 	/**
@@ -362,6 +360,19 @@ public class GetAutonomous {
 
 	/* package */ List<ECubeAction> getCubeActionsOnOtherSide() {
 		return mCubeActionPrefs.stream().filter(cA -> isCubeActionOtherSide(cA)).collect(Collectors.toList());
+	}
+	
+	private void getSides() {
+	   try {
+	      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
+	      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
+	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
+	      nDelayEntry = nAutonTable.getEntry("Delay");
+	    } catch (Exception e) {
+
+	    }
+	    mScaleSide = getScaleOwnedSide();
+	    mSwitchSide = getSwitchOwnedSide();
 	}
 
 	/**
