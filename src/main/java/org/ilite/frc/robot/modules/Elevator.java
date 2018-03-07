@@ -350,6 +350,11 @@ public class Elevator implements IModule {
     this.elevControlMode = elevControlMode;
   }
 
+	
+	public void setCurrentTachLevel(int tachLevel)
+	{
+	  currentTachLevel = tachLevel;
+	}
 	public void setGearState(ElevatorGearState newState)
   {
     elevGearState = newState;
