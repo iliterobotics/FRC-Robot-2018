@@ -202,8 +202,6 @@ public class Elevator implements IModule {
 					elevatorState = ElevatorState.HOLD;
         }
         log.debug("TAPE MARKER " + elevatorPosition);
-
-
         break;
 
         
@@ -433,6 +431,8 @@ public class Elevator implements IModule {
   {
     return mDesiredPower;
   }
+  
+
   //30/12 and 10/12 = amps / voltage
 	private boolean isTopCurrentTripped() {
 		return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= TOP_LIMIT;

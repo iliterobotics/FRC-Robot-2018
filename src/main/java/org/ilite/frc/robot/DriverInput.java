@@ -14,6 +14,7 @@ import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
 import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
@@ -30,6 +31,7 @@ public class DriverInput implements IModule{
   private final Elevator mElevatorModule;
   private final Intake mIntake;
   private boolean scaleInputs;
+  private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
   
   private Queue<ICommand> desiredCommandQueue;
   private boolean lastCanRunCommandQueue;
@@ -144,9 +146,26 @@ public class DriverInput implements IModule{
 	
 	private void updateElevator() {
 	  
+	  currentDriverToggle = mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMB_TOGGLE);
+	  currentOperatorToggle = mData.operator.isSet(DriveTeamInputMap.OPERATOR_CLIMB_TOGGLE);
+	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
 	  {
 	    mElevatorModule.setPower(0);
+	  }
+	  
+	  if(currentDriverToggle && currentOperatorToggle)
+	  {
+	    mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);	    
+	  }
+	  
+	  if(mElevatorModule.getElevControlMode() == ElevatorControlMode.CLIMBER)
+	  {
+	    // If we are pressed this tick but not last tick - make sure we aren't holding the button down
+	    if((currentOperatorToggle && !lastOperatorToggle) || (currentDriverToggle && !lastDriverToggle))
+	    {
+	      mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
+	    }
 	  }
 	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
@@ -164,14 +183,15 @@ public class DriverInput implements IModule{
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
       mElevatorModule.setPosition(ElevatorPosition.BOTTOM);
     }
-	  else
+	  else if(mElevatorModule.getElevControlMode() != ElevatorControlMode.CLIMBER)
     {
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
       mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) +
               mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
     }
 
-
+	  lastDriverToggle = currentDriverToggle;
+	  lastOperatorToggle = currentOperatorToggle;
 	}
   
   private void updateCarriage() {
