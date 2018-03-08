@@ -82,6 +82,8 @@ public class GetAutonomous {
 	  this.mField = new FieldAdapter();
 	  
 		this.nAutonTable = pAutonTable;
+		this.mDrivetrainControl = mDrivetrainControl;
+		this.mData = mData;
 		nAutonTable.initKeys();
 		doComplexAutonomous = true;
 		
@@ -206,19 +208,13 @@ public class GetAutonomous {
 		System.out.printf("Doing exchange autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
 			break;
-		case MIDDLE:
-			switch(mCrossType) {
-			case NONE: break;
-			case CARPET: break;
-			case PLATFORM: break;
-			}
+			
+		 case MIDDLE:
 			break;
+			
+	   case RIGHT: 
+	     break;
 		}
 	}
 
@@ -354,11 +350,11 @@ public class GetAutonomous {
 	public boolean isCubeActionOtherSide(ECubeAction c) {
 		switch (c) {
 		case EXCHANGE:
-			return false;
+		return false;
 		case SCALE:
-			return !isOnMySide(mScaleSide);
+		return !isOnMySide(mScaleSide);
 		case SWITCH:
-			return !isOnMySide(mSwitchSide);
+		return !isOnMySide(mSwitchSide);
 		case NONE:
 		default:
 			return true;

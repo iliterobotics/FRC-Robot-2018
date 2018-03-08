@@ -13,6 +13,10 @@ public class FieldAdapter {
   public FieldAdapter(FieldProfile pField) {
     this.mField = pField;
   }
+ 
+  public FieldAdapter() {
+    
+  }
   
   public FieldAdapter() {
     this(new DefaultField());
