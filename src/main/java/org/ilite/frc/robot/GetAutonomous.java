@@ -64,6 +64,8 @@ public class GetAutonomous {
 	// Used for turning. Starting on left side = 1, starting on right side = -1;
 	// Unknown or middle = 0
 	private int mTurnScalar = 0;
+	
+	private long triggeredTime = 0;
 
 	/**
 	 * 
@@ -93,6 +95,12 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
 	  getSides();
+	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
+	    double timerStart = System.currentTimeMillis();
+	    while(System.currentTimeMillis() - timerStart > 5000) {
+	      getSides();
+	    }
+	  }
 		parseEntries();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
@@ -366,6 +374,7 @@ public class GetAutonomous {
 	}
 	
 	private void getSides() {
+	  
 	   try {
 	      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
 	      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());

@@ -8,7 +8,7 @@ public class Delay implements ICommand {
 	}
 	@Override
 	public void initialize(double pNow) {
-		triggeredTime = pNow;
+	  triggeredTime = pNow;
 
 	}
 
