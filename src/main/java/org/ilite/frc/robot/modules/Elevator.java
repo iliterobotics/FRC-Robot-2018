@@ -138,6 +138,7 @@ public class Elevator implements IModule {
 	public enum ElevatorControlMode
 	{
 		MANUAL,
+		CLIMBER,
 		POSITION;
 	}
 
@@ -207,10 +208,22 @@ public class Elevator implements IModule {
 					elevatorState = ElevatorState.HOLD;
         }
         log.debug("TAPE MARKER " + elevatorPosition);
-
-
         break;
 
+        
+      case CLIMBER:
+        if(currentTachLevel != 2)
+        {
+          mDesiredPower = -ElevatorState.NORMAL.power;
+          elevatorState = ElevatorState.NORMAL;
+        }
+        else
+        {
+         elevatorState = ElevatorState.HOLD;
+        }
+         
+        break;
+        
       case MANUAL:
 
       	switch(elevatorDirection)
@@ -366,6 +379,7 @@ public class Elevator implements IModule {
   {
     elevGearState = newState;
   }
+	
 	public ElevatorGearState getGearState()
 	{
 	  return elevGearState;
@@ -379,7 +393,6 @@ public class Elevator implements IModule {
 	//obsolete?
 	public void zeroEncoder()
 	{
-
 	  masterElevator.setSelectedSensorPosition(0, 0, 0);
 	}
 
@@ -430,6 +443,8 @@ public class Elevator implements IModule {
   {
     return mDesiredPower;
   }
+  
+
   //30/12 and 10/12 = amps / voltage
 	private boolean isTopCurrentTripped() {
 		return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= TOP_LIMIT;

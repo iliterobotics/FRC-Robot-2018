@@ -192,6 +192,7 @@ public class Robot extends IterativeRobot {
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(mData.elevator, mCurrentTime);
   }
   
   /**
