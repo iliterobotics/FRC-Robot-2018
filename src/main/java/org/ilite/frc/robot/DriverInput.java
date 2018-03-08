@@ -127,18 +127,21 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateIntake() {
-	    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS);
-	    
-	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN))
-	      mIntake.setIntakeRetracted(false);
-	    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN))
-	      mIntake.setIntakeRetracted(true);
-	    
-	    if(intakeSpeed > 0) {
-	      mIntake.intakeIn(intakeSpeed);
-	    } else {
-	      mIntake.intakeOut(intakeSpeed);
-	    }
+    // Combines the two gamepad Y axes so the operator can use either one
+    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_1) + mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_2);
+    
+    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
+      mIntake.setIntakeRetracted(true);
+    }
+    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
+      mIntake.setIntakeRetracted(false);
+    }
+    
+    if(intakeSpeed > 0) {
+      mIntake.intakeIn(intakeSpeed);
+    } else {
+      mIntake.intakeOut(intakeSpeed);
+    }
 	}
 	
 	private void updateElevator() {
