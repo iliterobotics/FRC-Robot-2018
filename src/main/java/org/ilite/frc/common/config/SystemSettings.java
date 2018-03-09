@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
-import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.auto.FieldAdapter;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
@@ -74,11 +73,11 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Robot Dimensions - These include bumpers, all units in feet
   // =============================================================================
-  public static double  ROBOT_LENGTH = 3.083;
-  public static double  ROBOT_WIDTH = 2.791666666666667;
+  public static double  ROBOT_LENGTH = 3.1666666666666666666666666666667;
+  public static double  ROBOT_WIDTH = 2.8333333333333333333333333333333;
   public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
-  public static double  ROBOT_CENTER_TO_FRONT = 1.5833333333333333333333333333333;
-  public static double  ROBOT_CENTER_TO_BACK = 0;
+  public static double  ROBOT_CENTER_TO_FRONT = ROBOT_LENGTH / 2;
+  public static double  ROBOT_CENTER_TO_BACK = ROBOT_LENGTH - ROBOT_CENTER_TO_FRONT;
   
   // =============================================================================
   // Drive Train Constants
