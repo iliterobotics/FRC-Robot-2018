@@ -102,18 +102,20 @@ public class Elevator implements IModule {
 
 	public enum ElevDirection
 	{
-		UP(true, 30d/12d, 3),
-		DOWN(false, 11d/12d, 0);
+		UP(true, 30d/12d, 3, 20),
+		DOWN(false, 11d/12d, 0, 10);
 
 		boolean isPositiveDirection;
 		double mCurrentLimitRatio;
 		int tapeMark;
+		int currentLimit;
 
-		ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int tapeMark)
+		ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int tapeMark, int currentLimit)
 		{
 			this.isPositiveDirection = isPositiveDirection;
 			mCurrentLimitRatio = pCurrentLimitRatio;
 			this.tapeMark = tapeMark;
+			this.currentLimit = currentLimit;
 		}
 
 		public static ElevDirection getDirection(double pDesiredPower)
@@ -130,10 +132,15 @@ public class Elevator implements IModule {
 		  else return false;
 		}
 
+		public int getCurrentLimit()
+		{
+		  return currentLimit;
+		}
 		public boolean isDecelerated(int currentTapeMark)
 		{
 			return currentTapeMark == tapeMark;
 		}
+		
 	}
 
 	public enum ElevatorControlMode
@@ -198,7 +205,8 @@ public class Elevator implements IModule {
 
 		currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 
-		
+    masterElevator.configContinuousCurrentLimit(elevatorDirection.getCurrentLimit(), SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.enableCurrentLimit(true);
     currentTachLevel = getTachLevel(currentTachState, lastTachState);
 		switch(elevControlMode) {
 
@@ -230,7 +238,6 @@ public class Elevator implements IModule {
         break;
         
       case MANUAL:
-
       	switch(elevatorDirection)
 				{
 					case UP:
