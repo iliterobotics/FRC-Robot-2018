@@ -199,6 +199,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double VISION_CAMERA_DEGREES_CENTER_X = (VISION_CAMERA_WIDTH / 2) * VISION_DEGREES_PER_PIXEL_X; 
   
   public static double RES_SCALAR = 1.0;
+  public static final double ALLOWABLE_ERROR = 0.5;
   public static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   
   @Override

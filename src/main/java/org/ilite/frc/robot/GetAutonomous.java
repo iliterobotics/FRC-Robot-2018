@@ -82,8 +82,7 @@ public class GetAutonomous {
 	  this.mField = new FieldAdapter();
 	  
 		this.nAutonTable = pAutonTable;
-		this.mDrivetrainControl = mDrivetrainControl;
-		this.mData = mData;
+		this.mData = pData;
 		nAutonTable.initKeys();
 		doComplexAutonomous = true;
 		
