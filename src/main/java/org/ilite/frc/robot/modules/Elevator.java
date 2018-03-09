@@ -140,6 +140,7 @@ public class Elevator implements IModule {
 		{
 			return currentTapeMark == tapeMark;
 		}
+		
 	}
 
 	public enum ElevatorControlMode
@@ -205,7 +206,7 @@ public class Elevator implements IModule {
 		currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 
     masterElevator.configContinuousCurrentLimit(elevatorDirection.getCurrentLimit(), SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		
+		masterElevator.enableCurrentLimit(true);
     currentTachLevel = getTachLevel(currentTachState, lastTachState);
 		switch(elevControlMode) {
 
@@ -259,7 +260,6 @@ public class Elevator implements IModule {
 						}
 						break;
 					case DOWN:
-					  masterElevator.configContinuousCurrentLimit(10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 						if(elevatorDirection.isCurrentLimited(masterElevator))
 						{
 							elevatorState = ElevatorState.STOP;
