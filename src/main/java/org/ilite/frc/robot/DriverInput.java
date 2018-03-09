@@ -153,6 +153,7 @@ public class DriverInput implements IModule{
 	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
 	  {
+	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
 	    mElevatorModule.setPower(0);
 	  }
 	  
