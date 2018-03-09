@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.SimpleNetworkTable;
+import org.ilite.frc.robot.Utils;
+import org.ilite.frc.robot.auto.FieldAdapter;
 
 import com.flybotix.hfr.io.MessageProtocols.EProtocol;
 import com.team254.lib.util.ConstantsBase;
@@ -171,7 +173,7 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;
   public static int		AUTO_TURN_POS_TOLERANCE = 100;
   public static double	AUTO_TURN_TIMEOUT = 5000;
-  public static double ALLOWABLE_ERROR = .5;
+  public static FieldAdapter FIELD_ADAPTER = new FieldAdapter();
   // =============================================================================
   // Pneumatics
   // =============================================================================
