@@ -144,13 +144,15 @@ public class Elevator implements IModule {
 
 	public enum ElevatorGearState
 	{
-		NORMAL(false),
-		CLIMBING(true);
+		NORMAL(true, 3),
+		CLIMBING(false, 1.1);
 
 		boolean gearState;
-		ElevatorGearState(boolean gearState)
+		double holdVoltage;
+		ElevatorGearState(boolean gearState, double holdVoltage)
     {
       this.gearState = gearState;
+      this.holdVoltage = holdVoltage;
     }
   }
 
@@ -171,6 +173,8 @@ public class Elevator implements IModule {
 	public void initialize(double pNow) {
 		talonTach = mHardware.getTalonTach();
 		masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.setNeutralMode(NeutralMode.Brake);
+		setGearState(ElevatorGearState.NORMAL);
 		elevatorState = ElevatorState.STOP;
 		elevatorPosition = ElevatorPosition.BOTTOM;
 		mAtBottom = true;
@@ -238,6 +242,10 @@ public class Elevator implements IModule {
 							elevatorState = ElevatorState.DECELERATE_TOP;
 						}
 						
+						if(mDesiredPower == 0 && !mAtBottom)
+						{
+						  elevatorState = ElevatorState.HOLD;
+						}
 						else
 						{
 						  elevatorState = ElevatorState.NORMAL;
@@ -252,6 +260,10 @@ public class Elevator implements IModule {
 						{
 							elevatorState = ElevatorState.DECELERATE_BOTTOM;
 						}
+						if(mDesiredPower == 0 && !mAtBottom)
+            {
+              elevatorState = ElevatorState.HOLD;
+            }
 						else
             {
               elevatorState = ElevatorState.NORMAL;

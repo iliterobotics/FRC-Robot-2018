@@ -53,8 +53,8 @@ public class Carriage implements IModule{
 
   public enum KickerState
   {
-    KICK_EXTEND(false),
-    RESET(true);
+    KICK_EXTEND(true),
+    RESET(false);
 
     private boolean kicker;
 
@@ -178,4 +178,8 @@ public class Carriage implements IModule{
     return returnVal;
   }
 
+  public CarriageState getCurrentState() {
+    return mCurrentState;
+  }
+  
 }

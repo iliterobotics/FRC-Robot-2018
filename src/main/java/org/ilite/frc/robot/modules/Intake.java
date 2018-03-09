@@ -28,7 +28,7 @@ public class Intake implements IModule{
 	private DigitalInput beamBreak;
 	private final double LEFT_LIMITER = .8;
 	private final double RIGHT_LIMITER = .2;
-	private final double MAX_RATIO = 3;
+	private final double MAX_RATIO = 2;
 	private final double MIN_RATIO = .40;
 	
 	
@@ -43,15 +43,17 @@ public class Intake implements IModule{
 	@Override
 	public void initialize(double pNow) {
 	  beamBreak = mHardware.getCarriageBeamBreak();
-		extender.set(Value.kReverse);
+		setIntakeRetracted(true);
 	}
 
 	@Override
 	public boolean update(double pNow) {
 		if(mExtendIntake) {
-		  extender.set(Value.kForward);
+		  // Extended
+		  extender.set(Value.kReverse);
 		} else {
-	    extender.set(Value.kReverse);
+		  // Retracted
+	    extender.set(Value.kForward);
 		}
 		leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
 		rightIntakeTalon.set(ControlMode.PercentOutput, rightDesiredPower);
@@ -67,7 +69,7 @@ public class Intake implements IModule{
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		
-		if(beamBreak() && !mExtendIntake)
+		if(!mExtendIntake)
 		{
 			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{

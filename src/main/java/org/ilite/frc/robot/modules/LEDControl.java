@@ -1,6 +1,7 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.robot.Hardware;
+import org.ilite.frc.robot.modules.Carriage.CarriageState;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
@@ -47,6 +48,7 @@ public class LEDControl implements IModule {
 		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100),
 	  HAS_CUBE(LEDColor.YELLOW, 100),
 	  INTAKE_LIMITING(LEDColor.RED, 100),
+	  KICKING_CUBE(LEDColor.LIGHT_BLUE, 0),
 	  NONE(LEDColor.NONE, 0);
 
 		final LEDColor color;
@@ -77,6 +79,7 @@ public class LEDControl implements IModule {
 	  mCurrentMessage = Message.NONE;
 	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.INTAKE_LIMITING;
 	  if(!mHardware.getCarriageBeamBreak().get()) mCurrentMessage = Message.HAS_CUBE;
+	  if(mCarriage.getCurrentState() == CarriageState.KICKING) mCurrentMessage = Message.KICKING_CUBE;
 	  setLED(mCurrentMessage);
 		return false;
 	}
