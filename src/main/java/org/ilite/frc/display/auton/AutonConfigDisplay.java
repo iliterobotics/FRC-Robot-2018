@@ -46,8 +46,8 @@ import javafx.util.Callback;
 public class AutonConfigDisplay extends Application {
 
   private Integer[] preferredCubeActions;
-  private String awesomeCss = AutonConfigDisplay.class.getResource("./AwesomeStyle.css").toExternalForm();
-	private String iliteCss = AutonConfigDisplay.class.getResource("./ILITEStyle.css").toExternalForm();
+  private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
+	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
 	private double mDelay = -1;
 	private static Integer mCross = -1;
 	private static Integer mStartingPosition = -1;
