@@ -115,20 +115,20 @@ public class GetAutonomous {
 			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
 			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
 					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
-			switch (prefAction) {
-			case SCALE:
-				doScale();
-				break;
-			case SWITCH:
-				doSwitch();
-				break;
-			case EXCHANGE:
-				doExchange();
-				break;
-			case NONE:
-				crossAutoLine();
-				break;
-			}
+//			switch (prefAction) {
+//			case SCALE:
+//				doScale();
+//				break;
+//			case SWITCH:
+//				doSwitch();
+//				break;
+//			case EXCHANGE:
+//				doExchange();
+//				break;
+//			case NONE:
+//				crossAutoLine();
+//				break;
+//			}
 		}
 		
 		if(mCommands.isEmpty()) crossAutoLine();
@@ -148,7 +148,7 @@ public class GetAutonomous {
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftScaleX() - mField.getLeftStartingPosX())),
 		                                     new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 45, 3));
-		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
 			break;
 		case MIDDLE:
 			break;
@@ -156,7 +156,7 @@ public class GetAutonomous {
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightScaleX() - mField.getRightStartingPosX())),
           new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -45, 3));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
 			break;
 		}
 	}
@@ -183,7 +183,7 @@ public class GetAutonomous {
 			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
 			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
 			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2)));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2) - SystemSettings.ROBOT_CENTER_TO_FRONT)));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			case RIGHT:

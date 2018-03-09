@@ -269,9 +269,6 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
-    mCommandQueue.clear();
-    mCommandQueue = getAutonomous.getAutonomousCommands();
-    System.out.println(mCommandQueue);
   }
   
   
