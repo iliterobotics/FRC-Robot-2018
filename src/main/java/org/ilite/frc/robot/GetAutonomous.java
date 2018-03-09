@@ -178,7 +178,13 @@ public class GetAutonomous {
 		case MIDDLE:
 			switch(mSwitchSide) {
 			case LEFT:
-			  // TODO
+			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2)),
+			                                     new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2)));
+			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			case RIGHT:
 			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getMiddleStartingPosX())),
