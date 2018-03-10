@@ -21,7 +21,7 @@ public class DriveStraight implements ICommand{
 	
 	private ILog mLog = Logger.createLog(DriveStraight.class);
   
-  private static final double PROPORTION = 0.05;
+  private static final double TURN_PROPORTION = 0.03;
   private static final double INITIAL_POWER = 0.4;
   
   private final DriveTrain driveTrain;
@@ -59,8 +59,8 @@ public class DriveStraight implements ICommand{
 
     double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), initialYaw);
     driveTrain.setDriveMessage(new DrivetrainMessage(
-                               INITIAL_POWER + (yawError * PROPORTION), 
-                               INITIAL_POWER - (yawError * PROPORTION),
+                               INITIAL_POWER + (yawError * TURN_PROPORTION), 
+                               INITIAL_POWER - (yawError * TURN_PROPORTION),
                                DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     return false;

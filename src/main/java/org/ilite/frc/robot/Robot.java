@@ -24,7 +24,6 @@ import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
-import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;

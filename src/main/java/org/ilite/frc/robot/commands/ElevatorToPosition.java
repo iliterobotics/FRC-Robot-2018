@@ -2,16 +2,16 @@ package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
-import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
+import org.ilite.frc.robot.modules.EElevatorPosition;
 
 public class ElevatorToPosition implements ICommand {
 
   private double mStartTime, mTimeout;
-  private ElevatorPosition mPosition;
+  private EElevatorPosition mPosition;
   
   private Elevator mElevator;
   
-  public ElevatorToPosition(Elevator pElevator, ElevatorPosition pPosition, double pTimeout) {
+  public ElevatorToPosition(Elevator pElevator, EElevatorPosition pPosition, double pTimeout) {
     this.mElevator = pElevator;
     this.mPosition = pPosition;
     this.mTimeout = pTimeout;

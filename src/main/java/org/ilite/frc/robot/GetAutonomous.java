@@ -26,7 +26,7 @@ import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.Elevator;
-import org.ilite.frc.robot.modules.Elevator.ElevatorPosition;
+import org.ilite.frc.robot.modules.EElevatorPosition;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import openrio.powerup.MatchData;
@@ -147,7 +147,7 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftScaleX() - mField.getLeftStartingPosX())),
-		                                     new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
+		                                     new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4)));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 45, 3));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
 			break;
@@ -155,7 +155,7 @@ public class GetAutonomous {
 			break;
 		case RIGHT:
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightScaleX() - mField.getRightStartingPosX())),
-          new ElevatorToPosition(mElevator, ElevatorPosition.THIRD_TAPE, 4)));
+          new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -45, 3));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
 			break;
@@ -171,7 +171,7 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 			mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftSideSwitchX() - mField.getLeftStartingPosX())),
-			                                   new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
+			                                   new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 3)));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, 2));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
@@ -185,7 +185,7 @@ public class GetAutonomous {
 			                Math.hypot(Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY()), 
 			                           Utils.feetToInches(mField.getLeftFrontSwitchX() - FieldDimensions.EXCHANGE_TAPE_LENGTH - SystemSettings.ROBOT_CENTER_TO_BACK_CORNER))));
 			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 75, 3));
-			  mCommands.add(new ElevatorToPosition(mElevator, ElevatorPosition.SECOND_TAPE, 3));
+			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
 			  mCommands.add(new DriveStraight(mDriveTrain, mData, SystemSettings.ROBOT_CENTER_TO_BACK_CORNER));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
@@ -196,7 +196,7 @@ public class GetAutonomous {
 		case RIGHT:
 		  System.out.println(Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX()));
 		  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())),
-      new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
+      new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 3)));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 2));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));

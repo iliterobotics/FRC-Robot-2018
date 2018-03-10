@@ -1,0 +1,63 @@
+package org.ilite.frc.robot.modules;
+
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+/**
+ * 
+ * @author ilite
+ * Defines the possible directions the elevator can move in. Stores the direction, the current limit for the given direction, the tape mark to begin deceleration, and the continuous current limit.
+ */
+public enum ElevDirection
+{
+	UP(true, 20d/12d, 3, 20),
+	DOWN(false, 15d/12d, 1, 10),
+	OFF(false, 15d/12d, 0, 0);
+
+	boolean isPositiveDirection;
+	double mCurrentLimitRatio;
+	int decelerationTapeMark;
+	int continuousCurrentLimit;
+
+	ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int decelerationTapeMark, int continuousCurrentLimit)
+	{
+		this.isPositiveDirection = isPositiveDirection;
+		mCurrentLimitRatio = pCurrentLimitRatio;
+		this.decelerationTapeMark = decelerationTapeMark;
+		this.continuousCurrentLimit = continuousCurrentLimit;
+	}
+
+	public static ElevDirection getDirection(double pDesiredPower)
+	{
+	  if(pDesiredPower == 0) return OFF;
+		return pDesiredPower > 0 ? UP : DOWN;
+	}
+
+	public boolean isCurrentRatioLimited(TalonSRX pMasterTalon)
+	{
+	  if(pMasterTalon.getMotorOutputVoltage() != 0)
+	  {
+	    System.out.println("LIMIT: " + pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage());
+      return Math.abs(pMasterTalon.getOutputCurrent()) / Math.abs(pMasterTalon.getMotorOutputVoltage()) >= mCurrentLimitRatio;
+	  }
+	  else return false;
+	}
+
+	public int getCurrentLimit()
+	{
+	  return continuousCurrentLimit;
+	}
+	/**
+	 * 
+	 * @param currentTapeMark
+	 * @return whether we should be decelerated at this position
+	 */
+	public boolean shouldDecelerate(int currentTapeMark, boolean isUp)
+	{
+	  if(isUp) {
+      return currentTapeMark >= decelerationTapeMark;
+	  } else {
+	    return currentTapeMark <= decelerationTapeMark;
+	  }
+	}
+	
+}
