@@ -51,12 +51,14 @@ public class Intake implements IModule{
 		if(mExtendIntake) {
 		  // Extended
 		  extender.set(Value.kReverse);
+      leftIntakeTalon.set(ControlMode.PercentOutput, 0);
+      rightIntakeTalon.set(ControlMode.PercentOutput, 0);
 		} else {
 		  // Retracted
 	    extender.set(Value.kForward);
+      leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
+      rightIntakeTalon.set(ControlMode.PercentOutput, rightDesiredPower);
 		}
-		leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
-		rightIntakeTalon.set(ControlMode.PercentOutput, rightDesiredPower);
 		return true;
 		
 	}

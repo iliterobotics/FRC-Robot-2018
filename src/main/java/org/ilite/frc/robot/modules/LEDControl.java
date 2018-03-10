@@ -16,6 +16,7 @@ public class LEDControl implements IModule {
 	private long blinkStartTime;
 	private boolean isOn;
 	private Message mCurrentMessage;
+	private Elevator mElevator;
 	private Carriage mCarriage;
 	private Intake mIntake;
 	private Hardware mHardware;
@@ -47,7 +48,7 @@ public class LEDControl implements IModule {
 	public enum Message{
 		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100),
 	  HAS_CUBE(LEDColor.YELLOW, 100),
-	  INTAKE_LIMITING(LEDColor.RED, 100),
+	  CURRENT_LIMITING(LEDColor.RED, 100),
 	  KICKING_CUBE(LEDColor.LIGHT_BLUE, 0),
 	  NONE(LEDColor.NONE, 0);
 
@@ -61,9 +62,10 @@ public class LEDControl implements IModule {
 	}
 
 	
-	public LEDControl(Intake pIntake, Carriage pCarriage, Hardware pHardware)
+	public LEDControl(Intake pIntake, Elevator pElevator, Carriage pCarriage, Hardware pHardware)
 	{
 	  mIntake = pIntake;
+	  mElevator = pElevator;
 	  mCarriage = pCarriage;
 		mHardware = pHardware;
 		this.isOn = true;
@@ -77,8 +79,9 @@ public class LEDControl implements IModule {
 	@Override
 	public boolean update(double pNow) {
 	  mCurrentMessage = Message.NONE;
-	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.INTAKE_LIMITING;
-	  if(!mHardware.getCarriageBeamBreak().get()) mCurrentMessage = Message.HAS_CUBE;
+	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+	  if(mHardware.getCarriageBeamBreak().get()) mCurrentMessage = Message.HAS_CUBE;
+	  if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 	  if(mCarriage.getCurrentState() == CarriageState.KICKING) mCurrentMessage = Message.KICKING_CUBE;
 	  setLED(mCurrentMessage);
 		return false;

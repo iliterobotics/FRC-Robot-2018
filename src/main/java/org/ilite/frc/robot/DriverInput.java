@@ -132,6 +132,9 @@ public class DriverInput implements IModule{
     // Combines the two gamepad Y axes so the operator can use either one
     double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_1);
     
+    if(mCarriage.getBeamBreak() && !mData.operator.isSet(DriveTeamInputMap.OPERATOR_HOLD_INTAKE_OUT)) {
+      mIntake.setIntakeRetracted(true);
+    }
     if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
       mIntake.setIntakeRetracted(true);
     }

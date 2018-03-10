@@ -167,7 +167,7 @@ public class Carriage implements IModule{
     //undo kick and release
   }
   //verify that the beamBreak is functioning
-  private boolean getBeamBreak()
+  public boolean getBeamBreak()
   {
     boolean returnVal = false;
 

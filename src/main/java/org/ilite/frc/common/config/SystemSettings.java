@@ -73,11 +73,12 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================
   // Robot Dimensions - These include bumpers, all units in feet
   // =============================================================================
-  public static double  ROBOT_LENGTH = 3.1666666666666666666666666666667;
-  public static double  ROBOT_WIDTH = 2.8333333333333333333333333333333;
+  public static double  ROBOT_LENGTH = 37.75 / 12.0;
+  public static double  ROBOT_WIDTH = 34.0 / 12.0;
   public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
   public static double  ROBOT_CENTER_TO_FRONT = ROBOT_LENGTH / 2;
   public static double  ROBOT_CENTER_TO_BACK = ROBOT_LENGTH - ROBOT_CENTER_TO_FRONT;
+  public static double  ROBOT_CENTER_TO_BACK_CORNER = Math.sqrt(Math.pow(ROBOT_CENTER_TO_BACK, 2) + Math.pow(ROBOT_CENTER_TO_SIDE, 2));
   
   // =============================================================================
   // Drive Train Constants

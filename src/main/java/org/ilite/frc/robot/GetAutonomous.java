@@ -14,6 +14,7 @@ import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.FieldAdapter;
+import org.ilite.frc.robot.auto.FieldDimensions;
 import org.ilite.frc.robot.commands.Delay;
 import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.ElevatorToPosition;
@@ -115,20 +116,20 @@ public class GetAutonomous {
 			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
 			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
 					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
-//			switch (prefAction) {
-//			case SCALE:
-//				doScale();
-//				break;
-//			case SWITCH:
-//				doSwitch();
-//				break;
-//			case EXCHANGE:
-//				doExchange();
-//				break;
-//			case NONE:
-//				crossAutoLine();
-//				break;
-//			}
+			switch (prefAction) {
+			case SCALE:
+				doScale();
+				break;
+			case SWITCH:
+				doSwitch();
+				break;
+			case EXCHANGE:
+				doExchange();
+				break;
+			case NONE:
+				crossAutoLine();
+				break;
+			}
 		}
 		
 		if(mCommands.isEmpty()) crossAutoLine();
@@ -178,18 +179,17 @@ public class GetAutonomous {
 		case MIDDLE:
 			switch(mSwitchSide) {
 			case LEFT:
-			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2)),
-			                                     new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(((mField.getLeftFrontSwitchX() - mField.getMiddleStartingPosX()) / 2) - SystemSettings.ROBOT_CENTER_TO_FRONT)));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(FieldDimensions.EXCHANGE_TAPE_LENGTH)));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -75, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 
+			                Math.hypot(Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY()), 
+			                           Utils.feetToInches(mField.getLeftFrontSwitchX() - FieldDimensions.EXCHANGE_TAPE_LENGTH - SystemSettings.ROBOT_CENTER_TO_BACK_CORNER))));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 75, 3));
+			  mCommands.add(new ElevatorToPosition(mElevator, ElevatorPosition.SECOND_TAPE, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, SystemSettings.ROBOT_CENTER_TO_BACK_CORNER));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			case RIGHT:
-			  mCommands.add(new ParallelCommand( new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getMiddleStartingPosX())),
-			                                     new ElevatorToPosition(mElevator, ElevatorPosition.FIRST_TAPE, 3)));
-			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			}
 			break;
@@ -308,7 +308,6 @@ public class GetAutonomous {
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
 	public OwnedSide getSwitchOwnedSide() {
-		System.out.println(MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR));
 		return MatchData.getOwnedSide(MatchData.GameFeature.SWITCH_NEAR);
 	}
 
@@ -318,7 +317,6 @@ public class GetAutonomous {
 	 * @return - OwnedSide.LEFT or OwnedSide.RIGHT
 	 */
 	public OwnedSide getScaleOwnedSide() {
-		System.out.println(MatchData.getOwnedSide(MatchData.GameFeature.SCALE));
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 	}
 

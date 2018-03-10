@@ -2,6 +2,7 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.TalonTach;
+import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.Utils;
@@ -23,19 +24,20 @@ public class Elevator implements IModule {
   private Data mData;
   private final Hardware mHardware;
   private TalonTach talonTach;
-  private Solenoid shiftSolenoid;
-	private TalonSRX masterElevator, followerElevator;
+  Solenoid shiftSolenoid;
+	TalonSRX masterElevator, followerElevator;
 	
+	private boolean hasInitialized;
 	private boolean lastTachState, currentTachState;
 	private int currentTachLevel, currentEncoderTicks;
-	private double mDesiredPower;
+	private double mDesiredPower = 0;
 	private boolean mAtBottom, mAtTop, isDirectionUp;
 	
-	private ElevatorState elevatorState;
-	private ElevatorPosition elevatorPosition;
-	private ElevatorGearState elevGearState;
-	private ElevatorControlMode elevControlMode;
-	private ElevDirection elevatorDirection;
+	private ElevatorState elevatorState = ElevatorState.STOP;
+	private ElevatorPosition elevatorPosition = ElevatorPosition.BOTTOM;
+	private ElevatorGearState elevGearState = ElevatorGearState.NORMAL;
+	private ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
+	private ElevDirection elevatorDirection = ElevDirection.UP;
 	
   private static final ILog log = Logger.createLog(Elevator.class);
 
@@ -46,19 +48,9 @@ public class Elevator implements IModule {
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_MASTER);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_FOLLOWER);
 		shiftSolenoid = new Solenoid(SystemSettings.SOLENOID_ELEVATOR_SHIFTER);
-    
-    // Only initialize state variables once - elevator may be in a different position during at the start of teleop
-    mAtBottom = true;
-    mAtTop = false;
-		isDirectionUp = true;
-		
-	  currentTachLevel = 0;
-		
-		elevatorState = ElevatorState.STOP;
-		elevatorPosition = ElevatorPosition.BOTTOM;
 		elevGearState = ElevatorGearState.NORMAL;
-		elevControlMode = ElevatorControlMode.MANUAL;
-		
+    
+		hasInitialized = false;
 		
     followerElevator.follow(masterElevator);
     masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
@@ -113,7 +105,8 @@ public class Elevator implements IModule {
 	public enum ElevDirection
 	{
 		UP(true, 30d/12d, 3, 20),
-		DOWN(false, 11d/12d, 0, 10);
+		DOWN(false, 1d/12d, 0, 10),
+		OFF(false, 0d, 0, 0);
 
 		boolean isPositiveDirection;
 		double mCurrentLimitRatio;
@@ -183,6 +176,22 @@ public class Elevator implements IModule {
 	public void initialize(double pNow) {
 		masterElevator.setNeutralMode(NeutralMode.Brake);
 
+		// Only initialize state variables once
+		if(!hasInitialized) {
+	    mAtBottom = true;
+	    mAtTop = false;
+	    isDirectionUp = true;
+	    
+	    currentTachLevel = 0;
+	    
+	    elevatorState = ElevatorState.STOP;
+	    elevatorPosition = ElevatorPosition.BOTTOM;
+	    elevGearState = ElevatorGearState.NORMAL;
+	    elevControlMode = ElevatorControlMode.MANUAL;
+	    
+	    hasInitialized = true;
+		}
+		
     talonTach = mHardware.getTalonTach();
 
     currentTachState = talonTach.getSensor();
@@ -199,8 +208,8 @@ public class Elevator implements IModule {
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 		
 		isDirectionUp = mDesiredPower > 0 ? true : false;
-		mAtTop = isTopCurrentTripped() && currentTachLevel == ElevatorPosition.THIRD_TAPE.tapeMark;
-		mAtBottom = isBottomCurrentTripped() && currentTachLevel == ElevatorPosition.BOTTOM.tapeMark;
+		mAtTop = isCurrentLimiting() && currentTachLevel == ElevatorPosition.THIRD_TAPE.tapeMark;
+		mAtBottom = isCurrentLimiting() && currentTachLevel == ElevatorPosition.BOTTOM.tapeMark;
 
 		elevatorDirection = ElevDirection.getDirection(mDesiredPower);
 		boolean isContinuousCurrentLimited = elevatorDirection.isCurrentRatioLimited(masterElevator);
@@ -348,7 +357,7 @@ public class Elevator implements IModule {
 		// TODO
 		// Create Elevator Codex
 		// Replace system outs with Log
-		log.debug(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDirectionUp +  "talonTach=" + currentTachLevel);
+		log.debug(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
     masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
@@ -468,13 +477,9 @@ public class Elevator implements IModule {
   }
   
   //30/12 and 10/12 = amps / voltage
-	private boolean isTopCurrentTripped() {
-		return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= TOP_LIMIT;
+	public boolean isCurrentLimiting() {
+		return elevatorDirection.isCurrentRatioLimited(masterElevator);
 	}
-
-	private boolean isBottomCurrentTripped()
-  {
-    return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= BOTTOM_LIMIT;
-  }
+	
 }
 

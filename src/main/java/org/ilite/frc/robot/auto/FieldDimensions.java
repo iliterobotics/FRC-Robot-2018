@@ -14,6 +14,7 @@ public class FieldDimensions {
   
   public static final double PORTAL_CORNER_TO_FIELD_EDGE = 2.474166666666667;
   public static final double EXCHANGE_TAPE_TO_FIELD_EDGE = 14.5;
+  public static final double EXCHANGE_TAPE_LENGTH = 35.0 / 12.0;
   
   public static final double LEFT_STARTING_POS_X = SystemSettings.ROBOT_LENGTH - SystemSettings.ROBOT_CENTER_TO_FRONT;
   public static final double LEFT_STARTING_POS_Y = FIELD_WIDTH - PORTAL_CORNER_TO_FIELD_EDGE - SystemSettings.ROBOT_CENTER_TO_SIDE;
