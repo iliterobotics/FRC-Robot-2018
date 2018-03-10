@@ -97,7 +97,7 @@ public class Robot extends IterativeRobot {
     mControlLoop = new ControlLoopManager(mDrivetrain, mData, mHardware);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
-  	mLedController = new LEDControl(mIntake, mCarriage, mHardware);
+  	mLedController = new LEDControl(mIntake, mCarriage, mHardware, mElevator);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
   	Logger.setLevel(ELevel.DEBUG);
   }

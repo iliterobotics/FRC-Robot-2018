@@ -19,6 +19,7 @@ public class LEDControl implements IModule {
 	private Carriage mCarriage;
 	private Intake mIntake;
 	private Hardware mHardware;
+	private Elevator mElevator;
 	
 	public enum LEDColor {
 		PURPLE(255, 0, 200), 
@@ -61,11 +62,12 @@ public class LEDControl implements IModule {
 	}
 
 	
-	public LEDControl(Intake pIntake, Carriage pCarriage, Hardware pHardware)
+	public LEDControl(Intake pIntake, Carriage pCarriage, Hardware pHardware, Elevator pElevator)
 	{
 	  mIntake = pIntake;
 	  mCarriage = pCarriage;
 		mHardware = pHardware;
+		mElevator = pElevator;
 		this.isOn = true;
 	}
 	public void initialize(double pNow) {
@@ -80,6 +82,7 @@ public class LEDControl implements IModule {
 	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.INTAKE_LIMITING;
 	  if(!mHardware.getCarriageBeamBreak().get()) mCurrentMessage = Message.HAS_CUBE;
 	  if(mCarriage.getCurrentState() == CarriageState.KICKING) mCurrentMessage = Message.KICKING_CUBE;
+	  if(mElevator.isTopCurrentTripped() || mElevator.isBottomCurrentTripped()) mCurrentMessage = Message.ELEVATOR_LIMITING;
 	  setLED(mCurrentMessage);
 		return false;
 	}

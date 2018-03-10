@@ -466,11 +466,11 @@ public class Elevator implements IModule {
   
 
   //30/12 and 10/12 = amps / voltage
-	private boolean isTopCurrentTripped() {
+	public boolean isTopCurrentTripped() {
 		return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= TOP_LIMIT;
 	}
 
-	private boolean isBottomCurrentTripped()
+	public boolean isBottomCurrentTripped()
   {
     return masterElevator.getOutputCurrent() / masterElevator.getMotorOutputVoltage() >= BOTTOM_LIMIT;
   }
