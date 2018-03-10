@@ -28,8 +28,8 @@ public class Intake implements IModule{
 	private BeamBreakSensor beamBreak;
 	private final double LEFT_LIMITER = .8;
 	private final double RIGHT_LIMITER = .2;
-	private final double MAX_RATIO = 2;
-	private final double MIN_RATIO = .40;
+	private final double MAX_CURRENT_LIMIT_RATIO = 1.5;
+	private final double MIN_CURRENT_LIMIT_RATIO = .40;
 	
 	
 	public Intake(Elevator pElevator, Hardware pHardware, BeamBreakSensor pBeamBreak){
@@ -73,13 +73,13 @@ public class Intake implements IModule{
 		
 		if(!mRetractIntake)
 		{
-			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
+			if ( rightRatio >  MAX_CURRENT_LIMIT_RATIO || leftRatio > MAX_CURRENT_LIMIT_RATIO )
 			{
 				startCurrentLimiting = true;
 				leftDesiredPower = -inPower * LEFT_LIMITER;
 				rightDesiredPower = -inPower * RIGHT_LIMITER;
 			}
-			else if (rightRatio < MIN_RATIO && leftRatio < MIN_RATIO)
+			else if (rightRatio < MIN_CURRENT_LIMIT_RATIO && leftRatio < MIN_CURRENT_LIMIT_RATIO)
 			{
 				startCurrentLimiting = false;
 				leftDesiredPower = inPower;
