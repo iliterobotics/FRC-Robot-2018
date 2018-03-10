@@ -25,6 +25,7 @@ public class ElevatorToPosition implements ICommand {
 
   @Override
   public boolean update(double pNow) {
+    System.out.println("Updating elev setpt");
     mElevator.setPosition(mPosition);
     if(mElevator.getElevatorPosition() == mPosition) return true;
     if(pNow - mStartTime >= mTimeout) return true;

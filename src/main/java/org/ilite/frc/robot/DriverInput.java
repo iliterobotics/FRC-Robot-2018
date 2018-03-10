@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.ilite.frc.common.config.DriveTeamInputMap;
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.DriverInputUtils;
 import org.ilite.frc.common.input.EInputScale;
 import org.ilite.frc.common.types.ELogitech310;
@@ -108,8 +109,8 @@ public class DriverInput implements IModule{
 //		  throttle = Utils.clamp(throttle, 0.5);
 //		}
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
-	      throttle /= 3;
-	      rotate /= 3;
+	      throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
+	      rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
 		}
 		
 //		System.out.println("ENGINE THROTTLE " + throttle);
@@ -175,7 +176,7 @@ public class DriverInput implements IModule{
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
 	  {
 	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-	    mElevatorModule.setPosition(EElevatorPosition.FIRST_TAPE);
+	    mElevatorModule.setPosition(EElevatorPosition.SECOND_TAPE);
 	  }
 	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
     {
@@ -185,7 +186,7 @@ public class DriverInput implements IModule{
     else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
     {
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-      mElevatorModule.setPosition(EElevatorPosition.BOTTOM);
+      mElevatorModule.setPosition(EElevatorPosition.FIRST_TAPE);
     }
 	  else if(mElevatorModule.getElevControlMode() != ElevatorControlMode.CLIMBER)
     {
