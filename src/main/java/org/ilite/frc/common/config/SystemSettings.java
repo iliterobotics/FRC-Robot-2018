@@ -78,7 +78,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   public static double  ROBOT_CENTER_TO_SIDE = ROBOT_WIDTH / 2.0;
   public static double  ROBOT_CENTER_TO_FRONT = ROBOT_LENGTH / 2;
   public static double  ROBOT_CENTER_TO_BACK = ROBOT_LENGTH - ROBOT_CENTER_TO_FRONT;
-  public static double  ROBOT_CENTER_TO_BACK_CORNER = Math.sqrt(Math.pow(ROBOT_CENTER_TO_BACK, 2) + Math.pow(ROBOT_CENTER_TO_SIDE, 2));
+  public static double  ROBOT_CENTER_TO_FRONT_CORNER = Math.hypot(ROBOT_CENTER_TO_FRONT, ROBOT_CENTER_TO_SIDE);
+  public static double  ROBOT_CENTER_TO_BACK_CORNER = Math.hypot(ROBOT_CENTER_TO_BACK, ROBOT_CENTER_TO_SIDE);
   
   // =============================================================================
   // Drive Train Constants

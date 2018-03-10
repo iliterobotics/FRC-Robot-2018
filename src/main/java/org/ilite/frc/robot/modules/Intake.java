@@ -21,7 +21,7 @@ public class Intake implements IModule{
 	private double leftVoltage;
 	private double leftCurrent;
 	public DoubleSolenoid extender;
-	public boolean mExtendIntake;
+	public boolean mRetractIntake;
 	private double leftDesiredPower;
 	private double rightDesiredPower;
 	private boolean startCurrentLimiting;
@@ -37,7 +37,7 @@ public class Intake implements IModule{
 		leftIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_LEFT);
 		rightIntakeTalon = TalonFactory.createDefault(SystemSettings.INTAKE_TALONID_RIGHT);
 		extender = new DoubleSolenoid(SystemSettings.SOLENOID_INTAKE_A, SystemSettings.SOLENOID_INTAKE_B);
-		mExtendIntake = false;
+		mRetractIntake = false;
 	}
 
 	@Override
@@ -48,13 +48,13 @@ public class Intake implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		if(mExtendIntake) {
-		  // Extended
+		if(mRetractIntake) {
+		  // Retracted
 		  extender.set(Value.kReverse);
       leftIntakeTalon.set(ControlMode.PercentOutput, 0);
       rightIntakeTalon.set(ControlMode.PercentOutput, 0);
 		} else {
-		  // Retracted
+		  // Extended
 	    extender.set(Value.kForward);
       leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
       rightIntakeTalon.set(ControlMode.PercentOutput, rightDesiredPower);
@@ -71,7 +71,7 @@ public class Intake implements IModule{
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
 		
-		if(!mExtendIntake)
+		if(!mRetractIntake)
 		{
 			if ( rightRatio >  MAX_RATIO || leftRatio > MAX_RATIO )
 			{
@@ -104,7 +104,7 @@ public class Intake implements IModule{
 	}
 	public void setIntakeRetracted(boolean out)
 	{
-		mExtendIntake = out;
+		mRetractIntake = out;
 	}
 	
 	public boolean beamBreak(){
@@ -121,7 +121,7 @@ public class Intake implements IModule{
 	
 	public void intakeOut(double inPower) 
 	{
-		if (!mExtendIntake)
+		if (!mRetractIntake)
 		{
 			leftDesiredPower = inPower;
 			rightDesiredPower= inPower;

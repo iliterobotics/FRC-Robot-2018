@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class Elevator implements IModule {
 
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
-  public static final int CONTINOUS_LIMIT_AMPS = 20;
+  public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
   public static final double RAMP_OPEN_LOOP = 0.5;
   
   private Data mData;
@@ -31,7 +31,7 @@ public class Elevator implements IModule {
 	private boolean lastTachState, currentTachState;
 	private int currentTachLevel, currentEncoderTicks;
 	private double mDesiredPower = 0;
-	private boolean mAtBottom, mAtTop, isDirectionUp;
+	private boolean mAtBottom, mAtTop, isDesiredDirectionUp;
 	
 	private ElevatorState elevatorState = ElevatorState.STOP;
 	private ElevatorPosition elevatorPosition = ElevatorPosition.BOTTOM;
@@ -54,19 +54,23 @@ public class Elevator implements IModule {
 		
     followerElevator.follow(masterElevator);
     masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		masterElevator.configContinuousCurrentLimit(CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		masterElevator.enableCurrentLimit(true);
+//		masterElevator.configContinuousCurrentLimit(DEFAULT_CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+//		masterElevator.enableCurrentLimit(true);
 		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, 0);
 		// TODO set voltage ramp & current limit
 	}
 
-
+  /**
+   * 
+   * @author ilite
+   * Defines the state of the elevator as it moves up and down. Also defines the default power for each state, should we need it.
+   */
 	public enum ElevatorState
 	{
 		NORMAL(0.3),
 		DECELERATE_TOP(0.2),
 		DECELERATE_BOTTOM(-0.15),
-		HOLD(1.1),
+		HOLD(0),
 		STOP(0);
 
 		double power;
@@ -81,6 +85,11 @@ public class Elevator implements IModule {
 		}
 	}
 	
+	/**
+	 * 
+	 * @author ilite
+	 * Defines the possible positions of the elevator. Defines the power needed to get to a position and the tape mark associated with that position
+	 */
 	public enum ElevatorPosition
 	{
 		BOTTOM(0, 0),
@@ -96,12 +105,17 @@ public class Elevator implements IModule {
 			this.power = power;
 			this.tapeMark = tapeMark;
 		}
-		private boolean isTapeMarker()
-		{
-			return power != 0;
-		}
+//		private boolean isTapeMarker()
+//		{
+//			return power != 0;
+//		}
 	}
 
+	/**
+	 * 
+	 * @author ilite
+	 * Defines the possible directions the elevator can move in. Stores the direction, the current limit for the given direction, the tape mark to begin deceleration, and the continuous current limit.
+	 */
 	public enum ElevDirection
 	{
 		UP(true, 30d/12d, 3, 20),
@@ -157,7 +171,12 @@ public class Elevator implements IModule {
 		CLIMBER,
 		POSITION;
 	}
-
+	
+	/**
+	 * 
+	 * @author ilite
+	 * Defines possible shifter states and the carriage hold voltages associated with each.
+	 */
 	public enum ElevatorGearState
 	{
 		NORMAL(true, 3),
@@ -176,11 +195,11 @@ public class Elevator implements IModule {
 	public void initialize(double pNow) {
 		masterElevator.setNeutralMode(NeutralMode.Brake);
 
-		// Only initialize state variables once
+		// Only initialize state variables once, since the elevator may be in a different position at the end of auto
 		if(!hasInitialized) {
 	    mAtBottom = true;
 	    mAtTop = false;
-	    isDirectionUp = true;
+	    isDesiredDirectionUp = true;
 	    
 	    currentTachLevel = 0;
 	    
@@ -207,15 +226,14 @@ public class Elevator implements IModule {
 		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
 		
-		isDirectionUp = mDesiredPower > 0 ? true : false;
+		isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
 		mAtTop = isCurrentLimiting() && currentTachLevel == ElevatorPosition.THIRD_TAPE.tapeMark;
 		mAtBottom = isCurrentLimiting() && currentTachLevel == ElevatorPosition.BOTTOM.tapeMark;
 
 		elevatorDirection = ElevDirection.getDirection(mDesiredPower);
-		boolean isContinuousCurrentLimited = elevatorDirection.isCurrentRatioLimited(masterElevator);
 
-    masterElevator.configContinuousCurrentLimit(elevatorDirection.getCurrentLimit(), 0); // Don't wait to check for config success so we don't delay loop
-		masterElevator.enableCurrentLimit(true);
+//    masterElevator.configContinuousCurrentLimit(elevatorDirection.getCurrentLimit(), 0); // Don't wait to check for config success so we don't delay loop
+//		masterElevator.enableCurrentLimit(true);
 		
     currentTachLevel = getTachLevel(currentTachState, lastTachState); // Calculates current tape mark based on last/current tach state
     
@@ -271,7 +289,7 @@ public class Elevator implements IModule {
 						}
 						break;
 					case DOWN:
-						if(elevatorDirection.isCurrentRatioLimited(masterElevator))
+						if(elevatorDirection.isCurrentRatioLimited(masterElevator) || currentTachLevel == ElevatorPosition.BOTTOM.tapeMark)
 						{
 							elevatorState = ElevatorState.STOP;
 						}
@@ -357,7 +375,7 @@ public class Elevator implements IModule {
 		// TODO
 		// Create Elevator Codex
 		// Replace system outs with Log
-		log.debug(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
+		log.debug(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDesiredDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
     masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, 0.3d));
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
@@ -376,11 +394,11 @@ public class Elevator implements IModule {
   {
     if(lastTachState == true && currentTachState == false)
     {
-      if(isDirectionUp)
+      if(isDesiredDirectionUp)
       {
         currentTachLevel += (int)Math.ceil(mDesiredPower);
       }
-      if(!isDirectionUp)
+      if(!isDesiredDirectionUp)
       {
         currentTachLevel += (int)Math.floor(mDesiredPower);
       }
@@ -439,7 +457,7 @@ public class Elevator implements IModule {
 	}
 	public boolean getDirection()
 	{
-		return isDirectionUp;
+		return isDesiredDirectionUp;
 	}
 
 	public ElevatorPosition getElevatorPosition()

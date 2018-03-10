@@ -75,7 +75,10 @@ public class LEDControl implements IModule {
 	  mCurrentMessage = Message.NONE;
 		blinkStartTime = System.currentTimeMillis();
 	}
-
+	
+	/**
+	 * Updates LED strip based on mechanism states. We check mechanisms in order of lowest to highest priority.
+	 */
 	@Override
 	public boolean update(double pNow) {
 	  mCurrentMessage = Message.NONE;
