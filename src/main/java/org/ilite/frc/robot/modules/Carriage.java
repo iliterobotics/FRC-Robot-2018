@@ -4,6 +4,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
+import org.ilite.frc.robot.sensors.BeamBreakSensor;
 
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -20,7 +21,7 @@ public class Carriage implements IModule{
   private static final double RESET_DELAY = 0.1; // reset after all cylinders have fully extended.
   private Data mData;
   private boolean isScheduled;
-  private DigitalInput beamBreak;
+  private BeamBreakSensor beamBreak;
   private CarriageState mCurrentState, mDesiredState;
   private double releaseTime;
   private double resetTime;
@@ -28,11 +29,12 @@ public class Carriage implements IModule{
   private static final ILog log = Logger.createLog(Carriage.class);
 
   //constructs necessary variables and sets default state to cube
-  public Carriage(Data pData, Hardware pHardware)
+  public Carriage(Data pData, Hardware pHardware, BeamBreakSensor pBeamBreak)
   {
     mData = pData;
     mHardware = pHardware;
     isScheduled = false;
+    beamBreak = pBeamBreak;
     solenoidGrabber = new Solenoid(SystemSettings.CARRIAGE_GRABBER_ID);
     solenoidKicker = new Solenoid(SystemSettings.CARRIAGE_KICKER_ID);
     mDesiredState = mCurrentState = CarriageState.GRAB_CUBE;
@@ -98,7 +100,6 @@ public class Carriage implements IModule{
   //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
     isScheduled = false;
-    beamBreak = mHardware.getCarriageBeamBreak();
     mDesiredState = mCurrentState = CarriageState.GRAB_CUBE;
   }
   @Override
@@ -169,13 +170,7 @@ public class Carriage implements IModule{
   //verify that the beamBreak is functioning
   public boolean getBeamBreak()
   {
-    boolean returnVal = false;
-
-    if(beamBreak != null) {
-      returnVal = beamBreak.get(); 
-    }
-
-    return returnVal;
+    return beamBreak.isBroken();
   }
 
   public CarriageState getCurrentState() {

@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 public enum ElevDirection
 {
-	UP(true, 20d/12d, 3, 20),
+	UP(true, 30d/12d, 3, 20),
 	DOWN(false, 15d/12d, 1, 10),
 	OFF(false, 15d/12d, 0, 0);
 

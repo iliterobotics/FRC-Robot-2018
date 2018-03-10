@@ -29,6 +29,7 @@ import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
+import org.ilite.frc.robot.sensors.BeamBreakSensor;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -60,6 +61,7 @@ public class Robot extends IterativeRobot {
   private final Elevator mElevator;
   private final Intake mIntake;
   private final PneumaticModule mPneumaticControl;
+  private final BeamBreakSensor mBeamBreak;
   private DriverInput mDriverInput;
   private Joystick testJoystick;
   private  LEDControl mLedController;
@@ -68,7 +70,7 @@ public class Robot extends IterativeRobot {
   private GetAutonomous getAutonomous;
 
   public Robot() {
-    
+    System.out.println("Hardware init");
     mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
@@ -87,17 +89,21 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
+    System.out.println("Finished hardware init");
     
+    mBeamBreak = new BeamBreakSensor(mHardware.getCarriageBeamBreak());
+    System.out.println("Beam break init finished");
     mElevator = new Elevator(mHardware, mData);
-    mIntake = new Intake(mElevator, mHardware);
+    mIntake = new Intake(mElevator, mHardware, mBeamBreak);
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
-    mCarriage = new Carriage(mData, mHardware );
+    mCarriage = new Carriage(mData, mHardware, mBeamBreak);
   	mDrivetrain = new DriveTrain(mData, mHardware);
     mControlLoop = new ControlLoopManager(mDrivetrain, mData, mHardware);
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
+  	System.out.println("Modules instantiateds");
   	Logger.setLevel(ELevel.DEBUG);
   }
 
@@ -155,7 +161,7 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
 	   
-	  setRunningModules(mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
+	  setRunningModules(mBeamBreak, mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
 	  
 	  mControlLoop.setRunningControlLoops();
 	  mControlLoop.start();
@@ -268,7 +274,6 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
-    getAutonomous.getAutonomousCommands();
   }
   
   
