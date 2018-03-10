@@ -146,18 +146,20 @@ public class GetAutonomous {
 		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftScaleX() - mField.getLeftStartingPosX())));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(24d)));
 		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 45, 3));
-		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 3));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(1.0d)));
+		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		case MIDDLE:
 			break;
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightScaleX() - mField.getRightStartingPosX())));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(24d)));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -45, 3));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.RESET, 1));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(1.0d)));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		}
 	}
@@ -175,6 +177,9 @@ public class GetAutonomous {
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-3d)));
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, 72));
 			break;
 		case MIDDLE:
 			switch(mSwitchSide) {
@@ -194,11 +199,14 @@ public class GetAutonomous {
 			}
 			break;
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightSideSwitchX() - mField.getRightStartingPosX())));
-//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 3));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getRightStartingPosX())));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-//      mCommands.add(new DriveStraight(mDriveTrain, mData, 2));
-//      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightStartingPosY() - mField.getRightSideSwitchY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-3d)));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 72));
 			break;
 		}
 	}

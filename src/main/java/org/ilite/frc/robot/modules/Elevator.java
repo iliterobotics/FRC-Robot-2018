@@ -34,11 +34,11 @@ public class Elevator implements IModule {
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
 	
-	private EElevatorState elevatorState = EElevatorState.STOP;
-	private EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
-	private EElevatorGearState elevGearState = EElevatorGearState.NORMAL;
-	private ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
-	private ElevDirection elevatorDirection = ElevDirection.UP;
+	EElevatorState elevatorState = EElevatorState.STOP;
+	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
+	EElevatorGearState elevGearState = EElevatorGearState.NORMAL;
+	ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
+	ElevDirection elevatorDirection = ElevDirection.UP;
 	
   private static final ILog log = Logger.createLog(Elevator.class);
 

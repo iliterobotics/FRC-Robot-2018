@@ -46,8 +46,8 @@ public class LEDControl implements IModule {
 		
 	//pulse speed = 100, slow flash = 300, solid = 0
 	public enum Message{
-		EXAMPLE_MESSAGE(LEDColor.PURPLE, 100),
-	  HAS_CUBE(LEDColor.YELLOW, 100),
+		HAS_CUBE(LEDColor.PURPLE, 100),
+	  ELEV_DECEL(LEDColor.YELLOW, 100),
 	  CURRENT_LIMITING(LEDColor.RED, 100),
 	  KICKING_CUBE(LEDColor.LIGHT_BLUE, 0),
 	  NONE(LEDColor.NONE, 0);
@@ -84,6 +84,7 @@ public class LEDControl implements IModule {
 	  mCurrentMessage = Message.NONE;
 	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 	  if(mCarriage.getBeamBreak()) mCurrentMessage = Message.HAS_CUBE;
+	  if(mElevator.elevatorState == EElevatorState.DECELERATE_BOTTOM || mElevator.elevatorState == EElevatorState.DECELERATE_TOP) mCurrentMessage = Message.ELEV_DECEL;
 	  if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 	  if(mCarriage.getCurrentState() == CarriageState.KICKING) mCurrentMessage = Message.KICKING_CUBE;
 	  setLED(mCurrentMessage);
