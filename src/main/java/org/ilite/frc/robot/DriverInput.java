@@ -101,11 +101,12 @@ public class DriverInput implements IModule{
 		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+//		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
-		if(mElevatorModule.decelerateHeight())
-		{
-		  throttle = Utils.clamp(throttle, 0.5);
-		}
+//		if(mElevatorModule.decelerateHeight())
+//		{
+//		  throttle = Utils.clamp(throttle, 0.5);
+//		}
 		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
 	      throttle /= 3;
 	      rotate /= 3;

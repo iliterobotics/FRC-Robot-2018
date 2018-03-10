@@ -154,7 +154,6 @@ public class Robot extends IterativeRobot {
   }
   public void teleopInit()
   {
-	  SystemSettings.limelight.getEntry("ledMode").setNumber(1.0);
 	  mLog.info("TELEOP");
 	  receiveDriverControlMode();
 
