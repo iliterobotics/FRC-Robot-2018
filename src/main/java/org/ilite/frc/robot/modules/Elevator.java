@@ -63,9 +63,9 @@ public class Elevator implements IModule {
 
   public enum ElevatorControlMode
 	{
-		MANUAL(SystemSettings.ELEVATOR_NORMAL_MAX_POWER),
-		CLIMBER(SystemSettings.ELEVATOR_CLIMBER_MAX_POWER),
-		POSITION(SystemSettings.ELEVATOR_NORMAL_MAX_POWER);
+		MANUAL(0.8),
+		CLIMBER(0.8),
+		POSITION(0.8);
     
     private double maxPower;
     

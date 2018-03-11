@@ -151,6 +151,8 @@ public class DriverInput implements IModule{
 	
 	private void updateElevator() {
 	  
+	  double climberAxis = mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS);
+	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
 	  {
 	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
@@ -171,10 +173,16 @@ public class DriverInput implements IModule{
     {
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
       mElevatorModule.setPosition(EElevatorPosition.FIRST_TAPE);
-    } else if(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) != 0) {
-      mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
-      mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-      mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
+    } else if( climberAxis != 0) {
+      if(Math.abs(climberAxis) < 0.75) {
+        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
+        mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
+      }
+      if(Math.abs(climberAxis) > 0.75) {
+        mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
+        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
+        mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
+      }
     } else {
 	    mElevatorModule.setGearState(EElevatorGearState.NORMAL);
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
