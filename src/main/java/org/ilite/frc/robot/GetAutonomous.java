@@ -146,19 +146,19 @@ public class GetAutonomous {
 		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(24d)));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
 		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 3));
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(1.0d)));
+//		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		case MIDDLE:
 			break;
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(24d)));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(1.0d)));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			break;
 		}

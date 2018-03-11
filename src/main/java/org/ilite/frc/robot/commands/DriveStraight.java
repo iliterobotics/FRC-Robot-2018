@@ -22,7 +22,7 @@ public class DriveStraight implements ICommand{
 	private ILog mLog = Logger.createLog(DriveStraight.class);
   
   private static final double TURN_PROPORTION = 0.03;
-  private static final double INITIAL_POWER = 0.4;
+  private static final double INITIAL_POWER = 0.6 ;
   
   private final DriveTrain driveTrain;
   private final Data mData;

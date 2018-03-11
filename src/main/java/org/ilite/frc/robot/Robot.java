@@ -119,7 +119,7 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
-    setRunningModules(mDrivetrain, mElevator, mCarriage);
+    setRunningModules(mDrivetrain, mElevator, mCarriage, mBeamBreak);
     
     mCommandQueue.clear();
     mCommandQueue = getAutonomous.getAutonomousCommands();
