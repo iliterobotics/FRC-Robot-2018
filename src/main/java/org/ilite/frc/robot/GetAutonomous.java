@@ -152,6 +152,7 @@ public class GetAutonomous {
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 3));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
 			break;
 		case MIDDLE:
 			break;
@@ -161,6 +162,7 @@ public class GetAutonomous {
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
 			break;
 		}
 	}
