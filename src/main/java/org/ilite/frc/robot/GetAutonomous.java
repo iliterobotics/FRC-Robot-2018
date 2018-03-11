@@ -97,15 +97,15 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
 	  getSides();
-    parseEntries();
-	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN || mCubeActionPrefs.isEmpty() || mStartingPos == EStartingPosition.UNKNOWN) {
+//    parseEntries();
+	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
 	    double timerStart = System.currentTimeMillis();
 	    while(System.currentTimeMillis() < timerStart + 3000) {
 	      getSides();
-	      parseEntries();
 	      if(mSwitchSide != OwnedSide.UNKNOWN && mScaleSide != OwnedSide.UNKNOWN) break;
 	    }
 	  }
+	  parseEntries();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
 		
