@@ -135,6 +135,10 @@ public class DriverInput implements IModule{
     // Combines the two gamepad Y axes so the operator can use either one
     double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_1);
     
+    if(mCarriage.getBeamBreak() && !mData.operator.isSet(DriveTeamInputMap.OPERATOR_HOLD_INTAKE_OUT)) {
+      mIntake.setIntakeRetracted(true);
+    }
+    
     if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
       mIntake.setIntakeRetracted(true);
     }
@@ -173,16 +177,16 @@ public class DriverInput implements IModule{
     else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
     {
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-      mElevatorModule.setPosition(EElevatorPosition.FIRST_TAPE);
+      mElevatorModule.setPosition(EElevatorPosition.BOTTOM);
     } else if( climberAxis != 0) {
       if(Math.abs(climberAxis) < 0.75) {
         mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-        mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
+        mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
       }
       if(Math.abs(climberAxis) > 0.75) {
         mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
         mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-        mElevatorModule.setPower(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
+        mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
       }
     } else {
 	    mElevatorModule.setGearState(EElevatorGearState.NORMAL);

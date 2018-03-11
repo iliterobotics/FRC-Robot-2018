@@ -99,8 +99,9 @@ public class GetAutonomous {
 	  getSides();
 	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
 	    double timerStart = System.currentTimeMillis();
-	    while(System.currentTimeMillis() - timerStart > 3000) {
+	    while(System.currentTimeMillis() < timerStart + 3000) {
 	      getSides();
+	      if(mSwitchSide != OwnedSide.UNKNOWN && mScaleSide != OwnedSide.UNKNOWN) break;
 	    }
 	  }
 		parseEntries();
