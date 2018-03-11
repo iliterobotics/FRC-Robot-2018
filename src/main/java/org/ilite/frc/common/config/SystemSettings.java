@@ -111,7 +111,8 @@ public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
   // =============================================================================  
   public static int     DIO_TALON_TACH = 8;
   public static int     DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH = 6;
-  public static double ELEVATOR_MAX_POWER = 0.8d;
+  public static double ELEVATOR_NORMAL_MAX_POWER = 0.8d;
+  public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  

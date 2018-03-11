@@ -63,9 +63,20 @@ public class Elevator implements IModule {
 
   public enum ElevatorControlMode
 	{
-		MANUAL,
-		CLIMBER,
-		POSITION;
+		MANUAL(0.8),
+		CLIMBER(0.8),
+		POSITION(0.8);
+    
+    private double maxPower;
+    
+    private ElevatorControlMode(double maxPower) {
+      this.maxPower = maxPower;
+    }
+    
+    public double getMaxPower() {
+      return maxPower;
+    }
+    
 	}
 	
 	@Override
@@ -108,7 +119,7 @@ public class Elevator implements IModule {
     currentTachLevel = getTachLevel(currentTachState, lastTachState); // Calculates current tape mark based on last/current tach state
 		
 
-    elevatorDirection = ElevDirection.getDirection(mDesiredPower);
+    elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
     boolean isCurrentLimited = isCurrentLimiting();
 
 		mAtTop = isCurrentLimited && elevatorDirection == ElevDirection.UP;
@@ -158,7 +169,7 @@ public class Elevator implements IModule {
 		// Replace system outs with Log
 		//log.warn(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDesiredDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
 		log.warn("ElevState:" + elevatorState +  " talonTach=" + currentTachLevel);
-		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, SystemSettings.ELEVATOR_MAX_POWER));
+		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
 		shiftSolenoid.set(elevGearState.gearState);
@@ -184,18 +195,6 @@ public class Elevator implements IModule {
 
         
       case CLIMBER:
-        if(currentTachLevel != 2)
-        {
-          mDesiredPower = -EElevatorState.NORMAL.power;
-          elevatorState = EElevatorState.NORMAL;
-        }
-        else
-        {
-         elevatorState = EElevatorState.HOLD;
-        }
-         
-        break;
-        
       case MANUAL:
         switch(elevatorDirection)
         {
@@ -227,6 +226,12 @@ public class Elevator implements IModule {
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
             }
+            break;
+          case CLIMBER_UP:
+            elevatorState = EElevatorState.NORMAL;
+            break;
+          case CLIMBER_DOWN:
+            elevatorState = EElevatorState.NORMAL;
             break;
           default:
             elevatorState = EElevatorState.STOP;

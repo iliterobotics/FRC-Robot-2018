@@ -1,5 +1,7 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
+
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
@@ -11,6 +13,8 @@ public enum ElevDirection
 {
 	UP(true, 30d/12d, 3, 20),
 	DOWN(false, 15d/12d, 1, 10),
+	CLIMBER_UP(true, 30d/12d, 3, 20),
+	CLIMBER_DOWN(false, 15d/12d, 1, 10),
 	OFF(false, 15d/12d, 0, 0);
 
 	boolean isPositiveDirection;
@@ -26,10 +30,14 @@ public enum ElevDirection
 		this.continuousCurrentLimit = continuousCurrentLimit;
 	}
 
-	public static ElevDirection getDirection(double pDesiredPower)
+	public static ElevDirection getDirection(double pDesiredPower, ElevatorControlMode pElevatorControlMode)
 	{
 	  if(pDesiredPower == 0) return OFF;
-		return pDesiredPower > 0 ? UP : DOWN;
+	  if(pElevatorControlMode == ElevatorControlMode.CLIMBER) {
+	    return pDesiredPower > 0 ? CLIMBER_UP : CLIMBER_DOWN;
+	  } else {
+	    return pDesiredPower > 0 ? UP : DOWN;
+	  }
 	}
 
 	public boolean isCurrentRatioLimited(TalonSRX pMasterTalon)
