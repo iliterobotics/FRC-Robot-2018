@@ -140,6 +140,7 @@ public class DriverInput implements IModule{
     }
     if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
       mIntake.setIntakeRetracted(false);
+      mCarriage.setDesiredState(CarriageState.RESET);
     }
     
     if(intakeSpeed > 0) {
