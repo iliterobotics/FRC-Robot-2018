@@ -7,7 +7,7 @@ public class ReleaseCube implements ICommand {
 
   public static final CarriageState kDEFAULT_STATE = CarriageState.RESET;
   
-  private double mStartTime, mDuration;
+  private double mStartTime, mDuration, mRelaseTime;
   private CarriageState mCarriageState;
   
   private Carriage mCarriage;
@@ -22,13 +22,14 @@ public class ReleaseCube implements ICommand {
   public void initialize(double pNow) {
     if(mCarriageState != CarriageState.RESET || mCarriageState != CarriageState.KICKING) mCarriageState = kDEFAULT_STATE;
     mStartTime = pNow;
+    mRelaseTime = pNow + mDuration;
   }
 
   @Override
   public boolean update(double pNow) {
     mCarriage.setDesiredState(mCarriageState);
-    if(pNow - mStartTime >= mDuration) {
-      mCarriage.setDesiredState(CarriageState.RESET);
+    if(pNow >= mRelaseTime) {
+      mCarriage.setDesiredState(CarriageState.KICKING);
       return true;
     }
     return false;

@@ -18,7 +18,7 @@ import jaci.pathfinder.Trajectory.FitMethod;
 public class SystemSettings extends ConstantsBase {
   
   
-public static double CONTROL_LOOP_PERIOD = 0.01; // seconds
+public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
   
   // =============================================================================

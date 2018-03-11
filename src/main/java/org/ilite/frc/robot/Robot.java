@@ -120,6 +120,8 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     
     setRunningModules(mDrivetrain, mElevator, mCarriage, mBeamBreak);
+    mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
+    mControlLoop.start();
     
     mCommandQueue.clear();
     mCommandQueue = getAutonomous.getAutonomousCommands();
@@ -162,9 +164,9 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
 	   
 	  setRunningModules(mBeamBreak, mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
-	  
-	  mControlLoop.setRunningControlLoops();
-	  mControlLoop.start();
+    
+	  mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
+    mControlLoop.start();
   }
 
   public void teleopPeriodic() {
@@ -274,6 +276,7 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
+    System.out.println(getAutonomous.getAutonomousCommands());
   }
   
   

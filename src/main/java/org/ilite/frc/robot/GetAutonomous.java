@@ -51,8 +51,8 @@ public class GetAutonomous {
 
 	// Decision variables to be set by networktable entries.
 	private List<ECubeAction> mCubeActionPrefs;
-	private EStartingPosition mStartingPos;
-	private ECross mCrossType;
+	private EStartingPosition mStartingPos = EStartingPosition.LEFT;
+	private ECross mCrossType = ECross.NONE;
 	private double mDelay;
 	private boolean doComplexAutonomous;
 
@@ -97,14 +97,15 @@ public class GetAutonomous {
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
 	  getSides();
-	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
+    parseEntries();
+	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN || mCubeActionPrefs.isEmpty() || mStartingPos == EStartingPosition.UNKNOWN) {
 	    double timerStart = System.currentTimeMillis();
 	    while(System.currentTimeMillis() < timerStart + 3000) {
 	      getSides();
+	      parseEntries();
 	      if(mSwitchSide != OwnedSide.UNKNOWN && mScaleSide != OwnedSide.UNKNOWN) break;
 	    }
 	  }
-		parseEntries();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
 		
@@ -151,7 +152,8 @@ public class GetAutonomous {
 		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 3));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 2));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-1d)));
 			break;
 		case MIDDLE:
 			break;
@@ -160,7 +162,8 @@ public class GetAutonomous {
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 2));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-1d)));
 			break;
 		}
 	}
@@ -177,7 +180,7 @@ public class GetAutonomous {
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
-			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-3d)));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, 72));
@@ -287,12 +290,17 @@ public class GetAutonomous {
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mCrossType = ECross.intToEnum(crossNum);
 		mCubeActionPrefs = new ArrayList<ECubeAction>();
+		if(mStartingPos == EStartingPosition.UNKNOWN) mStartingPos = EStartingPosition.LEFT;
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
 				continue;
 			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
+		}
+		if(mCubeActionPrefs.isEmpty()) {
+		  mCubeActionPrefs.add(ECubeAction.SWITCH);
+		  mCubeActionPrefs.add(ECubeAction.SCALE);
 		}
 		switch (mStartingPos) {
 		case LEFT:
