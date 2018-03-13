@@ -20,14 +20,13 @@ public class ReleaseCube implements ICommand {
   
   @Override
   public void initialize(double pNow) {
-    if(mCarriageState != CarriageState.RESET || mCarriageState != CarriageState.KICKING) mCarriageState = kDEFAULT_STATE;
     mStartTime = pNow;
     mRelaseTime = pNow + mDuration;
   }
 
   @Override
   public boolean update(double pNow) {
-    mCarriage.setDesiredState(mCarriageState);
+    mCarriage.setDesiredState(CarriageState.KICKING);
     if(pNow >= mRelaseTime) {
       mCarriage.setDesiredState(CarriageState.KICKING);
       return true;

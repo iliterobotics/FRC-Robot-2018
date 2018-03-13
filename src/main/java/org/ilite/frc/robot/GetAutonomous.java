@@ -96,8 +96,10 @@ public class GetAutonomous {
 	 * @return Command Queue of autonomous commands.
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
+	  mCommands.clear();
 	  getSides();
 //    parseEntries();
+	  
 	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
 	    double timerStart = System.currentTimeMillis();
 	    while(System.currentTimeMillis() < timerStart + 3000) {
@@ -108,14 +110,15 @@ public class GetAutonomous {
 	  parseEntries();
 		
 		mCubeActionPrefs = getCubeActionsOnMySide();
+		System.out.println(mCubeActionPrefs);
 		
 		if (!mCubeActionPrefs.isEmpty()) {
 			ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
-			System.out.println("Autonomous chose: " + prefAction.toString());
+			System.out.println("=================== Autonomous chose: " + prefAction.toString());
 			if(mDelay > 15) {
 				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
 			}
-			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+//			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
 			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
 					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
 			switch (prefAction) {
@@ -134,6 +137,7 @@ public class GetAutonomous {
 			}
 		}
 		
+		System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
 		if(mCommands.isEmpty()) crossAutoLine();
 
 		return mCommands;
@@ -150,7 +154,7 @@ public class GetAutonomous {
 		case LEFT:
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
 		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 3));
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 5));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
@@ -160,7 +164,7 @@ public class GetAutonomous {
 		case RIGHT:
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 5));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
@@ -287,10 +291,11 @@ public class GetAutonomous {
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mDelay = nDelayEntry.getDouble(-1);
-		mStartingPos = EStartingPosition.intToEnum(posNum);
+//		mStartingPos = EStartingPosition.intToEnum(posNum);
+		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
 		mCubeActionPrefs = new ArrayList<ECubeAction>();
-		if(mStartingPos == EStartingPosition.UNKNOWN) mStartingPos = EStartingPosition.LEFT;
+		if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
