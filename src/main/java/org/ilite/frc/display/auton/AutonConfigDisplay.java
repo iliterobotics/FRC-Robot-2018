@@ -73,11 +73,7 @@ public class AutonConfigDisplay extends Application {
     
     Button send = new Button("Send");
     send.setOnAction(e -> {
-      SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
-      SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
-      SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
-      SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
-     
+      sendData();
     });
     
     Button mode = new Button("Enhanced Mode");
@@ -121,6 +117,17 @@ public class AutonConfigDisplay extends Application {
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
     primaryStage.show();
+    
+    Thread dataSender = new Thread(() -> {
+        while(!Thread.interrupted()) sendData();
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e1) {
+          System.err.println("Thread sleep interrupted");
+        }
+    });
+    dataSender.start();
+    
   }
   
   private static <E extends Enum<E>> VBox labeledDropdown(Class<E> pEnumeration) {
@@ -201,6 +208,14 @@ public class AutonConfigDisplay extends Application {
       sb.append(pInput.charAt(i));
     }
     return sb.toString();
+  }
+  
+  private void sendData() {
+    System.out.println("I'm sending");
+    SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+    SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
+    SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
+    SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
   }
   
   private static void swapEntriesUp(ListView listView, Object[] outputArray) {

@@ -2,7 +2,10 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ilite.frc.common.types.ECross;
+import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.SimpleNetworkTable;
 import org.ilite.frc.robot.auto.FieldAdapter;
 
@@ -24,7 +27,16 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   // Comms
   // =============================================================================
-  public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+  public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE") {
+    @Override
+    public void initKeys() {
+      getInstance().getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1); 
+      getInstance().getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
+      getInstance().getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(new Number[] {0}); 
+      getInstance().getEntry("Chosen Autonomous").setDefaultString(""); 
+      getInstance().getEntry("Delay").setDefaultDouble(-1); 
+    }
+  };
   public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
 	  @Override
 	  public void initKeys() {

@@ -76,12 +76,7 @@ public class GetAutonomous {
 	  
 		this.nAutonTable = pAutonTable;
 		this.mData = pData;
-
-	 pAutonTable.getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1); 
-   pAutonTable.getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
-   pAutonTable.getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(new Number[] {0}); 
-   pAutonTable.getEntry("Chosen Autonomous").setDefaultString(""); 
-   pAutonTable.getEntry("Delay").setDefaultDouble(-1); 
+		
 		mDoComplexAutonomous = true;
 		
 		mCommands = new LinkedList<ICommand>();

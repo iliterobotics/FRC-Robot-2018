@@ -21,6 +21,10 @@ public class SimpleNetworkTable  {
         netTable.getInstance().startClientTeam(1885);
     }
     
+    public void initKeys() {
+      
+    }
+    
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
     }
