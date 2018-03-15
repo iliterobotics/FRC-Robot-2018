@@ -211,7 +211,6 @@ public class AutonConfigDisplay extends Application {
   }
   
   private void sendData() {
-    System.out.println("I'm sending");
     SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
     SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
     SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);

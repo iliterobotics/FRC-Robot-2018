@@ -13,6 +13,7 @@ import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
+import org.ilite.frc.robot.commands.Delay;
 import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.ElevatorToPosition;
 import org.ilite.frc.robot.commands.GyroTurn;
@@ -44,7 +45,7 @@ public class GetAutonomous {
 	private Data mData;
 
 	// Decision variables to be set by networktable entries.
-	private List<ECubeAction> mCubeActionPrefs;
+	private List<ECubeAction> mReceivedCubeActionPrefs, mSameSideCubeActionPrefs, mOtherSideCubeActionPrefs;
 	private EStartingPosition mStartingPos = EStartingPosition.LEFT;
 	private ECross mCrossType = ECross.NONE;
 	private double mDelay;
@@ -88,9 +89,10 @@ public class GetAutonomous {
 	 * @return Command Queue of autonomous commands.
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
+	  System.out.println("STARTING");
 	  mCommands.clear();
 	  getSides();
-//    parseEntries();
+//     parseEntries();
 	  
 	  // Poll FMS for game data more than once to make sure it is correct
 	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
@@ -100,19 +102,20 @@ public class GetAutonomous {
 	    }
 	  }
 	  parseEntries();
+		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
+		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
 		
-		mCubeActionPrefs = getCubeActionsOnMySide();
-		System.out.println(mCubeActionPrefs);
+//		System.out.println(mSameSideCubeActionPrefs);
 		
-		if (!mCubeActionPrefs.isEmpty()) {
-			ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
-			System.out.println("=================== Autonomous chose: " + prefAction.toString());
+		if (!mSameSideCubeActionPrefs.isEmpty()) {
+			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+//			System.out.println("=================== Autonomous chose: " + prefAction.toString());
 			if(mDelay > 15) {
 				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
 			}
-//			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
 			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
+					mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
 			switch (prefAction) {
 			case SCALE:
 				doScale();
@@ -129,9 +132,11 @@ public class GetAutonomous {
 			}
 		}
 		
-		System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
-		if(mCommands.isEmpty()) crossAutoLine();
-
+		if(mCommands.isEmpty()) {
+		  System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
+		  crossAutoLine();
+		}
+		System.out.println("ENDING");
 		return mCommands;
 
 	}
@@ -272,22 +277,24 @@ public class GetAutonomous {
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mDelay = nDelayEntry.getDouble(-1);
-//		mStartingPos = EStartingPosition.intToEnum(posNum);
+		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
-		mCubeActionPrefs = new ArrayList<ECubeAction>();
+		mReceivedCubeActionPrefs = new ArrayList<>();
+		mSameSideCubeActionPrefs = new ArrayList<>();
+		mOtherSideCubeActionPrefs = new ArrayList<>();
 		if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
 				continue;
-			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
+			mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
 		}
-		if(mCubeActionPrefs.isEmpty()) {
-		  mCubeActionPrefs.add(ECubeAction.SWITCH);
-		  mCubeActionPrefs.add(ECubeAction.SCALE);
-		}
+//		if(mReceivedCubeActionPrefs.isEmpty()) {
+//		  mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
+//		  mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
+//		}
 		switch (mStartingPos) {
 		case LEFT:
 			mTurnScalar = 1;
@@ -332,10 +339,15 @@ public class GetAutonomous {
 	 *         cube action.
 	 */
 	public boolean isCubeActionOnMySide(ECubeAction c) {
+	  System.out.printf("Cube Action: %s Scale Side: %s Switch Side: %s\n", c, mScaleSide, mSwitchSide);
 		switch (c) {
 		case EXCHANGE:
 			return isExchangeOnMySide();
 		case SCALE:
+		  // Edge case not covered in isOnMySide - We obviously can't do scale in the middle
+		  if(mStartingPos == EStartingPosition.MIDDLE) {
+		    return false;
+		  }
 			return isOnMySide(mScaleSide);
 		case SWITCH:
 			return isOnMySide(mSwitchSide);
@@ -358,6 +370,10 @@ public class GetAutonomous {
 		case EXCHANGE:
 		return false;
 		case SCALE:
+		// Edge case not covered in isOnMySide - We obviously can't do scale in the middle
+    if(mStartingPos == EStartingPosition.MIDDLE) {
+      return false;
+    }
 		return !isOnMySide(mScaleSide);
 		case SWITCH:
 		return !isOnMySide(mSwitchSide);
@@ -368,11 +384,11 @@ public class GetAutonomous {
 	}
 
 	/* package */ List<ECubeAction> getCubeActionsOnMySide() {
-		return mCubeActionPrefs.stream().filter(cA -> isCubeActionOnMySide(cA)).collect(Collectors.toList());
+		return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionOnMySide(cA)).collect(Collectors.toList());
 	}
 
 	/* package */ List<ECubeAction> getCubeActionsOnOtherSide() {
-		return mCubeActionPrefs.stream().filter(cA -> isCubeActionOtherSide(cA)).collect(Collectors.toList());
+		return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionOtherSide(cA)).collect(Collectors.toList());
 	}
 	
 	private void getSides() {
@@ -383,7 +399,7 @@ public class GetAutonomous {
 	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
 	      nDelayEntry = nAutonTable.getEntry("Delay");
 	    } catch (Exception e) {
-
+	       System.err.println("Error retrieving data from auton display");
 	    }
 	    mScaleSide = getScaleOwnedSide();
 	    mSwitchSide = getSwitchOwnedSide();
@@ -400,7 +416,7 @@ public class GetAutonomous {
 	 */
 	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos,
 			OwnedSide pSwitchSide, OwnedSide pScaleSide) {
-		mCubeActionPrefs = pActions;
+		mReceivedCubeActionPrefs = pActions;
 		mCrossType = pCross;
 		mStartingPos = pPos;
 		mSwitchSide = pSwitchSide;
