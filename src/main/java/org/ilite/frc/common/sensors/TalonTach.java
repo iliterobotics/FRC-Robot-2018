@@ -7,18 +7,23 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class TalonTach implements IControlLoop {
 
 	private DigitalInput talonTachSensor;
-	private boolean currentState;
+	private boolean currentState, lastState, hasChanged, hasBeenPolled;
 	
 	public TalonTach(int port)
 	{
 		talonTachSensor = new DigitalInput(port);
 		currentState = true;
+		lastState = true;
+		hasChanged = false;
+		hasBeenPolled = false;
 	}
 	
 	//true for reflective surfaces (powdercoat) false for non-reflective (tape)
 	public boolean getSensor()
 	{
-	  return currentState;
+	  boolean actualHasChanged = hasChanged;
+	  hasChanged = false;
+	  return actualHasChanged;
 	}
 	
 //	public boolean getSensor() {
@@ -48,6 +53,8 @@ public class TalonTach implements IControlLoop {
   @Override
   public boolean update(double pNow) {
     currentState = getState();
+    if(currentState == false && lastState == true) hasChanged = true;
+    lastState = currentState;
     return false;
   }
 
