@@ -173,6 +173,16 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static int		MOTION_MAGIC_A = 951;
   
   // =============================================================================
+  // Closed-Loop Position Constants
+  // =============================================================================
+  public static int    POSITION_TOLERANCE = 0;
+  public static int    POSITION_PID_SLOT = 0;
+  public static double POSITION_P = 0;
+  public static double POSITION_I = 0;
+  public static double POSITION_D = 0;
+  public static double POSITION_F = 0;
+  
+  // =============================================================================
   // Autonomous Constants
   // =============================================================================
   public static int		AUTO_STRAIGHT_POS_TOLERANCE = 100;

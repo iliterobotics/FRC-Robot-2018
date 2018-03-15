@@ -140,6 +140,14 @@ public class DriveTrain implements IControlLoop {
 		case PercentOutput:
 		  controlMode = ControlMode.PercentOutput;
 			break;
+		case Position:
+		  controlMode = ControlMode.Position;
+		  leftMaster.configAllowableClosedloopError(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_TOLERANCE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  leftMaster.config_kP(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  leftMaster.config_kI(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  leftMaster.config_kD(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  leftMaster.config_kF(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  break;
 		case MotionMagic:
 		  controlMode = ControlMode.MotionMagic;
 			leftMaster.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
@@ -175,6 +183,11 @@ public class DriveTrain implements IControlLoop {
 	@Override
 	public void loop(double pNow) {
 	  update(pNow);
+	}
+	
+	public synchronized void holdPosition() {
+	  setDriveMessage(new DrivetrainMessage(getLeftMaster().getSelectedSensorPosition(0), getRightMaster().getSelectedSensorPosition(0),
+	                  DrivetrainMode.Position, NeutralMode.Brake));
 	}
 	
 	public synchronized void setDriveMessage(DrivetrainMessage drivetrainMessage) {

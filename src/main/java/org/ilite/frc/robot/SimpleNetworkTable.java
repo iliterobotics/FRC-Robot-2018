@@ -15,18 +15,12 @@ public class SimpleNetworkTable  {
     public SimpleNetworkTable(String name) {
         NetworkTableInstance.getDefault().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
         netTable = NetworkTableInstance.getDefault().getTable(name);
-        netTable.getInstance().startClient("1885");//Init 
+
+        netTable.getInstance().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
         netTable.getInstance().setServerTeam(1885);
         netTable.getInstance().startClientTeam(1885);
     }
-    public synchronized void initKeys() {
-    	    netTable.getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1);
-      		netTable.getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
-      		Number[] defaultArray = {0};
-      		netTable.getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(defaultArray);
-      		netTable.getEntry("Chosen Autonomous").setDefaultString("");
-      		netTable.getEntry("Delay").setDefaultDouble(-1);
-    }
+    
     public synchronized NetworkTableEntry getEntry(String key) {
     		return netTable.getEntry(key);
     }
