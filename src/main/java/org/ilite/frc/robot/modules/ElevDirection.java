@@ -11,10 +11,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 public enum ElevDirection
 {
-	UP(true, 30d/12d, 3, 20),
-	DOWN(false, 15d/12d, 1, 10),
-	CLIMBER_UP(true, 30d/12d, 3, 20),
-	CLIMBER_DOWN(false, 65d/12d, 1, 10),
+  //up = 3 down = 1
+	UP(true, 30d/12d, 5, 20),
+	DOWN(false, 15d/12d, 2, 10),
+	CLIMBER_UP(true, 30d/12d, 5, 20),
+	CLIMBER_DOWN(false, 65d/12d, 2, 10),
 	OFF(false, 15d/12d, 0, 0);
 
 	boolean isPositiveDirection;
