@@ -8,25 +8,23 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
-import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.robot.auto.FieldAdapter;
-import org.ilite.frc.robot.auto.FieldDimensions;
-import org.ilite.frc.robot.commands.Delay;
+import org.ilite.frc.robot.auto.AutoDimensions;
 import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.ElevatorToPosition;
 import org.ilite.frc.robot.commands.GyroTurn;
 import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.commands.ParallelCommand;
+import org.ilite.frc.robot.commands.IntakeCube;
 import org.ilite.frc.robot.commands.ReleaseCube;
 import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.EElevatorPosition;
+import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Intake;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import openrio.powerup.MatchData;
@@ -40,8 +38,7 @@ public class GetAutonomous {
 	private NetworkTableEntry nCubeActionPrefsEntry;
 	private NetworkTableEntry nDelayEntry;
 	
-	private FieldAdapter mField;
-	
+	private Intake mIntake;
 	private Elevator mElevator;
 	private Carriage mCarriage;
 	
@@ -50,11 +47,11 @@ public class GetAutonomous {
 	private Data mData;
 
 	// Decision variables to be set by networktable entries.
-	private List<ECubeAction> mCubeActionPrefs;
+	private List<ECubeAction> mReceivedCubeActionPrefs, mSameSideCubeActionPrefs, mOtherSideCubeActionPrefs;
 	private EStartingPosition mStartingPos = EStartingPosition.LEFT;
 	private ECross mCrossType = ECross.NONE;
 	private double mDelay;
-	private boolean doComplexAutonomous;
+	private boolean mDoComplexAutonomous;
 
 	// Game Data - Jaci's API
 	private OwnedSide mScaleSide;
@@ -73,20 +70,21 @@ public class GetAutonomous {
 	 * @param pAutonTable
 	 *            - Autonomous network table to be passed in from Robot.java
 	 */
-	public GetAutonomous(SimpleNetworkTable pAutonTable, Elevator pElevator, Carriage pCarriage, Pigeon pPigeon, DriveTrain pDriveTrain, Data pData) {
+	public GetAutonomous(SimpleNetworkTable pAutonTable, Intake pIntake, Elevator pElevator, Carriage pCarriage, Pigeon pPigeon, DriveTrain pDriveTrain, Data pData) {
+	  this.mIntake = pIntake;
 	  this.mElevator = pElevator;
 	  this.mCarriage = pCarriage;
 	  this.mPigeon = pPigeon;
 	  this.mDriveTrain = pDriveTrain;
 	  this.mData = pData;
 	  
-	  this.mField = new FieldAdapter();
-	  
 		this.nAutonTable = pAutonTable;
 		this.mData = pData;
-		nAutonTable.initKeys();
-		doComplexAutonomous = true;
 		
+		mDoComplexAutonomous = true;
+		mReceivedCubeActionPrefs = new ArrayList<>();
+    mSameSideCubeActionPrefs = new ArrayList<>();
+    mOtherSideCubeActionPrefs = new ArrayList<>();
 		mCommands = new LinkedList<ICommand>();
 	}
 
@@ -96,31 +94,34 @@ public class GetAutonomous {
 	 * @return Command Queue of autonomous commands.
 	 */
 	public Queue<ICommand> getAutonomousCommands() {
+	  System.out.println("STARTING");
 	  mCommands.clear();
 	  getSides();
 //    parseEntries();
 	  
+	  // Poll FMS for game data more than once to make sure it is correct
 	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
 	    double timerStart = System.currentTimeMillis();
-	    while(System.currentTimeMillis() < timerStart + 3000) {
+	    while(System.currentTimeMillis() < timerStart + 500) {
 	      getSides();
-	      if(mSwitchSide != OwnedSide.UNKNOWN && mScaleSide != OwnedSide.UNKNOWN) break;
 	    }
 	  }
 	  parseEntries();
+		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
+		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
+		System.out.println("SAME SIDE: " + mSameSideCubeActionPrefs);
+		System.out.println("OTHER SIDE: " + mOtherSideCubeActionPrefs);
+//		System.out.println(mSameSideCubeActionPrefs);
 		
-		mCubeActionPrefs = getCubeActionsOnMySide();
-		System.out.println(mCubeActionPrefs);
-		
-		if (!mCubeActionPrefs.isEmpty()) {
-			ECubeAction prefAction = mCubeActionPrefs.get(0);// Does most preferred driver selection.
-			System.out.println("=================== Autonomous chose: " + prefAction.toString());
+		if (!mSameSideCubeActionPrefs.isEmpty()) {
+			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+//			System.out.println("=================== Autonomous chose: " + prefAction.toString());
 			if(mDelay > 15) {
 				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
 			}
 //			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
-			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-					mStartingPos, mCrossType, mCubeActionPrefs.get(0)));
+//			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+//					mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
 			switch (prefAction) {
 			case SCALE:
 				doScale();
@@ -135,11 +136,33 @@ public class GetAutonomous {
 				crossAutoLine();
 				break;
 			}
+		} else if(!mOtherSideCubeActionPrefs.isEmpty() && mCrossType != ECross.NONE){
+		  ECubeAction prefAction = mOtherSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+//    System.out.println("=================== Autonomous chose: " + prefAction.toString());
+      if(mDelay > 15) {
+        mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
+      }
+  //    mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+  //    nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+  //        mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
+      switch (prefAction) {
+      case SCALE:
+        doOppositeScale();
+        break;
+      case SWITCH:
+        doOppositeSwitch();
+        break;
+      case NONE:
+        crossAutoLine();
+        break;
+      }
 		}
 		
-		System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
-		if(mCommands.isEmpty()) crossAutoLine();
-
+		if(mCommands.isEmpty()) {
+		  System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
+		  crossAutoLine();
+		}
+		System.out.println("ENDING");
 		return mCommands;
 
 	}
@@ -149,25 +172,21 @@ public class GetAutonomous {
 	 */ 
 	public void doScale() {
 		// TODO replace with turning scalar
-		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
+		System.out.printf("TESTTESTTESTTESTTESTDoing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
-		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90d, 5));
+		case RIGHT:
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE));
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 55d, 5));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.3));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, -6));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
 			break;
 		case MIDDLE:
-			break;
-		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(22d)));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 4));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 5));
-//      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
 			break;
 		}
 	}
@@ -180,44 +199,86 @@ public class GetAutonomous {
 		System.out.printf("Doing switch autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftFrontSwitchX() - mField.getLeftStartingPosX())));
+		case RIGHT:
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getLeftStartingPosY() - mField.getLeftSideSwitchY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 3));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-3d)));
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, 72));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP));
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));
 			break;
 		case MIDDLE:
 			switch(mSwitchSide) {
 			case LEFT:
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(FieldDimensions.EXCHANGE_TAPE_LENGTH)));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -75, 3));
-//			  mCommands.add(new DriveStraight(mDriveTrain, mData, 
-//			                Math.hypot(Utils.feetToInches(mField.getLeftFrontSwitchY() - mField.getMiddleStartingPosY()), 
-//			                           Utils.feetToInches(mField.getLeftFrontSwitchX() - FieldDimensions.EXCHANGE_TAPE_LENGTH - SystemSettings.ROBOT_CENTER_TO_BACK_CORNER))));
-//			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 75, 3));
-//			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
-//			  mCommands.add(new DriveStraight(mDriveTrain, mData, SystemSettings.ROBOT_CENTER_TO_BACK_CORNER));
-//			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_TO_PYRAMID));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -75, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_DIAGONAL));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 75, 3));
+			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_TO_SWITCH));
+			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			case RIGHT:
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_TO_PYRAMID));
+        mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -75, 3));
+        mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_DIAGONAL));
+        mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 75, 3));
+        mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
+        mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_TO_SWITCH));
+        mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  break;
 			}
 			break;
-		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getRightStartingPosX())));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -90, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightStartingPosY() - mField.getRightSideSwitchY() - SystemSettings.ROBOT_CENTER_TO_FRONT)));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(-3d)));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 90, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 72));
-			break;
 		}
 	}
+	
+	/**
+   * Do scale autonomous; switch based on starting position.
+   */ 
+  public void doOppositeScale() {
+    // TODO replace with turning scalar
+    System.out.printf("Doing opposite scale autonomous starting on %s\n", mStartingPos);
+    switch (mStartingPos) {
+    case LEFT:
+    case RIGHT:
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 18 * 12));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 15 * 12));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90d, 5));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 14, 0.2));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, -6));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+      break;
+    case MIDDLE:
+      break;
+    }
+  }
+
+  /**
+   * Do switch autonomous; switch based on starting position.
+   */
+  public void doOppositeSwitch() {
+    // TODO replace with turning scalar
+    System.out.printf("Doing opposite switch autonomous starting on %s\n", mStartingPos);
+    switch (mStartingPos) {
+    case LEFT:
+    case RIGHT:
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
+//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
+//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
+//      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP));
+//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));
+      break;
+    }
+  }
 
 	/**
 	 * Place cube in exchange autonomous; switch based on starting position.
@@ -244,7 +305,7 @@ public class GetAutonomous {
 	public void crossAutoLine() {
 		// TODO replace with turning scalar
 		System.out.printf("Doing auto line autonomous starting on %s\n", mStartingPos);
-		mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(mField.getRightFrontSwitchX() - mField.getRightStartingPosX())));
+		mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.AUTO_LINE_CROSS));
     mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 180, 10));
 	}
 
@@ -268,6 +329,18 @@ public class GetAutonomous {
 			return false;
 		}
 	}
+	
+	public boolean isOnOtherSide(OwnedSide side) {
+    switch (side) {
+    case LEFT:
+      return mStartingPos == EStartingPosition.RIGHT;
+    case RIGHT:
+      return mStartingPos == EStartingPosition.LEFT;
+    case UNKNOWN:
+    default:
+      return false;
+    }
+  }
 
 	/**
 	 * Determines whether or not our starting position corresponds to the exchange.
@@ -291,22 +364,24 @@ public class GetAutonomous {
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mDelay = nDelayEntry.getDouble(-1);
-//		mStartingPos = EStartingPosition.intToEnum(posNum);
-		mStartingPos = EStartingPosition.LEFT;
+		mStartingPos = EStartingPosition.intToEnum(posNum);
+//		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
-		mCubeActionPrefs = new ArrayList<ECubeAction>();
+		mReceivedCubeActionPrefs = new ArrayList<>();
+		mSameSideCubeActionPrefs = new ArrayList<>();
+		mOtherSideCubeActionPrefs = new ArrayList<>();
 		if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
 				continue;
-			mCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
+			mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
 		}
-		if(mCubeActionPrefs.isEmpty()) {
-		  mCubeActionPrefs.add(ECubeAction.SWITCH);
-		  mCubeActionPrefs.add(ECubeAction.SCALE);
-		}
+//		if(mReceivedCubeActionPrefs.isEmpty()) {
+//		  mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
+//		  mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
+//		}
 		switch (mStartingPos) {
 		case LEFT:
 			mTurnScalar = 1;
@@ -351,10 +426,15 @@ public class GetAutonomous {
 	 *         cube action.
 	 */
 	public boolean isCubeActionOnMySide(ECubeAction c) {
+	  System.out.printf("Cube Action: %s Scale Side: %s Switch Side: %s\n", c, mScaleSide, mSwitchSide);
 		switch (c) {
 		case EXCHANGE:
 			return isExchangeOnMySide();
 		case SCALE:
+		  // Edge case not covered in isOnMySide - We obviously can't do scale in the middle
+		  if(mStartingPos == EStartingPosition.MIDDLE) {
+		    return false;
+		  }
 			return isOnMySide(mScaleSide);
 		case SWITCH:
 			return isOnMySide(mSwitchSide);
@@ -365,7 +445,7 @@ public class GetAutonomous {
 	}
 
 	/**
-	 * Utilizes the previous to mySide methods.
+	 * Utilizes the previous two mySide methods.
 	 * 
 	 * @param c
 	 *            - Type of cube action, SCALE, SWITCH, EXCHANGE.
@@ -377,9 +457,13 @@ public class GetAutonomous {
 		case EXCHANGE:
 		return false;
 		case SCALE:
-		return !isOnMySide(mScaleSide);
+		// Edge case not covered in isOnMySide - We obviously can't do scale in the middle
+    if(mStartingPos == EStartingPosition.MIDDLE) {
+      return false;
+    }
+		return isOnOtherSide(mScaleSide);
 		case SWITCH:
-		return !isOnMySide(mSwitchSide);
+		return isOnOtherSide(mSwitchSide);
 		case NONE:
 		default:
 			return true;
@@ -387,11 +471,11 @@ public class GetAutonomous {
 	}
 
 	/* package */ List<ECubeAction> getCubeActionsOnMySide() {
-		return mCubeActionPrefs.stream().filter(cA -> isCubeActionOnMySide(cA)).collect(Collectors.toList());
+		return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionOnMySide(cA)).collect(Collectors.toList());
 	}
 
 	/* package */ List<ECubeAction> getCubeActionsOnOtherSide() {
-		return mCubeActionPrefs.stream().filter(cA -> isCubeActionOtherSide(cA)).collect(Collectors.toList());
+		return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionOtherSide(cA)).collect(Collectors.toList());
 	}
 	
 	private void getSides() {
@@ -402,7 +486,7 @@ public class GetAutonomous {
 	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
 	      nDelayEntry = nAutonTable.getEntry("Delay");
 	    } catch (Exception e) {
-
+	       System.err.println("Error retrieving data from auton display");
 	    }
 	    mScaleSide = getScaleOwnedSide();
 	    mSwitchSide = getSwitchOwnedSide();
@@ -419,7 +503,7 @@ public class GetAutonomous {
 	 */
 	public void testReceiveData(List<ECubeAction> pActions, ECross pCross, EStartingPosition pPos,
 			OwnedSide pSwitchSide, OwnedSide pScaleSide) {
-		mCubeActionPrefs = pActions;
+		mReceivedCubeActionPrefs = pActions;
 		mCrossType = pCross;
 		mStartingPos = pPos;
 		mSwitchSide = pSwitchSide;

@@ -2,7 +2,10 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ilite.frc.common.types.ECross;
+import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.SimpleNetworkTable;
 import org.ilite.frc.robot.auto.FieldAdapter;
 
@@ -24,7 +27,16 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   // Comms
   // =============================================================================
-  public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+  public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE") {
+    @Override
+    public void initKeys() {
+      getInstance().getEntry(ECross.class.getSimpleName()).setDefaultNumber(-1); 
+      getInstance().getEntry(EStartingPosition.class.getSimpleName()).setDefaultNumber(-1);
+      getInstance().getEntry(ECubeAction.class.getSimpleName()).setDefaultNumberArray(new Number[] {0}); 
+      getInstance().getEntry("Chosen Autonomous").setDefaultString(""); 
+      getInstance().getEntry("Delay").setDefaultDouble(-1); 
+    }
+  };
   public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
 	  @Override
 	  public void initKeys() {
@@ -171,6 +183,16 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double	MOTION_MAGIC_F = 1023 / 951;
   public static int		MOTION_MAGIC_V = 951;
   public static int		MOTION_MAGIC_A = 951;
+  
+  // =============================================================================
+  // Closed-Loop Position Constants
+  // =============================================================================
+  public static int    POSITION_TOLERANCE = 0;
+  public static int    POSITION_PID_SLOT = 0;
+  public static double POSITION_P = 0.3;
+  public static double POSITION_I = 0;
+  public static double POSITION_D = 0;
+  public static double POSITION_F = 0;
   
   // =============================================================================
   // Autonomous Constants

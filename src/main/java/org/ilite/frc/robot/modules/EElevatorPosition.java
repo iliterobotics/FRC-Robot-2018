@@ -14,7 +14,7 @@ package org.ilite.frc.robot.modules;
 
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
-		int tapeMark;
+		public int tapeMark;
 		EElevatorPosition(double power, int tapeMark)
 		{
 			this.mSetpointPower = power;

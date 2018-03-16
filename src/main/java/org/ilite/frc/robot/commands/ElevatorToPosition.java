@@ -26,7 +26,7 @@ public class ElevatorToPosition implements ICommand {
   @Override
   public boolean update(double pNow) {
     mElevator.setPosition(mPosition);
-    if(mElevator.getElevatorPosition() == mPosition) return true;
+    if(mElevator.getCurrentTachLevel() == mPosition.tapeMark) return true;
     if(pNow - mStartTime >= mTimeout) return true;
     return false;
   }

@@ -103,7 +103,7 @@ public class Robot extends IterativeRobot {
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
-  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
+  	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mIntake, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
   	System.out.println("Modules instantiateds");
   	Logger.setLevel(ELevel.DEBUG);
   }
@@ -119,7 +119,7 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
     
-    setRunningModules(mDrivetrain, mElevator, mCarriage, mBeamBreak);
+    setRunningModules(mDrivetrain, mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
     mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
     mControlLoop.start();
     
