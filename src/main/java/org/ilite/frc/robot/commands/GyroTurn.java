@@ -15,7 +15,7 @@ public class GyroTurn implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 5;
   private static final double kTIMEOUT = 4.0;
-  private static final double kP = 0.014;
+  private static final double kP = 0.012;
   private static final double kI = 0.0001;
   private static final double kD = 0.08;
   private static final double kMIN_POWER = 0.05;

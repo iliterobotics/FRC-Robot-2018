@@ -138,7 +138,7 @@ public class AutonConfigDisplay extends Application {
 	    combo.setOnAction(
 	        event -> {
 		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal());
-	        if(pEnumeration.getSimpleName() == "ECross") {
+	        if(pEnumeration.getClass() == ECross.class.getClass()) {
 	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
 	        }
 	        else {

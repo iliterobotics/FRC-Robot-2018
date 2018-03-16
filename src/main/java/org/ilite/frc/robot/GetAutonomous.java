@@ -109,7 +109,8 @@ public class GetAutonomous {
 	  parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
-		
+		System.out.println("SAME SIDE: " + mSameSideCubeActionPrefs);
+		System.out.println("OTHER SIDE: " + mOtherSideCubeActionPrefs);
 //		System.out.println(mSameSideCubeActionPrefs);
 		
 		if (!mSameSideCubeActionPrefs.isEmpty()) {
@@ -135,6 +136,26 @@ public class GetAutonomous {
 				crossAutoLine();
 				break;
 			}
+		} else if(!mOtherSideCubeActionPrefs.isEmpty() && mCrossType != ECross.NONE){
+		  ECubeAction prefAction = mOtherSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+//    System.out.println("=================== Autonomous chose: " + prefAction.toString());
+      if(mDelay > 15) {
+        mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
+      }
+  //    mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+  //    nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+  //        mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
+      switch (prefAction) {
+      case SCALE:
+        doOppositeScale();
+        break;
+      case SWITCH:
+        doOppositeSwitch();
+        break;
+      case NONE:
+        crossAutoLine();
+        break;
+      }
 		}
 		
 		if(mCommands.isEmpty()) {
@@ -212,6 +233,52 @@ public class GetAutonomous {
 			break;
 		}
 	}
+	
+	/**
+   * Do scale autonomous; switch based on starting position.
+   */ 
+  public void doOppositeScale() {
+    // TODO replace with turning scalar
+    System.out.printf("Doing opposite scale autonomous starting on %s\n", mStartingPos);
+    switch (mStartingPos) {
+    case LEFT:
+    case RIGHT:
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 18 * 12));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 15 * 12));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90d, 5));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 14, 0.2));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, -6));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+      break;
+    case MIDDLE:
+      break;
+    }
+  }
+
+  /**
+   * Do switch autonomous; switch based on starting position.
+   */
+  public void doOppositeSwitch() {
+    // TODO replace with turning scalar
+    System.out.printf("Doing opposite switch autonomous starting on %s\n", mStartingPos);
+    switch (mStartingPos) {
+    case LEFT:
+    case RIGHT:
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
+//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
+//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
+//      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP));
+//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));
+      break;
+    }
+  }
 
 	/**
 	 * Place cube in exchange autonomous; switch based on starting position.
@@ -262,6 +329,18 @@ public class GetAutonomous {
 			return false;
 		}
 	}
+	
+	public boolean isOnOtherSide(OwnedSide side) {
+    switch (side) {
+    case LEFT:
+      return mStartingPos == EStartingPosition.RIGHT;
+    case RIGHT:
+      return mStartingPos == EStartingPosition.LEFT;
+    case UNKNOWN:
+    default:
+      return false;
+    }
+  }
 
 	/**
 	 * Determines whether or not our starting position corresponds to the exchange.
@@ -382,9 +461,9 @@ public class GetAutonomous {
     if(mStartingPos == EStartingPosition.MIDDLE) {
       return false;
     }
-		return !isOnMySide(mScaleSide);
+		return isOnOtherSide(mScaleSide);
 		case SWITCH:
-		return !isOnMySide(mSwitchSide);
+		return isOnOtherSide(mSwitchSide);
 		case NONE:
 		default:
 			return true;
