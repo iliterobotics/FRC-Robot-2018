@@ -15,8 +15,8 @@ public class GyroTurn implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 5;
   private static final double kTIMEOUT = 4.0;
-  private static final double kP = 0.013;
-  private static final double kI = 0.000008;
+  private static final double kP = 0.014;
+  private static final double kI = 0.0001;
   private static final double kD = 0.08;
   private static final double kMIN_POWER = 0.05;
   private static final double kMAX_POWER = 1.0;
@@ -70,7 +70,10 @@ public class GyroTurn implements ICommand {
     mLastError = mError;
 
     if ((Math.abs(mError) <= mAllowableError)) mAlignedCount++;
-    if(pNow - mStartTime > kTIMEOUT) return true;
+    if(pNow - mStartTime > kTIMEOUT) {
+      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+      return true;
+    }
     if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
       mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;

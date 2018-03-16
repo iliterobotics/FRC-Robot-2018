@@ -189,7 +189,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   public static int    POSITION_TOLERANCE = 0;
   public static int    POSITION_PID_SLOT = 0;
-  public static double POSITION_P = 0;
+  public static double POSITION_P = 0.3;
   public static double POSITION_I = 0;
   public static double POSITION_D = 0;
   public static double POSITION_F = 0;

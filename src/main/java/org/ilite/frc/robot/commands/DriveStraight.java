@@ -22,7 +22,7 @@ public class DriveStraight implements ICommand{
 	private ILog mLog = Logger.createLog(DriveStraight.class);
   
   private static final double TURN_PROPORTION = 0.03;
-  private static final double INITIAL_POWER = 0.6 ;
+  private static double INITIAL_POWER;
   
   private final DriveTrain driveTrain;
   private final Data mData;
@@ -34,10 +34,15 @@ public class DriveStraight implements ICommand{
   private double initialYaw;
 
   
-  public DriveStraight(DriveTrain dt, Data pData, double inches){
+  public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = (int)Utils.inchesToTicks(inches);
+    this.INITIAL_POWER = power;
+  }
+  
+  public DriveStraight(DriveTrain dt, Data pData, double inches){
+     this(dt, pData, inches, 0.6);
   }
   
   public void initialize(double pNow){
