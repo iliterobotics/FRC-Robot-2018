@@ -116,9 +116,9 @@ public class GetAutonomous {
 		if (!mSameSideCubeActionPrefs.isEmpty()) {
 			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
 //			System.out.println("=================== Autonomous chose: " + prefAction.toString());
-			if(mDelay > 15) {
-				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
-			}
+//			if(mDelay > 15) {
+//				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
+//			}
 //			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
 //			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
 //					mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
@@ -378,10 +378,11 @@ public class GetAutonomous {
 			mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
 		}
-//		if(mReceivedCubeActionPrefs.isEmpty()) {
-//		  mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
-//		  mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
-//		}
+		if(mReceivedCubeActionPrefs.isEmpty()) {
+	    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
+	    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
+		}
+		if(mStartingPos == EStartingPosition.UNKNOWN) mStartingPos = EStartingPosition.LEFT;
 		switch (mStartingPos) {
 		case LEFT:
 			mTurnScalar = 1;
@@ -484,7 +485,7 @@ public class GetAutonomous {
 	      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
 	      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
 	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
-	      nDelayEntry = nAutonTable.getEntry("Delay");
+	      nDelayEntry = nAutonTable.getEntry("delay");
 	    } catch (Exception e) {
 	       System.err.println("Error retrieving data from auton display");
 	    }

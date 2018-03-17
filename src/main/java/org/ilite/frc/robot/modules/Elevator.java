@@ -197,36 +197,33 @@ public class Elevator implements IModule {
         
       case CLIMBER:
       case MANUAL:
-        switch(elevatorDirection)
+        //if idling, set to hold voltage
+        if(mDesiredPower == 0 && !mAtBottom)
+        {
+          elevatorState = EElevatorState.HOLD;
+        }
+        //else decide power based on direction enum
+        else switch(elevatorDirection)
         {
           case UP:
-            if(mDesiredPower == 0 && !mAtBottom)
-            {
-              elevatorState = EElevatorState.HOLD;
-            }
-            else
-            {
-              elevatorState = EElevatorState.NORMAL;
-            }
+
+            elevatorState = EElevatorState.NORMAL;
+            
             if(elevatorDirection.shouldDecelerate(currentTachLevel,  elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_TOP;
             }
+
             break;
           case DOWN:
-            if(mDesiredPower == 0 && !mAtBottom)
-            {
-              elevatorState = EElevatorState.HOLD;
-            }
-            else
-            {
-              elevatorState = EElevatorState.NORMAL;
-            }
-
+            
+            elevatorState = EElevatorState.NORMAL;             
+            
             if(elevatorDirection.shouldDecelerate(currentTachLevel, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
             }
+            
             break;
           case CLIMBER_UP:
             elevatorState = EElevatorState.NORMAL;

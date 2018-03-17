@@ -119,11 +119,13 @@ public class AutonConfigDisplay extends Application {
     primaryStage.show();
     
     Thread dataSender = new Thread(() -> {
-        while(!Thread.interrupted()) sendData();
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e1) {
-          System.err.println("Thread sleep interrupted");
+        while(!Thread.interrupted()) {
+          sendData();
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException e1) {
+            System.err.println("Thread sleep interrupted");
+          }
         }
     });
     dataSender.start();
@@ -137,13 +139,11 @@ public class AutonConfigDisplay extends Application {
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
 	        event -> {
-		    SystemSettings.AUTON_TABLE.putNumber(pEnumeration.getSimpleName(), combo.getSelectionModel().getSelectedItem().ordinal());
-	        if(pEnumeration.getClass() == ECross.class.getClass()) {
-	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
-	        }
-	        else {
-	        	mStartingPosition =combo.getSelectionModel().getSelectedItem().ordinal();
-	        }
+  	        if(pEnumeration.getClass() == ECross.class.getClass()) {
+  	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        }else {
+  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        }
 	        }
 	    );
 	    combo.setValue(enums.get(0));

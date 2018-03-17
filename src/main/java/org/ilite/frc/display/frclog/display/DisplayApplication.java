@@ -1,10 +1,10 @@
 package org.ilite.frc.display.frclog.display;
 
-import com.flybotix.hfr.util.lang.EnumUtils;
-import com.flybotix.hfr.util.log.ELevel;
-import com.flybotix.hfr.util.log.Logger;
+import java.io.File;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.display.frclog.data.RobotDataStream;
+
 import eu.hansolo.fx.horizon.Data;
 import eu.hansolo.fx.horizon.HorizonChart;
 import eu.hansolo.fx.horizon.Series;
@@ -17,28 +17,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.*;
-import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.display.frclog.data.RobotDataStream;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 //import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
@@ -52,7 +43,6 @@ public class DisplayApplication extends Application{
                                                     CornerRadii.EMPTY, new BorderWidths(0, 0, 1, 0), Insets.EMPTY));
   
   Stage stage = new Stage(StageStyle.UNDECORATED);
-  static Map<String, List<String>> dataMatrix = new HashMap<>();
   
 
 
@@ -60,26 +50,13 @@ public class DisplayApplication extends Application{
   Color[] positiveColors = { Color.web("#FEE090"), Color.web("#FDAE61"), Color.web("#F46D43"), Color.web("#D73027") };
   Class<?> mSelectedCodexToLoad = null;
   
+  private static CSVLogger csvLogger = new CSVLogger();
+  private static Thread loggingThread;
+  
   public DisplayApplication() {
-  }
-  
-  public static <E extends Enum<E>> List<String> getKeys(Class<E> pEnum) {
-    List<String> keys = new ArrayList<>();
-    EnumUtils.getEnums(pEnum).forEach(e -> keys.add(e.toString()));
-    return keys;
-  }
-  
-  public static <E extends Enum<E>> void putInMatrix(Class<E> pEnum) {
-    dataMatrix.put(pEnum.getSimpleName(), getKeys(pEnum));
-  }
-  
-  public static void matrixInit() {
-	  dataMatrix.put("operator", getKeys(ELogitech310.class));
-	  dataMatrix.put("driver", getKeys(ELogitech310.class));
-	  dataMatrix.put("pigeon", getKeys(EPigeon.class));
-	  dataMatrix.put("pdp", getKeys(EPowerDistPanel.class));
-	  dataMatrix.put("drivetrain", getKeys(EDriveTrain.class));;
-	  dataMatrix.put("vision", getKeys(ECubeTarget.class));
+    loggingThread = new Thread(() -> {
+      while(!Thread.interrupted()) csvLogger.writeToCSV();
+    });
   }
   
   @SuppressWarnings("unchecked")
@@ -141,8 +118,10 @@ public class DisplayApplication extends Application{
       
     });
     
-//    root.add(graphconfig, 0, 0);
-    primaryStage.setTitle("Test");
+
+    loggingThread.start();
+    root.add(graphconfig, 0, 0);
+    primaryStage.setTitle("ILITE Log Display");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
@@ -150,50 +129,7 @@ public class DisplayApplication extends Application{
   private void loadChart() {
   }
   
-  private static void writeHeaders(Map<String, List<String>> dataMap) throws IOException {
-    BufferedWriter writer = null;
-    for(String key : dataMap.keySet()) {
-      File file = new File(String.format("./logs/%s-log.csv", key));
-      if(!file.exists()) file.createNewFile();
-      dataMap.get(key).add("TIME");
-      dataMap.get(key).add("TIME RECEIVED");
-      writer = new BufferedWriter(new FileWriter(file, true));
-      writer.append(SystemUtils.toCsvRow(dataMap.get(key)) + "\n");
-      writer.flush();
-    }
-    writer.close();
-  }
-  
-  public static void writeData(Entry<String, List<String>> entry) {
-	  File file = new File(String.format("./logs/%s-log.csv", entry.getKey()));
-	  BufferedWriter bWriter = null;
-	  try {
-  	  if(!file.exists()) file.createNewFile();
-  	  
-  	  bWriter = new BufferedWriter(new FileWriter(file, true));
-  	  
-//  	  entry.getValue().add(0, SystemSettings.SMART_DASHBOARD.getEntry("TIME").getNumber(-1).toString());
-  	  List<String> rowList = entry.getValue().stream()
-              .map(entryKey -> SystemSettings.SMART_DASHBOARD.getEntry(entryKey).getNumber(-1).toString())
-              .collect(Collectors.toList());
-  	  rowList.add(SystemSettings.SMART_DASHBOARD.getEntry("TIME").getNumber(-1).toString());
-  	  rowList.add(Long.toString(System.currentTimeMillis() / 1000));
-  	  String csvRow = SystemUtils.toCsvRow(rowList);
-  	  bWriter.append(csvRow + "\n");
-  	  bWriter.flush();
-	  }
-	  catch (Exception e) {
-	    e.printStackTrace();
-		  System.err.println("Error writing to " + file.getAbsolutePath());
-	  }
-	  
-  }
-  
   public static void main(String[] pArgs) throws Exception {
-    //launch(pArgs);
-    matrixInit();
-    Logger.setLevel(ELevel.DEBUG);
-    writeHeaders(dataMatrix);
-    while(true) if(NetworkTableInstance.getDefault().isConnected()) dataMatrix.entrySet().forEach(entry -> writeData(entry));
+    launch(pArgs);
   }
 }
