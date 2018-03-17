@@ -20,7 +20,7 @@ public class Elevator implements IModule {
 
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
   public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
-  public static final double RAMP_OPEN_LOOP = 0.5;
+  public static final double RAMP_OPEN_LOOP = 1d;
   
   private Data mData;
   private final Hardware mHardware;
@@ -63,9 +63,9 @@ public class Elevator implements IModule {
 
   public enum ElevatorControlMode
 	{
-		MANUAL(0.8),
-		CLIMBER(0.8),
-		POSITION(0.8);
+		MANUAL(0.9),
+		CLIMBER(0.9),
+		POSITION(0.9);
     
     private double maxPower;
     
@@ -116,17 +116,17 @@ public class Elevator implements IModule {
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
     
     isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
-    currentTachLevel = getTachLevel(currentTachState, lastTachState); // Calculates current tape mark based on last/current tach state
-		
+    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
 
     elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
     boolean isCurrentLimited = isCurrentLimiting();
 
 		mAtTop = isCurrentLimited && elevatorDirection == ElevDirection.UP;
 		mAtBottom = isCurrentLimited && elevatorDirection == ElevDirection.DOWN;
-		if(mAtTop) {
-		  resetTop();
-		} else if(mAtBottom) {
+//		if(mAtTop) {
+//		  resetTop();
+//		} else if
+		  if(mAtBottom) {
 		  resetBottom();
 		}
 
@@ -197,33 +197,36 @@ public class Elevator implements IModule {
         
       case CLIMBER:
       case MANUAL:
-        //if idling, set to hold voltage
-        if(mDesiredPower == 0 && !mAtBottom)
+        //if no input, idle at hold power
+        if(Math.abs(mDesiredPower) == 0d && !mAtBottom)
         {
           elevatorState = EElevatorState.HOLD;
         }
-        //else decide power based on direction enum
+        //else, decide state based on direction enum
         else switch(elevatorDirection)
         {
           case UP:
 
-            elevatorState = EElevatorState.NORMAL;
-            
             if(elevatorDirection.shouldDecelerate(currentTachLevel,  elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_TOP;
             }
-
+            else elevatorState = EElevatorState.NORMAL;
             break;
           case DOWN:
-            
-            elevatorState = EElevatorState.NORMAL;             
-            
+//            if(mDesiredPower <= 0.25 && !mAtBottom)
+//            {
+//              elevatorState = EElevatorState.HOLD;
+//            }
+//            else
+//            {
+//            }
+
             if(elevatorDirection.shouldDecelerate(currentTachLevel, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
             }
-            
+            else elevatorState = EElevatorState.NORMAL;
             break;
           case CLIMBER_UP:
             elevatorState = EElevatorState.NORMAL;
@@ -234,37 +237,6 @@ public class Elevator implements IModule {
           default:
             elevatorState = EElevatorState.STOP;
         }
-        //bottom
-//        if (!isDirectionUp && currentTachLevel == 0) {
-//          elevatorState = ElevatorState.DECELERATE_BOTTOM;
-//        }
-//        //top
-//        if (isDirectionUp && currentTachLevel == 3) {
-//          elevatorState = ElevatorState.DECELERATE_TOP;
-//        }
-//        if ((isDirectionUp && currentTachLevel == 0) || (!isDirectionUp && currentTachLevel == 3)) {
-//          elevatorState = ElevatorState.NORMAL;
-//        }
-//        if (mAtBottom) {
-//          if (mDesiredPower > 0)
-//          {
-//            elevatorState = ElevatorState.NORMAL;
-//          }
-//          else {
-//            elevatorState = ElevatorState.STOP;
-//          }
-//        }
-//        if (mAtTop)
-//        {
-//          if (mDesiredPower < 0)
-//          {
-//            elevatorState = ElevatorState.NORMAL;
-//          }
-//          else {
-//
-//            elevatorState = ElevatorState.STOP;
-//          }
-//        }
         break;
     }
 //    if(shouldstop) {
@@ -276,7 +248,7 @@ public class Elevator implements IModule {
 	
 	private void resetTop() {
 
-    currentTachLevel = 3;
+    currentTachLevel = 6;
 	}
 	
 	private void resetBottom() {
@@ -291,11 +263,24 @@ public class Elevator implements IModule {
 
 	  true = reflective material (powdercoat) false = non-reflective (tape)
 	 */
-  private int getTachLevel(boolean currentTachState, boolean pLastTachState)
+  private int getTachLevel(boolean currentTachState)//, boolean pLastTachState)
   {
     // True = on metal, false = on tape
     // last = true, current = false ==> rising edge
-    if(pLastTachState == true && currentTachState == false)
+//    if(pLastTachState == true && currentTachState == false)
+//    {
+//      if(isDesiredDirectionUp)
+//      {
+//        currentTachLevel++;
+//      }
+//      if(!isDesiredDirectionUp)
+//      {
+//        currentTachLevel--;
+//      }
+//		}
+//    lastTachState = currentTachState;
+    //if it hits or leaves a tape, changes tachlevel based on direction
+    if(currentTachState)
     {
       if(isDesiredDirectionUp)
       {
@@ -305,14 +290,14 @@ public class Elevator implements IModule {
       {
         currentTachLevel--;
       }
-		}
-    lastTachState = currentTachState;
+    }
     return currentTachLevel;
   }
 
   public void setPower(double power) {
 			mDesiredPower = power;
 	}
+  
 	public void setElevControlMode(ElevatorControlMode elevControlMode)
   {
     this.elevControlMode = elevControlMode;
@@ -323,6 +308,7 @@ public class Elevator implements IModule {
 	{
 	  currentTachLevel = tachLevel;
 	}
+	
 	public void setGearState(EElevatorGearState newState)
   {
     elevGearState = newState;

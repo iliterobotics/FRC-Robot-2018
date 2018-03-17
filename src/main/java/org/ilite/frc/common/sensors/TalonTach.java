@@ -7,21 +7,35 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class TalonTach implements IControlLoop {
 
 	private DigitalInput talonTachSensor;
-	private boolean currentState;
+	private boolean mCurrentState, lastState, hasChanged, hasBeenPolled;
+	private TapeState lastTapeState, mCurrentTapeState;
 	
 	public TalonTach(int port)
 	{
 		talonTachSensor = new DigitalInput(port);
-		currentState = true;
+		mCurrentState = true;
+		lastState = true;
+		hasChanged = false;
+		hasBeenPolled = false;
+		mCurrentTapeState = TapeState.NON_TAPE;
+		lastTapeState = TapeState.NON_TAPE;
 	}
-	
+
+	public enum TapeState
+	{
+	  TAPE,
+	  NON_TAPE;
+	  
+	}
 	//true for reflective surfaces (powdercoat) false for non-reflective (tape)
 	public boolean getSensor()
 	{
-	  return currentState;
+	  boolean actualHasChanged = hasChanged;
+	  hasChanged = false;
+	  return actualHasChanged;
 	}
 	
-//	public boolean getSensor() {
+//	?public boolean getSensor() {
 //    if(talonTachSensor == null) {
 //      System.err.println("talon tach is null...");
 //      return false;
@@ -44,10 +58,29 @@ public class TalonTach implements IControlLoop {
     // TODO Auto-generated method stub
     
   }
+  
+  //calculates whether elevator is at a tape or not
+  public void setTapeState(boolean pCurrentState)
+  {
+    if(pCurrentState == false && lastState == true) mCurrentTapeState = TapeState.TAPE;
+    if(pCurrentState == true && lastState == false) mCurrentTapeState = TapeState.NON_TAPE;
+  }
 
+  
+  public TapeState getTapeState()
+  {
+    return mCurrentTapeState;
+  }
+  
   @Override
   public boolean update(double pNow) {
-    currentState = getState();
+    mCurrentState = getState();
+    setTapeState(mCurrentState);
+    if(mCurrentTapeState != lastTapeState) hasChanged = true;
+    
+    System.out.println("ON TAPE ? " + mCurrentTapeState);
+    lastTapeState = mCurrentTapeState;
+    lastState = mCurrentState;
     return false;
   }
 

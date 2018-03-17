@@ -114,7 +114,8 @@ public class DriverInput implements IModule{
 	      rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
 		}
 		
-//		System.out.println("ENGINE THROTTLE " + throttle);
+//		rotate = Utils.clamp(rotate, 0.6);
+		    //		System.out.println("ENGINE THROTTLE " + throttle);
 		desiredLeftOutput = throttle + rotate;
 		desiredRightOutput = throttle - rotate;
 		
