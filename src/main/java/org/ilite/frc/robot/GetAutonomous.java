@@ -106,8 +106,8 @@ public class GetAutonomous {
 	  parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
-		mAvailableCubeActions.addAll(mSameSideCubeActionPrefs);
-		mAvailableCubeActions.addAll(mOtherSideCubeActionPrefs);
+//		mAvailableCubeActions.addAll(mSameSideCubeActionPrefs);
+//		mAvailableCubeActions.addAll(mOtherSideCubeActionPrefs);
 		System.out.println("SAME SIDE: " + mSameSideCubeActionPrefs);
 		System.out.println("OTHER SIDE: " + mOtherSideCubeActionPrefs);
 //		System.out.println(mSameSideCubeActionPrefs);
