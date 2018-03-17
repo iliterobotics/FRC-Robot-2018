@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class CubeSearch implements ICommand{
 
-	public static final double TURN_POWER = 0.2;
+	public static final double TURN_POWER = 0.4;
 	
 	private DriveTrain mDriveTrain;
 	private Data mData;
