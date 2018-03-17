@@ -106,84 +106,84 @@ public class GetAutonomous {
 	  parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
-//		mAvailableCubeActions.addAll(mSameSideCubeActionPrefs);
-//		mAvailableCubeActions.addAll(mOtherSideCubeActionPrefs);
+		mAvailableCubeActions = getAvailableCubeActions();
+		System.out.println("RECEIVED: " + mReceivedCubeActionPrefs);
 		System.out.println("SAME SIDE: " + mSameSideCubeActionPrefs);
 		System.out.println("OTHER SIDE: " + mOtherSideCubeActionPrefs);
-//		System.out.println(mSameSideCubeActionPrefs);
-//		
-//		if(!mAvailableCubeActions.isEmpty()) {
-//		  ECubeAction prefAction = mAvailableCubeActions.get(0);
-//		  
-//		  switch(prefAction) {
-//		  case SCALE:
-//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
-//		      doScale();
-//		    } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
-//		      doOppositeScale();
-//		    }
-//		    break;
-//		  case SWITCH:
-//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
-//          doSwitch();
-//        } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
-//          doOppositeSwitch();
-//        }
-//		    break;
-//		  case EXCHANGE:
-//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.EXCHANGE)) {
-//          doExchange();
-//        } 
-//		    break;
-//		  case NONE:
-//		    break;
-//		  }
-//		}
+		System.out.println("AVAILABLE:" + mAvailableCubeActions);
 		
-		if (!mSameSideCubeActionPrefs.isEmpty()) {
-			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
-//			System.out.println("=================== Autonomous chose: " + prefAction.toString());
-//			if(mDelay > 15) {
-//				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
-//			}
-//			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
-//			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-//					mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
-			switch (prefAction) {
-			case SCALE:
-				doScale();
-				break;
-			case SWITCH:
-				doSwitch();
-				break;
-			case EXCHANGE:
-				doExchange();
-				break;
-			case NONE:
-				crossAutoLine();
-				break;
-			}
-		} else if(!mOtherSideCubeActionPrefs.isEmpty() && mCrossType != ECross.NONE){
-		  ECubeAction prefAction = mOtherSideCubeActionPrefs.get(0);// Does most preferred driver selection.
-//    System.out.println("=================== Autonomous chose: " + prefAction.toString());
-      if(mDelay > 15) {
-        mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
-      }
-  //    mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
-  //    nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
-  //        mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
-      switch (prefAction) {
-      case SCALE:
-        doOppositeScale();
-        break;
-      case SWITCH:
-        doOppositeSwitch();
-        break;
-      case NONE:
-        crossAutoLine();
-        break;
-      }
+		if(!mAvailableCubeActions.isEmpty()) {
+		  ECubeAction prefAction = mAvailableCubeActions.get(0);
+		  
+		  switch(prefAction) {
+		  case SCALE:
+		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
+		      doScale();
+		    } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
+		      doOppositeScale();
+		    }
+		    break;
+		  case SWITCH:
+		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
+          doSwitch();
+        } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
+          doOppositeSwitch();
+        }
+		    break;
+		  case EXCHANGE:
+		    if(mSameSideCubeActionPrefs.contains(ECubeAction.EXCHANGE)) {
+          doExchange();
+        } 
+		    break;
+		  case NONE:
+		    break;
+		  }
 		}
+		
+//		if (!mSameSideCubeActionPrefs.isEmpty()) {
+//			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+////			System.out.println("=================== Autonomous chose: " + prefAction.toString());
+////			if(mDelay > 15) {
+////				mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
+////			}
+////			mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+////			nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+////					mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
+//			switch (prefAction) {
+//			case SCALE:
+//				doScale();
+//				break;
+//			case SWITCH:
+//				doSwitch();
+//				break;
+//			case EXCHANGE:
+//				doExchange();
+//				break;
+//			case NONE:
+//				crossAutoLine();
+//				break;
+//			}
+//		} else if(!mOtherSideCubeActionPrefs.isEmpty() && mCrossType != ECross.NONE){
+//		  ECubeAction prefAction = mOtherSideCubeActionPrefs.get(0);// Does most preferred driver selection.
+////    System.out.println("=================== Autonomous chose: " + prefAction.toString());
+//      if(mDelay > 15) {
+//        mDelay = 15; //Cannot delay the autonomus for over 15 seconds.
+//      }
+//  //    mCommands.add(new Delay(mDelay)); //Delays autonomous with the given value from network table.
+//  //    nAutonTable.putString("Chosen Autonomous", String.format("Position: %s Cross: %s Cube Action: %s",
+//  //        mStartingPos, mCrossType, mSameSideCubeActionPrefs.get(0)));
+//      switch (prefAction) {
+//      case SCALE:
+//        doOppositeScale();
+//        break;
+//      case SWITCH:
+//        doOppositeSwitch();
+//        break;
+//      case NONE:
+//        crossAutoLine();
+//        break;
+//      }
+//		}
 		
 		if(mCommands.isEmpty()) {
 		  System.out.println("====================== COMMAND QUEUE IS EMPTY - CROSSING AUTO LINE");
@@ -398,7 +398,7 @@ public class GetAutonomous {
 		mSameSideCubeActionPrefs = new ArrayList<>();
 		mOtherSideCubeActionPrefs = new ArrayList<>();
 		mAvailableCubeActions = new ArrayList<>();
-		if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
+
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
@@ -406,10 +406,15 @@ public class GetAutonomous {
 			mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
 		}
-		mReceivedCubeActionPrefs.clear();
-    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
-    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
-		mStartingPos = EStartingPosition.LEFT;
+		
+//    if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
+		
+		if(mReceivedCubeActionPrefs.isEmpty()) {
+	    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
+	    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
+	    mStartingPos = EStartingPosition.LEFT;
+		}
+		
 		switch (mStartingPos) {
 		case LEFT:
 			mTurnScalar = 1;
@@ -497,6 +502,36 @@ public class GetAutonomous {
 			return true;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return Whether we can perform a certain cube action
+	 */
+	public boolean isCubeActionAvailable(ECubeAction c) {
+	  switch(c) {
+	  case EXCHANGE:
+	    // We can't do anything on the opposite side
+	    return isCubeActionOnMySide(c);
+    case SCALE:
+      // We can cross in order to reach the opposite scale, so make it available as long as we are on left or right
+      // We have to check cross type here - otherwise we won't maintain the correct order of priorities
+      return isCubeActionOnMySide(c) || (isCubeActionOtherSide(c) && mCrossType != ECross.NONE);
+    case SWITCH:
+      System.out.println("Switch auto availability: " + isCubeActionOnMySide(c));
+      // We can only do same-side switch
+      return isCubeActionOnMySide(c);
+    case NONE:
+      // We can always do nothing
+      return true;
+    default:
+	    return false;
+	  }
+	}
+	
+	/* package */ List<ECubeAction> getAvailableCubeActions() {
+    return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionAvailable(cA)).collect(Collectors.toList());
+  }
 
 	/* package */ List<ECubeAction> getCubeActionsOnMySide() {
 		return mReceivedCubeActionPrefs.stream().filter(cA -> isCubeActionOnMySide(cA)).collect(Collectors.toList());
