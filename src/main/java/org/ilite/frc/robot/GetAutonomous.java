@@ -98,14 +98,10 @@ public class GetAutonomous {
 	  mCommands.clear();
 	  getSides();
 //    parseEntries();
-	  
-	  // Poll FMS for game data more than once to make sure it is correct
-	  if(mSwitchSide == OwnedSide.UNKNOWN || mScaleSide == OwnedSide.UNKNOWN) {
-	    double timerStart = System.currentTimeMillis();
-	    while(System.currentTimeMillis() < timerStart + 500) {
-	      getSides();
-	    }
-	  }
+    double timerStart = System.currentTimeMillis();
+    while(System.currentTimeMillis() < timerStart + 500) {
+      getSides();
+    }
 	  parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
@@ -378,11 +374,10 @@ public class GetAutonomous {
 			mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(n.intValue()));
 
 		}
-		if(mReceivedCubeActionPrefs.isEmpty()) {
-	    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
-	    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
-		}
-		if(mStartingPos == EStartingPosition.UNKNOWN) mStartingPos = EStartingPosition.LEFT;
+		mReceivedCubeActionPrefs.clear();
+    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
+    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
+		mStartingPos = EStartingPosition.LEFT;
 		switch (mStartingPos) {
 		case LEFT:
 			mTurnScalar = 1;

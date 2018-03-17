@@ -17,7 +17,6 @@ public class CubeSearch implements ICommand{
 	private Data mData;
 	private VisionTurn mVisionTurn;
 	private CubeSearchType cubeSearchType;
-//	private boolean canSearch;
 	
 	
 	public enum CubeSearchType {
@@ -44,7 +43,6 @@ public class CubeSearch implements ICommand{
 
 	@Override
 	public boolean update(double pNow) {
-//		canSearch = Math.abs(mData.driverinput.get(ELogitech310.LEFT_Y_AXIS)) < 0.8 && Math.abs(mData.driverinput.get(ELogitech310.LEFT_X_AXIS)) < 0.8 ? true:false;
 		search();
 		System.out.println("updating cube search");
 		return false;
@@ -60,11 +58,13 @@ public class CubeSearch implements ICommand{
 		
 		System.out.println("IS SEARCHING \n\n\n\n\n");
 		
-		if(!(SystemSettings.limelight.getInstance().getTable("limelight").getEntry("tv").getNumber(-1)).equals(1.0)) {
+		boolean seesCube = (SystemSettings.limelight.getInstance().getTable("limelight").getEntry("tv").getNumber(-1)).equals(1.0) ? true:false;
+		
+		if(!seesCube) {
 			mDriveTrain.setDriveMessage(new DrivetrainMessage(cubeSearchType.turnScalar * TURN_POWER,cubeSearchType.turnScalar * -TURN_POWER, DrivetrainMode.PercentOutput, NeutralMode.Brake));	
 		}
 		
-		else if((SystemSettings.limelight.getInstance().getTable("limelight").getEntry("tv").getNumber(-1)).equals(1.0)){
+		else if(seesCube){
 			mVisionTurn = new VisionTurn(mDriveTrain, mData, SystemSettings.ALLOWABLE_ERROR);
 			mVisionTurn.update(0);
 			
