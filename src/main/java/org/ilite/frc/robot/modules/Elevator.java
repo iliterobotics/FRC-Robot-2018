@@ -20,7 +20,7 @@ public class Elevator implements IModule {
 
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
   public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
-  public static final double RAMP_OPEN_LOOP = 0.5;
+  public static final double RAMP_OPEN_LOOP = 1d;
   
   private Data mData;
   private final Hardware mHardware;
@@ -63,9 +63,9 @@ public class Elevator implements IModule {
 
   public enum ElevatorControlMode
 	{
-		MANUAL(0.8),
-		CLIMBER(0.8),
-		POSITION(0.8);
+		MANUAL(0.9),
+		CLIMBER(0.9),
+		POSITION(0.9);
     
     private double maxPower;
     
@@ -123,9 +123,10 @@ public class Elevator implements IModule {
 
 		mAtTop = isCurrentLimited && elevatorDirection == ElevDirection.UP;
 		mAtBottom = isCurrentLimited && elevatorDirection == ElevDirection.DOWN;
-		if(mAtTop) {
-		  resetTop();
-		} else if(mAtBottom) {
+//		if(mAtTop) {
+//		  resetTop();
+//		} else if
+		  if(mAtBottom) {
 		  resetBottom();
 		}
 
