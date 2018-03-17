@@ -70,7 +70,7 @@ public class Intake implements IModule{
     leftVoltage = leftIntakeTalon.getBusVoltage();
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
-		boolean beamBreakTriggered = mHardware.getTalonTach().getState();
+		boolean beamBreakTriggered = mHardware.getCarriageBeamBreak().get();
 		
 		if(!mRetractIntake)
 		{
