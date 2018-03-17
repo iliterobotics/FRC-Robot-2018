@@ -47,7 +47,7 @@ public class GetAutonomous {
 	private Data mData;
 
 	// Decision variables to be set by networktable entries.
-	private List<ECubeAction> mReceivedCubeActionPrefs, mSameSideCubeActionPrefs, mOtherSideCubeActionPrefs;
+	private List<ECubeAction> mReceivedCubeActionPrefs, mSameSideCubeActionPrefs, mOtherSideCubeActionPrefs, mAvailableCubeActions;
 	private EStartingPosition mStartingPos = EStartingPosition.LEFT;
 	private ECross mCrossType = ECross.NONE;
 	private double mDelay;
@@ -85,6 +85,7 @@ public class GetAutonomous {
 		mReceivedCubeActionPrefs = new ArrayList<>();
     mSameSideCubeActionPrefs = new ArrayList<>();
     mOtherSideCubeActionPrefs = new ArrayList<>();
+    mAvailableCubeActions = new ArrayList<>();
 		mCommands = new LinkedList<ICommand>();
 	}
 
@@ -105,9 +106,39 @@ public class GetAutonomous {
 	  parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
+		mAvailableCubeActions.addAll(mSameSideCubeActionPrefs);
+		mAvailableCubeActions.addAll(mOtherSideCubeActionPrefs);
 		System.out.println("SAME SIDE: " + mSameSideCubeActionPrefs);
 		System.out.println("OTHER SIDE: " + mOtherSideCubeActionPrefs);
 //		System.out.println(mSameSideCubeActionPrefs);
+//		
+//		if(!mAvailableCubeActions.isEmpty()) {
+//		  ECubeAction prefAction = mAvailableCubeActions.get(0);
+//		  
+//		  switch(prefAction) {
+//		  case SCALE:
+//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
+//		      doScale();
+//		    } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
+//		      doOppositeScale();
+//		    }
+//		    break;
+//		  case SWITCH:
+//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
+//          doSwitch();
+//        } else if(mOtherSideCubeActionPrefs.contains(ECubeAction.SWITCH)) {
+//          doOppositeSwitch();
+//        }
+//		    break;
+//		  case EXCHANGE:
+//		    if(mSameSideCubeActionPrefs.contains(ECubeAction.EXCHANGE)) {
+//          doExchange();
+//        } 
+//		    break;
+//		  case NONE:
+//		    break;
+//		  }
+//		}
 		
 		if (!mSameSideCubeActionPrefs.isEmpty()) {
 			ECubeAction prefAction = mSameSideCubeActionPrefs.get(0);// Does most preferred driver selection.
@@ -172,15 +203,15 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE));
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 55d, 5));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.8));
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 55d, 8));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.6));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, -6));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
-		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
+//		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
 			break;
 		case MIDDLE:
 			break;
@@ -366,6 +397,7 @@ public class GetAutonomous {
 		mReceivedCubeActionPrefs = new ArrayList<>();
 		mSameSideCubeActionPrefs = new ArrayList<>();
 		mOtherSideCubeActionPrefs = new ArrayList<>();
+		mAvailableCubeActions = new ArrayList<>();
 		if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {

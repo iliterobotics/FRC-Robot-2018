@@ -7,7 +7,7 @@ package org.ilite.frc.robot.modules;
 	 */
 	public enum EElevatorPosition
 	{
-		BOTTOM(0.5, 0),
+		BOTTOM(0.4, 0),
 		FIRST_TAPE(0.5, 1),
 		SECOND_TAPE(0.6, 2),
 		THIRD_TAPE(0.6, 3);
