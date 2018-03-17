@@ -48,7 +48,7 @@ public class LEDControl implements IModule {
 	public enum Message{
 		HAS_CUBE(LEDColor.PURPLE, 100),
 	  ELEV_DECEL(LEDColor.YELLOW, 100),
-	  CURRENT_LIMITING(LEDColor.RED, 100),
+	  CURRENT_LIMITING(LEDColor.RED, 0),
 	  KICKING_CUBE(LEDColor.LIGHT_BLUE, 0),
 	  NONE(LEDColor.NONE, 0);
 
