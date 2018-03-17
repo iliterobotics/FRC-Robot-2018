@@ -70,10 +70,11 @@ public class Intake implements IModule{
     leftVoltage = leftIntakeTalon.getBusVoltage();
 		double rightRatio = rightCurrent/rightVoltage;
 		double leftRatio = leftCurrent/leftVoltage;
+		boolean beamBreakTriggered = mHardware.getTalonTach().getState();
 		
 		if(!mRetractIntake)
 		{
-			if ( rightRatio >  MAX_CURRENT_LIMIT_RATIO || leftRatio > MAX_CURRENT_LIMIT_RATIO )
+			if ( (rightRatio >  MAX_CURRENT_LIMIT_RATIO || leftRatio > MAX_CURRENT_LIMIT_RATIO) && !beamBreakTriggered)
 			{
 				startCurrentLimiting = true;
 				leftDesiredPower = -inPower * LEFT_LIMITER;
@@ -85,7 +86,7 @@ public class Intake implements IModule{
 				leftDesiredPower = inPower;
 				rightDesiredPower = inPower;
 			}
-			else if (startCurrentLimiting)
+			else if (startCurrentLimiting && !beamBreakTriggered)
 			{
 				leftDesiredPower = -inPower * LEFT_LIMITER;
 				rightDesiredPower = -inPower * RIGHT_LIMITER;

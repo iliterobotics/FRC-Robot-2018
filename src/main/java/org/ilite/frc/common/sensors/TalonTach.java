@@ -30,7 +30,7 @@ public class TalonTach implements IControlLoop {
 //    }
 //  }
 	
-	private boolean getState() {
+	public boolean getState() {
 	  if(talonTachSensor == null) {
       System.err.println("talon tach is null...");
       return false;
