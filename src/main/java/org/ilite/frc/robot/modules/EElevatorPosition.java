@@ -8,9 +8,9 @@ package org.ilite.frc.robot.modules;
 	public enum EElevatorPosition
 	{
 		BOTTOM(0.4, 0),
-		FIRST_TAPE(0.5, 1),
-		SECOND_TAPE(0.6, 2),
-		THIRD_TAPE(0.6, 3);
+		FIRST_TAPE(0.5, 2),
+		SECOND_TAPE(0.6, 4),
+		THIRD_TAPE(0.6, 6);
 
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
