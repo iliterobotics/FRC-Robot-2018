@@ -116,7 +116,9 @@ public class Robot extends IterativeRobot {
   public void autonomousInit() {
     mLog.info("AUTONOMOUS");
     
+    double start = Timer.getFPGATimestamp();
     mHardware.getPigeon().zeroAll();
+    System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mapInputsAndCachedSensors();
     
     setRunningModules(mDrivetrain, mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
@@ -124,7 +126,10 @@ public class Robot extends IterativeRobot {
     mControlLoop.start();
     
     mCommandQueue.clear();
+
+    System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mCommandQueue = getAutonomous.getAutonomousCommands();
+    System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);
     

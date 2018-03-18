@@ -100,7 +100,7 @@ public class GetAutonomous {
 	  getSides();
 //    parseEntries();
     double timerStart = System.currentTimeMillis();
-    while(System.currentTimeMillis() < timerStart + 500) {
+    while(System.currentTimeMillis() < timerStart + 1) {
       getSides();
     }
 	  parseEntries();
