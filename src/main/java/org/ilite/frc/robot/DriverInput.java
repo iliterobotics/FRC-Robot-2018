@@ -133,16 +133,23 @@ public class DriverInput implements IModule{
 	}
 	
 	private void updateIntake() {
-    // Combines the two gamepad Y axes so the operator can use either one
     double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_1);
     
+    // Retract the intake if we have the cube and aren't being overridden manually by the operator
     if(mCarriage.getBeamBreak() && !mData.operator.isSet(DriveTeamInputMap.OPERATOR_HOLD_INTAKE_OUT)) {
+      mIntake.setIntakeRetracted(true);
+    }
+    
+    // Automatically retract when the climbing stick is moved
+    if(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) != 0) {
       mIntake.setIntakeRetracted(true);
     }
     
     if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
       mIntake.setIntakeRetracted(true);
     }
+    
+    // If we bring the intakes out, open the carriage so the cube won't get stuck
     if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
       mIntake.setIntakeRetracted(false);
       mCarriage.setDesiredState(CarriageState.RESET);
@@ -159,6 +166,7 @@ public class DriverInput implements IModule{
 	  
 	  double climberAxis = mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS);
 	  
+	  // Safety to prevent elevator motors from burning out
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
 	  {
 	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
@@ -201,7 +209,7 @@ public class DriverInput implements IModule{
   private void updateCarriage() {
     if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
       mCarriage.setDesiredState(CarriageState.KICKING);
-    }  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_RESET)) {
+    } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_RESET)) {
       mCarriage.setDesiredState(CarriageState.RESET);
     } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_GRAB)) {
       mCarriage.setDesiredState(CarriageState.GRAB_CUBE);
