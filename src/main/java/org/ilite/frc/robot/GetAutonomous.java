@@ -100,7 +100,7 @@ public class GetAutonomous {
 	  getSides();
 //    parseEntries();
     double timerStart = System.currentTimeMillis();
-    while(System.currentTimeMillis() < timerStart + 500) {
+    while(System.currentTimeMillis() < timerStart + 1) {
       getSides();
     }
 	  parseEntries();
@@ -203,10 +203,10 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.8));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.9));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1));
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 55d, 8));
 //		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.6));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
@@ -227,7 +227,7 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.9));
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
