@@ -33,6 +33,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,10 @@ public class DisplayApplication extends Application{
   
   Stage stage = new Stage(StageStyle.UNDECORATED);
   static Map<String, List<String>> dataMatrix = new HashMap<>();
+  static LocalDate localDate = LocalDate.now();
+  static Instant instant = Instant.now();
+  static long timeSeconds = instant.getEpochSecond();
+
   
 
 
@@ -153,7 +159,7 @@ public class DisplayApplication extends Application{
   private static void writeHeaders(Map<String, List<String>> dataMap) throws IOException {
     BufferedWriter writer = null;
     for(String key : dataMap.keySet()) {
-      File file = new File(String.format("./logs/%s-log.csv", key));
+      File file = new File(String.format("./logs/logs "+ (localDate.toString() + " " + timeSeconds) + "/%s-log " + localDate.toString() + "_" + timeSeconds + ".csv", key));
       if(!file.exists()) file.createNewFile();
       dataMap.get(key).add("TIME");
       dataMap.get(key).add("TIME RECEIVED");
@@ -165,7 +171,7 @@ public class DisplayApplication extends Application{
   }
   
   public static void writeData(Entry<String, List<String>> entry) {
-	  File file = new File(String.format("./logs/%s-log.csv", entry.getKey()));
+	  File file = new File(String.format("./logs/logs "+ (localDate.toString() + " " + timeSeconds) + "/%s-log " + localDate.toString() + "_" + timeSeconds + ".csv", entry.getKey()));
 	  BufferedWriter bWriter = null;
 	  try {
   	  if(!file.exists()) file.createNewFile();
@@ -189,11 +195,28 @@ public class DisplayApplication extends Application{
 	  
   }
   
+  public static void newDirectory(String fileName) {
+	  
+	  try{
+		  	String strDirectoy = fileName;
+		  	// Create one directory
+		  	boolean success = (new File(strDirectoy)).mkdir();
+		  	if (success) {
+		  		System.out.println("Directory: " + strDirectoy + " created");
+		  }  
+
+		  }catch (Exception e) {//Catch exception if any
+			  System.err.println("Error: " + e.getMessage());
+		  }
+  }
+  
   public static void main(String[] pArgs) throws Exception {
     //launch(pArgs);
+	newDirectory("logs");
+	newDirectory("./logs/logs " + localDate.toString() + " " + timeSeconds);
     matrixInit();
     Logger.setLevel(ELevel.DEBUG);
     writeHeaders(dataMatrix);
-    while(true) if(NetworkTableInstance.getDefault().isConnected()) dataMatrix.entrySet().forEach(entry -> writeData(entry));
+    while(true) if(!NetworkTableInstance.getDefault().isConnected()) dataMatrix.entrySet().forEach(entry -> writeData(entry));
   }
 }
