@@ -397,7 +397,7 @@ public class GetAutonomous {
 	private void parseEntries() {
 		int posNum = nPosEntry.getNumber(EStartingPosition.LEFT.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.CARPET.ordinal()).intValue();
-		Integer[] defaultArray = { ECubeAction.SWITCH.ordinal(), ECubeAction.SCALE.ordinal() };
+		Integer[] defaultArray = { /*ECubeAction.SWITCH.ordinal(),*/ ECubeAction.SCALE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mDelay = nDelayEntry.getDouble(-1);
