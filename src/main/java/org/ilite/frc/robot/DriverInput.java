@@ -34,6 +34,8 @@ public class DriverInput implements IModule{
   private final Intake mIntake;
   private boolean scaleInputs;
   private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
+
+  double desiredLeftOutput, desiredRightOutput;
   
   private Queue<ICommand> desiredCommandQueue;
   private boolean lastCanRunCommandQueue;
@@ -67,9 +69,7 @@ public class DriverInput implements IModule{
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-		if(!canRunCommandQueue) {
-		  updateDriveTrain();
-		}
+		updateDriveTrain();
 		updateIntake();
 		updateElevator();
 		updateCarriage();
@@ -98,7 +98,6 @@ public class DriverInput implements IModule{
 	
 	
 	private void updateDriveTrain() {
-		double desiredLeftOutput, desiredRightOutput;
 	  
 		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
@@ -128,7 +127,10 @@ public class DriverInput implements IModule{
 //			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
 //		}
 		
-		driveTrain.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+		// Only update actual outputs if we aren't running our command queue
+		if(!canRunCommandQueue) {
+		  driveTrain.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+		}
 		
 	}
 	
@@ -226,6 +228,14 @@ public class DriverInput implements IModule{
 	
 	public Queue<ICommand> getDesiredCommandQueue() {
 		return desiredCommandQueue;
+	}
+	
+	public double getDesiredLeftOutput() {
+	  return desiredLeftOutput;
+	}
+	
+	public double getDesiredRightOutput() {
+	  return desiredRightOutput;
 	}
 	
 

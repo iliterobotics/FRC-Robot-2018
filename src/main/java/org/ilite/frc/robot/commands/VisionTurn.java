@@ -1,10 +1,8 @@
 package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.sensors.IMU;
-import org.ilite.frc.common.types.ECubeTarget;
-import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.DriverInput;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
@@ -14,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class VisionTurn implements ICommand {
   
   private DriveTrain mDriveTrain;
+  private DriverInput mDriverInput;
   private Data mData;
   
   private static final double kMIN_POWER = 0.06;
@@ -22,8 +21,9 @@ public class VisionTurn implements ICommand {
   private double mError, mTotalError, mAllowableError;
   private Double mLeftPower, mRightPower, mOutput = 0.0;
 
-  public VisionTurn(DriveTrain pDriveControl, Data pData, double pAllowableError) {
+  public VisionTurn(DriveTrain pDriveControl, DriverInput pDriverInput, Data pData, double pAllowableError) {
     this.mDriveTrain = pDriveControl;
+    this.mDriverInput = pDriverInput;
     this.mData = pData;
     this.mAllowableError = pAllowableError;
   }
@@ -47,8 +47,8 @@ public class VisionTurn implements ICommand {
       mOutput = kMIN_POWER * scalar;
     }
     
-    mLeftPower = mOutput;
-    mRightPower = -mOutput;
+    mLeftPower = mDriverInput.getDesiredLeftOutput() + mOutput;
+    mRightPower = mDriverInput.getDesiredRightOutput() + -mOutput;
     
     mDriveTrain
         .setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));

@@ -2,6 +2,7 @@ package org.ilite.frc.robot.commands;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.robot.Data;
+import org.ilite.frc.robot.DriverInput;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
@@ -14,6 +15,7 @@ public class CubeSearch implements ICommand{
 	public static final double TURN_POWER = 0.4;
 	
 	private DriveTrain mDriveTrain;
+	private DriverInput mDriverInput
 	private Data mData;
 	private VisionTurn mVisionTurn;
 	private CubeSearchType cubeSearchType;
@@ -27,9 +29,10 @@ public class CubeSearch implements ICommand{
 		}
 	}
 	
-	public CubeSearch(DriveTrain pDriveTrain, Data pData, CubeSearchType cubeSearchType){
+	public CubeSearch(DriveTrain pDriveTrain, DriverInput pDriverInput, Data pData, CubeSearchType cubeSearchType){
 		
 		this.mDriveTrain = pDriveTrain;
+		this.mDriverInput = pDriverInput;
 		this.mData = pData;
 		this.cubeSearchType = cubeSearchType;
 		
