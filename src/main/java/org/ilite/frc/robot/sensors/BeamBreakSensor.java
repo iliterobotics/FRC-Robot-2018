@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class BeamBreakSensor implements IModule {
 	private DigitalInput beamInput;
-	private static final double TRIGGER_DELAY_SEC = 0.4;
+	private static final double TRIGGER_DELAY_SEC = 0.3;
 	private double triggerTime;
 	private double startTime;
 	private boolean isTriggerScheduled = false;

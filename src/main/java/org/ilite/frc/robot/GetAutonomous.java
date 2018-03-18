@@ -198,19 +198,29 @@ public class GetAutonomous {
 	 * Do scale autonomous; switch based on starting position.
 	 */ 
 	public void doScale() {
+	  double scaleTurnDegrees = 55d;
 		// TODO replace with turning scalar
 		System.out.printf("TESTTESTTESTTESTTESTDoing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
+		  // Drive 
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.9));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1));
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 55d, 8));
-//		  mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.6));
+      
+      // Turn into scale, drive forward, kick
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 3, 0.6));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+		  
+		  //Back up from scale
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+		  
+		  // Reset elevator
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
+      
+      // Turn back for a 2nd cube
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 180-scaleTurnDegrees, 2));
 //		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
 			break;
 		case MIDDLE:
