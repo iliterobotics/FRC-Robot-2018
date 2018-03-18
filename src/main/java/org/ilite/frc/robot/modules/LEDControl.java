@@ -84,7 +84,7 @@ public class LEDControl implements IModule {
 	  mCurrentMessage = Message.NONE;
 	  if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 	  if(mCarriage.getBeamBreak()) mCurrentMessage = Message.HAS_CUBE;
-	  if(mElevator.elevatorState == EElevatorState.DECELERATE_BOTTOM || mElevator.elevatorState == EElevatorState.DECELERATE_TOP) mCurrentMessage = Message.ELEV_DECEL;
+	  if(mElevator.elevatorState == EElevatorState.DECELERATE_TOP) mCurrentMessage = Message.ELEV_DECEL;
 	  if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 	  if(mCarriage.getCurrentState() == CarriageState.KICKING) mCurrentMessage = Message.KICKING_CUBE;
 	  setLED(mCurrentMessage);
