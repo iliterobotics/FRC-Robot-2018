@@ -84,7 +84,7 @@ public class DriverInput implements IModule{
 		canRunCommandQueue = leftButton || rightButton;
 
 		if(shouldInitializeCommandQueue()) {
-			System.out.println("shouldInitializeCommandQueue() = true \\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nsearching...!");
+//			System.out.println("shouldInitializeCommandQueue() = true \\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nsearching...!");
 			desiredCommandQueue.clear();
 			if(leftButton) {
 				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.LEFT));

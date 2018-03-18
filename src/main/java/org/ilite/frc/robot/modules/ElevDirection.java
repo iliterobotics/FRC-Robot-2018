@@ -45,7 +45,7 @@ public enum ElevDirection
 	{
 	  if(pMasterTalon.getMotorOutputVoltage() != 0)
 	  {
-	    System.out.println("LIMIT: " + pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage());
+//	    System.out.println("LIMIT: " + pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage());
       return Math.abs(pMasterTalon.getOutputCurrent()) / Math.abs(pMasterTalon.getMotorOutputVoltage()) >= mCurrentLimitRatio;
 	  }
 	  else return false;

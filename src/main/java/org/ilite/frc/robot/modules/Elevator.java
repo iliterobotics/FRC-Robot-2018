@@ -168,7 +168,7 @@ public class Elevator implements IModule {
 		// Create Elevator Codex
 		// Replace system outs with Log
 		//log.warn(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDesiredDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
-		log.warn("ElevState:" + elevatorState +  " talonTach=" + currentTachLevel + " talonTachState=" + currentTachState);
+//		log.warn("ElevState:" + elevatorState +  " talonTach=" + currentTachLevel + " talonTachState=" + currentTachState);
 //		log.warn(masterElevator.getOutputCurrent() + "/" + masterElevator.getMotorOutputVoltage());
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);

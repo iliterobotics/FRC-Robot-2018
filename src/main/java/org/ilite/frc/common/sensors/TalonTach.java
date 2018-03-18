@@ -78,7 +78,7 @@ public class TalonTach implements IControlLoop {
     setTapeState(mCurrentState);
     if(mCurrentTapeState != lastTapeState) hasChanged = true;
     
-    System.out.println("ON TAPE ? " + mCurrentTapeState);
+//    System.out.println("ON TAPE ? " + mCurrentTapeState);
     lastTapeState = mCurrentTapeState;
     lastState = mCurrentState;
     return false;
