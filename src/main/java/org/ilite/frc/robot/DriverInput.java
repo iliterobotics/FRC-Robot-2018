@@ -87,9 +87,9 @@ public class DriverInput implements IModule{
 			System.out.println("shouldInitializeCommandQueue() = true \\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nsearching...!");
 			desiredCommandQueue.clear();
 			if(leftButton) {
-				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.LEFT));
+				desiredCommandQueue.add(new CubeSearch(driveTrain, this, mData, CubeSearchType.LEFT));
 			} else if(rightButton) {
-				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.RIGHT));
+				desiredCommandQueue.add(new CubeSearch(driveTrain, this, mData, CubeSearchType.RIGHT));
 			}
 		}
 		lastCanRunCommandQueue = canRunCommandQueue;

@@ -15,7 +15,7 @@ public class CubeSearch implements ICommand{
 	public static final double TURN_POWER = 0.4;
 	
 	private DriveTrain mDriveTrain;
-	private DriverInput mDriverInput
+	private DriverInput mDriverInput;
 	private Data mData;
 	private VisionTurn mVisionTurn;
 	private CubeSearchType cubeSearchType;
@@ -68,7 +68,7 @@ public class CubeSearch implements ICommand{
 		}
 		
 		else if(seesCube){
-			mVisionTurn = new VisionTurn(mDriveTrain, mData, SystemSettings.ALLOWABLE_ERROR);
+			mVisionTurn = new VisionTurn(mDriveTrain, mDriverInput, mData, SystemSettings.ALLOWABLE_ERROR);
 			mVisionTurn.update(0);
 			
 		}
