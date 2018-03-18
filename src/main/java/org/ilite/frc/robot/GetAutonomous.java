@@ -385,9 +385,9 @@ public class GetAutonomous {
 	 * an enum.
 	 */
 	private void parseEntries() {
-		int posNum = nPosEntry.getNumber(EStartingPosition.UNKNOWN.ordinal()).intValue();
-		int crossNum = nCrossEntry.getNumber(ECross.NONE.ordinal()).intValue();
-		Integer[] defaultArray = { ECubeAction.NONE.ordinal() };
+		int posNum = nPosEntry.getNumber(EStartingPosition.LEFT.ordinal()).intValue();
+		int crossNum = nCrossEntry.getNumber(ECross.CARPET.ordinal()).intValue();
+		Integer[] defaultArray = { ECubeAction.SWITCH.ordinal(), ECubeAction.SCALE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
 		mDelay = nDelayEntry.getDouble(-1);
@@ -408,14 +408,6 @@ public class GetAutonomous {
 		}
 		
 //    if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
-		
-    if(mCrossType == ECross.NONE) mCrossType = ECross.CARPET;
-		if(mStartingPos == EStartingPosition.UNKNOWN) mStartingPos = EStartingPosition.LEFT;
-    
-		if(mReceivedCubeActionPrefs.isEmpty()) {
-	    mReceivedCubeActionPrefs.add(ECubeAction.SWITCH);
-	    mReceivedCubeActionPrefs.add(ECubeAction.SCALE);
-		}
 		
 		switch (mStartingPos) {
 		case LEFT:

@@ -276,7 +276,7 @@ public class Robot extends IterativeRobot {
   }
   
   public void disabledPeriodic() {
-//    System.out.println(getAutonomous.getAutonomousCommands());
+    System.out.println(getAutonomous.getAutonomousCommands());
   }
   
   
