@@ -3,6 +3,7 @@ package org.ilite.frc.display.frclog.display;
 import java.io.File;
 
 import org.ilite.frc.common.types.ELogitech310;
+import org.ilite.frc.common.util.CSVLogger;
 import org.ilite.frc.display.frclog.data.RobotDataStream;
 
 import eu.hansolo.fx.horizon.Data;
@@ -51,12 +52,8 @@ public class DisplayApplication extends Application{
   Class<?> mSelectedCodexToLoad = null;
   
   private static CSVLogger csvLogger = new CSVLogger();
-  private static Thread loggingThread;
   
   public DisplayApplication() {
-    loggingThread = new Thread(() -> {
-      while(!Thread.interrupted()) csvLogger.writeToCSV();
-    });
   }
   
   @SuppressWarnings("unchecked")
@@ -119,7 +116,7 @@ public class DisplayApplication extends Application{
     });
     
 
-    loggingThread.start();
+    csvLogger.start();
     root.add(graphconfig, 0, 0);
     primaryStage.setTitle("ILITE Log Display");
     primaryStage.setScene(scene);

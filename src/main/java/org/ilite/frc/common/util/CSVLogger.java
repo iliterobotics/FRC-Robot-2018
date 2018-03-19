@@ -1,4 +1,4 @@
-package org.ilite.frc.display.frclog.display;
+package org.ilite.frc.common.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECubeTarget;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.types.EPowerDistPanel;
-import org.ilite.frc.common.util.SystemUtils;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
@@ -25,8 +25,9 @@ import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class CSVLogger {
+public class CSVLogger extends Thread{
 
+  private BufferedWriter writer;
   private Map<String, List<String>> mDataMatrix = new HashMap<>();
   private boolean mHasWrittenHeaders = false;
   
@@ -37,6 +38,7 @@ public class CSVLogger {
     mDataMatrix.put("pdp", getKeys(EPowerDistPanel.class));
     mDataMatrix.put("drivetrain", getKeys(EDriveTrain.class));;
     mDataMatrix.put("vision", getKeys(ECubeTarget.class));
+    mDataMatrix.put("elevator", getKeys(EElevator.class));
   }
   
   public <E extends Enum<E>> List<String> getKeys(Class<E> pEnum) {
@@ -53,43 +55,48 @@ public class CSVLogger {
     mDataMatrix.put(pEnum.getSimpleName(), getKeys(pEnum));
   }
   
-  private void writeHeaders(Map<String, List<String>> dataMap) throws IOException {
-    if(!mHasWrittenHeaders) return;
+  private void writeHeaderToCsv(Map<String, List<String>> dataMap) {
     
+    if(mHasWrittenHeaders) return;
     mHasWrittenHeaders = true;
-    BufferedWriter writer = null;
-    for(String key : dataMap.keySet()) {
-      File file = new File(String.format("./logs/%s-log.csv", key));
-      if(!file.exists()) file.createNewFile();
-      dataMap.get(key).add("TIME");
-      dataMap.get(key).add("TIME RECEIVED");
-      writer = new BufferedWriter(new FileWriter(file, true));
-      writer.append(SystemUtils.toCsvRow(dataMap.get(key)) + "\n");
-      writer.flush();
+
+    try {
+      for(String key : dataMap.keySet()) {
+        File file = new File(String.format("./logs/%s-log.csv", key));
+        handleCreation(file);
+        
+        dataMap.get(key).add("TIME");
+        dataMap.get(key).add("TIME RECEIVED");
+        
+        writer = new BufferedWriter(new FileWriter(file, true));
+        writer.append(SystemUtils.toCsvRow(dataMap.get(key)) + "\n");
+        writer.flush();
+      }
+      writer.close();
+    } catch (Exception e) {
+        System.err.println("Error writing log headers.");
     }
-    writer.close();
+    
   }
   
   private void writeMapEntry(Entry<String, List<String>> entry) throws IOException {
     File file = new File(String.format("./logs/%s-log.csv", entry.getKey()));
-    BufferedWriter bWriter = null;
-    if(file.getParentFile().exists()) file.getParentFile().mkdir();
-    if(!file.exists()) file.createNewFile();
     
-    bWriter = new BufferedWriter(new FileWriter(file, true));
+    handleCreation(file);
     
-//      entry.getValue().add(0, SystemSettings.SMART_DASHBOARD.getEntry("TIME").getNumber(-1).toString());
+    writer = new BufferedWriter(new FileWriter(file, true));
+    
     List<String> rowList = entry.getValue().stream()
             .map(entryKey -> SystemSettings.SMART_DASHBOARD.getEntry(entryKey).getNumber(-1).toString())
             .collect(Collectors.toList());
     rowList.add(SystemSettings.SMART_DASHBOARD.getEntry("TIME").getNumber(-1).toString());
     rowList.add(Long.toString(System.currentTimeMillis() / 1000));
-    String csvRow = SystemUtils.toCsvRow(rowList);
-    bWriter.append(csvRow + "\n");
-    bWriter.flush();
+    
+    writer.append(SystemUtils.toCsvRow(rowList) + "\n");
+    writer.flush();
   }
   
-  public void writeToCSV() {
+  public void writeRowsToCsv() {
     Logger.setLevel(ELevel.DEBUG);
     mDataMatrix.entrySet().forEach(entry -> {
       try { 
@@ -99,6 +106,24 @@ public class CSVLogger {
         System.err.printf("Error writing log file: %s\n", entry.getKey());
       }   
     });
+  }
+  
+  private void handleCreation(File file) throws IOException {
+    if(file.getParentFile().exists()) file.getParentFile().mkdir();
+    if(!file.exists()) file.createNewFile();
+  }
+  
+  @Override
+  public void run() {
+    writeHeaderToCsv(mDataMatrix);
+    while(!Thread.interrupted()) {
+      if(NetworkTableInstance.getDefault().isConnected()) writeRowsToCsv();
+      try {
+        sleep(10);
+      } catch (InterruptedException e) {
+        System.err.println("Thread sleep interrupted.");
+      }
+    }
   }
   
 }
