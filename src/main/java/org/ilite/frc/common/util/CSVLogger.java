@@ -28,17 +28,16 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class CSVLogger extends Thread{
 
   private BufferedWriter writer;
-  private Map<String, List<String>> mDataMatrix = new HashMap<>();
+  private Map<String, List<String>> codexKeys = new HashMap<>(); // Contains a mapping of codex names to codex keys. Used to retrieve codex data dumped by the robot from NetworkTables
   private boolean mHasWrittenHeaders = false;
   
   public CSVLogger() {
-    mDataMatrix.put("operator", getKeys(ELogitech310.class));
-    mDataMatrix.put("driver", getKeys(ELogitech310.class));
-    mDataMatrix.put("pigeon", getKeys(EPigeon.class));
-    mDataMatrix.put("pdp", getKeys(EPowerDistPanel.class));
-    mDataMatrix.put("drivetrain", getKeys(EDriveTrain.class));;
-    mDataMatrix.put("vision", getKeys(ECubeTarget.class));
-    mDataMatrix.put("elevator", getKeys(EElevator.class));
+    putInMatrix("operator", ELogitech310.class);
+    putInMatrix("driver", ELogitech310.class);
+    putInMatrix(EPigeon.class);
+    putInMatrix(EPowerDistPanel.class);
+    putInMatrix(EDriveTrain.class);
+    putInMatrix(EElevator.class);
   }
   
   public <E extends Enum<E>> List<String> getKeys(Class<E> pEnum) {
@@ -48,11 +47,15 @@ public class CSVLogger extends Thread{
   }
   
   public <E extends Enum<E>> void putInMatrix(String pLogName, Class<E> pEnum) {
-    mDataMatrix.put(pLogName, getKeys(pEnum));
+    codexKeys.put(pLogName, getKeys(pEnum));
   }
   
   public <E extends Enum<E>> void putInMatrix(Class<E> pEnum) {
-    mDataMatrix.put(pEnum.getSimpleName(), getKeys(pEnum));
+    codexKeys.put(pEnum.getSimpleName(), getKeys(pEnum));
+  }
+  
+  public <E extends Enum<E>> void putAllInMatrix(Class<E> ... pEnumerations) {
+    for(Class<E> enumeration : pEnumerations) putInMatrix(enumeration);
   }
   
   private void writeHeaderToCsv(Map<String, List<String>> dataMap) {
@@ -87,7 +90,7 @@ public class CSVLogger extends Thread{
     writer = new BufferedWriter(new FileWriter(file, true));
     
     List<String> rowList = entry.getValue().stream()
-            .map(entryKey -> SystemSettings.SMART_DASHBOARD.getEntry(entryKey).getNumber(-1).toString())
+            .map(networkTablesKey -> SystemSettings.SMART_DASHBOARD.getEntry(entry.getKey() + "-" + networkTablesKey).getNumber(-1).toString())
             .collect(Collectors.toList());
     rowList.add(SystemSettings.SMART_DASHBOARD.getEntry("TIME").getNumber(-1).toString());
     rowList.add(Long.toString(System.currentTimeMillis() / 1000));
@@ -98,7 +101,7 @@ public class CSVLogger extends Thread{
   
   public void writeRowsToCsv() {
     Logger.setLevel(ELevel.DEBUG);
-    mDataMatrix.entrySet().forEach(entry -> {
+    codexKeys.entrySet().forEach(entry -> {
       try { 
         System.out.printf("Writing log: %s\n", entry.getKey());
         writeMapEntry(entry);
@@ -115,7 +118,7 @@ public class CSVLogger extends Thread{
   
   @Override
   public void run() {
-    writeHeaderToCsv(mDataMatrix);
+    writeHeaderToCsv(codexKeys);
     while(!Thread.interrupted()) {
       if(NetworkTableInstance.getDefault().isConnected()) writeRowsToCsv();
       try {
