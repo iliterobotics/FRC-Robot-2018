@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.common.input.EDriverControlMode;
+import org.ilite.frc.common.util.CSVLogger;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
-import com.google.gson.Gson;
 
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -28,7 +28,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
@@ -45,12 +44,15 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
+  private CSVLogger logger = new CSVLogger();
+  
   private Integer[] preferredCubeActions;
   private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
 	private double mDelay = -1;
 	private static Integer mCross = -1;
 	private static Integer mStartingPosition = -1;
+	
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -90,7 +92,12 @@ public class AutonConfigDisplay extends Application {
       }
       
     });
+    
     TextField delayText = new TextField();
+    delayText.setOnAction(e -> {
+      mDelay = Double.parseDouble(delayText.getText());
+      SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
+    });
     Label delayLabel = new Label("Delay");
     
     HBox selectionBoxes = new HBox(
@@ -100,13 +107,23 @@ public class AutonConfigDisplay extends Application {
     		labeledDropdown(EDriverControlMode.class),
     		delayLabel,
     		delayText);
-    delayText.setOnAction(e -> {
-    	mDelay = Double.parseDouble(delayText.getText());
-    	SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
-    });
+    
     HBox modeOptions = new HBox(mode, send);
-   
     modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
+    
+    Thread dataSender = new Thread(() -> {
+      while(!Thread.interrupted()) {
+        sendData();
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e1) {
+          System.err.println("Thread sleep interrupted");
+        }
+      }
+    });
+    dataSender.start();
+    
+    logger.start();
     
     selectionBoxes.setSpacing(10d);
     root.setCenter(selectionBoxes);
@@ -116,19 +133,8 @@ public class AutonConfigDisplay extends Application {
     
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
+    primaryStage.setOnCloseRequest(e -> System.exit(0));
     primaryStage.show();
-    
-    Thread dataSender = new Thread(() -> {
-        while(!Thread.interrupted()) {
-          sendData();
-          try {
-            Thread.sleep(100);
-          } catch (InterruptedException e1) {
-            System.err.println("Thread sleep interrupted");
-          }
-        }
-    });
-    dataSender.start();
     
   }
   
