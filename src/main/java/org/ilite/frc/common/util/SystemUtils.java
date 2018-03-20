@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ilite.frc.common.config.SystemSettings;
+
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.lang.EnumUtils;
@@ -65,7 +67,7 @@ public class SystemUtils {
       Double value = (Double) pCodex.get(e);
       if(e != null) SmartDashboard.putNumber(name + "-" + e.toString(), (value == null) ? 0 : value);
     }
-    SmartDashboard.putNumber("TIME", pTime);
+    SmartDashboard.putNumber(name + "-" + SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
   }
   
 }
