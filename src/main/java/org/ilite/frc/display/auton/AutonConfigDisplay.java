@@ -13,13 +13,13 @@ import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.common.util.CSVLogger;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
+import com.google.gson.Gson;
 
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -47,11 +47,13 @@ public class AutonConfigDisplay extends Application {
   private CSVLogger logger = new CSVLogger();
   
   private Integer[] preferredCubeActions;
+  private double mDelay = -1;
+  private static Integer mCross = -1;
+  private static Integer mStartingPosition = -1;
+  private static Integer mDriverControlMode = -1;
+  
   private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
-	private double mDelay = -1;
-	private static Integer mCross = -1;
-	private static Integer mStartingPosition = -1;
 	
   public static void main(String[] pArgs) {
     launch(pArgs);
@@ -115,7 +117,7 @@ public class AutonConfigDisplay extends Application {
       while(!Thread.interrupted()) {
         sendData();
         try {
-          Thread.sleep(100);
+          Thread.sleep(200);
         } catch (InterruptedException e1) {
           System.err.println("Thread sleep interrupted");
         }
@@ -145,11 +147,20 @@ public class AutonConfigDisplay extends Application {
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
 	        event -> {
-  	        if(pEnumeration.getClass() == ECross.class.getClass()) {
+	          System.out.println("Action triggered!");
+	          String enumName = pEnumeration.getSimpleName();
+  	        if(enumName.equals(ECross.class.getSimpleName())) {
   	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
-  	        }else {
-  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating cross: " + mCross);
   	        }
+  	        if(enumName.equals(EStartingPosition.class.getSimpleName())){
+  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        	System.out.println("Updating position: " + mStartingPosition);
+  	        }
+  	        if(enumName.equals(EDriverControlMode.class.getSimpleName())){
+              mDriverControlMode = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating controlmode: " + mStartingPosition);
+            }
 	        }
 	    );
 	    combo.setValue(enums.get(0));
@@ -181,16 +192,6 @@ public class AutonConfigDisplay extends Application {
         }
     }));
     
-    listView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener() {
-
-		@Override
-		public void onChanged(Change arg0) {
-			System.out.println("On changed");
-			SystemSettings.AUTON_TABLE.putNumberArray(pEnumeration.getSimpleName(), preferredCubeActions);
-		}
-    	
-    });
-    
     Button up = new Button("Up");
     Button down = new Button("Down");
     up.setOnAction(e -> swapEntriesUp(listView, preferenceArray) );
@@ -221,6 +222,7 @@ public class AutonConfigDisplay extends Application {
     SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
     SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
     SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+    SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);
   }
   
   private static void swapEntriesUp(ListView listView, Object[] outputArray) {

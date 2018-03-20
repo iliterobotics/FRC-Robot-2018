@@ -103,7 +103,7 @@ public class CSVLogger extends Thread{
     Logger.setLevel(ELevel.DEBUG);
     codexKeys.entrySet().forEach(entry -> {
       try { 
-        System.out.printf("Writing log: %s\n", entry.getKey());
+//        System.out.printf("Writing log: %s\n", entry.getKey());
         writeMapEntry(entry);
       } catch (Exception e) {
         System.err.printf("Error writing log file: %s\n", entry.getKey());
