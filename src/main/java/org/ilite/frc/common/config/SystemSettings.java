@@ -2,6 +2,7 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.ELogitech310;
@@ -40,7 +41,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
 	  @Override
 	  public void initKeys() {
-		  getInstance().getEntry("Driver Control Mode").setDefaultString("ARCADE");
+		  getInstance().getEntry(EDriverControlMode.class.getSimpleName()).setDefaultNumber(-1);
 	  }
   };
   public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
