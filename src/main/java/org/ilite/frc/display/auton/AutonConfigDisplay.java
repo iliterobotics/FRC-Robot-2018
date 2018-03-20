@@ -98,7 +98,6 @@ public class AutonConfigDisplay extends Application {
     TextField delayText = new TextField();
     delayText.setOnAction(e -> {
       mDelay = Double.parseDouble(delayText.getText());
-      SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
     });
     Label delayLabel = new Label("Delay");
     
@@ -219,7 +218,7 @@ public class AutonConfigDisplay extends Application {
   
   private void sendData() {
     SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
-    SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
+    SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
     SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
     SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
     SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);

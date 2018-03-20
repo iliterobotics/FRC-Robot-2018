@@ -8,6 +8,7 @@ import java.util.Queue;
 //Java8
 import java.util.stream.Collectors;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
@@ -36,7 +37,7 @@ public class GetAutonomous {
 	private NetworkTableEntry nPosEntry;
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
-	private NetworkTableEntry nDelayEntry;
+	private NetworkTableEntry mDelayEntry;
 	
 	private Intake mIntake;
 	private Elevator mElevator;
@@ -200,7 +201,7 @@ public class GetAutonomous {
 	public void doScale() {
 	  double scaleTurnDegrees = 55d;
 		// TODO replace with turning scalar
-		System.out.printf("TESTTESTTESTTESTTESTDoing scale autonomous starting on %s\n", mStartingPos);
+		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
@@ -400,7 +401,7 @@ public class GetAutonomous {
 		Integer[] defaultArray = { /*ECubeAction.SWITCH.ordinal(),*/ ECubeAction.SCALE.ordinal() };
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
 
-		mDelay = nDelayEntry.getDouble(-1);
+		mDelay = mDelayEntry.getDouble(-1);
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 //		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
@@ -546,14 +547,13 @@ public class GetAutonomous {
 	}
 	
 	private void getSides() {
-	  
 	   try {
 	      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
 	      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
 	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
-	      nDelayEntry = nAutonTable.getEntry("delay");
+	      mDelayEntry = nAutonTable.getEntry(SystemSettings.AUTO_DELAY_KEY);
 	    } catch (Exception e) {
-	       System.err.println("Error retrieving data from auton display");
+	       System.err.println("Error retrieving data entries from auton display");
 	    }
 	    mScaleSide = getScaleOwnedSide();
 	    mSwitchSide = getSwitchOwnedSide();
@@ -575,6 +575,11 @@ public class GetAutonomous {
 		mStartingPos = pPos;
 		mSwitchSide = pSwitchSide;
 		mScaleSide = pScaleSide;
+	}
+	
+	public void testReceiveSideData(OwnedSide pSwitchSide, OwnedSide pScaleSide) {
+	  mSwitchSide = pSwitchSide;
+    mScaleSide = pScaleSide;
 	}
 
 }

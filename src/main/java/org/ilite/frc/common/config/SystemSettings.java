@@ -45,6 +45,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
 	  }
   };
   public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
+  public static String AUTO_DELAY_KEY = "delay";
   public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
   
   //=============================================================================
