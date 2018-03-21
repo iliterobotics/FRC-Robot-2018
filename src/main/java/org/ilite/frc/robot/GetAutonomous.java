@@ -205,7 +205,7 @@ public class GetAutonomous {
 		case LEFT:
 		case RIGHT:
 		  // Drive 
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.9));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1));
       
       // Turn into scale, drive forward, kick
@@ -221,6 +221,8 @@ public class GetAutonomous {
       
       // Turn back for a 2nd cube
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 180-scaleTurnDegrees, 2));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 36d));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -45, 2));
 //		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
 			break;
 		case MIDDLE:
@@ -237,11 +239,11 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.9));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
-			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 3));
+			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));

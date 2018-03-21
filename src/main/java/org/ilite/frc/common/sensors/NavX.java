@@ -47,7 +47,7 @@ public class NavX extends IMU {
 	}
 		
 	public double getAngle(){
-		return convertTo360(iahrs.getAngle());
+		return iahrs.getAngle();
 	}
 	
 	public double getAngleOffStart(){
