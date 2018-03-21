@@ -21,6 +21,7 @@ public class DriveStraight implements ICommand{
 	
 	private ILog mLog = Logger.createLog(DriveStraight.class);
   
+	// % Power per degree
   private static final double TURN_PROPORTION = 0.03;
   
   //If error > ~3 feet, then use max power (1.0)
@@ -29,18 +30,22 @@ public class DriveStraight implements ICommand{
   // Therefore P = (1 - default power) / (# of wheel rotations to start slowing down * # of ticks per rotation)
   // TODO - verify it's 4096 ticks per rotation for this encoder
   private static final double NUM_TICKS_FOR_SLOWDOWN = 2d * 4096d;
+  // Units are % power per remaining encoder tick
   private double kP = 0.4 / 8096d;
+  // % motor output
   private double mPower;
   
   private final DriveTrain driveTrain;
   private final Data mData;
+  
+  // In encoder ticks
   private final double distanceToTravel;
   private double remainingDistance;
-  
   private double initialLeftPosition;
   private double initialRightPosition;
   
-  private double initialYaw;
+  // In degrees
+  private double mDesiredHeadingYaw;
 
   
   public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
@@ -56,11 +61,10 @@ public class DriveStraight implements ICommand{
   }
   
   public void initialize(double pNow){
-    initialYaw = IMU.clampDegrees(mData.pigeon.get(YAW));
+    mDesiredHeadingYaw = IMU.clampDegrees(mData.pigeon.get(YAW));
     initialLeftPosition = mData.drivetrain.get(LEFT_POSITION_TICKS);
     initialRightPosition = mData.drivetrain.get(RIGHT_POSITION_TICKS);
-    mLog.debug("Initial Yaw:" + IMU.clampDegrees(mData.pigeon.get(YAW)));
-//    System.out.printf("InitL:%s InitR:%s\n", initialLeftPosition, initialRightPosition);
+    mLog.debug("Initial Yaw:" + mDesiredHeadingYaw);
   }
   
   public boolean update(double pNow){
@@ -69,19 +73,26 @@ public class DriveStraight implements ICommand{
       // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
       driveTrain.holdPosition();
       DriverStation.reportError("I AM STOPPING", false);
-//      System.out.printf("FinalL:%s FinalR:%s DistTravelled:%s Target:%s\n", mData.drivetrain.get(LEFT_POSITION_TICKS), mData.drivetrain.get(RIGHT_POSITION_TICKS), getAverageDistanceTravel(), distanceToTravel);
       return true;
     }
 
     remainingDistance = distanceToTravel - currentDistance;
-    double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), initialYaw);
-    driveTrain.setDriveMessage(new DrivetrainMessage(
-                              // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
-                               Utils.clamp(mPower + kP * remainingDistance, 0.95) + (yawError * TURN_PROPORTION), 
-                               Utils.clamp(mPower + kP * remainingDistance, 0.95) - (yawError * TURN_PROPORTION),
+    // negative error = turn left; positive error = turn right
+    double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, IMU.clampDegrees(mData.pigeon.get(YAW)));
+    // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
+    // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
+    driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(
+        // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
+        // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
+        // 2 degrees of correction before % power is saturated
+         Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
+         yawError * TURN_PROPORTION, 
+         NeutralMode.Brake));
+    
+//    driveTrain.setDriveMessage(new DrivetrainMessage(
 //                               mPower + (yawError * TURN_PROPORTION), 
 //                               mPower - (yawError * TURN_PROPORTION),
-                               DrivetrainMode.PercentOutput, NeutralMode.Brake));
+//                               DrivetrainMode.PercentOutput, NeutralMode.Brake));
     
     return false;
   }
@@ -90,13 +101,16 @@ public class DriveStraight implements ICommand{
     
   }
   
+  /**
+   * @return average # of ticks traveled per encoder
+   */
   private double getAverageDistanceTravel(){
     return (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) + 
             (Math.abs(mData.drivetrain.get(RIGHT_POSITION_TICKS) - initialRightPosition))) / 2;
   }
   
   public void adjustBearing(double angleDiff){
-    initialYaw = IMU.getAngleSum(initialYaw, angleDiff);
+    mDesiredHeadingYaw = IMU.getAngleSum(mDesiredHeadingYaw, angleDiff);
   }
 	
 }
