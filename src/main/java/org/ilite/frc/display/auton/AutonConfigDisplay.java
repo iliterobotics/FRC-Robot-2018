@@ -46,11 +46,11 @@ public class AutonConfigDisplay extends Application {
 
   private CSVLogger logger = new CSVLogger();
   
-  private Integer[] preferredCubeActions;
-  private double mDelay = -1;
-  private static Integer mCross = -1;
-  private static Integer mStartingPosition = -1;
-  private static Integer mDriverControlMode = -1;
+  private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
+  private double mDelay = 0.0;
+  private static Integer mCross = ECross.values()[0].ordinal();
+  private static Integer mStartingPosition = EStartingPosition.values()[0].ordinal();
+  private static Integer mDriverControlMode = EDriverControlMode.values()[0].ordinal();
   
   private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
@@ -65,10 +65,6 @@ public class AutonConfigDisplay extends Application {
     Scene scene = new Scene(root, 800, 600);
 		
     scene.getStylesheets().add(iliteCss);
-    
-    preferredCubeActions = new Integer[ECubeAction.values().length];
-    for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
-    
     scene.setOnMouseClicked(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
         playSound("./airhorn.mp3");

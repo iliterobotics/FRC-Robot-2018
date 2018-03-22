@@ -1,35 +1,22 @@
 package org.ilite.frc.robot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-//Java8
-import java.util.stream.Collectors;
-
+import edu.wpi.first.networktables.NetworkTableEntry;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
-import org.ilite.frc.robot.commands.DriveStraight;
-import org.ilite.frc.robot.commands.ElevatorToPosition;
-import org.ilite.frc.robot.commands.GyroTurn;
-import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.commands.IntakeCube;
-import org.ilite.frc.robot.commands.ReleaseCube;
-import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.commands.*;
+import org.ilite.frc.robot.modules.*;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.EElevatorPosition;
-import org.ilite.frc.robot.modules.Elevator;
-import org.ilite.frc.robot.modules.Intake;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import openrio.powerup.MatchData;
-import openrio.powerup.MatchData.OwnedSide;
+import java.util.*;
+import java.util.stream.Collectors;
+
+//Java8
 
 public class GetAutonomous {
 	// Network Table instance variables.
@@ -398,19 +385,16 @@ public class GetAutonomous {
 	private void parseEntries() {
 		int posNum = nPosEntry.getNumber(EStartingPosition.LEFT.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.CARPET.ordinal()).intValue();
-		Integer[] defaultArray = { /*ECubeAction.SWITCH.ordinal(),*/ ECubeAction.SCALE.ordinal() };
-		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
+		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS);
 
 		mDelay = mDelayEntry.getDouble(-1);
 		mStartingPos = EStartingPosition.intToEnum(posNum);
-//		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
 		mReceivedCubeActionPrefs = new ArrayList<>();
 		mSameSideCubeActionPrefs = new ArrayList<>();
 		mOtherSideCubeActionPrefs = new ArrayList<>();
 		mAvailableCubeActions = new ArrayList<>();
 
-		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
 				continue;
@@ -418,6 +402,10 @@ public class GetAutonomous {
 
 		}
 		
+		if(mReceivedCubeActionPrefs.isEmpty()) {
+		  Arrays.asList(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS).forEach(e -> mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(e)));
+		}
+
 //    if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		
 		switch (mStartingPos) {
