@@ -1,25 +1,21 @@
 package org.ilite.frc.robot.modules;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
-import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
-import org.ilite.frc.robot.Utils;
-//import org.usfirst.frc.team1885.robot.SystemSettings;
 import org.ilite.frc.robot.controlloop.IControlLoop;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainProfilingMessage;
 import org.ilite.frc.robot.modules.drivetrain.PathFollower;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import org.usfirst.frc.team1885.robot.SystemSettings;
 /**
  * Class for running all drive train control operations from both autonomous and
  * driver-control
@@ -148,6 +144,27 @@ public class DriveTrain implements IControlLoop {
 		  leftMaster.config_kD(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		  leftMaster.config_kF(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		  break;
+		case Velocity:
+			controlMode = ControlMode.Velocity;
+
+			leftMaster.selectProfileSlot(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_PID_SLOT);
+			leftMaster.configAllowableClosedloopError(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_TOLERANCE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			leftMaster.setSelectedSensorPosition(0, SystemSettings.VELOCITY_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
+			leftMaster.config_kP(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_LEFT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			leftMaster.config_kI(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_LEFT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			leftMaster.config_kD(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_LEFT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			leftMaster.config_kF(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_LEFT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
+			rightMaster.selectProfileSlot(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_PID_SLOT);
+			rightMaster.configAllowableClosedloopError(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_TOLERANCE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			rightMaster.setSelectedSensorPosition(0, SystemSettings.VELOCITY_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
+			rightMaster.config_kP(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_RIGHT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			rightMaster.config_kI(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_RIGHT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			rightMaster.config_kD(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_RIGHT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			rightMaster.config_kF(SystemSettings.VELOCITY_PID_SLOT, SystemSettings.VELOCITY_RIGHT_kP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+			break;
 		case MotionMagic:
 		  controlMode = ControlMode.MotionMagic;
 			leftMaster.selectProfileSlot(SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);

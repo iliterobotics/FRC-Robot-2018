@@ -1,7 +1,11 @@
 package org.ilite.frc.common.config;
 
-import java.util.concurrent.TimeUnit;
-
+import com.flybotix.hfr.io.MessageProtocols.EProtocol;
+import com.team254.lib.util.ConstantsBase;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import jaci.pathfinder.Trajectory.Config;
+import jaci.pathfinder.Trajectory.FitMethod;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.ELogitech310;
@@ -9,13 +13,7 @@ import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.SimpleNetworkTable;
 import org.ilite.frc.robot.auto.FieldAdapter;
 
-import com.flybotix.hfr.io.MessageProtocols.EProtocol;
-import com.team254.lib.util.ConstantsBase;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import jaci.pathfinder.Trajectory.Config;
-import jaci.pathfinder.Trajectory.FitMethod;
+import java.util.concurrent.TimeUnit;
 
 
 public class SystemSettings extends ConstantsBase {
@@ -117,7 +115,24 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double  DRIVETRAIN_RIGHT_VELOCITY_kD = 0;
   public static double  DRIVETRAIN_RIGHT_kA = 0;
   public static double  DRIVETRAIN_RIGHT_kV = 1.0 / 13.848650721299247;
-  
+
+  // =============================================================================
+  // Closed-loop Velocity Mode Constants
+  // =============================================================================
+  public static double  VELOCITY_LEFT_kP = 0.0;
+  public static double  VELOCITY_LEFT_kD = 0.0;
+  public static double  VELOCITY_LEFT_kI = 0.0;
+  public static double  VELOCITY_LEFT_kF = 0.0;
+
+  public static double  VELOCITY_RIGHT_kP = 0.0;
+  public static double  VELOCITY_RIGHT_kI = 0.0;
+  public static double  VELOCITY_RIGHT_kD = 0.0;
+  public static double  VELOCITY_RIGHT_kF = 0.0;
+
+  public static int     VELOCITY_PID_SLOT = 0;
+  public static int     VELOCITY_LOOP_SLOT = 0;
+  public static int     VELOCITY_TOLERANCE = 0;
+
   // =============================================================================
   // Elevator Constants
   // =============================================================================  

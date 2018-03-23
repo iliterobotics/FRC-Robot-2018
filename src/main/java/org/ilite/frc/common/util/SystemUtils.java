@@ -1,19 +1,19 @@
 package org.ilite.frc.common.util;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.lang.EnumUtils;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SystemUtils {
 
@@ -44,7 +44,30 @@ public class SystemUtils {
             .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
             .collect(Collectors.joining(","));
   }
-  
+
+  public static List<String> parseCsvRow(String pCsvRow) {
+    return Arrays.asList(pCsvRow.replaceAll(" ", "").split(","));
+  }
+
+  public static Map<String, List<String>> csvToMap(File pCsvFile) {
+    HashMap<String, List<String>> mCsvMap = new HashMap<>();
+    ArrayList<List<String>> mSplitLines = new ArrayList<>();
+    try {
+      Files.readAllLines(pCsvFile.toPath()).forEach(e -> mSplitLines.add(parseCsvRow(e)));
+      List<String> mHeaderLine = mSplitLines.get(0);
+      mSplitLines.remove(0); // Remove the header line from our data
+      for(int headerIndex = 0; headerIndex < mSplitLines.size(); headerIndex++) {
+        String header = mHeaderLine.get(headerIndex);
+        final int index = headerIndex;
+        mCsvMap.put(header, mSplitLines.stream().map(e -> e.get(index)).collect(Collectors.toList()));
+      }
+    } catch (IOException e) {
+      System.err.println("Error parsing CSV file: " + pCsvFile.getAbsolutePath());
+      e.printStackTrace();
+    }
+    return mCsvMap;
+  }
+
   /**
    * Provides a way to write every value of a codex to the smart dashboard.
    * @param pCodex

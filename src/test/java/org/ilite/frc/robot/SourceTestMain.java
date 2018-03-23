@@ -1,13 +1,11 @@
 package org.ilite.frc.robot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import openrio.powerup.MatchData.OwnedSide;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 
-import openrio.powerup.MatchData.OwnedSide;
+import java.util.ArrayList;
 
 
 public class SourceTestMain {
@@ -42,5 +40,7 @@ public class SourceTestMain {
 //	  }
 	  
 	}
+
+	publ
 
 }
