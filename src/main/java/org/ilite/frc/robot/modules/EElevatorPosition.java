@@ -14,13 +14,13 @@ package org.ilite.frc.robot.modules;
 
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
-		public int tapeMark;
-		EElevatorPosition(double power, int tapeMark)
+		public int encoderThreshold;
+		EElevatorPosition(double power, int encoderThreshold)
 		{
 			this.mSetpointPower = power;
-			this.tapeMark = tapeMark;
+			this.encoderThreshold = encoderThreshold;
 		}
-//		private boolean isTapeMarker()
+//		private boolean isencoderThresholder()
 //		{
 //			return power != 0;
 //		}

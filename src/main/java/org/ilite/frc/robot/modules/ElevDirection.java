@@ -20,14 +20,14 @@ public enum ElevDirection
 
 	boolean isPositiveDirection;
 	double mCurrentLimitRatio;
-	int decelerationTapeMark;
+	int decelerationEncoderThreshold;
 	int continuousCurrentLimit;
 
-	ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int decelerationTapeMark, int continuousCurrentLimit)
+	ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int decelerationEncoderThreshold, int continuousCurrentLimit)
 	{
 		this.isPositiveDirection = isPositiveDirection;
 		mCurrentLimitRatio = pCurrentLimitRatio;
-		this.decelerationTapeMark = decelerationTapeMark;
+		this.decelerationEncoderThreshold = decelerationEncoderThreshold;
 		this.continuousCurrentLimit = continuousCurrentLimit;
 	}
 
@@ -57,15 +57,15 @@ public enum ElevDirection
 	}
 	/**
 	 * 
-	 * @param currentTapeMark
+	 * @param currentEncoderTick
 	 * @return whether we should be decelerated at this position
 	 */
-	public boolean shouldDecelerate(int currentTapeMark, boolean isUp)
+	public boolean shouldDecelerate(int currentEncoderTick, boolean isUp)
 	{
 	  if(isUp) {
-      return currentTapeMark >= decelerationTapeMark;
+      return currentEncoderTick >= decelerationEncoderThreshold;
 	  } else {
-	    return currentTapeMark <= decelerationTapeMark;
+	    return currentEncoderTick <= decelerationEncoderThreshold;
 	  }
 	}
 	
