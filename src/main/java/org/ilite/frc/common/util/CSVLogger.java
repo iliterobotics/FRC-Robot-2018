@@ -92,8 +92,7 @@ public class CSVLogger extends Thread{
     List<String> rowList = entry.getValue().stream()
             .map(networkTablesKey -> SystemSettings.SMART_DASHBOARD.getEntry(entry.getKey() + "-" + networkTablesKey).getNumber(-1).toString())
             .collect(Collectors.toList());
-    rowList.add(SystemSettings.SMART_DASHBOARD.getEntry(entry.getKey() + "-" + SystemSettings.LOGGING_TIMESTAMP_KEY).getNumber(-1).toString());
-    rowList.add(Long.toString(System.currentTimeMillis() / 1000));
+    rowList.set(rowList.size() - 1, Long.toString(System.currentTimeMillis() / 1000));
     
     writer.append(SystemUtils.toCsvRow(rowList) + "\n");
     writer.flush();

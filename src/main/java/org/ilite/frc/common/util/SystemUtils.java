@@ -51,8 +51,8 @@ public class SystemUtils {
    * Provides a way to write every value of a codex to NetworkTables.
    * @param pCodex The codex you want to dump to NetworkTables.
    */
-  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex, double pTime) {
-    writeCodexToSmartDashboard(pCodex.getClass().getSimpleName(), pCodex, pTime);
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, double pTime) {
+    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pTime);
   }
   
   /**
