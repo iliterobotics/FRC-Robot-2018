@@ -24,12 +24,12 @@ public class Elevator implements IModule {
   
   private Data mData;
   private final Hardware mHardware;
-  TalonTach talonTach;
+//  TalonTach talonTach;
   Solenoid shiftSolenoid;
 	TalonSRX masterElevator, followerElevator;
 	
 	private boolean hasInitialized;
-	private boolean lastTachState, currentTachState;
+//	private boolean lastTachState, currentTachState;
 	private int currentTachLevel, currentEncoderTicks;
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
@@ -102,10 +102,10 @@ public class Elevator implements IModule {
 	    hasInitialized = true;
 		}
 		
-    talonTach = mHardware.getTalonTach();
+//    talonTach = mHardware.getTalonTach();
 
-    currentTachState = talonTach.getSensor();
-    lastTachState = currentTachState;
+//    currentTachState = talonTach.getSensor();
+//    lastTachState = currentTachState;
     
 		setGearState(EElevatorGearState.NORMAL);
 		elevatorState = EElevatorState.STOP;
@@ -114,11 +114,11 @@ public class Elevator implements IModule {
 	@Override
 	public boolean update(double pNow) {
 	  
-		currentTachState = talonTach.getSensor();
+//		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
     
     isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
-    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
+//    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
 
     elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
     boolean isCurrentLimited = isCurrentLimiting();
@@ -208,15 +208,15 @@ public class Elevator implements IModule {
         else switch(elevatorDirection)
         {
           case UP:
-
-            if(elevatorDirection.shouldDecelerate(currentEncoderTicks,  elevatorDirection.isPositiveDirection))
+            
+            if(elevatorDirection.shouldDecelerate(currentEncoderTicks))
             {
               elevatorState = EElevatorState.DECELERATE_TOP;
             }
             else elevatorState = EElevatorState.NORMAL;
             break;
           case DOWN:
-            if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
+            if(elevatorDirection.shouldDecelerate(currentEncoderTicks))
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
             }

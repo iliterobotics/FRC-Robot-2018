@@ -1,5 +1,7 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -22,7 +24,6 @@ public enum ElevDirection
 	double mCurrentLimitRatio;
 	int decelerationEncoderThreshold;
 	int continuousCurrentLimit;
-
 	ElevDirection(boolean isPositiveDirection, double pCurrentLimitRatio, int decelerationEncoderThreshold, int continuousCurrentLimit)
 	{
 		this.isPositiveDirection = isPositiveDirection;
@@ -59,14 +60,12 @@ public enum ElevDirection
 	 * 
 	 * @param currentEncoderTick
 	 * @return whether we should be decelerated at this position
+	 * 
+	 * compares the current encoder tick to the threshold, if in range then decelerate
 	 */
-	public boolean shouldDecelerate(int currentEncoderTick, boolean isUp)
+	public boolean shouldDecelerate(int currentEncoderTick)
 	{
-	  if(isUp) {
-      return currentEncoderTick >= decelerationEncoderThreshold;
-	  } else {
-	    return currentEncoderTick <= decelerationEncoderThreshold;
-	  }
+	    return Utils.inRange(currentEncoderTick, decelerationEncoderThreshold, SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE);
 	}
 	
 }

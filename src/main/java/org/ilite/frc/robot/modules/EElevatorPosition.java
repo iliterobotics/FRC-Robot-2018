@@ -1,5 +1,8 @@
 package org.ilite.frc.robot.modules;
 
+import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.robot.Utils;
+
 /**
 	 * 
 	 * @author ilite
@@ -15,16 +18,17 @@ package org.ilite.frc.robot.modules;
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
 		public int encoderThreshold;
-		int thresholdRange = 50;
 		EElevatorPosition(double power, int encoderThreshold)
 		{
 			this.mSetpointPower = power;
 			this.encoderThreshold = encoderThreshold;
 		}
 		
+		//checks if passed encoderTick is within the range of the threshold, to determine whether the elevator needs to hold
 		public boolean inRange(int currentEncoderTick)
 		{
-		  return Math.abs(currentEncoderTick - encoderThreshold) <= thresholdRange;
+      return Utils.inRange(currentEncoderTick, encoderThreshold, SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE);
+
 		}
 //		private boolean isencoderThresholder()
 //		{

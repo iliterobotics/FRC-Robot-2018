@@ -79,4 +79,8 @@ public class Utils {
     return val * (pValue > 0d ? 1d : -1d);
   }
   
+  public static boolean inRange(int pCurrent, int pComparison, int range)
+  {
+    return Math.abs(pCurrent - pComparison) <= range;
+  }
 }

@@ -126,6 +126,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double ELEVATOR_NORMAL_MAX_POWER = 0.8d;
   public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
   public static int    TOP_ENCODER_TICK = 1024;
+  public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 50;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
