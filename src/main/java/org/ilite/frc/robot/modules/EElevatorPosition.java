@@ -15,10 +15,16 @@ package org.ilite.frc.robot.modules;
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
 		public int encoderThreshold;
+		int thresholdRange = 50;
 		EElevatorPosition(double power, int encoderThreshold)
 		{
 			this.mSetpointPower = power;
 			this.encoderThreshold = encoderThreshold;
+		}
+		
+		public boolean inRange(int currentEncoderTick)
+		{
+		  return Math.abs(currentEncoderTick - encoderThreshold) <= thresholdRange;
 		}
 //		private boolean isencoderThresholder()
 //		{

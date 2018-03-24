@@ -185,7 +185,7 @@ public class Elevator implements IModule {
 
       case POSITION:
 
-        if (currentEncoderTicks != elevatorPosition.encoderThreshold) {
+        if (!elevatorPosition.inRange(currentEncoderTicks)) {
           mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : elevatorPosition.mSetpointPower;
           elevatorState = EElevatorState.NORMAL;
         }
