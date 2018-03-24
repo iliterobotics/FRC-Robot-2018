@@ -31,13 +31,13 @@ public enum ElevDirection
 		this.continuousCurrentLimit = continuousCurrentLimit;
 	}
 
-	public static ElevDirection getDirection(double pDesiredPower, ElevatorControlMode pElevatorControlMode)
+	public static ElevDirection getDirection(double pVoltage, ElevatorControlMode pElevatorControlMode)
 	{
-	  if(pDesiredPower == 0) return OFF;
+	  if(pVoltage == 0) return OFF;
 	  if(pElevatorControlMode == ElevatorControlMode.CLIMBER) {
-	    return pDesiredPower > 0 ? CLIMBER_UP : CLIMBER_DOWN;
+	    return pVoltage > 0 ? CLIMBER_UP : CLIMBER_DOWN;
 	  } else {
-	    return pDesiredPower > 0 ? UP : DOWN;
+	    return pVoltage > 0 ? UP : DOWN;
 	  }
 	}
 

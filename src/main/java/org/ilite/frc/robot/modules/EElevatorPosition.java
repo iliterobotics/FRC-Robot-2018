@@ -7,21 +7,19 @@ package org.ilite.frc.robot.modules;
 	 */
 	public enum EElevatorPosition
 	{
-		BOTTOM(0.4, 0),
-		FIRST_TAPE(0.5, 2),
-		SECOND_TAPE(0.6, 4),
-		THIRD_TAPE(0.6, 6);
-
-		double inches;
-		double mSetpointPower; // Power to apply in order to servo to position
-		public int tapeMark;
-		EElevatorPosition(double power, int tapeMark)
+		BOTTOM(0),
+		FIRST_TAPE(2),
+		SECOND_TAPE(4),
+		THIRD_TAPE(6);
+	  
+		public int encoderThreshold;
+		EElevatorPosition(int encoderThreshold)
 		{
-			this.mSetpointPower = power;
-			this.tapeMark = tapeMark;
+			this.encoderThreshold = encoderThreshold;
 		}
-//		private boolean isTapeMarker()
-//		{
-//			return power != 0;
-//		}
+		
+		public boolean isAtPosition(int pCurrentPosition, EElevatorPosition pPosition) {
+		  return Math.abs(pPosition.encoderThreshold - pCurrentPosition) < Elevator.ENCODER_POS_TOLERANCE;
+		}
+		
 	}

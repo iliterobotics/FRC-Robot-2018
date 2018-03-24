@@ -125,6 +125,17 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static int     DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH = 6;
   public static double ELEVATOR_NORMAL_MAX_POWER = 0.8d;
   public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
+  
+  public static double  ELEVATOR_MOTION_MAGIC_P = 0.0;
+  public static double  ELEVATOR_MOTION_MAGIC_I = 0.0;
+  public static double  ELEVATOR_MOTION_MAGIC_D = 0.0;
+  public static double  ELEVATOR_MOTION_MAGIC_F = 0.0;
+  
+  public static int     ELEVATOR_MOTION_MAGIC_V = 0;
+  public static int     ELEVATOR_MOTION_MAGIC_A = 0;
+  
+  public static int     ELEVATOR_PID_SLOT = 0;
+  public static int     ELEVATOR_LOOP_SLOT = 0;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  

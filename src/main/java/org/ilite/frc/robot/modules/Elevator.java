@@ -18,21 +18,26 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
 
+  public static final int POS_DECREMENT_AMOUNT = 0;
+  public static final int POS_INCREMENT_AMOUNT = 0;
+  public static final int ENCODER_POS_TOLERANCE = 0; // The error we should tolerate for closed-loop control
+  public static final int ENCODER_PANIC_THRESHOLD = 0; // If we are this many ticks further up or down than the lower and upper limits, we should panic and stop the elevator
+  public static final int UPPER_ENC_POS_LIMIT = 0;
+  public static final int BOTTOM_ENC_POS_LIMIT = 0;
+  
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
   public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
   public static final double RAMP_OPEN_LOOP = 1d;
   
   private Data mData;
   private final Hardware mHardware;
-  TalonTach talonTach;
   Solenoid shiftSolenoid;
 	TalonSRX masterElevator, followerElevator;
 	
 	private boolean hasInitialized;
-	private boolean lastTachState, currentTachState;
-	private int currentTachLevel, currentEncoderTicks;
-	private double mDesiredPower = 0;
-	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
+	private double mDesiredPower;
+	private int currentEncoderTicks, desiredEncoderTicks;
+	private boolean mAtBottom = true, mAtTop = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
 	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
@@ -54,10 +59,21 @@ public class Elevator implements IModule {
 		hasInitialized = false;
 		
     followerElevator.follow(masterElevator);
-    masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+    
+    zeroEncoder();
+    
 		masterElevator.configContinuousCurrentLimit(DEFAULT_CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
 		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, 0);
+
+		masterElevator.selectProfileSlot(SystemSettings.ELEVATOR_PID_SLOT, SystemSettings.ELEVATOR_LOOP_SLOT);
+		masterElevator.config_kP(SystemSettings.ELEVATOR_PID_SLOT, SystemSettings.ELEVATOR_MOTION_MAGIC_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.config_kI(SystemSettings.ELEVATOR_PID_SLOT, SystemSettings.ELEVATOR_MOTION_MAGIC_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.config_kD(SystemSettings.ELEVATOR_PID_SLOT, SystemSettings.ELEVATOR_MOTION_MAGIC_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.config_kF(SystemSettings.ELEVATOR_PID_SLOT, SystemSettings.ELEVATOR_MOTION_MAGIC_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.configMotionCruiseVelocity(SystemSettings.ELEVATOR_MOTION_MAGIC_V, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.configMotionAcceleration(SystemSettings.ELEVATOR_MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		
 		// TODO set voltage ramp & current limit
 	}
 
@@ -88,9 +104,11 @@ public class Elevator implements IModule {
 		if(!hasInitialized) {
 	    mAtBottom = true;
 	    mAtTop = false;
-	    isDesiredDirectionUp = true;
 	    
-	    currentTachLevel = 0;
+	    mDesiredPower = 0;
+	    
+	    currentEncoderTicks = 0;
+	    desiredEncoderTicks = 0;
 	    
 	    elevatorState = EElevatorState.STOP;
 	    elevatorPosition = EElevatorPosition.BOTTOM;
@@ -99,11 +117,6 @@ public class Elevator implements IModule {
 	    
 	    hasInitialized = true;
 		}
-		
-    talonTach = mHardware.getTalonTach();
-
-    currentTachState = talonTach.getSensor();
-    lastTachState = currentTachState;
     
 		setGearState(EElevatorGearState.NORMAL);
 		elevatorState = EElevatorState.STOP;
@@ -112,21 +125,17 @@ public class Elevator implements IModule {
 	@Override
 	public boolean update(double pNow) {
 	  
-		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
     
-    isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
-    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
-
-    elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
+    elevatorDirection = ElevDirection.getDirection(masterElevator.getMotorOutputVoltage(), elevControlMode);
+    
     boolean isCurrentLimited = isCurrentLimiting();
-
 		mAtTop = isCurrentLimited && elevatorDirection == ElevDirection.UP;
 		mAtBottom = isCurrentLimited && elevatorDirection == ElevDirection.DOWN;
 //		if(mAtTop) {
 //		  resetTop();
 //		} else if
-		  if(mAtBottom) {
+		if(mAtBottom) {
 		  resetBottom();
 		}
 
@@ -139,28 +148,19 @@ public class Elevator implements IModule {
 		  updateElevatorControl();
 		}
     
-		double actualPower = 0;
+		double actualTicks = currentEncoderTicks;
 
 		switch(elevatorState){
-
 			case NORMAL:
-				actualPower = mDesiredPower;
+			  actualTicks = Utils.clamp(actualTicks, BOTTOM_ENC_POS_LIMIT, UPPER_ENC_POS_LIMIT);
+				actualTicks = desiredEncoderTicks;
 				break;
-
-			case DECELERATE_BOTTOM:
-			  actualPower = Math.max(mDesiredPower, elevatorState.power);
-			  break;
-			case DECELERATE_TOP:
-			  actualPower = Math.min(mDesiredPower, elevatorState.power);
-				break;
-
 			case HOLD:
-		    actualPower = elevGearState.holdVoltage / masterElevator.getBusVoltage();
+		    masterElevator.set(ControlMode.PercentOutput, elevGearState.holdVoltage / masterElevator.getBusVoltage());
 				break;
-
 			case STOP:
 			default:
-				actualPower = EElevatorState.STOP.getPower();
+			  masterElevator.set(ControlMode.PercentOutput, 0.0);
 				break;
 		}
 
@@ -170,7 +170,7 @@ public class Elevator implements IModule {
 		//log.warn(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDesiredDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
 //		log.warn("ElevState:" + elevatorState +  " talonTach=" + currentTachLevel + " talonTachState=" + currentTachState);
 //		log.warn(masterElevator.getOutputCurrent() + "/" + masterElevator.getMotorOutputVoltage());
-		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
+		masterElevator.set(ControlMode.MotionMagic, Utils.clamp(desiredEncoderTicks, BOTTOM_ENC_POS_LIMIT, UPPER_ENC_POS_LIMIT));
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
 		shiftSolenoid.set(elevGearState.gearState);
@@ -180,62 +180,19 @@ public class Elevator implements IModule {
 	private void updateElevatorControl() {
 
     switch(elevControlMode) {
-
       case POSITION:
-
-        if (currentTachLevel != elevatorPosition.tapeMark) {
-          mDesiredPower = currentTachLevel > elevatorPosition.tapeMark ? -elevatorPosition.mSetpointPower : elevatorPosition.mSetpointPower;
-          elevatorState = EElevatorState.NORMAL;
-        }
-        else
-        {
-          elevatorState = EElevatorState.HOLD;
-        }
-        log.debug("TAPE MARKER " + elevatorPosition);
-        break;
-
-        
+        if(shouldPanic()) elevatorState = EElevatorState.STOP;
+        if(isPosNear(currentEncoderTicks, desiredEncoderTicks)) elevatorState = EElevatorState.HOLD;
+        if(!isPosNear(currentEncoderTicks, desiredEncoderTicks)) elevatorState = EElevatorState.NORMAL;
+        break;        
       case CLIMBER:
       case MANUAL:
         //if no input, idle at hold power
         if(Math.abs(mDesiredPower) == 0d && !mAtBottom)
         {
           elevatorState = EElevatorState.HOLD;
-        }
-        //else, decide state based on direction enum
-        else switch(elevatorDirection)
-        {
-          case UP:
-
-            if(elevatorDirection.shouldDecelerate(currentTachLevel,  elevatorDirection.isPositiveDirection))
-            {
-              elevatorState = EElevatorState.DECELERATE_TOP;
-            }
-            else elevatorState = EElevatorState.NORMAL;
-            break;
-          case DOWN:
-//            if(mDesiredPower <= 0.25 && !mAtBottom)
-//            {
-//              elevatorState = EElevatorState.HOLD;
-//            }
-//            else
-//            {
-//            }
-
-            if(elevatorDirection.shouldDecelerate(currentTachLevel, elevatorDirection.isPositiveDirection))
-            {
-              elevatorState = EElevatorState.DECELERATE_BOTTOM;
-            }
-            else elevatorState = EElevatorState.NORMAL;
-            break;
-          case CLIMBER_UP:
-            elevatorState = EElevatorState.NORMAL;
-            break;
-          case CLIMBER_DOWN:
-            elevatorState = EElevatorState.NORMAL;
-            break;
-          default:
-            elevatorState = EElevatorState.STOP;
+        } else {
+          elevatorState = EElevatorState.NORMAL;
         }
         break;
     }
@@ -247,52 +204,14 @@ public class Elevator implements IModule {
 	}
 	
 	private void resetTop() {
-
-    currentTachLevel = 6;
+	  currentEncoderTicks = UPPER_ENC_POS_LIMIT;
+	  zeroEncoder(UPPER_ENC_POS_LIMIT);
 	}
 	
 	private void resetBottom() {
-    currentTachLevel = 0;
     currentEncoderTicks = 0;
-    masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+    zeroEncoder(BOTTOM_ENC_POS_LIMIT);
 	}
-
-	/*
-	  Changes the tach level by taking the currentTachState and lastTachState every cycle.
-	  Increases by one when first encounters non-reflective material
-
-	  true = reflective material (powdercoat) false = non-reflective (tape)
-	 */
-  private int getTachLevel(boolean currentTachState)//, boolean pLastTachState)
-  {
-    // True = on metal, false = on tape
-    // last = true, current = false ==> rising edge
-//    if(pLastTachState == true && currentTachState == false)
-//    {
-//      if(isDesiredDirectionUp)
-//      {
-//        currentTachLevel++;
-//      }
-//      if(!isDesiredDirectionUp)
-//      {
-//        currentTachLevel--;
-//      }
-//		}
-//    lastTachState = currentTachState;
-    //if it hits or leaves a tape, changes tachlevel based on direction
-    if(currentTachState)
-    {
-      if(isDesiredDirectionUp)
-      {
-        currentTachLevel++;
-      }
-      if(!isDesiredDirectionUp)
-      {
-        currentTachLevel--;
-      }
-    }
-    return currentTachLevel;
-  }
 
   public void setPower(double power) {
 			mDesiredPower = power;
@@ -302,12 +221,6 @@ public class Elevator implements IModule {
   {
     this.elevControlMode = elevControlMode;
   }
-
-	
-	public void setCurrentTachLevel(int tachLevel)
-	{
-	  currentTachLevel = tachLevel;
-	}
 	
 	public void setGearState(EElevatorGearState newState)
   {
@@ -323,30 +236,19 @@ public class Elevator implements IModule {
 
 	  return mAtBottom;
 	}
-
-	//obsolete?
+	
 	public void zeroEncoder()
 	{
-	  masterElevator.setSelectedSensorPosition(0, 0, 0);
+	  zeroEncoder(0);
+	}
+	
+	public void zeroEncoder(int pTicks) {
+	  masterElevator.setSelectedSensorPosition(SystemSettings.ELEVATOR_PID_SLOT, pTicks, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 	}
 
 	@Override
 	public void shutdown(double pNow) {
 
-	}
-
-	public void goToBottom()
-	{
-		elevatorPosition = EElevatorPosition.BOTTOM;
-	}
-
-	public boolean decelerateHeight()
-	{
-		return currentTachLevel >= 2;
-	}
-	public boolean getDirection()
-	{
-		return isDesiredDirectionUp;
 	}
 
 	public EElevatorPosition getElevatorPosition()
@@ -369,10 +271,6 @@ public class Elevator implements IModule {
   {
     return elevControlMode;
   }
-	public int getCurrentTachLevel()
-  {
-    return currentTachLevel;
-  }
 
   public int getCurrentEncoderTicks() {
     return currentEncoderTicks;
@@ -386,6 +284,24 @@ public class Elevator implements IModule {
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
 		return elevatorDirection.isCurrentRatioLimited(masterElevator);
+	}
+  
+  public void up() {
+    desiredEncoderTicks = currentEncoderTicks + POS_INCREMENT_AMOUNT;
+  }
+	
+	public void down() {
+	  desiredEncoderTicks = currentEncoderTicks - POS_DECREMENT_AMOUNT;
+	}
+	
+	private boolean isPosNear(int pCurrentTicks, int pGoalTicks) {
+	  return Math.abs(pGoalTicks - pCurrentTicks) < ENCODER_POS_TOLERANCE;
+	}
+	
+	private boolean shouldPanic() {
+	  boolean panicTop = Math.abs(currentEncoderTicks - UPPER_ENC_POS_LIMIT) > ENCODER_PANIC_THRESHOLD;
+	  boolean panicBottom = Math.abs(currentEncoderTicks - BOTTOM_ENC_POS_LIMIT) > ENCODER_PANIC_THRESHOLD;
+	  return panicTop || panicBottom;
 	}
 	
 }

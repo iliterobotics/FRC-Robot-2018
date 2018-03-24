@@ -79,4 +79,11 @@ public class Utils {
     return val * (pValue > 0d ? 1d : -1d);
   }
   
+  public static double clamp(double pValue, double pMinValue, double pMaxValue) {
+    double value = pValue;
+    if(value < pMinValue) value = pMinValue;
+    if(value > pMaxValue) value = pMaxValue;
+    return value;
+  }
+  
 }
