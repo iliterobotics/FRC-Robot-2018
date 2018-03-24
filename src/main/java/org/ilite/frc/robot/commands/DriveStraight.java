@@ -4,6 +4,7 @@ import static org.ilite.frc.common.types.EDriveTrain.LEFT_POSITION_TICKS;
 import static org.ilite.frc.common.types.EDriveTrain.RIGHT_POSITION_TICKS;
 import static org.ilite.frc.common.types.EPigeon.YAW;
 
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
@@ -26,12 +27,12 @@ public class DriveStraight implements ICommand{
   
   //If error > ~3 feet, then use max power (1.0)
   // If error < ~3 feet, then 
-  // therefore we want to slow down when there are 8096 ticks remaining
+  // therefore we want to slow down when there are (3ft / wheel diameter) * ticks per rotation ticks remaining
   // Therefore P = (1 - default power) / (# of wheel rotations to start slowing down * # of ticks per rotation)
   // TODO - verify it's 4096 ticks per rotation for this encoder
-  private static final double NUM_TICKS_FOR_SLOWDOWN = 2d * 4096d;
+  private static final double NUM_TICKS_FOR_SLOWDOWN = Utils.inchesToTicks(10 * 12);
   // Units are % power per remaining encoder tick
-  private double kP = 0.4 / 8096d;
+  private double kP = 0.4 / (Utils.inchesToTicks(36));
   // % motor output
   private double mPower;
   
@@ -71,21 +72,23 @@ public class DriveStraight implements ICommand{
     double currentDistance = getAverageDistanceTravel();
     if( currentDistance >= distanceToTravel){
       // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
-      driveTrain.holdPosition();
-      DriverStation.reportError("I AM STOPPING", false);
+//      driveTrain.holdPosition();
+      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+      DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;
     }
 
     remainingDistance = distanceToTravel - currentDistance;
     // negative error = turn left; positive error = turn right
-    double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, IMU.clampDegrees(mData.pigeon.get(YAW)));
+    // We negate angle beacuse pigeon angle goes counter-clockwise
+    double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, -IMU.clampDegrees(mData.pigeon.get(YAW)));
     // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
     // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
     driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(
         // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
         // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
         // 2 degrees of correction before % power is saturated
-         Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
+        Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
          yawError * TURN_PROPORTION, 
          NeutralMode.Brake));
     
