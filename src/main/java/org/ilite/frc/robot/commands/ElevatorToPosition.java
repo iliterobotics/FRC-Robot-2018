@@ -26,7 +26,7 @@ public class ElevatorToPosition implements ICommand {
   @Override
   public boolean update(double pNow) {
     mElevator.setPosition(mPosition);
-    if(mElevator.getCurrentEncoderTicks() == mPosition.encoderThreshold) return true;
+    if(mPosition.inRange(mElevator.getCurrentEncoderTicks())) return true;
     if(pNow - mStartTime >= mTimeout) return true;
     return false;
   }
