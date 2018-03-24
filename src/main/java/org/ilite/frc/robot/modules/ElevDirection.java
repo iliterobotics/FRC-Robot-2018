@@ -14,8 +14,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public enum ElevDirection
 {
   //up = 3 down = 1
-	UP(true, 35d/12d, 5, 20),
-	DOWN(false, 20d/12d, 2, 10),
+	UP(true, 35d/12d, 5000, 20),
+	DOWN(false, 20d/12d, 1200, 10),
 	CLIMBER_UP(true, 30d/12d, 5, 20),
 	CLIMBER_DOWN(false, 65d/12d, 2, 10),
 	OFF(false, 15d/12d, 0, 0);
@@ -61,11 +61,18 @@ public enum ElevDirection
 	 * @param currentEncoderTick
 	 * @return whether we should be decelerated at this position
 	 * 
-	 * compares the current encoder tick to the threshold, if in range then decelerate
+	 * compares the current encoder tick to the threshold, if beyond/below then decelerate
 	 */
-	public boolean shouldDecelerate(int currentEncoderTick)
+	public boolean shouldDecelerate(int currentEncoderTick, boolean isUp)
 	{
-	    return Utils.inRange(currentEncoderTick, decelerationEncoderThreshold, SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE);
+	  if(isUp)
+	  {
+	    return currentEncoderTick >= decelerationEncoderThreshold;
+	  }
+	  else
+	  {
+	    return currentEncoderTick <= decelerationEncoderThreshold;
+	  }
 	}
 	
 }

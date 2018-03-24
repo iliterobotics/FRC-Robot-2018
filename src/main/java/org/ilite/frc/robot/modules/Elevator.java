@@ -9,6 +9,8 @@ import org.ilite.frc.robot.Utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
@@ -60,6 +62,8 @@ public class Elevator implements IModule {
 		masterElevator.configContinuousCurrentLimit(DEFAULT_CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
 		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, 0);
+		masterElevator.setSensorPhase(true);
+		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		// TODO set voltage ramp & current limit
 	}
 
@@ -116,7 +120,7 @@ public class Elevator implements IModule {
 	  
 //		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
-    
+    System.out.println("CURRENT ENCODER TICKS=" + currentEncoderTicks);
     isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
 //    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
 
@@ -128,14 +132,15 @@ public class Elevator implements IModule {
 //		if(mAtTop) {
 //		  resetTop();
 //		} else if
-		  if(mAtBottom) {
-		  resetBottom();
-		}
+//		  if(mAtBottom) {
+//		  resetBottom();
+//		}
 
 //    masterElevator.configContinuousCurrentLimit(elevatorDirection.getCurrentLimit(), 0); // Don't wait to check for config success so we don't delay loop
 //		masterElevator.enableCurrentLimit(true);   
 		
 		if(isCurrentLimited) {
+		  System.out.println("================================= CURRENT LIMITED");
 		  elevatorState = EElevatorState.STOP;
 		} else {
 		  updateElevatorControl();
@@ -176,6 +181,8 @@ public class Elevator implements IModule {
 //		masterElevator.set(ControlMode.PercentOutput, actualPower);
 		//System.out.println(mDesiredPower + "POST CHECK");
 		shiftSolenoid.set(elevGearState.gearState);
+		System.out.println("elevState=" + elevatorState);
+		System.out.println("elevControlMode=" + elevControlMode);
 		return true;
 	}
 	
@@ -185,15 +192,17 @@ public class Elevator implements IModule {
 
       case POSITION:
 
-        if (!elevatorPosition.inRange(currentEncoderTicks)) {
-          mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : elevatorPosition.mSetpointPower;
+        if (!elevatorPosition.inRange(currentEncoderTicks) && currentEncoderTicks <= elevatorPosition.encoderThreshold) {
+          mDesiredPower = elevatorPosition.mSetpointPower;
           elevatorState = EElevatorState.NORMAL;
+          System.out.println("============= GOING TO POSITION");
         }
         else
         {
           elevatorState = EElevatorState.HOLD;
+          System.out.println("==========HOLDING POSITION");
         }
-        log.debug("TAPE MARKER " + elevatorPosition);
+//        log.debug("TAPE MARKER " + elevatorPosition);
         break;
 
         
@@ -209,14 +218,14 @@ public class Elevator implements IModule {
         {
           case UP:
             
-            if(elevatorDirection.shouldDecelerate(currentEncoderTicks))
+            if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_TOP;
             }
             else elevatorState = EElevatorState.NORMAL;
             break;
           case DOWN:
-            if(elevatorDirection.shouldDecelerate(currentEncoderTicks))
+            if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
             }
@@ -258,6 +267,8 @@ public class Elevator implements IModule {
 
 	  true = reflective material (powdercoat) false = non-reflective (tape)
 	 */
+	
+	//OBSOLETE
   private int getTachLevel(boolean currentTachState)//, boolean pLastTachState)
   {
     //if it hits or leaves a tape, changes tachlevel based on direction
@@ -305,10 +316,9 @@ public class Elevator implements IModule {
 	  return mAtBottom;
 	}
 
-	//obsolete?
 	public void zeroEncoder()
 	{
-	  masterElevator.setSelectedSensorPosition(0, 0, 0);
+    masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 	}
 
 	@Override
