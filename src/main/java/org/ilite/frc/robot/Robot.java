@@ -203,8 +203,8 @@ public class Robot extends IterativeRobot {
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.drivetrain, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(mData.elevator, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
   }
   
   /**
