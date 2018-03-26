@@ -101,7 +101,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
   public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-  public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 6000;
+  public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
   public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
   public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
   public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
@@ -125,8 +125,8 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static int     DIO_ELEVATOR_BOTTOM_LIMIT_SWITCH = 6;
   public static double ELEVATOR_NORMAL_MAX_POWER = 0.8d;
   public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
-  public static int    TOP_ENCODER_TICK = 1024;
-  public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 50;
+  public static int    ELEVATOR_TOP_ENCODER_TICK = 6000;
+  public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 200;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  

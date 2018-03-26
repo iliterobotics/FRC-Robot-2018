@@ -26,12 +26,12 @@ public class Elevator implements IModule {
   
   private Data mData;
   private final Hardware mHardware;
-//  TalonTach talonTach;
+  TalonTach talonTach;
   Solenoid shiftSolenoid;
 	TalonSRX masterElevator, followerElevator;
 	
 	private boolean hasInitialized;
-//	private boolean lastTachState, currentTachState;
+	private boolean lastTachState, currentTachState;
 	private int currentTachLevel, currentEncoderTicks;
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
@@ -106,9 +106,9 @@ public class Elevator implements IModule {
 	    hasInitialized = true;
 		}
 		
-//    talonTach = mHardware.getTalonTach();
+    talonTach = mHardware.getTalonTach();
 
-//    currentTachState = talonTach.getSensor();
+    currentTachState = talonTach.getSensor();
 //    lastTachState = currentTachState;
     
 		setGearState(EElevatorGearState.NORMAL);
@@ -171,15 +171,11 @@ public class Elevator implements IModule {
 				break;
 		}
 
-		// TODO
-		// Create Elevator Codex
-		// Replace system outs with Log
 		//log.warn(elevatorState + " dPow=" + mDesiredPower + " aPow=" + actualPower + " dir=" + isDesiredDirectionUp +  "talonTach=" + currentTachLevel + "Amps: " + masterElevator.getOutputCurrent());
 //		log.warn("ElevState:" + elevatorState +  " talonTach=" + currentTachLevel + " talonTachState=" + currentTachState);
 //		log.warn(masterElevator.getOutputCurrent() + "/" + masterElevator.getMotorOutputVoltage());
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
-//		masterElevator.set(ControlMode.PercentOutput, actualPower);
-		//System.out.println(mDesiredPower + "POST CHECK");
+
 		shiftSolenoid.set(elevGearState.gearState);
 		System.out.println("elevState=" + elevatorState);
 		System.out.println("elevControlMode=" + elevControlMode);
@@ -192,15 +188,15 @@ public class Elevator implements IModule {
 
       case POSITION:
 
-        if (!elevatorPosition.inRange(currentEncoderTicks) && currentEncoderTicks <= elevatorPosition.encoderThreshold) {
-          mDesiredPower = elevatorPosition.mSetpointPower;
-          elevatorState = EElevatorState.NORMAL;
-          System.out.println("============= GOING TO POSITION");
+        //check if we are in the acceptable range to stop the elevator at a position
+        if(elevatorPosition.inRange(currentEncoderTicks))
+        {
+          elevatorState = EElevatorState.HOLD;
         }
         else
         {
-          elevatorState = EElevatorState.HOLD;
-          System.out.println("==========HOLDING POSITION");
+          mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : elevatorPosition.mSetpointPower;
+          elevatorState = EElevatorState.NORMAL;
         }
 //        log.debug("TAPE MARKER " + elevatorPosition);
         break;
@@ -251,7 +247,7 @@ public class Elevator implements IModule {
 	
 	private void resetTop() {
 
-	  masterElevator.setSelectedSensorPosition(SystemSettings.TOP_ENCODER_TICK, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	  masterElevator.setSelectedSensorPosition(SystemSettings.ELEVATOR_TOP_ENCODER_TICK, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 //    currentTachLevel = 6;
 	}
 	
