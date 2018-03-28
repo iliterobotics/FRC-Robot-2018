@@ -88,4 +88,10 @@ public enum EDriveTrain implements CodexOf<Double> {
     pCodex.set(TALON_CONTROL_MODE, (double)driveTrain.getControlMode().ordinal());  
   }
   
+  public static void testMap(Codex<Double, EDriveTrain> pCodex) {
+    for(EDriveTrain e : values()) {
+      pCodex.set(e, Math.random() * 10);
+    }
+  }
+  
 }

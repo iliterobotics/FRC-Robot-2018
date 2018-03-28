@@ -44,6 +44,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
 		  getInstance().getEntry(EDriverControlMode.class.getSimpleName()).setDefaultNumber(-1);
 	  }
   };
+  public static SimpleNetworkTable LOGGING_TABLE = new SimpleNetworkTable("LOGGING_TABLE");
   public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
   public static String AUTO_DELAY_KEY = "delay";
   public static Integer[] AUTO_DEFAULT_CUBE_ACTIONS = new Integer[] {ECubeAction.SWITCH.ordinal(), ECubeAction.SCALE.ordinal()};

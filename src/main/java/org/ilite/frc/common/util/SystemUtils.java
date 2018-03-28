@@ -51,8 +51,8 @@ public class SystemUtils {
    * Provides a way to write every value of a codex to NetworkTables.
    * @param pCodex The codex you want to dump to NetworkTables.
    */
-  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex, double pTime) {
-    writeCodexToSmartDashboard(pCodex.getClass().getSimpleName(), pCodex, pTime);
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, double pTime) {
+    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pTime);
   }
   
   /**
@@ -65,9 +65,17 @@ public class SystemUtils {
     List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
     for(E e : enums) {
       Double value = (Double) pCodex.get(e);
-      if(e != null) SmartDashboard.putNumber(name + "-" + e.toString(), (value == null) ? 0 : value);
+      if(e != null) logNumber(name, e, value);
     }
-    SmartDashboard.putNumber(name + "-" + SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+    logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {
+    logNumber(pName, pEnumeration.toString(), pNumber);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
+    SystemSettings.LOGGING_TABLE.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
   }
   
 }

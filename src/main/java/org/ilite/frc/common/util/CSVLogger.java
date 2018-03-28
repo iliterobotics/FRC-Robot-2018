@@ -82,8 +82,7 @@ public class CSVLogger extends Thread{
     List<String> rowList = pEntry.getValue().stream()
             .map(networkTablesKey -> retrieveStringValue(pEntry.getKey(), networkTablesKey))
             .collect(Collectors.toList());
-    rowList.add(retrieveStringValue(pEntry.getKey(), SystemSettings.LOGGING_TIMESTAMP_KEY));
-    rowList.add(Long.toString(System.currentTimeMillis() / 1000));
+    rowList.set(rowList.size() - 1, Long.toString(System.currentTimeMillis() / 1000));
     
     Writer writer = pCodexWriters.get(pEntry.getKey());
     writer.append(SystemUtils.toCsvRow(rowList) + "\n");
@@ -91,6 +90,7 @@ public class CSVLogger extends Thread{
   }
   
   public void writeRowsToCsv() {
+    System.out.println("Writing rows");
     Logger.setLevel(ELevel.DEBUG);
     mCodexKeys.entrySet().forEach(entry -> {
       try { 
@@ -114,7 +114,7 @@ public class CSVLogger extends Thread{
   }
   
   private String retrieveStringValue(String pLogName, String pKey) {
-    return SystemSettings.SMART_DASHBOARD.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
+    return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
   }
   
   @Override
