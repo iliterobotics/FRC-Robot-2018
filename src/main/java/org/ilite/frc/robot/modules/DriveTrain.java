@@ -147,6 +147,12 @@ public class DriveTrain implements IControlLoop {
 		  leftMaster.config_kI(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		  leftMaster.config_kD(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		  leftMaster.config_kF(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		  
+		  rightMaster.configAllowableClosedloopError(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_TOLERANCE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+      rightMaster.config_kP(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+      rightMaster.config_kI(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+      rightMaster.config_kD(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+      rightMaster.config_kF(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		  break;
 		case MotionMagic:
 		  controlMode = ControlMode.MotionMagic;

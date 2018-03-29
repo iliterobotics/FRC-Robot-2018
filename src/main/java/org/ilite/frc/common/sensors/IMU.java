@@ -101,27 +101,42 @@ public abstract  class IMU {
   // =====================================================================
   // Utility Methods
   // =====================================================================
+  /**
+   * Take any value in degrees, mod it
+   * @param pRawValue input, in degrees
+   * @return a value between 0 and 360
+   */
   public static double clampDegrees(double pRawValue) {
-    return (pRawValue %= 360) >= 0 ? pRawValue : (pRawValue + 360);
+    double result = pRawValue % 360;
+    if(result < 0) {
+      result += 360d;
+    }
+    return result;
   }
   
   public static double getAngleSum(double pRawValue1, double pRawValue2) {
     double sum = pRawValue1 + pRawValue2;
-    if(sum > 180){
-      sum = -360 + sum;
-    } else if(sum < -180){
-      sum = 360 + sum;
+    if(sum > 180d){
+      sum = -360d + sum;
+    } else if(sum < -180d){
+      sum = 360d + sum;
     }
     return sum;
   }
 
-
-  public static double convertTo360(double pRawValue){
-    if(pRawValue < 0) return pRawValue + 360;
-    return pRawValue;
+  public static double getAngleDistance(double pFrom, double pTo){
+    return getAngleSum(pFrom, -pTo);
   }
   
-  public static double getAngleDistance(double pRawValue1, double pRawValue2){
-    return getAngleSum(pRawValue1, -pRawValue2);
+  public static void main(String[] pArgs) {
+    final double incr = 60d;
+    System.out.println("INPUT\tCLAMP\tANGLEDIST\tANGLESUM");
+    for(double i = -720d ; i <= 720d ; i += incr) {
+      System.out.println(
+          i + "\t" + 
+          clampDegrees(i) + "\t" + 
+          getAngleDistance(i-incr/2, i+incr/2) + "\t\t" + 
+          getAngleSum(i-incr/2, i+incr/2));
+    }
   }
 }
