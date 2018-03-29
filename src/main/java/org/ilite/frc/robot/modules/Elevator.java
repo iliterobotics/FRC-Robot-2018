@@ -198,11 +198,13 @@ public class Elevator implements IModule {
         // If our setpoint was below us when we set it, stop moving if we go below it
         else if(isSetpointAboveIntialPosition)
         {
-          mDesiredPower = currentEncoderTicks < elevatorPosition.encoderThreshold ? elevatorPosition.mSetpointPower : 0;
-          elevatorState = EElevatorState.NORMAL;
+          boolean isBelowSetpoint = currentEncoderTicks < elevatorPosition.encoderThreshold;
+          mDesiredPower = isBelowSetpoint ? elevatorPosition.mSetpointPower : 0;
+          elevatorState = isBelowSetpoint ? EElevatorState.NORMAL : EElevatorState.HOLD;
         } else if(!isSetpointAboveIntialPosition) {
-          mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : 0;
-          elevatorState = EElevatorState.NORMAL;
+          boolean isAboveSetpoint = currentEncoderTicks > elevatorPosition.encoderThreshold;
+          mDesiredPower = isAboveSetpoint ? -elevatorPosition.mSetpointPower : 0;
+          elevatorState = isAboveSetpoint ? EElevatorState.NORMAL : EElevatorState.HOLD;
         }
 //        log.debug("TAPE MARKER " + elevatorPosition);
         break;
