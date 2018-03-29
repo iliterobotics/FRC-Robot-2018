@@ -1,12 +1,15 @@
 package org.ilite.frc.robot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.common.util.SystemUtils;
+
+import com.flybotix.hfr.codex.Codex;
 
 import openrio.powerup.MatchData.OwnedSide;
 
@@ -15,8 +18,17 @@ public class SourceTestMain {
 	
 	public static void main(String[] args) {
 	  
-	  testOnLocalServer();
+	  testLoggingLocally();
+//	  testOnLocalServer();
 	  
+	}
+	
+	private static void testLoggingLocally() {
+	  Data mData = new Data();
+	  while(true) {
+	    EDriveTrain.testMap(mData.drivetrain);
+	    SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, 0);
+	  }
 	}
 	
 	/**

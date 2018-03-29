@@ -65,9 +65,17 @@ public class SystemUtils {
     List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
     for(E e : enums) {
       Double value = (Double) pCodex.get(e);
-      if(e != null) SmartDashboard.putNumber(name + "-" + e.toString(), (value == null) ? 0 : value);
+      if(e != null) logNumber(name, e, value);
     }
-    SmartDashboard.putNumber(name + "-" + SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+    logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {
+    logNumber(pName, pEnumeration.toString(), pNumber);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
+    SystemSettings.LOGGING_TABLE.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
   }
   
 }
