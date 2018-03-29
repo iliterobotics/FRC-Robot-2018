@@ -52,7 +52,7 @@ public class DriveStraight implements ICommand{
   public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
     this.driveTrain = dt;
     this.mData = pData;
-    this.distanceToTravel = (int)Utils.inchesToTicks(inches);
+    this.distanceToTravel = Utils.inchesToTicks(inches);
     this.mPower = power;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
   }
@@ -72,8 +72,8 @@ public class DriveStraight implements ICommand{
     double currentDistance = getAverageDistanceTravel();
     if( currentDistance >= distanceToTravel){
       // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
-//      driveTrain.holdPosition();
-      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+      driveTrain.holdPosition();
+//      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;
     }
