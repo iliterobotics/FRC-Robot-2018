@@ -38,11 +38,11 @@ import org.ilite.frc.robot.Utils;
 		
 		public boolean isAboveSetpoint(int currentEncoderTick) {
 		  
-		  return currentEncoderTick > encoderThreshold;
+		  return currentEncoderTick > encoderThreshold - SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE;
 		}
 		
 		public boolean isBelowSetpoint(int currentEncoderTick) {
-      return currentEncoderTick < encoderThreshold;
+      return currentEncoderTick < encoderThreshold + SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE;
     }
 //		private boolean isencoderThresholder()
 //		{
