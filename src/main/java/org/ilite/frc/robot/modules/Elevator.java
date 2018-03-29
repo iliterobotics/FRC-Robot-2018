@@ -189,23 +189,23 @@ public class Elevator implements IModule {
 
       case POSITION:
 
-        //check if we are in the acceptable range to stop the elevator at a position
-        if(elevatorPosition.inRange(currentEncoderTicks))
+        int directionScalar = 0;
+        // If we are past the setpoint, hold position
+        if(elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition))
         {
           elevatorState = EElevatorState.HOLD;
+        // If the setpoint is above us, and we are below it, go up
+        // This is redundant
+        } else if (isSetpointAboveIntialPosition) {
+          directionScalar = (elevatorPosition.isBelowSetpoint(currentEncoderTicks)) ? 1 : -1;
+          elevatorState = EElevatorState.NORMAL;
+        } else if(!isSetpointAboveIntialPosition && elevatorPosition.isAboveSetpoint(currentEncoderTicks)) {
+          directionScalar = (elevatorPosition.isAboveSetpoint(currentEncoderTicks)) ? -1 : 1;
+          elevatorState = EElevatorState.NORMAL;
         }
-        // If our setpoint was above us when we set it, stop moving if we go above it
-        // If our setpoint was below us when we set it, stop moving if we go below it
-        else if(isSetpointAboveIntialPosition)
-        {
-          boolean isBelowSetpoint = currentEncoderTicks < elevatorPosition.encoderThreshold;
-          mDesiredPower = isBelowSetpoint ? elevatorPosition.mSetpointPower : 0;
-          elevatorState = isBelowSetpoint ? EElevatorState.NORMAL : EElevatorState.HOLD;
-        } else if(!isSetpointAboveIntialPosition) {
-          boolean isAboveSetpoint = currentEncoderTicks > elevatorPosition.encoderThreshold;
-          mDesiredPower = isAboveSetpoint ? -elevatorPosition.mSetpointPower : 0;
-          elevatorState = isAboveSetpoint ? EElevatorState.NORMAL : EElevatorState.HOLD;
-        }
+        
+        mDesiredPower = elevatorPosition.mSetpointPower * directionScalar;
+        
 //        log.debug("TAPE MARKER " + elevatorPosition);
         break;
 
@@ -387,6 +387,10 @@ public class Elevator implements IModule {
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
 		return elevatorDirection.isCurrentRatioLimited(masterElevator);
+	}
+	
+	public boolean isFinishedGoingToPosition() {
+	  return elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition);
 	}
 	
 }

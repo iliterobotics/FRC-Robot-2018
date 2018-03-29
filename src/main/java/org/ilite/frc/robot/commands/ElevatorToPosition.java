@@ -21,12 +21,12 @@ public class ElevatorToPosition implements ICommand {
   public void initialize(double pNow) {
     mStartTime = pNow;
     mElevator.setElevControlMode(ElevatorControlMode.POSITION);
+    mElevator.setPosition(mPosition);
   }
 
   @Override
   public boolean update(double pNow) {
-    mElevator.setPosition(mPosition);
-    if(mPosition.inRange(mElevator.getCurrentEncoderTicks())) return true;
+    if(mElevator.isFinishedGoingToPosition()) return true;
     if(pNow - mStartTime >= mTimeout) return true;
     return false;
   }
