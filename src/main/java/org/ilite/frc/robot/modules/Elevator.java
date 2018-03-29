@@ -35,6 +35,7 @@ public class Elevator implements IModule {
 	private int currentTachLevel, currentEncoderTicks;
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
+	private boolean isSetpointAboveIntialPosition = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
 	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
@@ -193,9 +194,14 @@ public class Elevator implements IModule {
         {
           elevatorState = EElevatorState.HOLD;
         }
-        else
+        // If our setpoint was above us when we set it, stop moving if we go above it
+        // If our setpoint was below us when we set it, stop moving if we go below it
+        else if(isSetpointAboveIntialPosition)
         {
-          mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : elevatorPosition.mSetpointPower;
+          mDesiredPower = currentEncoderTicks < elevatorPosition.encoderThreshold ? elevatorPosition.mSetpointPower : 0;
+          elevatorState = EElevatorState.NORMAL;
+        } else if(!isSetpointAboveIntialPosition) {
+          mDesiredPower = currentEncoderTicks > elevatorPosition.encoderThreshold ? -elevatorPosition.mSetpointPower : 0;
           elevatorState = EElevatorState.NORMAL;
         }
 //        log.debug("TAPE MARKER " + elevatorPosition);
@@ -343,6 +349,12 @@ public class Elevator implements IModule {
 	
 	public void setPosition(EElevatorPosition desiredPosition)
 	{
+	  // Sets a flag telling whether the setpoint was above or below the current position when we called setPosition
+	  if(currentEncoderTicks < desiredPosition.encoderThreshold) {
+	    isSetpointAboveIntialPosition = true;
+	  } else if (currentEncoderTicks > desiredPosition.encoderThreshold){
+	    isSetpointAboveIntialPosition = false;
+	  }
 	  elevatorPosition = desiredPosition;
 	}
 
