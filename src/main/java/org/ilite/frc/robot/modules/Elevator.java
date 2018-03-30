@@ -194,8 +194,7 @@ public class Elevator implements IModule {
         
         double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
-        double kp = 1d / 2000d * 1.15;
-        double ki = 0.0001;
+        double kp = 1d / 2000d * 1.2;
         
 
 //        int directionScalar = 0;
@@ -227,6 +226,17 @@ public class Elevator implements IModule {
 //            mDesiredPower = Utils.clamp(mDesiredPower, -1*EElevatorState.DECELERATE_BOTTOM.power);
 //          } else if (currentEncoderTicks > ElevDirection.UP.decelerationEncoderThreshold) {
 //            mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
+//          }
+          //check if we should decelerate based on whether we are near the top of bottom
+//          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
+//          {
+//            //clamp power by checking if going up or down and setting to deceleration power accordingly
+//            if(elevatorDirection.isPositiveDirection)
+//            {
+//              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
+//            }
+//            else
+//              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_BOTTOM.power);
 //          }
           lastError = error;
           lastTime = now;

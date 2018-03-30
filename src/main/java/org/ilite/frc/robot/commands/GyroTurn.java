@@ -15,7 +15,7 @@ public class GyroTurn implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 5;
   private static final double kTIMEOUT = 1.5;
-  private static final double kP = 0.012;
+  private static final double kP = 0.0121;
   private static final double kI = 0.0001;
   private static final double kD = 0.08;
   private static final double kMIN_POWER = 0.05;
@@ -64,20 +64,22 @@ public class GyroTurn implements ICommand {
     
     mLeftPower = mOutput;
     mRightPower = -mOutput;
-    
-    mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
-    
     mLastError = mError;
 
-    if ((Math.abs(mError) <= mAllowableError)) mAlignedCount++;
+    if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
+      mDrivetrain.holdPosition();
+//      mAlignedCount++;
+      return true;
+    }
     if(pNow - mStartTime > kTIMEOUT) {
-      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+//      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
-    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
-      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
-      return true;
-    }
+    mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+//    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
+//      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+//      return true;
+//    }
     
     System.out.printf("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
     return false;

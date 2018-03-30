@@ -12,7 +12,7 @@ import org.ilite.frc.robot.Utils;
 	{
 		BOTTOM(0.35, 0),
 		FIRST_TAPE(1d, 1776),
-		SECOND_TAPE(1d, 3650),
+		SECOND_TAPE(1d, 5000),
 		THIRD_TAPE(1d, 6300);
 
 		double inches;

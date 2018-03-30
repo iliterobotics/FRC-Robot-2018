@@ -4,13 +4,11 @@ import static org.ilite.frc.common.types.EDriveTrain.LEFT_POSITION_TICKS;
 import static org.ilite.frc.common.types.EDriveTrain.RIGHT_POSITION_TICKS;
 import static org.ilite.frc.common.types.EPigeon.YAW;
 
-import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
@@ -66,6 +64,10 @@ public class DriveStraight implements ICommand{
      this(dt, pData, inches, 0.6);
   }
   
+  public DriveStraight(DriveTrain dt, Data pData, double inches, boolean ignoreGyro){
+     this(dt, pData, inches, 0.6, ignoreGyro);
+  }
+  
   public void initialize(double pNow){
     mDesiredHeadingYaw = IMU.clampDegrees(mData.pigeon.get(YAW));
     initialLeftPosition = mData.drivetrain.get(LEFT_POSITION_TICKS);
@@ -101,7 +103,7 @@ public class DriveStraight implements ICommand{
     } else {
       // negative error = turn left; positive error = turn right
       // We negate angle beacuse pigeon angle goes counter-clockwise
-      double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, -IMU.clampDegrees(mData.pigeon.get(YAW)));
+      double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), mDesiredHeadingYaw);
       // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
       // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
       driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(

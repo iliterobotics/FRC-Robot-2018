@@ -6,7 +6,7 @@ public class AutoDimensions {
   
   // Same side switch
   public static double  SAME_SIDE_SWITCH_CROSS_LINE = 125.125;
-  public static double  SAME_SIDE_SWITCH_TO_SWITCH = 24;
+  public static double  SAME_SIDE_SWITCH_TO_SWITCH = 19;
   public static double  SAME_SIDE_SWITCH_BACK_UP = -36;
   public static double  SAME_SIDE_SWITCH_TO_NULL_ZONE = 72;
   
@@ -21,7 +21,7 @@ public class AutoDimensions {
   public static double  MIDDLE_RIGHT_SWITCH_TO_SWITCH = 0;
   
   // Same side scale
-  public static double  SAME_SIDE_SCALE_TO_NULL_ZONE = 264;
+  public static double  SAME_SIDE_SCALE_TO_NULL_ZONE = 248;
   public static double  SAME_SIDE_SCALE_BACK_UP = -20;
   
   // Same side two cube scale

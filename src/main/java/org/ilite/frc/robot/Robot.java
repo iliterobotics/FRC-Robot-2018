@@ -279,13 +279,10 @@ public class Robot extends IterativeRobot {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
 	  // Stop blinking if we don't have a cube
-	  mCarriage.initialize(0d);
-	  mLedController.initialize(0d);
   }
   
   public void disabledPeriodic() {
 //    System.out.println(getAutonomous.getAutonomousCommands());
-    mLedController.update(Timer.getFPGATimestamp());
   }
   
   
