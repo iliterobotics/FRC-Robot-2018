@@ -21,8 +21,8 @@ public class AutoDimensions {
   public static double  MIDDLE_RIGHT_SWITCH_TO_SWITCH = 0;
   
   // Same side scale
-  public static double  SAME_SIDE_SCALE_TO_NULL_ZONE = 256;
-  public static double  SAME_SIDE_SCALE_BACK_UP = -12;
+  public static double  SAME_SIDE_SCALE_TO_NULL_ZONE = 264;
+  public static double  SAME_SIDE_SCALE_BACK_UP = -20;
   
   // Same side two cube scale
   public static double  SAME_SIDE_SCALE_TO_CUBE = 0;

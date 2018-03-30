@@ -220,8 +220,13 @@ public class Elevator implements IModule {
           
           mDesiredPower = Utils.clamp(kp * error, elevatorPosition.mSetpointPower);
           if(elevatorDirection == ElevDirection.DOWN) {
-            mDesiredPower /= 2d;
+            mDesiredPower /= 1.25d;
           }
+//          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection)) {
+//            mDesiredPower = Utils.clamp(mDesiredPower, -1*EElevatorState.DECELERATE_BOTTOM.power);
+//          } else if (currentEncoderTicks > ElevDirection.UP.decelerationEncoderThreshold) {
+//            mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
+//          }
           lastError = error;
           lastTime = now;
         }
@@ -245,15 +250,17 @@ public class Elevator implements IModule {
             if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_TOP;
+            } else {
+              elevatorState = EElevatorState.NORMAL;
             }
-            else elevatorState = EElevatorState.NORMAL;
             break;
           case DOWN:
             if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
             {
               elevatorState = EElevatorState.DECELERATE_BOTTOM;
+            } else {
+              elevatorState = EElevatorState.NORMAL;
             }
-            else elevatorState = EElevatorState.NORMAL;
             break;
           case CLIMBER_UP:
             elevatorState = EElevatorState.NORMAL;
