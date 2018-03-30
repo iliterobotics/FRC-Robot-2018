@@ -144,7 +144,7 @@ public class Elevator implements IModule {
 		  System.out.println("================================= CURRENT LIMITED");
 		  elevatorState = EElevatorState.STOP;
 		} else {
-		  updateElevatorControl();
+		  updateElevatorControl(pNow);
 		}
     
 		double actualPower = 0;
@@ -178,33 +178,53 @@ public class Elevator implements IModule {
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 
 		shiftSolenoid.set(elevGearState.gearState);
-		System.out.println("elevState=" + elevatorState);
+		System.out.println("elevState=" + elevatorState + "\tPOWER = " + mDesiredPower);
 		System.out.println("elevControlMode=" + elevControlMode);
 		return true;
 	}
 	
-	private void updateElevatorControl() {
+	double lastError = 0d;
+	double lastTime = 0d;
+	private void updateElevatorControl(double now) {
 
     switch(elevControlMode) {
 
       case POSITION:
+        
+        double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
+        // 1.0 power = 1000 ticks
+        double kp = 1d / 2000d;
+        double ki = 0.0001;
+        
 
-        int directionScalar = 0;
+//        int directionScalar = 0;
         // If we are past the setpoint, hold position
         if(elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition))
         {
           elevatorState = EElevatorState.HOLD;
         // If the setpoint is above us, and we are below it, go up
         // This is redundant
-        } else if (isSetpointAboveIntialPosition) {
-          directionScalar = (elevatorPosition.isBelowSetpoint(currentEncoderTicks)) ? 1 : -1;
+//        } else if (isSetpointAboveIntialPosition) {
+//          directionScalar = (elevatorPosition.isBelowSetpoint(currentEncoderTicks)) ? 1 : -1;
+//          elevatorState = EElevatorState.NORMAL;
+//        } else if(!isSetpointAboveIntialPosition && elevatorPosition.isAboveSetpoint(currentEncoderTicks)) {
+//          directionScalar = (elevatorPosition.isAboveSetpoint(currentEncoderTicks)) ? -1 : 1;
+//          elevatorState = EElevatorState.NORMAL;
+//        }
+          
+//        mDesiredPower = elevatorPosition.mSetpointPower * directionScalar;
+          
+        } else {
           elevatorState = EElevatorState.NORMAL;
-        } else if(!isSetpointAboveIntialPosition && elevatorPosition.isAboveSetpoint(currentEncoderTicks)) {
-          directionScalar = (elevatorPosition.isAboveSetpoint(currentEncoderTicks)) ? -1 : 1;
-          elevatorState = EElevatorState.NORMAL;
+          System.out.println("ERROR=" + error + " \tkP = " + kp);
+          
+          mDesiredPower = Utils.clamp(kp * error, elevatorPosition.mSetpointPower);
+          if(elevatorDirection == ElevDirection.DOWN) {
+            mDesiredPower /= 2d;
+          }
+          lastError = error;
+          lastTime = now;
         }
-        
-        mDesiredPower = elevatorPosition.mSetpointPower * directionScalar;
         
 //        log.debug("TAPE MARKER " + elevatorPosition);
         break;

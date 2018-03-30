@@ -10,10 +10,10 @@ import org.ilite.frc.robot.Utils;
 	 */
 	public enum EElevatorPosition
 	{
-		BOTTOM(0.4, 0),
-		FIRST_TAPE(0.5, 1776),
-		SECOND_TAPE(0.6, 2950),
-		THIRD_TAPE(0.6, 3850);
+		BOTTOM(0.35, 0),
+		FIRST_TAPE(1d, 1776),
+		SECOND_TAPE(1d, 2950),
+		THIRD_TAPE(1d, 6300);
 
 		double inches;
 		double mSetpointPower; // Power to apply in order to servo to position
