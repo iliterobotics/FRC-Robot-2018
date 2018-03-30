@@ -3,6 +3,11 @@ package org.ilite.frc.robot.commands;
 public class Delay implements ICommand {
 	private double mDelayDuration;
 	private double triggeredTime;
+	
+	
+	/**
+	 * @param pDelayDuration in seconds
+	 */
 	public Delay(double pDelayDuration) {
 		mDelayDuration = pDelayDuration;
 	}
