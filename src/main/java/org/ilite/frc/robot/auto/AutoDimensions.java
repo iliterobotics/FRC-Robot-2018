@@ -6,7 +6,7 @@ public class AutoDimensions {
   
   // Same side switch
   public static double  SAME_SIDE_SWITCH_CROSS_LINE = 125.125;
-  public static double  SAME_SIDE_SWITCH_TO_SWITCH = 20;
+  public static double  SAME_SIDE_SWITCH_TO_SWITCH = 24;
   public static double  SAME_SIDE_SWITCH_BACK_UP = -36;
   public static double  SAME_SIDE_SWITCH_TO_NULL_ZONE = 72;
   

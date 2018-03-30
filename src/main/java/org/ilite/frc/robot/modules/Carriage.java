@@ -100,7 +100,7 @@ public class Carriage implements IModule{
   //makes sure that the kick sequence has not started, gets the correct beamBreak, and sets the current state to cube
   public void initialize(double pNow) {
     isScheduled = false;
-    mDesiredState = mCurrentState = CarriageState.GRAB_CUBE;
+    mDesiredState = mCurrentState = getBeamBreak() ? CarriageState.GRAB_CUBE : CarriageState.RESET;
   }
   @Override
   public boolean update(double pNow)

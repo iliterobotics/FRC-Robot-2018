@@ -196,7 +196,7 @@ public class Robot extends IterativeRobot {
     
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
-      ELogitech310.map(mData.tester, testJoystick);
+//      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
@@ -278,10 +278,14 @@ public class Robot extends IterativeRobot {
   public void disabledInit() {
 	  mLog.info("DISABLED");
 	  mControlLoop.stop();
+	  // Stop blinking if we don't have a cube
+	  mCarriage.initialize(0d);
+	  mLedController.initialize(0d);
   }
   
   public void disabledPeriodic() {
 //    System.out.println(getAutonomous.getAutonomousCommands());
+    mLedController.update(Timer.getFPGATimestamp());
   }
   
   

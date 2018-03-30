@@ -44,17 +44,22 @@ public class DriveStraight implements ICommand{
   private double remainingDistance;
   private double initialLeftPosition;
   private double initialRightPosition;
+  private final boolean mIgnoreGyro;
   
   // In degrees
   private double mDesiredHeadingYaw;
 
-  
-  public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
+  public DriveStraight(DriveTrain dt, Data pData, double inches, double power, boolean ignoreGyro) {
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = Utils.inchesToTicks(inches);
     this.mPower = power;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
+    mIgnoreGyro = ignoreGyro;
+  }
+  
+  public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
+    this(dt, pData, inches, 0.6, false);
   }
   
   public DriveStraight(DriveTrain dt, Data pData, double inches){
@@ -79,18 +84,36 @@ public class DriveStraight implements ICommand{
     }
 
     remainingDistance = distanceToTravel - currentDistance;
-    // negative error = turn left; positive error = turn right
-    // We negate angle beacuse pigeon angle goes counter-clockwise
-    double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, -IMU.clampDegrees(mData.pigeon.get(YAW)));
-    // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
-    // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
-    driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(
-        // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
-        // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
-        // 2 degrees of correction before % power is saturated
-        Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
-         yawError * TURN_PROPORTION, 
-         NeutralMode.Brake));
+    
+    if(mIgnoreGyro) {
+      // negative error = turn left; positive error = turn right
+      // We negate angle beacuse pigeon angle goes counter-clockwise
+      // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
+      // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
+      driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(
+          // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
+          // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
+          // 2 degrees of correction before % power is saturated
+          mPower + kP * remainingDistance,
+          0d,
+           NeutralMode.Brake));
+      
+    } else {
+      // negative error = turn left; positive error = turn right
+      // We negate angle beacuse pigeon angle goes counter-clockwise
+      double yawError = IMU.getAngleDistance(mDesiredHeadingYaw, -IMU.clampDegrees(mData.pigeon.get(YAW)));
+      // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
+      // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
+      driveTrain.setDriveMessage(DrivetrainMessage.fromThrottleAndTurn(
+          // Clamp the mPower + kP * distance so we have headroom for the turn proportion to work
+          // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
+          // 2 degrees of correction before % power is saturated
+          Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
+           yawError * TURN_PROPORTION, 
+           NeutralMode.Brake));
+      
+    }
+    
     
 //    driveTrain.setDriveMessage(new DrivetrainMessage(
 //                               mPower + (yawError * TURN_PROPORTION), 

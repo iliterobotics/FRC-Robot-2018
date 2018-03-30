@@ -105,6 +105,7 @@ public class Elevator implements IModule {
 	    elevControlMode = ElevatorControlMode.MANUAL;
 	    
 	    hasInitialized = true;
+	    masterElevator.getSensorCollection().setQuadraturePosition(0, 0);
 		}
 		
     talonTach = mHardware.getTalonTach();
@@ -121,7 +122,7 @@ public class Elevator implements IModule {
 	  
 //		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
-    System.out.println("CURRENT ENCODER TICKS=" + currentEncoderTicks);
+//    System.out.println("CURRENT ENCODER TICKS=" + currentEncoderTicks);
     isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
 //    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
 
@@ -178,8 +179,8 @@ public class Elevator implements IModule {
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 
 		shiftSolenoid.set(elevGearState.gearState);
-		System.out.println("elevState=" + elevatorState + "\tPOWER = " + mDesiredPower);
-		System.out.println("elevControlMode=" + elevControlMode);
+//		System.out.println("elevState=" + elevatorState + "\tPOWER = " + mDesiredPower);
+//		System.out.println("elevControlMode=" + elevControlMode);
 		return true;
 	}
 	
@@ -193,7 +194,7 @@ public class Elevator implements IModule {
         
         double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
-        double kp = 1d / 2000d;
+        double kp = 1d / 2000d * 1.15;
         double ki = 0.0001;
         
 
