@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ilite.frc.common.config.SystemSettings;
+
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.lang.EnumUtils;
@@ -46,16 +48,34 @@ public class SystemUtils {
   }
   
   /**
-   * Provides a way to write every value of a codex to the smart dashboard.
-   * @param pCodex
+   * Provides a way to write every value of a codex to NetworkTables.
+   * @param pCodex The codex you want to dump to NetworkTables.
    */
-  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Codex<V, E> pCodex, double pTime) {
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, double pTime) {
+    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pTime);
+  }
+  
+  /**
+   * 
+   * @param name Allows you to define a name for the codex so two of the same type can be written at once.
+   * @param pCodex The codex you want to dump to NetworkTables.
+   * @param pTime The current time.
+   */
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, double pTime) {
     List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
     for(E e : enums) {
       Double value = (Double) pCodex.get(e);
-      if(e != null) SmartDashboard.putNumber(e.toString(), (value == null) ? 0 : value);
+      if(e != null) logNumber(name, e, value);
     }
-    SmartDashboard.putNumber("TIME", pTime);
+    logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {
+    logNumber(pName, pEnumeration.toString(), pNumber);
+  }
+  
+  public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
+    SystemSettings.LOGGING_TABLE.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
   }
   
 }

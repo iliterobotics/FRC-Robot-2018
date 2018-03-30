@@ -1,34 +1,22 @@
 package org.ilite.frc.robot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-//Java8
-import java.util.stream.Collectors;
-
+import edu.wpi.first.networktables.NetworkTableEntry;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
-import org.ilite.frc.robot.commands.DriveStraight;
-import org.ilite.frc.robot.commands.ElevatorToPosition;
-import org.ilite.frc.robot.commands.GyroTurn;
-import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.commands.IntakeCube;
-import org.ilite.frc.robot.commands.ReleaseCube;
-import org.ilite.frc.robot.modules.Carriage;
+import org.ilite.frc.robot.commands.*;
+import org.ilite.frc.robot.modules.*;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.EElevatorPosition;
-import org.ilite.frc.robot.modules.Elevator;
-import org.ilite.frc.robot.modules.Intake;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import openrio.powerup.MatchData;
-import openrio.powerup.MatchData.OwnedSide;
+import java.util.*;
+import java.util.stream.Collectors;
+
+//Java8
 
 public class GetAutonomous {
 	// Network Table instance variables.
@@ -36,7 +24,7 @@ public class GetAutonomous {
 	private NetworkTableEntry nPosEntry;
 	private NetworkTableEntry nCrossEntry;
 	private NetworkTableEntry nCubeActionPrefsEntry;
-	private NetworkTableEntry nDelayEntry;
+	private NetworkTableEntry mDelayEntry;
 	
 	private Intake mIntake;
 	private Elevator mElevator;
@@ -200,17 +188,17 @@ public class GetAutonomous {
 	public void doScale() {
 	  double scaleTurnDegrees = 55d;
 		// TODO replace with turning scalar
-		System.out.printf("TESTTESTTESTTESTTESTDoing scale autonomous starting on %s\n", mStartingPos);
+		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
 		  // Drive 
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.2));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1));
       
       // Turn into scale, drive forward, kick
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 3, 0.6));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 3, 0.2));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  
 		  //Back up from scale
@@ -239,10 +227,10 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE));
-			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.2));
+			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.2));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
@@ -251,22 +239,69 @@ public class GetAutonomous {
 		case MIDDLE:
 			switch(mSwitchSide) {
 			case LEFT:
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_TO_PYRAMID));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -75, 3));
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_DIAGONAL));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 75, 3));
-			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_LEFT_SWITCH_TO_SWITCH));
+				//26 inches is how far we need to move off the alliance station wall without worrying about hitting it
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.4));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -41, 3));
+			  //98 inches is the distance to the left of the switch
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 98.0, 0.2));
+			  //turn back to be aligned square with the switch
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 41, 3));
+			  //0.1 set to timeout just to make sure that it gets past its initial spike
+			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 0.1));
+			  //distance is actually 40 inches, but we want to make sure that we actually hit the switch
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1, 0.4));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM, 0.1));
+			  //move back same distance that we drive to the switch
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.4));
+			  //67 degrees is about what we need to line up with a cube in the cube stack (highly subject to change)
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -67, 3));
+			  //64 inches is about the distance needed to drive into the cube in the cube stack. Probably an overshoot
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 64, 0.4));
+			  //intake the cube
+			  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.5, 0.1, true));
+			  //Drive backwards the same distance as it took to get to the cube, while over compensating for an inch
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, -65, 0.4));
+			  //Turn amount of degrees to become realigned with switch
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 67, 3));
+			  //Try and physically hit the switch
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1));
+			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM, 0.1));
+			  
+			  
+			  
 			  break;
 			case RIGHT:
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_TO_PYRAMID));
-        mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -75, 3));
-        mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_DIAGONAL));
-        mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 75, 3));
-        mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 3));
-        mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.MIDDLE_RIGHT_SWITCH_TO_SWITCH));
-        mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+				//26 inches is how far we need to move off the alliance station wall without worrying about hitting it
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.4));
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -36, 3));
+				  //92 inches is the distance to the left of the switch
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 92.0, 0.2));
+				  //turn back to be aligned square with the switch
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 36, 3));
+				  //0.1 set to timeout just to make sure that it gets past its initial spike
+				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 0.1));
+				  //distance is actually 40 inches, but we want to make sure that we actually hit the switch
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1, 0.4));
+				  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM, 0.1));
+				  //move back same distance that we drive to the switch
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.4));
+				  //67 degrees is about what we need to line up with a cube in the cube stack (highly subject to change)
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -67, 3));
+				  //64 inches is about the distance needed to drive into the cube in the cube stack. Probably an overshoot
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 64, 0.4));
+				  //intake the cube
+				  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.5, 0.1, true));
+				  //Drive backwards the same distance as it took to get to the cube, while over compensating for an inch
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, -65, 0.4));
+				  //Turn amount of degrees to become realigned with switch
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 67, 3));
+				  //Try and physically hit the switch
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1));
+				  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM, 0.1));
 			  break;
 			}
 			break;
@@ -399,19 +434,16 @@ public class GetAutonomous {
 	private void parseEntries() {
 		int posNum = nPosEntry.getNumber(EStartingPosition.LEFT.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.CARPET.ordinal()).intValue();
-		Integer[] defaultArray = { /*ECubeAction.SWITCH.ordinal(),*/ ECubeAction.SCALE.ordinal() };
-		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(defaultArray);
+		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS);
 
-		mDelay = nDelayEntry.getDouble(-1);
+		mDelay = mDelayEntry.getDouble(-1);
 		mStartingPos = EStartingPosition.intToEnum(posNum);
-//		mStartingPos = EStartingPosition.LEFT;
 		mCrossType = ECross.intToEnum(crossNum);
 		mReceivedCubeActionPrefs = new ArrayList<>();
 		mSameSideCubeActionPrefs = new ArrayList<>();
 		mOtherSideCubeActionPrefs = new ArrayList<>();
 		mAvailableCubeActions = new ArrayList<>();
 
-		System.out.println(Arrays.toString(nCubeActionPrefsEntry.getNumberArray(defaultArray)));
 		for (Number n : cubeArray) {
 			if (n.intValue() == -1)
 				continue;
@@ -419,6 +451,10 @@ public class GetAutonomous {
 
 		}
 		
+		if(mReceivedCubeActionPrefs.isEmpty()) {
+		  Arrays.asList(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS).forEach(e -> mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(e)));
+		}
+
 //    if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
 		
 		switch (mStartingPos) {
@@ -548,14 +584,13 @@ public class GetAutonomous {
 	}
 	
 	private void getSides() {
-	  
 	   try {
 	      nPosEntry = nAutonTable.getEntry(EStartingPosition.class.getSimpleName());
 	      nCrossEntry = nAutonTable.getEntry(ECross.class.getSimpleName());
 	      nCubeActionPrefsEntry = nAutonTable.getEntry(ECubeAction.class.getSimpleName());
-	      nDelayEntry = nAutonTable.getEntry("delay");
+	      mDelayEntry = nAutonTable.getEntry(SystemSettings.AUTO_DELAY_KEY);
 	    } catch (Exception e) {
-	       System.err.println("Error retrieving data from auton display");
+	       System.err.println("Error retrieving data entries from auton display");
 	    }
 	    mScaleSide = getScaleOwnedSide();
 	    mSwitchSide = getSwitchOwnedSide();
@@ -577,6 +612,11 @@ public class GetAutonomous {
 		mStartingPos = pPos;
 		mSwitchSide = pSwitchSide;
 		mScaleSide = pScaleSide;
+	}
+	
+	public void testReceiveSideData(OwnedSide pSwitchSide, OwnedSide pScaleSide) {
+	  mSwitchSide = pSwitchSide;
+    mScaleSide = pScaleSide;
 	}
 
 }

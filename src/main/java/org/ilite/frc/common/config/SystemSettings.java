@@ -2,6 +2,7 @@ package org.ilite.frc.common.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.ELogitech310;
@@ -40,22 +41,30 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
 	  @Override
 	  public void initKeys() {
-		  getInstance().getEntry("Driver Control Mode").setDefaultString("ARCADE");
+		  getInstance().getEntry(EDriverControlMode.class.getSimpleName()).setDefaultNumber(-1);
 	  }
   };
+  public static SimpleNetworkTable LOGGING_TABLE = new SimpleNetworkTable("LOGGING_TABLE");
   public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
+  public static String AUTO_DELAY_KEY = "delay";
+  public static Integer[] AUTO_DEFAULT_CUBE_ACTIONS = new Integer[] {ECubeAction.SWITCH.ordinal(), ECubeAction.SCALE.ordinal()};
   public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
   
+  //=============================================================================
+  // Logging
+  // =============================================================================
   public static EProtocol CODEX_DATA_PROTOCOL = EProtocol.UDP;
   public static int     DRIVER_STATION_CODEX_DATA_RECEIVER_PORT = 7777;
   public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "10.18.85.10";
-//  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
+  //  public static String  DRIVER_STATION_CODEX_DATA_RECEIVER_HOST = "172.22.11.1";
   public static String[]  DRIVER_STATION_CODEX_DATA_RECEIVER_HOSTS = new String[]{
       "10.18.85.10",
       "172.22.11.1",
   };
   
-  public static int     ROBOT_CODEX_DATA_SENDER_PORT = 7778;
+  public static String LOGGING_TIMESTAMP_KEY = "TIME";
+  
+  public static int ROBOT_CODEX_DATA_SENDER_PORT = 7778;
   
   public static int SOLENOID_INTAKE_A = 1;
   public static int SOLENOID_INTAKE_B= 2;

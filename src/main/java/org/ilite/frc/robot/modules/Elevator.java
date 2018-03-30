@@ -22,7 +22,7 @@ public class Elevator implements IModule {
 
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
   public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
-  public static final double RAMP_OPEN_LOOP = 1d;
+  public static final double RAMP_OPEN_LOOP = 0.7d;
   
   private Data mData;
   private final Hardware mHardware;

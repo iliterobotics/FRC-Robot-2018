@@ -6,10 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.common.input.EDriverControlMode;
+import org.ilite.frc.common.util.CSVLogger;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
@@ -19,7 +20,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,7 +28,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
@@ -45,12 +44,17 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
-  private Integer[] preferredCubeActions;
+  private CSVLogger logger = new CSVLogger();
+  
+  private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
+  private double mDelay = 0.0;
+  private static Integer mCross = ECross.values()[0].ordinal();
+  private static Integer mStartingPosition = EStartingPosition.values()[0].ordinal();
+  private static Integer mDriverControlMode = EDriverControlMode.values()[0].ordinal();
+  
   private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
 	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
-	private double mDelay = -1;
-	private static Integer mCross = -1;
-	private static Integer mStartingPosition = -1;
+	
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -61,10 +65,6 @@ public class AutonConfigDisplay extends Application {
     Scene scene = new Scene(root, 800, 600);
 		
     scene.getStylesheets().add(iliteCss);
-    
-    preferredCubeActions = new Integer[ECubeAction.values().length];
-    for(int i = 0; i < preferredCubeActions.length; i++) preferredCubeActions[i] = -1;
-    
     scene.setOnMouseClicked(e -> {
       if(scene.getStylesheets().contains(awesomeCss)) {
         playSound("./airhorn.mp3");
@@ -90,7 +90,11 @@ public class AutonConfigDisplay extends Application {
       }
       
     });
+    
     TextField delayText = new TextField();
+    delayText.setOnAction(e -> {
+      mDelay = Double.parseDouble(delayText.getText());
+    });
     Label delayLabel = new Label("Delay");
     
     HBox selectionBoxes = new HBox(
@@ -100,13 +104,23 @@ public class AutonConfigDisplay extends Application {
     		labeledDropdown(EDriverControlMode.class),
     		delayLabel,
     		delayText);
-    delayText.setOnAction(e -> {
-    	mDelay = Double.parseDouble(delayText.getText());
-    	SystemSettings.AUTON_TABLE.putDouble("Delay", mDelay);
-    });
+    
     HBox modeOptions = new HBox(mode, send);
-   
     modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
+    
+    Thread dataSender = new Thread(() -> {
+      while(!Thread.interrupted()) {
+        sendData();
+        try {
+          Thread.sleep(200);
+        } catch (InterruptedException e1) {
+          System.err.println("Thread sleep interrupted");
+        }
+      }
+    });
+    dataSender.start();
+    
+    logger.start();
     
     selectionBoxes.setSpacing(10d);
     root.setCenter(selectionBoxes);
@@ -116,19 +130,8 @@ public class AutonConfigDisplay extends Application {
     
     primaryStage.setTitle("ILITE Autonomous Configuration");
     primaryStage.setScene(scene);
+    primaryStage.setOnCloseRequest(e -> System.exit(0));
     primaryStage.show();
-    
-    Thread dataSender = new Thread(() -> {
-        while(!Thread.interrupted()) {
-          sendData();
-          try {
-            Thread.sleep(100);
-          } catch (InterruptedException e1) {
-            System.err.println("Thread sleep interrupted");
-          }
-        }
-    });
-    dataSender.start();
     
   }
   
@@ -139,11 +142,20 @@ public class AutonConfigDisplay extends Application {
 	    ComboBox<E> combo = new ComboBox<>(FXCollections.observableArrayList(enums));
 	    combo.setOnAction(
 	        event -> {
-  	        if(pEnumeration.getClass() == ECross.class.getClass()) {
+	          System.out.println("Action triggered!");
+	          String enumName = pEnumeration.getSimpleName();
+  	        if(enumName.equals(ECross.class.getSimpleName())) {
   	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
-  	        }else {
-  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating cross: " + mCross);
   	        }
+  	        if(enumName.equals(EStartingPosition.class.getSimpleName())){
+  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        	System.out.println("Updating position: " + mStartingPosition);
+  	        }
+  	        if(enumName.equals(EDriverControlMode.class.getSimpleName())){
+              mDriverControlMode = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating controlmode: " + mStartingPosition);
+            }
 	        }
 	    );
 	    combo.setValue(enums.get(0));
@@ -175,16 +187,6 @@ public class AutonConfigDisplay extends Application {
         }
     }));
     
-    listView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener() {
-
-		@Override
-		public void onChanged(Change arg0) {
-			System.out.println("On changed");
-			SystemSettings.AUTON_TABLE.putNumberArray(pEnumeration.getSimpleName(), preferredCubeActions);
-		}
-    	
-    });
-    
     Button up = new Button("Up");
     Button down = new Button("Down");
     up.setOnAction(e -> swapEntriesUp(listView, preferenceArray) );
@@ -212,9 +214,10 @@ public class AutonConfigDisplay extends Application {
   
   private void sendData() {
     SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
-    SystemSettings.AUTON_TABLE.putDouble("delay", mDelay);
+    SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
     SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
     SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+    SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);
   }
   
   private static void swapEntriesUp(ListView listView, Object[] outputArray) {
