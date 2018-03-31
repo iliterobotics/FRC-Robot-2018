@@ -50,12 +50,12 @@ public class Intake implements IModule{
 
 	@Override
 	public boolean update(double pNow) {
-		if(mRetractIntake && !beamBreak()) {
+		if(mRetractIntake) {
 		  // Retracted and beam break is not broken
 		  extender.set(Value.kReverse);
       leftIntakeTalon.set(ControlMode.PercentOutput, 0);
       rightIntakeTalon.set(ControlMode.PercentOutput, 0);
-		} else if(!beamBreak()){
+		} else {
 		  // Extended and beam break is not broken
 	    extender.set(Value.kForward);
       leftIntakeTalon.set(ControlMode.PercentOutput, -leftDesiredPower);
