@@ -221,9 +221,9 @@ public class Elevator implements IModule {
           mDesiredPower = Utils.clamp(kp * error, elevatorPosition.mSetpointPower);
           elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
           
-          if(elevatorDirection == ElevDirection.DOWN) {
-            mDesiredPower /= 1.25d;
-          }
+//          if(elevatorDirection == ElevDirection.DOWN) {
+//            mDesiredPower /= 1.25d;
+//          }
 //          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection)) {
 //            mDesiredPower = Utils.clamp(mDesiredPower, -1*EElevatorState.DECELERATE_BOTTOM.power);
 //          } else if (currentEncoderTicks > ElevDirection.UP.decelerationEncoderThreshold) {

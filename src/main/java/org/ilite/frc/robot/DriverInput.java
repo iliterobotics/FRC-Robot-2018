@@ -165,6 +165,7 @@ public class DriverInput implements IModule{
 	private void updateElevator() {
 	  
 	  double climberAxis = mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS);
+	  climberAxis = EInputScale.EXPONENTIAL.map(climberAxis, 2d);
 	  
 	  // Safety to prevent elevator motors from burning out
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
