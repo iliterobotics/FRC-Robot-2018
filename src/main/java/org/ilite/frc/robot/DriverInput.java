@@ -141,12 +141,16 @@ public class DriverInput implements IModule{
     }
     
     // Automatically retract when the climbing stick is moved
-    if(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) != 0) {
+    if(Math.abs(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.1) {
       mIntake.setIntakeRetracted(true);
     }
     
     if(Math.abs(intakeSpeed) > 0.1) {
-      mIntake.setIntakeRetracted(false);
+      if(!mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN) && mCarriage.getBeamBreak()) {
+        mIntake.setIntakeRetracted(true);
+      } else {
+        mIntake.setIntakeRetracted(false);
+      }
       if(intakeSpeed > 0) {
         mIntake.intakeIn(intakeSpeed);
         mCarriage.setDesiredState(CarriageState.RESET);
@@ -154,14 +158,15 @@ public class DriverInput implements IModule{
         mIntake.intakeOut(intakeSpeed);
         mCarriage.setDesiredState(CarriageState.RESET);
       }
-    } else 
+    } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
       // If we bring the intakes out, open the carriage so the cube won't get stuck
-      if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
         mIntake.setIntakeRetracted(false);
         mCarriage.setDesiredState(CarriageState.RESET);
-      } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
-        mIntake.setIntakeRetracted(true);
-      }
+    } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
+      mIntake.setIntakeRetracted(true);
+    } else {
+      mIntake.turnOff();
+    }
 	}
 	
 	private void updateElevator() {

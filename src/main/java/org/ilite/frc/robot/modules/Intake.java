@@ -61,6 +61,10 @@ public class Intake implements IModule{
 		}
 		return true;
 	}
+	
+	public void turnOff() {
+	  leftDesiredPower = rightDesiredPower = 0d;
+	}
 
 	public void intakeIn(double inPower) {
     rightCurrent = rightIntakeTalon.getOutputCurrent();
