@@ -3,7 +3,6 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.robot.Hardware;
-import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.sensors.BeamBreakSensor;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -31,7 +30,6 @@ public class Intake implements IModule{
 	private final double RIGHT_LIMITER = .2;
 	private final double MAX_CURRENT_LIMIT_RATIO = 30.0/12.0;
 	private final double MIN_CURRENT_LIMIT_RATIO = .80;
-	private final double MAX_OPERATOR_POWER = 0.6d;
 	
 	
 	public Intake(Elevator pElevator, Hardware pHardware, BeamBreakSensor pBeamBreak){
@@ -94,8 +92,8 @@ public class Intake implements IModule{
 			}
 			else
 			{
-				leftDesiredPower = Utils.clamp(inPower, MAX_OPERATOR_POWER);
-				rightDesiredPower = Utils.clamp(inPower, MAX_OPERATOR_POWER);
+				leftDesiredPower = inPower;
+				rightDesiredPower = inPower;
 			}
 		}
 		else

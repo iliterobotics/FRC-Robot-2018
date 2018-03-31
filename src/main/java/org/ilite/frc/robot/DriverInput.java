@@ -171,6 +171,7 @@ public class DriverInput implements IModule{
 	  {
 	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
 	    mElevatorModule.setPower(0);
+	    // TODO - also reset encoder
 	  }
 	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
@@ -188,9 +189,9 @@ public class DriverInput implements IModule{
       mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
       mElevatorModule.setPosition(EElevatorPosition.BOTTOM);
     } else if( climberAxis != 0) {
-      if(Math.abs(climberAxis) < 0.75) {
+      if(Math.abs(climberAxis) > 0.1 && Math.abs(climberAxis) < 0.75) {
+        mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
         mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-        mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
       }
       if(Math.abs(climberAxis) > 0.75) {
         mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
