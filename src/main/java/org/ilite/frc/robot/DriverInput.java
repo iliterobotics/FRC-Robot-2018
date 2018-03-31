@@ -145,21 +145,23 @@ public class DriverInput implements IModule{
       mIntake.setIntakeRetracted(true);
     }
     
-    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
-      mIntake.setIntakeRetracted(true);
-    }
-    
-    // If we bring the intakes out, open the carriage so the cube won't get stuck
-    if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
+    if(Math.abs(intakeSpeed) > 0.1) {
       mIntake.setIntakeRetracted(false);
-      mCarriage.setDesiredState(CarriageState.RESET);
-    }
-    
-    if(intakeSpeed > 0) {
-      mIntake.intakeIn(intakeSpeed);
-    } else {
-      mIntake.intakeOut(intakeSpeed);
-    }
+      if(intakeSpeed > 0) {
+        mIntake.intakeIn(intakeSpeed);
+        mCarriage.setDesiredState(CarriageState.RESET);
+      } else {
+        mIntake.intakeOut(intakeSpeed);
+        mCarriage.setDesiredState(CarriageState.RESET);
+      }
+    } else 
+      // If we bring the intakes out, open the carriage so the cube won't get stuck
+      if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
+        mIntake.setIntakeRetracted(false);
+        mCarriage.setDesiredState(CarriageState.RESET);
+      } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
+        mIntake.setIntakeRetracted(true);
+      }
 	}
 	
 	private void updateElevator() {

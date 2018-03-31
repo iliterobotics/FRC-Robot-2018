@@ -91,7 +91,7 @@ public class GetAutonomous {
     while(System.currentTimeMillis() < timerStart + 1) {
       getSides();
     }
-	  parseEntries();
+	  boolean received = parseEntries();
 		mSameSideCubeActionPrefs = getCubeActionsOnMySide();
 		mOtherSideCubeActionPrefs = getCubeActionsOnOtherSide();
 		mAvailableCubeActions = getAvailableCubeActions();
@@ -435,11 +435,11 @@ public class GetAutonomous {
 	 * variables. Converts the number representation of the network table entry into
 	 * an enum.
 	 */
-	private void parseEntries() {
+	private boolean parseEntries() {
 		int posNum = nPosEntry.getNumber(EStartingPosition.LEFT.ordinal()).intValue();
 		int crossNum = nCrossEntry.getNumber(ECross.CARPET.ordinal()).intValue();
 		Number[] cubeArray = nCubeActionPrefsEntry.getNumberArray(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS);
-
+		boolean received = false;
 		mDelay = mDelayEntry.getDouble(-1);
 		mStartingPos = EStartingPosition.intToEnum(posNum);
 		mCrossType = ECross.intToEnum(crossNum);
@@ -456,7 +456,10 @@ public class GetAutonomous {
 		}
 		
 		if(mReceivedCubeActionPrefs.isEmpty()) {
+		  received = false;
 		  Arrays.asList(SystemSettings.AUTO_DEFAULT_CUBE_ACTIONS).forEach(e -> mReceivedCubeActionPrefs.add(ECubeAction.intToEnum(e)));
+		} else {
+		  received = true;
 		}
 
 //    if(mStartingPos != EStartingPosition.LEFT) mStartingPos = EStartingPosition.LEFT;
@@ -476,6 +479,8 @@ public class GetAutonomous {
 			mTurnScalar = 0;
 			break;
 		}
+		
+		return received;
 	}
 
 	/**
