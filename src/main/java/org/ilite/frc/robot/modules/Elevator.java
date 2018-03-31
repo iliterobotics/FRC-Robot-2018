@@ -197,7 +197,7 @@ public class Elevator implements IModule {
         double kp = 1d / 2000d * 1.2;
         
 
-//        int directionScalar = 0;  
+//        int directionScalar = 0;
         // If we are past the setpoint, hold position
         if(elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition))
         {
@@ -229,20 +229,17 @@ public class Elevator implements IModule {
 //          } else if (currentEncoderTicks > ElevDirection.UP.decelerationEncoderThreshold) {
 //            mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
 //          }
-          
           //check if we should decelerate based on whether we are near the top of bottom
-          System.out.println("ElevDirection = " + elevatorDirection);
-          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
-          {
-            //clamp power by checking if going up or down and setting to deceleration power accordingly
-            if(elevatorDirection.isPositiveDirection)
-            {
-              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
-            }
-            else
-              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_BOTTOM.power);
-          }
-          System.out.println("Desired power= " + mDesiredPower);
+//          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection))
+//          {
+//            //clamp power by checking if going up or down and setting to deceleration power accordingly
+//            if(elevatorDirection.isPositiveDirection)
+//            {
+//              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
+//            }
+//            else
+//              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_BOTTOM.power);
+//          }
           lastError = error;
           lastTime = now;
         }
