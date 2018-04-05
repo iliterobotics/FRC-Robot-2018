@@ -108,6 +108,7 @@ public class Elevator implements IModule {
 	    masterElevator.getSensorCollection().setQuadraturePosition(0, 0);
 		}
 		
+		
     talonTach = mHardware.getTalonTach();
 
     currentTachState = talonTach.getSensor();
@@ -199,21 +200,9 @@ public class Elevator implements IModule {
 
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
-        if(elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition))
+        if(elevatorPosition.inRange(currentEncoderTicks))
         {
-          elevatorState = EElevatorState.HOLD;
-        // If the setpoint is above us, and we are below it, go up
-        // This is redundant
-//        } else if (isSetpointAboveIntialPosition) {
-//          directionScalar = (elevatorPosition.isBelowSetpoint(currentEncoderTicks)) ? 1 : -1;
-//          elevatorState = EElevatorState.NORMAL;
-//        } else if(!isSetpointAboveIntialPosition && elevatorPosition.isAboveSetpoint(currentEncoderTicks)) {
-//          directionScalar = (elevatorPosition.isAboveSetpoint(currentEncoderTicks)) ? -1 : 1;
-//          elevatorState = EElevatorState.NORMAL;
-//        }
-          
-//        mDesiredPower = elevatorPosition.mSetpointPower * directionScalar;
-          
+          elevatorState = EElevatorState.HOLD;          
         } else {
           elevatorState = EElevatorState.NORMAL;
           System.out.println("ERROR=" + error + " \tkP = " + kp);
@@ -226,7 +215,7 @@ public class Elevator implements IModule {
 //          }
 //          if(elevatorDirection.shouldDecelerate(currentEncoderTicks, elevatorDirection.isPositiveDirection)) {
 //            mDesiredPower = Utils.clamp(mDesiredPower, -1*EElevatorState.DECELERATE_BOTTOM.power);
-//          } else if (currentEncoderTicks > ElevDirection.UP.decelerationEncoderThreshold) {
+//          } else if (currentEnco  derTicks > ElevDirection.UP.decelerationEncoderThreshold) {
 //            mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_TOP.power);
 //          }
           //check if we should decelerate based on whether we are near the top of bottom
@@ -424,13 +413,23 @@ public class Elevator implements IModule {
     return mDesiredPower;
   }
   
+  public double getMasterVoltage()
+  {
+    return masterElevator.getMotorOutputVoltage();
+  }
+  
+  public double getFollowerVoltage()
+  {
+    return followerElevator.getMotorOutputVoltage();
+  }
+  
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
 		return elevatorDirection.isCurrentRatioLimited(masterElevator);
 	}
 	
 	public boolean isFinishedGoingToPosition() {
-	  return elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition);
+	  return elevatorPosition.inRange(currentEncoderTicks);
 	}
 	
 }

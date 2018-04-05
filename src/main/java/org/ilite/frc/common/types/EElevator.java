@@ -12,7 +12,9 @@ public enum EElevator implements CodexOf<Double> {
   DESIRED_POWER,
   CURRENT_ENCODER_TICKS,
   CURRENT_TOP_RATIO,
-  CURRENT_BOTTOM_RATIO;
+  CURRENT_BOTTOM_RATIO,
+  MASTER_VOLTAGE,
+  FOLLOWER_VOLTAGE;
 
   public static void map(Codex<Double, EElevator> pCodex, Elevator pElevator, double pTimestampNow) {
     pCodex.reset();
@@ -24,5 +26,7 @@ public enum EElevator implements CodexOf<Double> {
     pCodex.set(CURRENT_ENCODER_TICKS, (double)pElevator.getCurrentEncoderTicks());
     pCodex.set(CURRENT_TOP_RATIO, 30d/12d);
     pCodex.set(CURRENT_BOTTOM_RATIO, 10d/12d);
+    pCodex.set(MASTER_VOLTAGE, pElevator.getMasterVoltage());
+    pCodex.set(FOLLOWER_VOLTAGE, pElevator.getFollowerVoltage());
   }
 }
