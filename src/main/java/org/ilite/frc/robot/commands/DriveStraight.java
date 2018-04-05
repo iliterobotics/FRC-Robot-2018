@@ -86,6 +86,10 @@ public class DriveStraight implements ICommand{
       DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;
     }
+    else
+    {
+      //set drivetrain output to 0
+    }
 
     remainingDistance = distanceToTravel - currentDistance;
     
