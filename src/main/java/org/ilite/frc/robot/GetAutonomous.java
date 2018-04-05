@@ -34,7 +34,7 @@ public class GetAutonomous {
 	private Pigeon mPigeon;
 	private Data mData;
 
-	// Decision variables to be set by networktable entries.
+	//Decision variables to be set by networktable entries.
 	private List<ECubeAction> mReceivedCubeActionPrefs, mSameSideCubeActionPrefs, mOtherSideCubeActionPrefs, mAvailableCubeActions;
 	private EStartingPosition mStartingPos = EStartingPosition.LEFT;
 	private ECross mCrossType = ECross.NONE;
@@ -208,7 +208,7 @@ public class GetAutonomous {
 //		  // Reset elevator
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
 //      
-//      // Turn back for a 2nd cube
+//       Turn back for a 2nd cube
 //      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 180-scaleTurnDegrees, 2));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, 36d));
 //      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -45, 2));
@@ -308,6 +308,16 @@ public class GetAutonomous {
 			  break;
 			}
 			break;
+		}
+		if(mSameSideCubeActionPrefs.contains(ECubeAction.SCALE)) {
+		//Backs up from rim of switch, subject to change.
+		mCommands.add(new DriveStraight(mDriveTrain, mData, -12, .5));
+		//Turns toward null zone
+		mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, .5));
+		//The inches is distance from null zone to wall - distance from switch to wall.
+		mCommands.add(new DriveStraight(mDriveTrain, mData, (299.65 - 196) , .5));
+		//Based on Daniel's calculations- 30 degrees is degrees towards opponent cube
+		mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 30, .5));
 		}
 	}
 	
