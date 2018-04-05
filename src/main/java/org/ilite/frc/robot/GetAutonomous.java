@@ -199,7 +199,7 @@ public class GetAutonomous {
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true));
-      mCommands.add(new Delay(0.5));
+      mCommands.add(new Delay(1.2));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  
 //		  //Back up from scale
