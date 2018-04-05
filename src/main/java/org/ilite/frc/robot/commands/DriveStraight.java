@@ -43,29 +43,31 @@ public class DriveStraight implements ICommand{
   private double initialLeftPosition;
   private double initialRightPosition;
   private final boolean mIgnoreGyro;
+  private boolean useHoldPosition;
   
   // In degrees
   private double mDesiredHeadingYaw;
 
-  public DriveStraight(DriveTrain dt, Data pData, double inches, double power, boolean ignoreGyro) {
+  public DriveStraight(DriveTrain dt, Data pData, double inches, double power, boolean ignoreGyro, boolean useHoldPosition) {
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = Utils.inchesToTicks(inches);
     this.mPower = power;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
     mIgnoreGyro = ignoreGyro;
+    this.useHoldPosition = useHoldPosition;
   }
   
   public DriveStraight(DriveTrain dt, Data pData, double inches, double power){
-    this(dt, pData, inches, 0.6, false);
+    this(dt, pData, inches, 0.6, false, true);
   }
   
   public DriveStraight(DriveTrain dt, Data pData, double inches){
      this(dt, pData, inches, 0.6);
   }
   
-  public DriveStraight(DriveTrain dt, Data pData, double inches, boolean ignoreGyro){
-     this(dt, pData, inches, 0.6, ignoreGyro);
+  public DriveStraight(DriveTrain dt, Data pData, double inches, boolean ignoreGyro, boolean useHoldPosition){
+     this(dt, pData, inches, 0.6, ignoreGyro, true);
   }
   
   public void initialize(double pNow){
