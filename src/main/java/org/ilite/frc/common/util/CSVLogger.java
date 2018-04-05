@@ -84,9 +84,13 @@ public class CSVLogger extends Thread{
             .collect(Collectors.toList());
     rowList.set(rowList.size() - 1, Long.toString(System.currentTimeMillis() / 1000));
     
-    Writer writer = pCodexWriters.get(pEntry.getKey());
-    writer.append(SystemUtils.toCsvRow(rowList) + "\n");
-    writer.flush();
+    double time = Double.parseDouble(retrieveStringValue(pEntry.getKey(), SystemSettings.LOGGING_TIMESTAMP_KEY));
+    
+    if(isAuto(time)) {
+      Writer writer = pCodexWriters.get(pEntry.getKey());
+      writer.append(SystemUtils.toCsvRow(rowList) + "\n");
+      writer.flush();
+    }
   }
   
   public void writeRowsToCsv() {
@@ -115,6 +119,14 @@ public class CSVLogger extends Thread{
   
   private String retrieveStringValue(String pLogName, String pKey) {
     return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
+  }
+  
+  private boolean isAuto(double time) {
+    return time <= 15.0;
+  }
+  
+  private boolean isTeleop(double time) {
+    return time > 15 && time <= 135;
   }
   
   @Override
