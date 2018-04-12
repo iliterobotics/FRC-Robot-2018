@@ -15,6 +15,7 @@ import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
+import org.ilite.frc.robot.commands.DriveStraight;
 import org.ilite.frc.robot.commands.ElevatorToPosition;
 import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
@@ -128,7 +129,8 @@ public class Robot extends IterativeRobot {
     mCommandQueue.clear();
 
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    mCommandQueue = getAutonomous.getAutonomousCommands();
+    //mCommandQueue = getAutonomous.getAutonomousCommands();
+    mCommandQueue.add(new DriveStraight(mDrivetrain, mData, 15*12, false, false));
     System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);

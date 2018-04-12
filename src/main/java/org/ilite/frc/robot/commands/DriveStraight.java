@@ -9,6 +9,7 @@ import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
+import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
@@ -67,7 +68,17 @@ public class DriveStraight implements ICommand{
   }
   
   public DriveStraight(DriveTrain dt, Data pData, double inches, boolean ignoreGyro, boolean useHoldPosition){
-     this(dt, pData, inches, 0.6, ignoreGyro, true);
+     this(dt, pData, inches, 0.6, ignoreGyro, useHoldPosition);
+  }
+  
+  public DriveStraight(DriveTrain dt, Data pData, double inches, boolean ignoreGyro)
+  {
+    this(dt, pData, inches, 0.6, ignoreGyro, true);
+  }
+  
+  public DriveStraight(DriveTrain dt, Data pData, double inches, double power, boolean ignoreGyro)
+  {
+    this(dt, pData, inches, inches, ignoreGyro, true);
   }
   
   public void initialize(double pNow){
@@ -81,15 +92,19 @@ public class DriveStraight implements ICommand{
     double currentDistance = getAverageDistanceTravel();
     if( currentDistance >= distanceToTravel){
       // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
+     if(useHoldPosition)
+     {
       driveTrain.holdPosition();
+     }
+     else
+     {
+       driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+     }
 //      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;
     }
-    else
-    {
-      //set drivetrain output to 0
-    }
+    
 
     remainingDistance = distanceToTravel - currentDistance;
     
