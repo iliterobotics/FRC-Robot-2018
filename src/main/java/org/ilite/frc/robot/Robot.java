@@ -12,6 +12,7 @@ import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EElevator;
+import org.ilite.frc.common.types.EIntake;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.common.types.EPigeon;
 import org.ilite.frc.common.util.SystemUtils;
@@ -203,8 +204,10 @@ public class Robot extends IterativeRobot {
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
+      EIntake.map(mData.intake, mIntake);
       SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
       SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EIntake.class, mData.intake, mCurrentTime);
   }
   
   /**

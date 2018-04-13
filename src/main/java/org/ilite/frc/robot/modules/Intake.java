@@ -17,9 +17,11 @@ public class Intake implements IModule{
 	final TalonSRX leftIntakeTalon;
 	final TalonSRX rightIntakeTalon;
 	private double rightCurrent;
-	private double rightVoltage;
-	private double leftVoltage;
+	private double rightBusVoltage;
+	private double leftBusVoltage;
 	private double leftCurrent;
+	private double leftRatio;
+	private double rightRatio;
 	public DoubleSolenoid extender;
 	public boolean mRetractIntake;
 	private double leftDesiredPower;
@@ -66,10 +68,10 @@ public class Intake implements IModule{
 	public void intakeIn(double inPower) {
     rightCurrent = rightIntakeTalon.getOutputCurrent();
     leftCurrent = leftIntakeTalon.getOutputCurrent();
-    rightVoltage = rightIntakeTalon.getBusVoltage();
-    leftVoltage = leftIntakeTalon.getBusVoltage();
-		double rightRatio = rightCurrent/rightVoltage;
-		double leftRatio = leftCurrent/leftVoltage;
+    rightBusVoltage = rightIntakeTalon.getBusVoltage();
+    leftBusVoltage = leftIntakeTalon.getBusVoltage();
+		rightRatio = rightCurrent/rightBusVoltage;
+		leftRatio = leftCurrent/leftBusVoltage;
 		boolean beamBreakTriggered = mHardware.getCarriageBeamBreak().get();
 		
 		if(!mRetractIntake)
@@ -115,6 +117,10 @@ public class Intake implements IModule{
 	  return startCurrentLimiting;
 	}
 	
+	public boolean isRetracted() {
+	  return mRetractIntake;
+	}
+	
 	public void intakeOut(double inPower) 
 	{
 		if (!mRetractIntake)
@@ -127,6 +133,48 @@ public class Intake implements IModule{
 	@Override
 	public void shutdown(double pNow) {	
 	}
+	
+  public double getLeftBusVoltage() {
+    return leftBusVoltage;
+  }
+  
+  public double getRightBusVoltage() {
+    return rightBusVoltage;
+  }
+  
+  public double getLeftOutVoltage() {
+    return leftIntakeTalon.getMotorOutputVoltage();
+  }
+  
+  public double getRightOutVoltage() {
+    return rightIntakeTalon.getMotorOutputVoltage();
+  }
+  
+  public double getLeftCurrentRatio() {
+    return leftRatio;
+  }
+  
+  public double getRightCurrentRatio() {
+    return rightRatio;
+  }
+  
+  public double getLeftOutputCurrent() {
+    return leftCurrent;
+  }
+  
+  public double getRightOutputCurrent() {
+    return rightCurrent;
+  }
+  
+  public double getLeftDesiredPower() {
+    return leftDesiredPower;
+  }
+  
+  public double getRightDesiredPower() {
+    return rightDesiredPower;
+  }
+  
+  
 	
 
 }
