@@ -29,7 +29,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class CSVLogger extends Thread{
 
-  private static final String LOG_PATH_FORMAT = "./logs/%s-%s-%s %s.%s.%s/%s-log.csv";
+  private static final String LOG_PATH_FORMAT = "./logs/%s %s %s/%s %s %s/%s-log.csv";
 
   private Map<String, Writer> mCodexWriters = new HashMap<>();
   private Map<String, List<String>> mCodexKeys = new HashMap<>(); // Contains a mapping of codex names to codex keys. Used to retrieve codex data dumped by the robot from NetworkTables
@@ -48,7 +48,7 @@ public class CSVLogger extends Thread{
   
   public <E extends Enum<E>> void putInMatrix(String pLogName, Class<E> pEnum) {
     String logName = String.format(LOG_PATH_FORMAT, mDateNow.getMonth(), mDateNow.getDayOfMonth(), mDateNow.getYear(), mTimeNow.getHour(), mTimeNow.getMinute(), mTimeNow.getSecond(), pLogName);
-    File log = new File(String.format(LOG_PATH_FORMAT, pLogName));
+    File log = new File(logName);
     mCodexKeys.put(pLogName, getKeys(pEnum));
     try {
       handleCreation(log);
@@ -113,7 +113,7 @@ public class CSVLogger extends Thread{
   }
   
   private void handleCreation(File pFile) throws IOException {
-    if(pFile.getParentFile().exists()) pFile.getParentFile().mkdir();
+    pFile.getParentFile().mkdirs();
     if(!pFile.exists()) pFile.createNewFile();
   }
   
