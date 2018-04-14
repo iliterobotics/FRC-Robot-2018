@@ -45,7 +45,7 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
-  private CSVLogger logger = new CSVLogger(EGameMode.AUTONOMOUS_INIT, EGameMode.AUTONOMOUS_PERIODIC);
+  private CSVLogger logger = new CSVLogger(SystemSettings.LOGGING_ALLOWED_GAME_MODES);
   
   private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
   private double mDelay = 0.0;

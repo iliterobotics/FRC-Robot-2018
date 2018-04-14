@@ -3,10 +3,7 @@ package org.ilite.frc.common.config;
 import java.util.concurrent.TimeUnit;
 
 import org.ilite.frc.common.input.EDriverControlMode;
-import org.ilite.frc.common.types.ECross;
-import org.ilite.frc.common.types.ECubeAction;
-import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.common.types.*;
 import org.ilite.frc.robot.SimpleNetworkTable;
 import org.ilite.frc.robot.auto.FieldAdapter;
 
@@ -61,7 +58,8 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
       "10.18.85.10",
       "172.22.11.1",
   };
-  
+
+  public static EGameMode[] LOGGING_ALLOWED_GAME_MODES = new EGameMode[]{EGameMode.AUTONOMOUS_INIT, EGameMode.AUTONOMOUS_PERIODIC};
   public static String LOGGING_TIMESTAMP_KEY = "TIME";
   public static String GAME_MODE_KEY = "GAME_MODE";
   public static String LOGGING_GLOBAL_KEY_PREFIX = "GLOBAL";
