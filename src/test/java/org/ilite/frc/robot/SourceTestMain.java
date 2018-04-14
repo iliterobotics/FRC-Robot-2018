@@ -3,10 +3,7 @@ package org.ilite.frc.robot;
 import java.util.ArrayList;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.ECross;
-import org.ilite.frc.common.types.ECubeAction;
-import org.ilite.frc.common.types.EDriveTrain;
-import org.ilite.frc.common.types.EStartingPosition;
+import org.ilite.frc.common.types.*;
 import org.ilite.frc.common.util.SystemUtils;
 
 import com.flybotix.hfr.codex.Codex;
@@ -18,16 +15,16 @@ public class SourceTestMain {
 	
 	public static void main(String[] args) {
 	  
-	  testLoggingLocally();
+	  testLoggingLocally(EGameMode.AUTONOMOUS_PERIODIC);
 //	  testOnLocalServer();
 	  
 	}
 	
-	private static void testLoggingLocally() {
+	private static void testLoggingLocally(EGameMode pGameMode) {
 	  Data mData = new Data();
 	  while(true) {
 	    EDriveTrain.testMap(mData.drivetrain);
-	    SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, 0);
+	    SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, pGameMode, 0);
 	  }
 	}
 	

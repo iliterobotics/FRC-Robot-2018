@@ -15,7 +15,7 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.lang.EnumUtils;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.ilite.frc.common.types.EGameMode;
 
 public class SystemUtils {
 
@@ -46,28 +46,41 @@ public class SystemUtils {
             .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
             .collect(Collectors.joining(","));
   }
-  
+
   /**
-   * Provides a way to write every value of a codex to NetworkTables.
-   * @param pCodex The codex you want to dump to NetworkTables.
+   * Convenience method, so we don't have to specify game mode.
+   * @param pEnumeration
+   * @param pCodex
+   * @param pTime
+   * @param <V>
+   * @param <E>
    */
   public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, double pTime) {
-    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pTime);
+    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, EGameMode.AUTONOMOUS_PERIODIC, pTime);
+  }
+
+  /**
+   * Provides a way to write every value of a codex to NetworkTables. Provided for convenience - automatically names codexes.
+   * @param pCodex The codex you want to dump to NetworkTables.
+   */
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, EGameMode pGameMode, double pTime) {
+    writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pGameMode, pTime);
   }
   
   /**
-   * 
+   * Provides a way to write every value of a codex to NetworkTables.
    * @param name Allows you to define a name for the codex so two of the same type can be written at once.
    * @param pCodex The codex you want to dump to NetworkTables.
    * @param pTime The current time.
    */
-  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, double pTime) {
+  public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, EGameMode pGameMode, double pTime) {
     List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
     for(E e : enums) {
       Double value = (Double) pCodex.get(e);
       if(e != null) logNumber(name, e, value);
     }
     logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
+    logNumber(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY, pGameMode.ordinal());
   }
   
   public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {

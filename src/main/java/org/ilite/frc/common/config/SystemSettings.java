@@ -63,6 +63,8 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   };
   
   public static String LOGGING_TIMESTAMP_KEY = "TIME";
+  public static String GAME_MODE_KEY = "GAME_MODE";
+  public static String LOGGING_GLOBAL_KEY_PREFIX = "GLOBAL";
   
   public static int ROBOT_CODEX_DATA_SENDER_PORT = 7778;
   
