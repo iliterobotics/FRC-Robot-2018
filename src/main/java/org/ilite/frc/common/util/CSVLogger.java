@@ -7,19 +7,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.types.EDriveTrain;
-import org.ilite.frc.common.types.EElevator;
-import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.common.types.EPigeon;
-import org.ilite.frc.common.types.EPowerDistPanel;
+import org.ilite.frc.common.types.*;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ELevel;
@@ -34,10 +27,20 @@ public class CSVLogger extends Thread{
   private Map<String, Writer> mCodexWriters = new HashMap<>();
   private Map<String, List<String>> mCodexKeys = new HashMap<>(); // Contains a mapping of codex names to codex keys. Used to retrieve codex data dumped by the robot from NetworkTables
 
+  private List<EGameMode> mLoggableGameModes;
+
   private LocalTime mTimeNow = LocalTime.now();
   private LocalDate mDateNow = LocalDate.now();
 
+  /**
+   * By default, log in all game modes.
+   */
   public CSVLogger() {
+    this(EGameMode.values());
+  }
+
+  public CSVLogger(EGameMode ... pGameModes) {
+    this.mLoggableGameModes = Arrays.asList(pGameModes);
     putInMatrix("operator", ELogitech310.class);
     putInMatrix("driver", ELogitech310.class);
     putInMatrix(EPigeon.class);
@@ -91,12 +94,11 @@ public class CSVLogger extends Thread{
     rowList.set(rowList.size() - 1, Long.toString(System.currentTimeMillis() / 1000));
     
     double time = Double.parseDouble(retrieveStringValue(pEntry.getKey(), SystemSettings.LOGGING_TIMESTAMP_KEY));
-    
-    if(isAuto(time)) {
-      Writer writer = pCodexWriters.get(pEntry.getKey());
-      writer.append(SystemUtils.toCsvRow(rowList) + "\n");
-      writer.flush();
-    }
+
+    Writer writer = pCodexWriters.get(pEntry.getKey());
+    writer.append(SystemUtils.toCsvRow(rowList) + "\n");
+    writer.flush();
+
   }
   
   public void writeRowsToCsv() {
@@ -126,20 +128,20 @@ public class CSVLogger extends Thread{
   private String retrieveStringValue(String pLogName, String pKey) {
     return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
   }
-  
-  private boolean isAuto(double time) {
-    return time <= 15.0;
+
+  private Number retrieveNumberValue(String pLogName, String pKey) {
+    return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1);
   }
   
-  private boolean isTeleop(double time) {
-    return time > 15 && time <= 135;
+  private EGameMode getGameMode() {
+    return EGameMode.intToEnum(retrieveNumberValue(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY).intValue());
   }
   
   @Override
   public void run() {
     writeHeaderToCsv(mCodexKeys, mCodexWriters);
     while(!Thread.interrupted()) {
-      if(NetworkTableInstance.getDefault().isConnected()) writeRowsToCsv();
+      if(NetworkTableInstance.getDefault().isConnected() && mLoggableGameModes.contains(getGameMode())) writeRowsToCsv();
       try {
         sleep(10);
       } catch (InterruptedException e) {

@@ -9,6 +9,7 @@ import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
+import org.ilite.frc.common.types.EGameMode;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.common.util.CSVLogger;
 
@@ -44,7 +45,7 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
-  private CSVLogger logger = new CSVLogger();
+  private CSVLogger logger = new CSVLogger(EGameMode.AUTONOMOUS_INIT, EGameMode.AUTONOMOUS_PERIODIC);
   
   private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
   private double mDelay = 0.0;

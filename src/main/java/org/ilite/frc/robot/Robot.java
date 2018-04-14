@@ -1,6 +1,5 @@
 package org.ilite.frc.robot;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -10,20 +9,12 @@ import java.util.concurrent.Executors;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
-import org.ilite.frc.common.types.EDriveTrain;
-import org.ilite.frc.common.types.EElevator;
-import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.common.types.EPigeon;
+import org.ilite.frc.common.types.*;
 import org.ilite.frc.common.util.SystemUtils;
-import org.ilite.frc.robot.commands.ElevatorToPosition;
-import org.ilite.frc.robot.commands.FollowPath;
 import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.commands.ReleaseCube;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
-import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.EElevatorPosition;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
@@ -119,7 +110,7 @@ public class Robot extends IterativeRobot {
     double start = Timer.getFPGATimestamp();
     mHardware.getPigeon().zeroAll();
     System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors(EGameMode.AUTONOMOUS_INIT);
     
     setRunningModules(mDrivetrain, mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
     mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
@@ -135,7 +126,7 @@ public class Robot extends IterativeRobot {
     
   }
   public void autonomousPeriodic() {
-    mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors(EGameMode.AUTONOMOUS_PERIODIC);
     
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
@@ -166,7 +157,7 @@ public class Robot extends IterativeRobot {
 	  receiveDriverControlMode();
 
     mHardware.getPigeon().zeroAll();
-    mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors(EGameMode.TELEOP_INIT);
 	   
 	  setRunningModules(mBeamBreak, mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
     
@@ -175,7 +166,7 @@ public class Robot extends IterativeRobot {
   }
 
   public void teleopPeriodic() {
-    mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors(EGameMode.TELEOP_PERIODIC);
     
     if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
     if(mDriverInput.canRunCommandQueue()) updateCommandQueue(mDriverInput.shouldInitializeCommandQueue());
@@ -191,7 +182,7 @@ public class Robot extends IterativeRobot {
    * 2. Perform any input filtering (such as split the split arcade re-map and squaring of the turn)
    * 3. Sets DriveTrain outputs based on processed input
    */
-  private void mapInputsAndCachedSensors() {
+  private void mapInputsAndCachedSensors(EGameMode pGameMode) {
       mCurrentTime = Timer.getFPGATimestamp();
     
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
@@ -203,8 +194,12 @@ public class Robot extends IterativeRobot {
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
+      logCodexes(pGameMode);
+  }
+
+  private void logCodexes(EGameMode pCurrentGameMode) {
+      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, pCurrentGameMode, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, pCurrentGameMode, mCurrentTime);
   }
   
   /**
@@ -263,7 +258,8 @@ public class Robot extends IterativeRobot {
     setRunningModules(mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator,
                       new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator, mPneumaticControl));
     mHardware.getPigeon().zeroAll();
-    
+    mapInputsAndCachedSensors(EGameMode.TEST_INIT);
+
     mControlLoop.setRunningControlLoops();
     mControlLoop.start();
   }
@@ -271,7 +267,7 @@ public class Robot extends IterativeRobot {
   public void testPeriodic() {
 	  mLog.info("TEST");
 	  mCurrentTime = Timer.getFPGATimestamp();
-    mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors(EGameMode.TEST_PERIODIC);
     updateRunningModules();
   }
 
