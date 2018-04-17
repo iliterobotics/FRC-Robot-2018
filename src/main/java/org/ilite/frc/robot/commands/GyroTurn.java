@@ -52,6 +52,7 @@ public class GyroTurn implements ICommand {
 
   public boolean update(double pNow) {
     
+	System.out.println("-----GyroTurn EXECUTING");
     mError = getError(); // Update error value
     this.mTotalError += this.mError; // Update running error total
     

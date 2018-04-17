@@ -40,10 +40,12 @@ public class GetAutonomous {
 	private ECross mCrossType = ECross.NONE;
 	private double mDelay;
 	private boolean mDoComplexAutonomous;
+	
 
 	// Game Data - Jaci's API
 	private OwnedSide mScaleSide;
 	private OwnedSide mSwitchSide;
+	private OwnedSide mOppositeSwitchSide;
 	
   private Queue<ICommand> mCommands;
 
@@ -71,9 +73,9 @@ public class GetAutonomous {
 		
 		mDoComplexAutonomous = true;
 		mReceivedCubeActionPrefs = new ArrayList<>();
-    mSameSideCubeActionPrefs = new ArrayList<>();
-    mOtherSideCubeActionPrefs = new ArrayList<>();
-    mAvailableCubeActions = new ArrayList<>();
+		mSameSideCubeActionPrefs = new ArrayList<>();
+		mOtherSideCubeActionPrefs = new ArrayList<>();
+		mAvailableCubeActions = new ArrayList<>();
 		mCommands = new LinkedList<ICommand>();
 	}
 
@@ -202,15 +204,18 @@ public class GetAutonomous {
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  
 //		  //Back up from scale
-		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.6));
+		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.4));
 //		  
 //		  // Reset elevator
 		  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
+		  
+		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -mTurnScalar * (90 - 33), 8));
+		  
 //      
 //       Turn back for a 2nd cube
-//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 180-scaleTurnDegrees, 2));
-//      mCommands.add(new DriveStraight(mDriveTrain, mData, 36d));
-//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -45, 2));
+//       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 180-scaleTurnDegrees, 2));
+//       mCommands.add(new DriveStraight(mDriveTrain, mData, 36d));
+//       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -45, 2));
 ////		  mCommands.add(new IntakeCube(mIntake, mCarriage, 0.7, 5, true));
 			break;
 		case MIDDLE:
@@ -227,25 +232,36 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.2));
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, .5));
+			
+			/*================= Puts cube in the same side switch ================================*/
+			
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.05));
+			
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, .05));
+			
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.1, true));
-			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.05, true));
+			
 			mCommands.add(new Delay(2));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.1, true));
+			
+			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+			
+			mCommands.add(new Delay(2));
+			
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true));
+			
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d));
-//			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
-//			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));
-			//Backs up from rim of switch, subject to change.
-			mCommands.add(new DriveStraight(mDriveTrain, mData, -56, .1));
-			//Turns toward null zone
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, .1));
-			//The inches is distance from null zone to wall - distance from switch to wall.
-			mCommands.add(new DriveStraight(mDriveTrain, mData, (299.65 - 196) , .1));
-			//Based on Daniel's calculations- 33 degrees is degrees towards opponent cube
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 33, .1));
+			
+			
+			/*================== Goes to null zone and faces opponent's corner cube ==============*/
+			
+			
+			
+			
 			break;
+			
+			
 		case MIDDLE:
 			switch(mSwitchSide) {
 			case LEFT:
@@ -517,6 +533,11 @@ public class GetAutonomous {
 	public OwnedSide getScaleOwnedSide() {
 		return MatchData.getOwnedSide(MatchData.GameFeature.SCALE);
 	}
+	
+	
+//	public OwnedSide getOppositeScaleSide() {
+//		return MatchData.getOwnedSide(MatchData.GameFeature.)
+//	}
 
 	/**
 	 * Utilizes the previous to mySide methods.

@@ -26,6 +26,7 @@ public class ReleaseCube implements ICommand {
 
   @Override
   public boolean update(double pNow) {
+	System.out.println("-----Release Cube EXECUTING");
     mCarriage.setDesiredState(CarriageState.KICKING);
     System.out.println("UPDATE KICK ====================");
     if(pNow >= mRelaseTime) {
