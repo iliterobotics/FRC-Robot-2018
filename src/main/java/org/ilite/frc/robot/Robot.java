@@ -273,10 +273,12 @@ public class Robot extends IterativeRobot {
 
   public void disabledInit() {
 	  mLog.info("DISABLED");
+      SystemUtils.logGameMode(EGameMode.DISABLED_INIT);
 	  mControlLoop.stop();
   }
   
   public void disabledPeriodic() {
+      SystemUtils.logGameMode(EGameMode.DISABLED_PERIODIC);
 //    System.out.println(getAutonomous.getAutonomousCommands());
   }
   

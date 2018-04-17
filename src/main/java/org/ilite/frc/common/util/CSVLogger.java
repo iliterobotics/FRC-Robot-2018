@@ -136,12 +136,19 @@ public class CSVLogger extends Thread{
   private EGameMode getGameMode() {
     return EGameMode.intToEnum(retrieveNumberValue(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY).intValue());
   }
+
+  private boolean isAllowedToLog() {
+      return NetworkTableInstance.getDefault().isConnected() && mLoggableGameModes.contains(getGameMode());
+  }
   
   @Override
   public void run() {
     writeHeaderToCsv(mCodexKeys, mCodexWriters);
     while(!Thread.interrupted()) {
-      if(NetworkTableInstance.getDefault().isConnected() && mLoggableGameModes.contains(getGameMode())) writeRowsToCsv();
+      if(isAllowedToLog()) {
+        System.out.println("Logging!");
+        writeRowsToCsv();
+      }
       try {
         sleep(10);
       } catch (InterruptedException e) {

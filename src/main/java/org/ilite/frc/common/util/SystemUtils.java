@@ -79,8 +79,9 @@ public class SystemUtils {
       Double value = (Double) pCodex.get(e);
       if(e != null) logNumber(name, e, value);
     }
-    logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
-    logNumber(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY, pGameMode.ordinal());
+    logTime(name, pTime);
+    logGameMode(pGameMode);
+
   }
   
   public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {
@@ -89,6 +90,14 @@ public class SystemUtils {
   
   public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
     SystemSettings.LOGGING_TABLE.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
+  }
+
+  public static void logGameMode(EGameMode pGameMode) {
+    logNumber(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY, pGameMode.ordinal());
+  }
+
+  public static void logTime(String name, double pTime) {
+     logNumber(name, SystemSettings.LOGGING_TIMESTAMP_KEY, pTime);
   }
   
 }
