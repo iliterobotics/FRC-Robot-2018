@@ -20,7 +20,7 @@ public class ElevatorToPosition implements ICommand {
   @Override
   public void initialize(double pNow) {
     mStartTime = pNow;
-    mElevator.setElevControlMode(ElevatorControlMode.POSITION);
+    mElevator.setElevControlMode(ElevatorControlMode.POSITION, pNow);
     mElevator.setPosition(mPosition);
   }
 
