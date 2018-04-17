@@ -59,7 +59,9 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
       "172.22.11.1",
   };
 
-  public static EGameMode[] LOGGING_ALLOWED_GAME_MODES = new EGameMode[]{EGameMode.AUTONOMOUS_INIT, EGameMode.AUTONOMOUS_PERIODIC};
+  public static EGameMode[] LOGGING_ALLOWED_GAME_MODES = new EGameMode[]{EGameMode.AUTONOMOUS_INIT, EGameMode.AUTONOMOUS_PERIODIC,
+                                                                         EGameMode.TELEOP_INIT, EGameMode.TELEOP_PERIODIC,
+                                                                         EGameMode.TEST_INIT, EGameMode.TEST_PERIODIC};
   public static String LOGGING_TIMESTAMP_KEY = "TIME";
   public static String GAME_MODE_KEY = "GAME_MODE";
   public static String LOGGING_GLOBAL_KEY_PREFIX = "GLOBAL";
