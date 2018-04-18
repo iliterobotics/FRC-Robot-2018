@@ -177,38 +177,38 @@ public class DriverInput implements IModule{
 	  // Safety to prevent elevator motors from burning out
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
 	  {
-	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL, pNow);
+	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
 	    mElevatorModule.setPower(0);
 	    // TODO - also reset encoder
 	  }
 	  
 	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
 	  {
-	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION, pNow);
+	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
 	    mElevatorModule.setPosition(EElevatorPosition.SECOND_TAPE);
 	  }
 	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
     {
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION, pNow);
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
       mElevatorModule.setPosition(EElevatorPosition.THIRD_TAPE);
     }
     else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
     {
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION, pNow);
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
       mElevatorModule.setPosition(EElevatorPosition.BOTTOM);
     } else if( climberAxis != 0) {
       if(Math.abs(climberAxis) > 0.1 && Math.abs(climberAxis) < 0.75) {
         mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
-        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER, pNow);
+        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
       }
       if(Math.abs(climberAxis) > 0.75) {
         mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
-        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER, pNow);
+        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
         mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
       }
     } else {
 	    mElevatorModule.setGearState(EElevatorGearState.NORMAL);
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL, pNow);
+      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
       mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) +
               mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
     }
