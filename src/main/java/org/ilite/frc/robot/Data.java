@@ -19,6 +19,7 @@ public class Data {
   public final Codex<Double, ECubeTarget> vision = new Codex<>(ECubeTarget.class);
   public final Codex<Double, EElevator> elevator = new Codex<>(EElevator.class);
   public final Codex<Double, EIntake> intake = new Codex<>(EIntake.class);
+  public final Codex<Double, EGlobalValues> globalValues = new Codex<>(EGlobalValues.class);
   public final List<Codex<Double, ETalonSRX>> talons = new ArrayList<>();
   
   private final Codex<?,?>[] all = {
