@@ -73,14 +73,14 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   // Talon Addresses
   // =============================================================================
-  public static  int kDRIVETRAIN_TALONID_LEFT_MASTER = 8; 
+  public static  int kDRIVETRAIN_TALONID_LEFT_MASTER = 10; 
   public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW1 = 11;
   public static  int kDRIVETRAIN_TALONID_LEFT_FOLLOW2 = 12;
   public static  int kDRIVETRAIN_TALONID_RIGHT_MASTER = 5; 
   public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW1 = 6;
   public static  int kDRIVETRAIN_TALONID_RIGHT_FOLLOW2 = 7;
-  public static int ELEVATOR_TALONID_MASTER = 10; //8
-  public static int ELEVATOR_TALONID_FOLLOWER = 9; //9
+  public static int ELEVATOR_TALONID_MASTER = 8;
+  public static int ELEVATOR_TALONID_FOLLOWER = 9; 
   public static int INTAKE_TALONID_RIGHT = 14;
   public static int INTAKE_TALONID_LEFT = 13;
 	
@@ -136,8 +136,8 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
   public static int    ELEVATOR_TOP_ENCODER_TICK = 6000;
   public static int    ELEVATOR_ERROR_DEADBAND = 20;
-  public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 75;
-  public static double ELEVATOR_ENCODER_TIMEOUT = 1d;
+  public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 25;
+  public static double ELEVATOR_ENCODER_TIMEOUT = 0.2d;
   // =============================================================================
   // Carriage Constants
   // =============================================================================  
