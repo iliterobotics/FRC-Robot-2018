@@ -1,6 +1,7 @@
 package org.ilite.frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import javafx.scene.ParallelCamera;
 import openrio.powerup.MatchData;
 import openrio.powerup.MatchData.OwnedSide;
 import org.ilite.frc.common.config.SystemSettings;
@@ -237,9 +238,7 @@ public class GetAutonomous {
 			
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.05));
 			
-			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, .05));
-			
-			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
+			mCommands.add(new ParallelCommand(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 8), new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1)));
 			
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.05, true));
 			
@@ -249,15 +248,41 @@ public class GetAutonomous {
 			
 			mCommands.add(new Delay(2));
 			
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true));
-			
-			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d));
+			mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true), new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d)));
 			
 			
-			/*================== Goes to null zone and faces opponent's corner cube ==============*/
+			/*================== Goes to null zone and faces opponent's corner cube if scale is on our own side ==============*/
+			
+			if(mScaleSide.equals(mSwitchSide)) {
+				
+				mCommands.add(new Delay(2));
+				
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -mTurnScalar * 90, 8));
+				
+				mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE, 0.05, true));
+				
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 33, 8));
+				
+			}else {
 			
 			
-			
+			/*================== Goes to platform zone and intakes 2nd cube from edge if opposing scale is on our side ==============*/
+				
+				mCommands.add(new Delay(2));
+				
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -mTurnScalar * 90, 8));
+				
+				mCommands.add(new DriveStraight(mDriveTrain, mData, 6 * 12, 0.05));
+				
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 8));
+				
+				mCommands.add(new DriveStraight(mDriveTrain, mData, 14 * 12, 0.05));
+				
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 135d,  8));
+				
+				mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, 12, 0.02), new IntakeCube(mIntake, mCarriage, 1.0, 100, true)));
+				
+			}
 			
 			break;
 			
