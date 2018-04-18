@@ -184,7 +184,7 @@ public class Robot extends IterativeRobot {
    */
   private void mapInputsAndCachedSensors(EGameMode pGameMode) {
       mCurrentTime = Timer.getFPGATimestamp();
-    
+
       ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
       ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
       ELogitech310.map(mData.tester, testJoystick);
@@ -194,12 +194,23 @@ public class Robot extends IterativeRobot {
       EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
       EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
       EElevator.map(mData.elevator, mElevator, mCurrentTime);
+
+      mapGlobalValues(pGameMode);
       logCodexes(pGameMode);
   }
 
   private void logCodexes(EGameMode pCurrentGameMode) {
-      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, pCurrentGameMode, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, pCurrentGameMode, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
+      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
+  }
+
+    /**
+     * Allows us to map global values in a separate call, so we aren't forced to map all sensors, etc. if we don't want to
+     * @param pGameMode
+     */
+  private void mapGlobalValues(EGameMode pGameMode) {
+      EGlobalValues.map(mData.globalValues, pGameMode);
+      SystemUtils.writeCodexToSmartDashboard(EGlobalValues.class, mData.globalValues, mCurrentTime);
   }
   
   /**
@@ -267,18 +278,18 @@ public class Robot extends IterativeRobot {
   public void testPeriodic() {
 	  mLog.info("TEST");
 	  mCurrentTime = Timer.getFPGATimestamp();
-    mapInputsAndCachedSensors(EGameMode.TEST_PERIODIC);
+    mapGlobalValues(EGameMode.TEST_PERIODIC);
     updateRunningModules();
   }
 
   public void disabledInit() {
 	  mLog.info("DISABLED");
-      SystemUtils.logGameMode(EGameMode.DISABLED_INIT);
+      mapGlobalValues(EGameMode.DISABLED_INIT);
 	  mControlLoop.stop();
   }
   
   public void disabledPeriodic() {
-      SystemUtils.logGameMode(EGameMode.DISABLED_PERIODIC);
+      mapGlobalValues(EGameMode.DISABLED_PERIODIC);
 //    System.out.println(getAutonomous.getAutonomousCommands());
   }
   

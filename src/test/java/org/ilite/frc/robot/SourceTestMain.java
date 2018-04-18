@@ -24,7 +24,9 @@ public class SourceTestMain {
 	  Data mData = new Data();
 	  while(true) {
 	    EDriveTrain.testMap(mData.drivetrain);
-	    SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, pGameMode, 0);
+	    EGlobalValues.map(mData.globalValues, pGameMode);
+	    SystemUtils.writeCodexToSmartDashboard(EGlobalValues.class, mData.globalValues, 0);
+	    SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, 0);
 	  }
 	}
 	

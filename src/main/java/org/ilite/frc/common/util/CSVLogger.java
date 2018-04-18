@@ -32,6 +32,8 @@ public class CSVLogger extends Thread{
   private LocalTime mTimeNow = LocalTime.now();
   private LocalDate mDateNow = LocalDate.now();
 
+  private boolean isInitialized = false;
+
   /**
    * By default, log in all game modes.
    */
@@ -41,12 +43,18 @@ public class CSVLogger extends Thread{
 
   public CSVLogger(EGameMode ... pGameModes) {
     this.mLoggableGameModes = Arrays.asList(pGameModes);
+  }
+
+  private void init() {
+    if(!isInitialized) { return; }
+    isInitialized = true;
     putInMatrix("operator", ELogitech310.class);
     putInMatrix("driver", ELogitech310.class);
     putInMatrix(EPigeon.class);
     putInMatrix(EPowerDistPanel.class);
     putInMatrix(EDriveTrain.class);
     putInMatrix(EElevator.class);
+    putInMatrix(EGlobalValues.class);
   }
   
   public <E extends Enum<E>> void putInMatrix(String pLogName, Class<E> pEnum) {
@@ -134,7 +142,8 @@ public class CSVLogger extends Thread{
   }
   
   private EGameMode getGameMode() {
-    return EGameMode.intToEnum(retrieveNumberValue(SystemSettings.LOGGING_GLOBAL_KEY_PREFIX, SystemSettings.GAME_MODE_KEY).intValue());
+    int ordinal = retrieveNumberValue(EGlobalValues.class.getSimpleName(), EGlobalValues.GAME_MODE.name()).intValue();
+    return EGameMode.intToEnum(ordinal);
   }
 
   private boolean isAllowedToLog() {
@@ -143,10 +152,12 @@ public class CSVLogger extends Thread{
   
   @Override
   public void run() {
-    writeHeaderToCsv(mCodexKeys, mCodexWriters);
+    if(isAllowedToLog()) {
+      init();
+      writeHeaderToCsv(mCodexKeys, mCodexWriters);
+    }
     while(!Thread.interrupted()) {
       if(isAllowedToLog()) {
-        System.out.println("Logging!");
         writeRowsToCsv();
       }
       try {
