@@ -196,16 +196,17 @@ public class GetAutonomous {
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.2));
       
       // Turn into scale, drive forward, kick
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
+//		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
+//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
+		  mCommands.add(new ParallelCommand(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8), 
+		                                    new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 0.1)));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true));
       mCommands.add(new Delay(0.5));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  
 //		  //Back up from scale
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.6));
-//		  
-//		  // Reset elevator
+		  // Reset elevator
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
 //      
 //      // Turn back for a 2nd cube
