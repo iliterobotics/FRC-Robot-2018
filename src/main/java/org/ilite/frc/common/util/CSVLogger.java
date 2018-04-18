@@ -46,7 +46,7 @@ public class CSVLogger extends Thread{
   }
 
   private void init() {
-    if(!isInitialized) { return; }
+    if(isInitialized) { return; }
     isInitialized = true;
     putInMatrix("operator", ELogitech310.class);
     putInMatrix("driver", ELogitech310.class);
@@ -55,6 +55,7 @@ public class CSVLogger extends Thread{
     putInMatrix(EDriveTrain.class);
     putInMatrix(EElevator.class);
     putInMatrix(EGlobalValues.class);
+    writeHeaderToCsv(mCodexKeys, mCodexWriters);
   }
   
   public <E extends Enum<E>> void putInMatrix(String pLogName, Class<E> pEnum) {
@@ -152,12 +153,9 @@ public class CSVLogger extends Thread{
   
   @Override
   public void run() {
-    if(isAllowedToLog()) {
-      init();
-      writeHeaderToCsv(mCodexKeys, mCodexWriters);
-    }
     while(!Thread.interrupted()) {
       if(isAllowedToLog()) {
+        init();
         writeRowsToCsv();
       }
       try {
