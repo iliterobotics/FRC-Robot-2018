@@ -467,6 +467,14 @@ public class Elevator implements IModule {
     return followerElevator.getMotorOutputVoltage();
   }
   
+  public double getMasterCurrrent()
+  {
+    return masterElevator.getOutputCurrent();
+  }
+  public double getFollowerCurrent()
+  {
+    return followerElevator.getOutputCurrent();
+  }
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
 		return elevatorDirection.isCurrentRatioLimited(masterElevator);
