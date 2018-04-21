@@ -261,7 +261,7 @@ public class Robot extends IterativeRobot {
   
   public void testInit() {
     setRunningModules(mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator,
-                      new TestingInputs(mData, mIntak2e, mCarriage, mDrivetrain, mElevator, mPneumaticControl));
+                      new TestingInputs(mData, mIntake, mCarriage, mDrivetrain, mElevator, mPneumaticControl));
     mHardware.getPigeon().zeroAll();
     
     mControlLoop.setRunningControlLoops();
