@@ -194,9 +194,8 @@ public class DriveTrain implements IControlLoop {
 	}
 	
 	public synchronized void holdPosition() {
-//	  setDriveMessage(new DrivetrainMessage(getLeftMaster().getSelectedSensorPosition(0), getRightMaster().getSelectedSensorPosition(0),
-//	                  DrivetrainMode.Position, NeutralMode.Brake));
-	 setDriveMessage(new DrivetrainMessage(0d, 0d, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+	  setDriveMessage(new DrivetrainMessage(getLeftMaster().getSelectedSensorPosition(0), getRightMaster().getSelectedSensorPosition(0),
+	                  DrivetrainMode.Position, NeutralMode.Brake));
 	}
 	
 	public synchronized void setDriveMessage(DrivetrainMessage drivetrainMessage) {

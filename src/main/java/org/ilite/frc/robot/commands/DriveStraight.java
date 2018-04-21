@@ -40,6 +40,7 @@ public class DriveStraight implements ICommand{
   
   // In encoder ticks
   private final double distanceToTravel;
+  private double directionScalar;
   private double remainingDistance;
   private double initialLeftPosition;
   private double initialRightPosition;
@@ -53,8 +54,8 @@ public class DriveStraight implements ICommand{
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = Utils.inchesToTicks(inches);
-    int scalar = (distanceToTravel > 0) ? 1 : -1;
-    this.mPower = power * scalar;
+    this.directionScalar = (distanceToTravel > 0) ? 1 : -1;
+    this.mPower = power * directionScalar;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
     mIgnoreGyro = ignoreGyro;
     this.useHoldPosition = useHoldPosition;
@@ -141,7 +142,7 @@ public class DriveStraight implements ICommand{
           // Turn proportion is in units of % power per degree.  So 2 * TURN_PROPORTION gives us
           // 2 degrees of correction before % power is saturated
           Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
-           yawError * TURN_PROPORTION, 
+           yawError * TURN_PROPORTION,
            NeutralMode.Brake));
       
     }
@@ -163,8 +164,8 @@ public class DriveStraight implements ICommand{
    * @return average # of ticks traveled per encoder
    */
   private double getAverageDistanceTravel(){
-    return /*(Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) + */
-        (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialRightPosition));
+    return (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) +
+            Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialRightPosition)) / 2;
   }
   
   public void adjustBearing(double angleDiff){
