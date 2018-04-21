@@ -105,7 +105,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   // Drive Train Constants
   // =============================================================================
-  public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
+  public static double  DRIVETRAIN_WHEEL_DIAMETER = 4.875;
   public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
   public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
   public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec

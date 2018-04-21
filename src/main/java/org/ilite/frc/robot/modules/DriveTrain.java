@@ -116,8 +116,8 @@ public class DriveTrain implements IControlLoop {
     default:
       leftMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
       rightMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
-      leftMaster.set(controlMode, currentDrivetrainMessage.leftOutput);
-      rightMaster.set(controlMode, currentDrivetrainMessage.rightOutput);
+      leftMaster.set(controlMode, Utils.clamp(currentDrivetrainMessage.leftOutput, 0.7));
+      rightMaster.set(controlMode, Utils.clamp(currentDrivetrainMessage.rightOutput, 0.7));
       break;
     }
     
@@ -194,8 +194,9 @@ public class DriveTrain implements IControlLoop {
 	}
 	
 	public synchronized void holdPosition() {
-	  setDriveMessage(new DrivetrainMessage(getLeftMaster().getSelectedSensorPosition(0), getRightMaster().getSelectedSensorPosition(0),
-	                  DrivetrainMode.Position, NeutralMode.Brake));
+//	  setDriveMessage(new DrivetrainMessage(getLeftMaster().getSelectedSensorPosition(0), getRightMaster().getSelectedSensorPosition(0),
+//	                  DrivetrainMode.Position, NeutralMode.Brake));
+	 setDriveMessage(new DrivetrainMessage(0d, 0d, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 	}
 	
 	public synchronized void setDriveMessage(DrivetrainMessage drivetrainMessage) {

@@ -53,7 +53,8 @@ public class DriveStraight implements ICommand{
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = Utils.inchesToTicks(inches);
-    this.mPower = power;
+    int scalar = (distanceToTravel > 0) ? 1 : -1;
+    this.mPower = power * scalar;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
     mIgnoreGyro = ignoreGyro;
     this.useHoldPosition = useHoldPosition;
@@ -89,8 +90,16 @@ public class DriveStraight implements ICommand{
   }
   
   public boolean update(double pNow){
+    if(useHoldPosition)
+    {
+    System.out.println("using holdPosition");
+    }
+    else
+    {
+      System.out.println("not using holdPosition");
+    }
     double currentDistance = getAverageDistanceTravel();
-    if( currentDistance >= distanceToTravel){
+    if( Math.abs(currentDistance) >= Math.abs(distanceToTravel)){
       // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
      if(useHoldPosition)
      {
@@ -154,8 +163,8 @@ public class DriveStraight implements ICommand{
    * @return average # of ticks traveled per encoder
    */
   private double getAverageDistanceTravel(){
-    return (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) + 
-            (Math.abs(mData.drivetrain.get(RIGHT_POSITION_TICKS) - initialRightPosition))) / 2;
+    return /*(Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialLeftPosition) + */
+        (Math.abs(mData.drivetrain.get(LEFT_POSITION_TICKS) - initialRightPosition));
   }
   
   public void adjustBearing(double angleDiff){

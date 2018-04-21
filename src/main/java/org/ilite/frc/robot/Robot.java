@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
+import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.sensors.TalonTach;
 import org.ilite.frc.common.types.EDriveTrain;
 import org.ilite.frc.common.types.EElevator;
@@ -129,8 +130,8 @@ public class Robot extends IterativeRobot {
     mCommandQueue.clear();
 
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    //mCommandQueue = getAutonomous.getAutonomousCommands();
-    mCommandQueue.add(new DriveStraight(mDrivetrain, mData, 15*12, false, false));
+    mCommandQueue = getAutonomous.getAutonomousCommands();
+    //mCommandQueue.add(new DriveStraight(mDrivetrain, mData, 5*12, false, true));
     System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);
@@ -141,6 +142,7 @@ public class Robot extends IterativeRobot {
     
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
+    System.out.println("Queue: " + mCurrentCommand);
     updateRunningModules();
       
   }
@@ -178,7 +180,7 @@ public class Robot extends IterativeRobot {
 
   public void teleopPeriodic() {
     mapInputsAndCachedSensors();
-    
+    System.out.println(IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)));
     if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
     if(mDriverInput.canRunCommandQueue()) updateCommandQueue(mDriverInput.shouldInitializeCommandQueue());
     

@@ -198,7 +198,7 @@ public class GetAutonomous {
       // Turn into scale, drive forward, kick
 		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true, false));
       mCommands.add(new Delay(0.5));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 		  
@@ -231,7 +231,7 @@ public class GetAutonomous {
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.2));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.4, true));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.4, true, false));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			mCommands.add(new Delay(2));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.4, true));
@@ -320,17 +320,17 @@ public class GetAutonomous {
     switch (mStartingPos) {
     case LEFT:
     case RIGHT:
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
+//      mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
+//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 9 , 0.05));
+     // mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 9 , 0.05, false));
       mCommands.add(new Delay(0.5));
-      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      //mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+     // mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
       break;
     case MIDDLE:
       break;

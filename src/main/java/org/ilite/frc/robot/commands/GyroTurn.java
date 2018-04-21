@@ -52,6 +52,8 @@ public class GyroTurn implements ICommand {
 
   public boolean update(double pNow) {
     
+    System.out.println("=============TURNING");
+    System.out.println("Allowable Error is " + mAllowableError +"\tError is " + mError);
     mError = getError(); // Update error value
     this.mTotalError += this.mError; // Update running error total
     
@@ -68,7 +70,9 @@ public class GyroTurn implements ICommand {
 
     if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
       mDrivetrain.holdPosition();
+      
 //      mAlignedCount++;
+      System.out.println("============FINISHED");
       return true;
     }
     if(pNow - mStartTime > kTIMEOUT) {
