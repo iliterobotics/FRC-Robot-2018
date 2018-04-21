@@ -130,9 +130,7 @@ public class Robot extends IterativeRobot {
     mCommandQueue.clear();
 
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
-//    mCommandQueue = getAutonomous.getAutonomousCommands();
-    mCommandQueue.add(new DriveStraight(mDrivetrain, mData, 6*12, false, true));
-    mCommandQueue.add(new DriveStraight(mDrivetrain, mData, -6*12, false, true));
+    mCommandQueue = getAutonomous.getAutonomousCommands();
     System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);

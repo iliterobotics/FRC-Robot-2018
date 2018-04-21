@@ -116,8 +116,8 @@ public class DriveTrain implements IControlLoop {
     default:
       leftMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
       rightMaster.setNeutralMode(currentDrivetrainMessage.neutralMode);
-      leftMaster.set(controlMode, Utils.clamp(currentDrivetrainMessage.leftOutput, 0.7));
-      rightMaster.set(controlMode, Utils.clamp(currentDrivetrainMessage.rightOutput, 0.7));
+      leftMaster.set(controlMode, currentDrivetrainMessage.leftOutput);
+      rightMaster.set(controlMode, currentDrivetrainMessage.rightOutput);
       break;
     }
     
