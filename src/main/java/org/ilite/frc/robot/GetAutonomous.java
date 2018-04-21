@@ -1,21 +1,36 @@
 package org.ilite.frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import javafx.scene.ParallelCamera;
-import openrio.powerup.MatchData;
-import openrio.powerup.MatchData.OwnedSide;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
+
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
-import org.ilite.frc.robot.commands.*;
-import org.ilite.frc.robot.modules.*;
+import org.ilite.frc.robot.commands.Delay;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.ElevatorToPosition;
+import org.ilite.frc.robot.commands.GyroTurn;
+import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.commands.IntakeCube;
+import org.ilite.frc.robot.commands.ParallelCommand;
+import org.ilite.frc.robot.commands.ReleaseCube;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
+import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.EElevatorPosition;
+import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Intake;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
 
 //Java8
 
@@ -189,6 +204,7 @@ public class GetAutonomous {
 	 * Do scale autonomous; switch based on starting position.
 	 */ 
 	public void doScale() {
+		
 	  double scaleTurnDegrees = 55d;
 		// TODO replace with turning scalar
 		System.out.printf("Doing scale autonomous starting on %s\n", mStartingPos);
@@ -229,27 +245,38 @@ public class GetAutonomous {
 	 */
 	public void doSwitch() {
 		// TODO replace with turning scalar
+		
+		mCommands.clear();
 		System.out.printf("Doing switch autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
 			
+			double cubeTurnDegrees = 33d;
+			
 			/*================= Puts cube in the same side switch ================================*/
 			
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.05));
+				
+//			mCommands.add(new ParallelCommand(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 8), new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1)));
 			
-			mCommands.add(new ParallelCommand(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 8), new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1)));
+			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 8));
 			
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.05, true));
+//			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
+			
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.05));
 			
 			mCommands.add(new Delay(2));
 			
-			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+//			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1d));
 			
-			mCommands.add(new Delay(2));
+			//mCommands.add(new Delay(2));
 			
-			mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true), new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d)));
+//			mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true), new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d)));
 			
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.05, true));
+			
+//			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 1d));
 			
 			/*================== Goes to null zone and faces opponent's corner cube if scale is on our own side ==============*/
 			
@@ -257,11 +284,14 @@ public class GetAutonomous {
 				
 				mCommands.add(new Delay(2));
 				
+				//turns to null zone
 				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -mTurnScalar * 90, 8));
 				
+				//drive to the null zone
 				mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE, 0.05, true));
 				
-				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 33, 8));
+			    //turns to opponent cube on the edge
+				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * cubeTurnDegrees, 8));
 				
 			}else {
 			
@@ -270,16 +300,22 @@ public class GetAutonomous {
 				
 				mCommands.add(new Delay(2));
 				
+				//turns away from switch
 				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -mTurnScalar * 90, 8));
 				
+				//drive in between switch and scale area
 				mCommands.add(new DriveStraight(mDriveTrain, mData, 6 * 12, 0.05));
 				
+				//turn to face other side
 				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 8));
 				
+				//drive to second cube from the end
 				mCommands.add(new DriveStraight(mDriveTrain, mData, 14 * 12, 0.05));
 				
+				//turn 135 degrees to cube
 				mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 135d,  8));
 				
+				//drive straight while intaking at the same time
 				mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, 12, 0.02), new IntakeCube(mIntake, mCarriage, 1.0, 100, true)));
 				
 			}

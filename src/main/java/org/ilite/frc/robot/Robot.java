@@ -175,6 +175,7 @@ public class Robot extends IterativeRobot {
   }
 
   public void teleopPeriodic() {
+	System.out.println("LEFT ENCODER TICKS: " + mData.drivetrain.get(EDriveTrain.LEFT_POSITION_TICKS) + "\tRIGHT POSITION TICKS: " + mData.drivetrain.get(EDriveTrain.RIGHT_POSITION_TICKS));
     mapInputsAndCachedSensors();
     
     if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
