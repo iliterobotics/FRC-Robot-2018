@@ -179,7 +179,6 @@ public class Robot extends IterativeRobot {
 
   public void teleopPeriodic() {
     mapInputsAndCachedSensors();
-    System.out.println(IMU.clampDegrees(mData.pigeon.get(EPigeon.YAW)));
     if(mDriverInput.shouldInitializeCommandQueue()) mCommandQueue = mDriverInput.getDesiredCommandQueue();
     if(mDriverInput.canRunCommandQueue()) updateCommandQueue(mDriverInput.shouldInitializeCommandQueue());
     

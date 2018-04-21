@@ -320,17 +320,17 @@ public class GetAutonomous {
     switch (mStartingPos) {
     case LEFT:
     case RIGHT:
-//      mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
-//      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
-     // mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 9 , 0.05, false));
       mCommands.add(new Delay(0.5));
-      //mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
-     // mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 4));
       break;
     case MIDDLE:
       break;
