@@ -28,8 +28,14 @@ public class IntakeCube implements ICommand {
   @Override
   public boolean update(double pNow) {
     mIntake.intakeIn(mIntakePower);
-    if(mCarriage.getBeamBreak() && mRetractWhenHasCube) mIntake.setIntakeRetracted(true);
-    if(pNow - mStartTime >= mTimeout) return true;
+    if(mCarriage.getBeamBreak() && mRetractWhenHasCube) {
+       if(mRetractWhenHasCube) {
+         mIntake.setIntakeRetracted(true);
+       } return true;
+    }
+    if(pNow - mStartTime >= mTimeout) {
+      return true;
+    }
     return false;
   }
 
