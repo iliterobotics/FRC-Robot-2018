@@ -135,7 +135,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static double ELEVATOR_NORMAL_MAX_POWER = 0.8d;
   public static double ELEVATOR_CLIMBER_MAX_POWER = 0.8d;
   public static int    ELEVATOR_TOP_ENCODER_TICK = 6000;
-  public static int    ELEVATOR_ERROR_DEADBAND = 20;
+  public static int    ELEVATOR_ERROR_DEADBAND_TICKS = 20;
   public static int    ELEVATOR_ENCODER_DEADBAND_RANGE = 25;
   public static double ELEVATOR_ENCODER_TIMEOUT = 0.2d;
   // =============================================================================

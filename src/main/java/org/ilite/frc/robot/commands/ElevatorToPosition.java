@@ -17,6 +17,10 @@ public class ElevatorToPosition implements ICommand {
     this.mTimeout = pTimeout;
   }
   
+  public ElevatorToPosition(Elevator pElevator, EElevatorPosition pPosition) {
+    this(pElevator, pPosition, -1);
+  }
+  
   @Override
   public void initialize(double pNow) {
     mStartTime = pNow;
@@ -27,7 +31,9 @@ public class ElevatorToPosition implements ICommand {
   @Override
   public boolean update(double pNow) {
     if(mElevator.isFinishedGoingToPosition()) return true;
-    if(pNow - mStartTime >= mTimeout) return true;
+    if(mTimeout > 0) {
+      if(pNow - mStartTime >= mTimeout) return true;
+    }
     return false;
   }
 

@@ -219,7 +219,7 @@ public class Elevator implements IModule {
 
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
-        if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
+        if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
         {
           elevatorState = EElevatorState.HOLD;
           isAtPosition = true;
