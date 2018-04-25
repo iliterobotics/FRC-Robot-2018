@@ -323,7 +323,7 @@ public class GetAutonomous {
       mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
-      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90d, 5));
+      mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 9 , 0.2));
