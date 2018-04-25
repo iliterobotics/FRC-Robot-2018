@@ -208,7 +208,6 @@ public class GetAutonomous {
 	  //need to slow down with DriveStraight  
       mCommands.add(new DriveStraight(mDriveTrain, mData, 18, 0.4, true));
       
-      mCommands.add(new Delay(0.5));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 
       mCommands.add(new Delay(0.5));
