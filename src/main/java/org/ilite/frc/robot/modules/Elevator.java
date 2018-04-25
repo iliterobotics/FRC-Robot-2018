@@ -36,13 +36,14 @@ public class Elevator implements IModule {
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
 	private boolean isSetpointAboveIntialPosition = false;
+	private boolean isAtPosition = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
 	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
 	EElevatorGearState elevGearState = EElevatorGearState.NORMAL;
 	ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
 	ElevDirection elevatorDirection = ElevDirection.UP;
-	
+	ElevatorControlMode currentElevControlMode, lastElevControlMode;
   private static final ILog log = Logger.createLog(Elevator.class);
 
   
@@ -103,6 +104,9 @@ public class Elevator implements IModule {
 	    elevatorPosition = EElevatorPosition.BOTTOM;
 	    elevGearState = EElevatorGearState.NORMAL;
 	    elevControlMode = ElevatorControlMode.MANUAL;
+	    
+	    currentElevControlMode = elevControlMode;
+	    lastElevControlMode = elevControlMode;
 	    
 	    hasInitialized = true;
 	    masterElevator.getSensorCollection().setQuadraturePosition(0, 0);
@@ -178,6 +182,8 @@ public class Elevator implements IModule {
 //		log.warn(masterElevator.getOutputCurrent() + "/" + masterElevator.getMotorOutputVoltage());
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 
+		System.out.println("HAS STARTED ? =" + hasStarted);
+		System.out.println("actual power= " + actualPower + " bus voltage= " + masterElevator.getBusVoltage());
 		shiftSolenoid.set(elevGearState.gearState);
 //		System.out.println("elevState=" + elevatorState + "\tPOWER = " + mDesiredPower);
 //		System.out.println("elevControlMode=" + elevControlMode);
@@ -186,22 +192,39 @@ public class Elevator implements IModule {
 	
 	double lastError = 0d;
 	double lastTime = 0d;
+	double startTime = 0d;
+	boolean hasStarted = false;
 	private void updateElevatorControl(double now) {
-
+	  currentElevControlMode = elevControlMode;
+	  //compare last control mode with current control mode. Checks if our control mode has just changed, ie the button has been pressed
+	  //if has just entered position control mode, sets this as the start time for positional control
+	  //necessary for the timout to allow the motor to begin moving before checking if we are within threshold for error
+	  if(currentElevControlMode == ElevatorControlMode.POSITION && lastElevControlMode != ElevatorControlMode.POSITION)
+    {
+      hasStarted = true;
+    }
+    else hasStarted = false;
+	  
     switch(elevControlMode) {
-
       case POSITION:
         
+        if(hasStarted)
+        {
+          startTime = now;
+        }
         double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
         double kp = 1d / 2000d * 1.2;
-        
+        System.out.println(currentEncoderTicks + "============ CURRENT TICKS");
 
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
-        if(elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition))
+        if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
         {
           elevatorState = EElevatorState.HOLD;
+          isAtPosition = true;
+          System.out.println("=======================HOLDING AT POSITION");
+        
         // If the setpoint is above us, and we are below it, go up
         // This is redundant
 //        } else if (isSetpointAboveIntialPosition) {
@@ -221,6 +244,12 @@ public class Elevator implements IModule {
           mDesiredPower = Utils.clamp(kp * error, elevatorPosition.mSetpointPower);
           elevatorDirection = ElevDirection.getDirection(mDesiredPower, elevControlMode);
           
+//          if(mDesiredPower <= EElevatorState.HOLD.power / masterElevator.getBusVoltage()){
+//              isAtPosition = true;
+//            }
+//          else {
+//            isAtPosition = false;
+//          }
 //          if(elevatorDirection == ElevDirection.DOWN) {
 //            mDesiredPower /= 1.25d;
 //          }
@@ -240,8 +269,11 @@ public class Elevator implements IModule {
 //            else
 //              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_BOTTOM.power);
 //          }
+          System.out.println("CURRENT ERROR=" + error + "LAST ERROR=" + lastError);
+          System.out.println("START TIME = " + startTime);
           lastError = error;
           lastTime = now;
+          
         }
         
 //        log.debug("TAPE MARKER " + elevatorPosition);
@@ -286,6 +318,8 @@ public class Elevator implements IModule {
         }
         break;
     }
+    
+    lastElevControlMode = currentElevControlMode;
 //    if(shouldstop) {
 //      elevatorState = ElevatorState.STOP;
 //    }
@@ -424,13 +458,30 @@ public class Elevator implements IModule {
     return mDesiredPower;
   }
   
+  public double getMasterVoltage()
+  {
+    return masterElevator.getMotorOutputVoltage();
+  }
+  public double getFollowerVoltage()
+  {
+    return followerElevator.getMotorOutputVoltage();
+  }
+  
+  public double getMasterCurrrent()
+  {
+    return masterElevator.getOutputCurrent();
+  }
+  public double getFollowerCurrent()
+  {
+    return followerElevator.getOutputCurrent();
+  }
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
 		return elevatorDirection.isCurrentRatioLimited(masterElevator);
 	}
 	
 	public boolean isFinishedGoingToPosition() {
-	  return elevatorPosition.inRange(currentEncoderTicks, isSetpointAboveIntialPosition);
+	  return isAtPosition;
 	}
 	
 }

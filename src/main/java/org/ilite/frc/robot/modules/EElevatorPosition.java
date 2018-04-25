@@ -25,15 +25,9 @@ import org.ilite.frc.robot.Utils;
 		}
 		
 		//checks if passed encoderTick is within the range of the threshold, to determine whether the elevator needs to hold
-		public boolean inRange(int currentEncoderTick, boolean isSetpointAbove)
+		public boolean inRange(int currentEncoderTick)
 		{
-		  if(isSetpointAbove)
-      {
-        return isBelowSetpoint(currentEncoderTick) ? false : true;
-      } else if(!isSetpointAbove) {
-        return isAboveSetpoint(currentEncoderTick) ? false : true;
-      }
-		  return false;
+		  return Utils.inRange(currentEncoderTick, encoderThreshold, SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE); 
 		}
 		
 		public boolean isAboveSetpoint(int currentEncoderTick) {
@@ -44,6 +38,20 @@ import org.ilite.frc.robot.Utils;
 		public boolean isBelowSetpoint(int currentEncoderTick) {
       return currentEncoderTick < encoderThreshold + SystemSettings.ELEVATOR_ENCODER_DEADBAND_RANGE;
     }
+		
+//		public boolean inRange(int currentEncoderTick, boolean isSetpointAbove)
+//		{
+//		  if( isSetpointAbove) 
+//		  { 
+//	      return isBelowSetpoint(currentEncoderTick) ? false : true; 
+//	    }  
+//	    else if(!isSetpointAbove)
+//	    { 
+//	      return isAboveSetpoint(currentEncoderTick) ? false : true; 
+//	    } 
+//    return false; 
+//		}
+//		
 //		private boolean isencoderThresholder()
 //		{
 //			return power != 0;

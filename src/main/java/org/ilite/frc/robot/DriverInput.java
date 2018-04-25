@@ -71,7 +71,7 @@ public class DriverInput implements IModule{
 		  updateDriveTrain();
 		}
 		updateIntake();
-		updateElevator();
+		updateElevator(pNow);
 		updateCarriage();
 		updateCommands();
 		return false;
@@ -169,7 +169,7 @@ public class DriverInput implements IModule{
     }
 	}
 	
-	private void updateElevator() {
+	private void updateElevator(double pNow) {
 	  
 	  double climberAxis = mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS);
 	  climberAxis = EInputScale.EXPONENTIAL.map(climberAxis, 2d);
