@@ -196,7 +196,9 @@ public class GetAutonomous {
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.2));
       
       // Turn into scale, drive forward, kick
-		  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8));
+		  mCommands.add( new ParallelCommand( 
+		      new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5),
+		      new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8)));
 //      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true));
 		  
@@ -204,19 +206,20 @@ public class GetAutonomous {
 		  
       //drives forward and raises elevator at the same time
 	  //need to slow down with DriveStraight  
-      mCommands.add(new ParallelCommand(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5), new DriveStraight(mDriveTrain, mData, 6, 0.4, true)));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 18, 0.4, true));
       
       mCommands.add(new Delay(0.5));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-		  
+
+      mCommands.add(new Delay(0.5));
 //		 //Back up from scale
-//		 mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.6));
+		 mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP));
 //		  
 //		 // Reset elevator
-//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d));
       
       //Resets elevator while backing up from scale
-      mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.6), new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d)));
+//      mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP, 0.6), new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE, 0.5d)));
       
 //      
 //      // Turn back for a 2nd cube
