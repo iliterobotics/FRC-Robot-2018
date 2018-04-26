@@ -244,15 +244,15 @@ public class GetAutonomous {
 		switch (mStartingPos) {
 		case LEFT:
 		case RIGHT:
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.2));
-			mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_CROSS_LINE, 0.1));
+			mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
-			mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
-      		mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE, 1));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.4, true));
+			mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
+  		mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.1, true));
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-			mCommands.add(new Delay(2));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.4, true));
+			mCommands.add(new Delay(1));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.1, true));
 			mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE));
 //			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -90, 3));
 //			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_NULL_ZONE));
