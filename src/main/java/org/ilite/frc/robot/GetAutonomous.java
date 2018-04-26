@@ -206,12 +206,12 @@ public class GetAutonomous {
 		  mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0));
 		  // Turn into scale, drive forward, kick
 		  mCommands.add( new ParallelCommand( 
-		      new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE),
+		      new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 5d),
 		      new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8)));
 		  
       //drives forward and raises elevator at the same time
 	  //need to slow down with DriveStraight  
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 18, 0.4, true));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 16, 0.1, true));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new Delay(0.5));
 //		 //Back up from scale
