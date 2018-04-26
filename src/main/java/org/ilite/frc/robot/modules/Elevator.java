@@ -52,6 +52,8 @@ public class Elevator implements IModule {
 		
 		masterElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_MASTER);
 		followerElevator = TalonFactory.createDefault(SystemSettings.ELEVATOR_TALONID_FOLLOWER);
+		masterElevator.setInverted(true);
+		followerElevator.setInverted(true);
 		shiftSolenoid = new Solenoid(SystemSettings.SOLENOID_ELEVATOR_SHIFTER);
 		elevGearState = EElevatorGearState.NORMAL;
     
@@ -61,10 +63,13 @@ public class Elevator implements IModule {
     masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.configContinuousCurrentLimit(DEFAULT_CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
-		masterElevator.setSensorPhase(true);
+		masterElevator.setSensorPhase(false);
 		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
     followerElevator.configOpenloopRamp(RAMP_OPEN_LOOP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
+    masterElevator.setNeutralMode(NeutralMode.Brake);
+    followerElevator.setNeutralMode(NeutralMode.Brake);
 	}
 
   public enum ElevatorControlMode

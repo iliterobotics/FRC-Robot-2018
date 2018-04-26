@@ -1,26 +1,41 @@
 package org.ilite.frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import openrio.powerup.MatchData;
-import openrio.powerup.MatchData.OwnedSide;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
+
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.Pigeon;
 import org.ilite.frc.common.types.ECross;
 import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
-import org.ilite.frc.robot.commands.*;
+import org.ilite.frc.robot.commands.Delay;
+import org.ilite.frc.robot.commands.DriveStraight;
+import org.ilite.frc.robot.commands.ElevatorToPosition;
+import org.ilite.frc.robot.commands.GyroTurn;
+import org.ilite.frc.robot.commands.HoldPosition;
 import org.ilite.frc.robot.commands.HoldPosition.HoldType;
-import org.ilite.frc.robot.modules.*;
+import org.ilite.frc.robot.commands.ICommand;
+import org.ilite.frc.robot.commands.IntakeCube;
+import org.ilite.frc.robot.commands.ParallelCommand;
+import org.ilite.frc.robot.commands.ReleaseCube;
+import org.ilite.frc.robot.modules.Carriage;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
+import org.ilite.frc.robot.modules.DriveTrain;
+import org.ilite.frc.robot.modules.EElevatorPosition;
+import org.ilite.frc.robot.modules.Elevator;
+import org.ilite.frc.robot.modules.Intake;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.Holder;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.OwnedSide;
 
 //Java8
 

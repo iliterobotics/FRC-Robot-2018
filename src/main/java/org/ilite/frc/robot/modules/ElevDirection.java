@@ -16,7 +16,7 @@ import com.flybotix.hfr.codex.Codex;
 public enum ElevDirection
 {
   //up = 3 down = 1
-	UP(true, 40d/12d, 5800, 25),
+	UP(true, 40d/12d, 4800, 25),
 	DOWN(false, 22d/12d, 2000, 20),
 	CLIMBER_UP(true, 30d/12d, 5, 35),
 	CLIMBER_DOWN(false, 65d/12d, 2, 10),
