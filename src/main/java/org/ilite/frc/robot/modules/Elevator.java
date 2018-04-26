@@ -33,6 +33,7 @@ public class Elevator implements IModule {
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
 	private boolean isSetpointAboveIntialPosition = false;
+	private boolean isAtPosition = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
 	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM, lastElevPosition = EElevatorPosition.BOTTOM;
@@ -41,8 +42,6 @@ public class Elevator implements IModule {
 	ElevDirection elevatorDirection = ElevDirection.UP;
 	ElevatorControlMode currentElevControlMode, lastElevControlMode;
 	
-	private double error, lastError = 0;
-	private double lastTime, startTime = 0;
   private static final ILog log = Logger.createLog(Elevator.class);
 
   
@@ -190,13 +189,16 @@ public class Elevator implements IModule {
 		return true;
 	}
 	
+  double lastError = 0d;
+  double lastTime = 0d;
+  double startTime = 0d;
 	boolean hasStarted = false;
 	private void updateElevatorControl(double now) {
 	  currentElevControlMode = elevControlMode;
 	  /*
 	   * Check if our position setpoint has been updated. If it has, reset our start time so we don't exit before the motors begin moving.
 	   */
-	  if(elevatorPosition.encoderThreshold != lastElevPosition.encoderThreshold || lastElevControlMode != ElevatorControlMode.POSITION)
+	  if(currentElevControlMode == ElevatorControlMode.POSITION && elevatorPosition.encoderThreshold != lastElevPosition.encoderThreshold)
     {
       hasStarted = true;
     } else {
@@ -210,16 +212,18 @@ public class Elevator implements IModule {
         {
           startTime = now;
         }
-        error = elevatorPosition.encoderThreshold - currentEncoderTicks;
+        double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
         double kp = 1d / 2000d * 1.2;
         log.warn(currentEncoderTicks + "============ CURRENT TICKS");
         log.warn("Time going to setpoint: " + (lastTime - startTime));
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
-        if(isFinishedGoingToPosition())
+        if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
+//        if(isFinishedGoingToPosition())
         {
           elevatorState = EElevatorState.HOLD;
+          isAtPosition = true;
         // If the setpoint is above us, and we are below it, go up
         // This is redundant
 //        } else if (isSetpointAboveIntialPosition) {
@@ -476,7 +480,8 @@ public class Elevator implements IModule {
 	}
 	
 	public boolean isFinishedGoingToPosition() {
-	  return Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT;
+	  return isAtPosition;
+//	  return Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT;
 	}
 	
 }

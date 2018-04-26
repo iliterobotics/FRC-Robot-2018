@@ -101,7 +101,7 @@ public class DriveStraight implements ICommand{
       
     } else {
       // negative error = turn left; positive error = turn right
-      // We negate angle beacuse pigeon angle goes counter-clockwise
+      // We negate angle because pigeon angle goes counter-clockwise
       double yawError = IMU.getAngleDistance(IMU.clampDegrees(mData.pigeon.get(YAW)), mDesiredHeadingYaw);
       // If desired = 30 and current = 60, then error = -30. Turn left 30 degrees.
       // If desired = 0 and current = -2, then error = 2.  Turn right 2 degrees.
