@@ -1,5 +1,6 @@
 package org.ilite.frc.robot.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,11 +27,13 @@ public class ParallelCommand implements ICommand {
 
   @Override
   public boolean update(double pNow) {
+    List<ICommand> toremove = new ArrayList<>();
     for(ICommand c : mCommandList) {
       if(c.update(pNow)) {
-        mCommandList.remove(c);
+        toremove.add(c);
       }
     }
+    mCommandList.removeAll(toremove);
     if(mCommandList.isEmpty()) {
       return true;
     }
