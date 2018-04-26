@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class DriverInputUtils {
   
-  public static final double sMIN_DEAD_BAND_POS = 0.09;
-  public static final double sMIN_DEAD_BAND_NEG = -0.02;
-  public static final double sMAX_DEAD_BAND_POS = 0.98;
-  public static final double sMAX_DEAD_BAND_NEG = -0.98;
+  public static final double sMIN_DEAD_BAND_POS = 0.05;
+  public static final double sMIN_DEAD_BAND_NEG = -0.05;
+  public static final double sMAX_DEAD_BAND_POS = 0.9;
+  public static final double sMAX_DEAD_BAND_NEG = -0.9;
 
   public static double handleDeadband(Joystick pJoystick, int pAxis) {
     double res = pJoystick.getRawAxis(pAxis);
