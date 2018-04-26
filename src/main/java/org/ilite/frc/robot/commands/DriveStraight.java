@@ -51,7 +51,8 @@ public class DriveStraight implements ICommand{
     this.driveTrain = dt;
     this.mData = pData;
     this.distanceToTravel = Utils.inchesToTicks(inches);
-    this.mPower = power;
+    int directionScalar = (distanceToTravel > 0) ? 1 : -1;
+    this.mPower = distanceToTravel * power;
     kP = (1-power) / NUM_TICKS_FOR_SLOWDOWN;
     mIgnoreGyro = ignoreGyro;
   }
@@ -77,7 +78,7 @@ public class DriveStraight implements ICommand{
   
   public boolean update(double pNow){
     double currentDistance = getAverageDistanceTravel();
-    if( currentDistance >= distanceToTravel){
+    if( Math.abs(currentDistance) >= Math.abs(distanceToTravel)){
       driveTrain.zeroOutputs();
       DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;

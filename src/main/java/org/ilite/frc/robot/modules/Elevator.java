@@ -416,6 +416,7 @@ public class Elevator implements IModule {
 	
 	public void setPosition(EElevatorPosition desiredPosition)
 	{
+	  log.warn("SETTING POSITION: " + desiredPosition.name());
 	  // Sets a flag telling whether the setpoint was above or below the current position when we called setPosition
 	  if(currentEncoderTicks < desiredPosition.encoderThreshold) {
 	    isSetpointAboveIntialPosition = true;
