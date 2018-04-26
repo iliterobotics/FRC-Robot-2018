@@ -74,9 +74,9 @@ public class Elevator implements IModule {
 
   public enum ElevatorControlMode
 	{
-		MANUAL(0.9),
-		CLIMBER(0.9),
-		POSITION(0.9);
+		MANUAL(1.0),
+		CLIMBER(1.0),
+		POSITION(1.0);
     
     private double maxPower;
     
