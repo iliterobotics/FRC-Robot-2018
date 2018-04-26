@@ -10,6 +10,7 @@ import org.ilite.frc.common.types.ECubeAction;
 import org.ilite.frc.common.types.EStartingPosition;
 import org.ilite.frc.robot.auto.AutoDimensions;
 import org.ilite.frc.robot.commands.*;
+import org.ilite.frc.robot.commands.HoldPosition.HoldType;
 import org.ilite.frc.robot.modules.*;
 import org.ilite.frc.robot.modules.Carriage.CarriageState;
 
@@ -18,6 +19,8 @@ import com.flybotix.hfr.util.log.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.xml.ws.Holder;
 
 //Java8
 
@@ -199,22 +202,17 @@ public class GetAutonomous {
 		case RIGHT:
 		  // Drive 
 		  mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_TO_NULL_ZONE, 0.2));
-      
-      // Turn into scale, drive forward, kick
+		  
+		  mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0));
+		  // Turn into scale, drive forward, kick
 		  mCommands.add( new ParallelCommand( 
 		      new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE),
 		      new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * scaleTurnDegrees, 8)));
-//      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 1.5));
-//      mCommands.add(new DriveStraight(mDriveTrain, mData, 6, 0.4, true));
-		  
-		  
 		  
       //drives forward and raises elevator at the same time
 	  //need to slow down with DriveStraight  
       mCommands.add(new DriveStraight(mDriveTrain, mData, 18, 0.4, true));
-      
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
-
       mCommands.add(new Delay(0.5));
 //		 //Back up from scale
 		 mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SCALE_BACK_UP));
@@ -344,11 +342,11 @@ public class GetAutonomous {
       mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
       mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg, 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
+		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
 		mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg.opposite(), 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
+		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
      /* 
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));
@@ -362,7 +360,7 @@ public class GetAutonomous {
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new Delay(0.5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
-      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE));
+      mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM));
       break;
     case MIDDLE:
       break;
