@@ -101,7 +101,7 @@ public class DriverInput implements IModule{
 		double desiredLeftOutput, desiredRightOutput;
 	  
 		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
-		rotate = EInputScale.EXPONENTIAL.map(rotate, 1.7);
+		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
 		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 //		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
