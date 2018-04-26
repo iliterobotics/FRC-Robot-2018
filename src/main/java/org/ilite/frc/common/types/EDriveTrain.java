@@ -9,7 +9,8 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 
 public enum EDriveTrain implements CodexOf<Double> {
-  DRIVE_MODE,
+  LEFT_DRIVE_MODE,
+  RIGHT_DRIVE_MODE,
   DESIRED_LEFT_OUTPUT,
   DESIRED_RIGHT_OUTPUT,
   
@@ -49,14 +50,16 @@ public enum EDriveTrain implements CodexOf<Double> {
   RIGHT_TALON_FOLLOW2_CURRENT,
   
   TALON_VBUS,
-  TALON_CONTROL_MODE;
+  LEFT_CONTROL_MODE,
+  RIGHT_CONTROL_MODE;
   
   public static void map(Codex<Double, EDriveTrain> pCodex, DriveTrain driveTrain, DrivetrainMessage driveMessage) {
     double leftPositionTicks = driveTrain.getLeftMaster().getSelectedSensorPosition(0);
     double rightPositionTicks = driveTrain.getRightMaster().getSelectedSensorPosition(0);
     double leftVelocityTicks = driveTrain.getLeftMaster().getSelectedSensorVelocity(0);
     double rightVelocityTicks = driveTrain.getRightMaster().getSelectedSensorVelocity(0);
-    pCodex.set(DRIVE_MODE, (double)driveTrain.getDriveMode().ordinal());
+    pCodex.set(LEFT_DRIVE_MODE, (double)driveTrain.getLeftDriveMode().ordinal());
+    pCodex.set(RIGHT_DRIVE_MODE, (double)driveTrain.getRightDriveMode().ordinal());
     
     pCodex.set(DESIRED_LEFT_OUTPUT, driveMessage.leftOutput);
     pCodex.set(DESIRED_RIGHT_OUTPUT, driveMessage.rightOutput);
@@ -85,7 +88,8 @@ public enum EDriveTrain implements CodexOf<Double> {
     pCodex.set(RIGHT_TALON_FOLLOW1_VOLTAGE, driveTrain.getRightFollower1().getMotorOutputVoltage());
     pCodex.set(RIGHT_TALON_FOLLOW2_VOLTAGE, driveTrain.getRightFollower2().getMotorOutputVoltage());
     
-    pCodex.set(TALON_CONTROL_MODE, (double)driveTrain.getControlMode().ordinal());  
+    pCodex.set(LEFT_CONTROL_MODE, (double)driveTrain.getLeftControlMode().ordinal());
+    pCodex.set(RIGHT_CONTROL_MODE, (double)driveTrain.getRightControlMode().ordinal());
   }
   
   public static void testMap(Codex<Double, EDriveTrain> pCodex) {

@@ -67,7 +67,7 @@ public class GyroTurn implements ICommand {
     mLastError = mError;
 
     if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
-      mDrivetrain.holdPosition();
+      mDrivetrain.zeroOutputs();
 //      mAlignedCount++;
       return true;
     }

@@ -5,20 +5,33 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class DrivetrainMessage {
 
   public final double leftOutput, rightOutput;
-  public final DrivetrainMode driveMode;
-  public final NeutralMode neutralMode;
+  public final DrivetrainMode leftDriveMode, rightDriveMode;
+  public final NeutralMode leftNeutralMode, rightNeutralMode;
   public final boolean initMode;
-  
-  
-  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode driveMode, NeutralMode neutralMode) {
-    this(leftOutput, rightOutput, driveMode, neutralMode, false);
+
+  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode drivetrainMode, NeutralMode neutralMode) {
+    this(leftOutput, rightOutput, drivetrainMode, drivetrainMode, neutralMode, neutralMode);
   }
-  
-  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode driveMode, NeutralMode neutralMode, boolean initMode) {
+
+  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode drivetrainMode, NeutralMode neutralMode, boolean initMode) {
+    this(leftOutput, rightOutput, drivetrainMode, drivetrainMode, neutralMode, neutralMode, initMode);
+  }
+
+  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode leftDriveMode, DrivetrainMode rightDriveMode, NeutralMode neutralMode) {
+    this(leftOutput, rightOutput, leftDriveMode, rightDriveMode, neutralMode, neutralMode, false);
+  }
+
+  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode leftDriveMode, DrivetrainMode rightDriveMode, NeutralMode leftNeutralMode, NeutralMode rightNeutralMode) {
+    this(leftOutput, rightOutput, leftDriveMode, rightDriveMode, leftNeutralMode, rightNeutralMode, false);
+  }
+
+  public DrivetrainMessage(double leftOutput, double rightOutput, DrivetrainMode leftDriveMode, DrivetrainMode rightDriveMode, NeutralMode leftNeutralMode, NeutralMode rightNeutralMode, boolean initMode) {
     this.leftOutput = leftOutput;
     this.rightOutput = rightOutput;
-    this.driveMode = driveMode;
-    this.neutralMode = neutralMode;
+    this.leftDriveMode = leftDriveMode;
+    this.rightDriveMode = rightDriveMode;
+    this.leftNeutralMode = leftNeutralMode;
+    this.rightNeutralMode = rightNeutralMode;
     this.initMode = initMode;
   }
 

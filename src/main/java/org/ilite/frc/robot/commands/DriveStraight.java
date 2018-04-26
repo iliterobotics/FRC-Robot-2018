@@ -78,9 +78,7 @@ public class DriveStraight implements ICommand{
   public boolean update(double pNow){
     double currentDistance = getAverageDistanceTravel();
     if( currentDistance >= distanceToTravel){
-      // We hold our current position (where we ended the drive straight) using the Talon's closed-loop position mode to avoid overshooting the target distance
-      driveTrain.holdPosition();
-//      driveTrain.setDriveMessage(new DrivetrainMessage(0, 0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+      driveTrain.zeroOutputs();
       DriverStation.reportError("I AM STOPPING " + Utils.ticksToInches(currentDistance), false);
       return true;
     }
