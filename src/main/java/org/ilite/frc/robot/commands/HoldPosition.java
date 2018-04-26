@@ -32,10 +32,10 @@ public class HoldPosition implements ICommand {
         System.out.println(mDrivetrain);
         switch (mHoldType) {
             case HOLD_LEFT:
-                mDrivetrain.setDriveMessage(new DrivetrainMessage(getLeftPositionTicks(), 0.0, DrivetrainMode.Position, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+                mDrivetrain.setDriveMessage(new DrivetrainMessage(getLeftPositionTicks(), 0.0, DrivetrainMode.Position, DrivetrainMode.PercentOutput, NeutralMode.Brake, NeutralMode.Coast));
                 break;
             case HOLD_RIGHT:
-                mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, getRightPositionTicks(), DrivetrainMode.PercentOutput, DrivetrainMode.Position, NeutralMode.Brake));
+                mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, getRightPositionTicks(), DrivetrainMode.PercentOutput, DrivetrainMode.Position, NeutralMode.Coast, NeutralMode.Brake));
                 break;
             case HOLD_BOTH:
                 mDrivetrain.setDriveMessage(new DrivetrainMessage(getLeftPositionTicks(), getRightPositionTicks(), DrivetrainMode.Position, DrivetrainMode.Position, NeutralMode.Brake));
