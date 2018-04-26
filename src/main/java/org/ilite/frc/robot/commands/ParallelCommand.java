@@ -19,19 +19,29 @@ public class ParallelCommand implements ICommand {
   
   @Override
   public void initialize(double pNow) {
-    for(ICommand c : mCommandList) c.initialize(pNow);
+    for(ICommand c : mCommandList) {
+      c.initialize(pNow);
+    }
   }
 
   @Override
   public boolean update(double pNow) {
-    for(ICommand c : mCommandList) if(c.update(pNow)) mCommandList.remove(c);
-    if(mCommandList.isEmpty()) return true;
+    for(ICommand c : mCommandList) {
+      if(c.update(pNow)) {
+        mCommandList.remove(c);
+      }
+    }
+    if(mCommandList.isEmpty()) {
+      return true;
+    }
     return false;
   }
 
   @Override
   public void shutdown(double pNow) {
-    for(ICommand c : mCommandList) c.update(pNow);
+    for(ICommand c : mCommandList) {
+      c.shutdown(pNow);
+    }
   }
 
 }

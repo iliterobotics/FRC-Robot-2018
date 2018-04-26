@@ -10,7 +10,7 @@ import org.ilite.frc.robot.Utils;
 	 */
 	public enum EElevatorPosition
 	{
-		BOTTOM(0.35, 285),
+		BOTTOM(0.40, 285),
 		FIRST_TAPE(0.5d, 1776),
 		SECOND_TAPE(1d, 5000),
 		THIRD_TAPE(1d, 6300);

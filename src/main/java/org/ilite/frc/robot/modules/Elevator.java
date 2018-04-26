@@ -19,7 +19,6 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
-
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
   public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
   public static final double RAMP_OPEN_LOOP = 0.7d;
@@ -126,7 +125,6 @@ public class Elevator implements IModule {
 	  
 //		currentTachState = talonTach.getSensor();
     currentEncoderTicks = masterElevator.getSelectedSensorPosition(0);
-//    System.out.println("CURRENT ENCODER TICKS=" + currentEncoderTicks);
     isDesiredDirectionUp = mDesiredPower > 0 ? true : false;
 //    currentTachLevel = getTachLevel(currentTachState);//, lastTachState); // Calculates current tape mark based on last/current tach state
 
@@ -146,7 +144,7 @@ public class Elevator implements IModule {
 //		masterElevator.enableCurrentLimit(true);   
 		
 		if(isCurrentLimited) {
-		  System.out.println("================================= CURRENT LIMITED");
+		  log.warn("================================= CURRENT LIMITED");
 		  elevatorState = EElevatorState.STOP;
 		} else {
 		  updateElevatorControl(pNow);
@@ -182,11 +180,7 @@ public class Elevator implements IModule {
 //		log.warn(masterElevator.getOutputCurrent() + "/" + masterElevator.getMotorOutputVoltage());
 		masterElevator.set(ControlMode.PercentOutput, Utils.clamp(actualPower, elevControlMode.getMaxPower()));
 
-		System.out.println("HAS STARTED ? =" + hasStarted);
-		System.out.println("actual power= " + actualPower + " bus voltage= " + masterElevator.getBusVoltage());
 		shiftSolenoid.set(elevGearState.gearState);
-//		System.out.println("elevState=" + elevatorState + "\tPOWER = " + mDesiredPower);
-//		System.out.println("elevControlMode=" + elevControlMode);
 		return true;
 	}
 	
@@ -215,7 +209,7 @@ public class Elevator implements IModule {
         double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
         double kp = 1d / 2000d * 1.2;
-        System.out.println(currentEncoderTicks + "============ CURRENT TICKS");
+        log.warn(currentEncoderTicks + "============ CURRENT TICKS");
 
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
@@ -223,7 +217,6 @@ public class Elevator implements IModule {
         {
           elevatorState = EElevatorState.HOLD;
           isAtPosition = true;
-          System.out.println("=======================HOLDING AT POSITION");
         
         // If the setpoint is above us, and we are below it, go up
         // This is redundant
@@ -269,8 +262,6 @@ public class Elevator implements IModule {
 //            else
 //              mDesiredPower = Utils.clamp(mDesiredPower, EElevatorState.DECELERATE_BOTTOM.power);
 //          }
-          System.out.println("CURRENT ERROR=" + error + "LAST ERROR=" + lastError);
-          System.out.println("START TIME = " + startTime);
           lastError = error;
           lastTime = now;
           
