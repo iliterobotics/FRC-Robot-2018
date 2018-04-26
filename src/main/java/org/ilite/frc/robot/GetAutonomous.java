@@ -413,8 +413,9 @@ public class GetAutonomous {
 	public void crossAutoLine() {
 		// TODO replace with turning scalar
 		log.info("Doing auto line autonomous starting on %s\n", mStartingPos);
-		mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.AUTO_LINE_CROSS));
-    mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 180, 10));
+    mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
+    mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
+    mCommands.add(new DriveStraight(mDriveTrain, mData, 4d * 12d));
 	}
 
 	/**

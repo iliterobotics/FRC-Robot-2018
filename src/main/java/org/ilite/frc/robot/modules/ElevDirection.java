@@ -1,10 +1,12 @@
 package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.flybotix.hfr.codex.Codex;
 
 /**
  * 
@@ -15,7 +17,7 @@ public enum ElevDirection
 {
   //up = 3 down = 1
 	UP(true, 40d/12d, 5800, 25),
-	DOWN(false, 22d/12d, 1200, 20),
+	DOWN(false, 22d/12d, 2000, 20),
 	CLIMBER_UP(true, 30d/12d, 5, 35),
 	CLIMBER_DOWN(false, 65d/12d, 2, 10),
 	OFF(false, 15d/12d, 0, 0);
@@ -42,12 +44,12 @@ public enum ElevDirection
 	  }
 	}
 
-	public boolean isCurrentRatioLimited(TalonSRX pMasterTalon)
+	public boolean isCurrentRatioLimited(Codex<Double, EElevator> pData)
 	{
-	  if(pMasterTalon.getMotorOutputVoltage() != 0)
+	  if(pData.get(EElevator.MASTER_VOLTAGE) != 0 && pData.get(EElevator.MASTER_CURRENT) > 20d)
 	  {
 //	    System.out.println("LIMIT: " + pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage());
-      return Math.abs(pMasterTalon.getOutputCurrent()) / Math.abs(pMasterTalon.getMotorOutputVoltage()) >= mCurrentLimitRatio;
+      return Math.abs(pData.get(EElevator.MASTER_CURRENT)) / Math.abs(pData.get(EElevator.MASTER_VOLTAGE)) >= mCurrentLimitRatio;
 	  }
 	  else return false;
 	}

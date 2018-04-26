@@ -2,14 +2,12 @@ package org.ilite.frc.robot.modules;
 
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.TalonTach;
-import org.ilite.frc.common.types.EElevator;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.Utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ELevel;
@@ -35,7 +33,6 @@ public class Elevator implements IModule {
 	private double mDesiredPower = 0;
 	private boolean mAtBottom = true, mAtTop = false, isDesiredDirectionUp = true;
 	private boolean isSetpointAboveIntialPosition = false;
-	private boolean isAtPosition = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
 	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM, lastElevPosition = EElevatorPosition.BOTTOM;
@@ -43,6 +40,9 @@ public class Elevator implements IModule {
 	ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
 	ElevDirection elevatorDirection = ElevDirection.UP;
 	ElevatorControlMode currentElevControlMode, lastElevControlMode;
+	
+	private double error, lastError = 0;
+	private double lastTime, startTime = 0;
   private static final ILog log = Logger.createLog(Elevator.class);
 
   
@@ -65,6 +65,8 @@ public class Elevator implements IModule {
 		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, 0);
 		masterElevator.setSensorPhase(true);
 		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 15, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		followerElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 15, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		// TODO set voltage ramp & current limit
 	}
 
@@ -155,7 +157,11 @@ public class Elevator implements IModule {
 		switch(elevatorState){
 
 			case NORMAL:
-				actualPower = mDesiredPower;
+			  if(elevatorDirection == ElevDirection.DOWN) {
+			    actualPower = -elevatorState.power;
+			  } else {
+			    actualPower = mDesiredPower;
+			  }
 				break;
 
 			case DECELERATE_BOTTOM:
@@ -184,16 +190,13 @@ public class Elevator implements IModule {
 		return true;
 	}
 	
-	double lastError = 0d;
-	double lastTime = 0d;
-	double startTime = 0d;
 	boolean hasStarted = false;
 	private void updateElevatorControl(double now) {
 	  currentElevControlMode = elevControlMode;
 	  /*
 	   * Check if our position setpoint has been updated. If it has, reset our start time so we don't exit before the motors begin moving.
 	   */
-	  if(currentElevControlMode == ElevatorControlMode.POSITION && elevatorPosition.encoderThreshold != lastElevPosition.encoderThreshold)
+	  if(elevatorPosition.encoderThreshold != lastElevPosition.encoderThreshold || lastElevControlMode != ElevatorControlMode.POSITION)
     {
       hasStarted = true;
     } else {
@@ -207,18 +210,16 @@ public class Elevator implements IModule {
         {
           startTime = now;
         }
-        double error = elevatorPosition.encoderThreshold - currentEncoderTicks;
+        error = elevatorPosition.encoderThreshold - currentEncoderTicks;
         // 1.0 power = 1000 ticks
         double kp = 1d / 2000d * 1.2;
         log.warn(currentEncoderTicks + "============ CURRENT TICKS");
         log.warn("Time going to setpoint: " + (lastTime - startTime));
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
-        if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
+        if(isFinishedGoingToPosition())
         {
           elevatorState = EElevatorState.HOLD;
-          isAtPosition = true;
-        
         // If the setpoint is above us, and we are below it, go up
         // This is redundant
 //        } else if (isSetpointAboveIntialPosition) {
@@ -471,11 +472,11 @@ public class Elevator implements IModule {
   }
   //30/12 and 10/12 = amps / voltage
 	public boolean isCurrentLimiting() {
-		return elevatorDirection.isCurrentRatioLimited(masterElevator);
+		return elevatorDirection.isCurrentRatioLimited(mData.elevator);
 	}
 	
 	public boolean isFinishedGoingToPosition() {
-	  return isAtPosition;
+	  return Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT;
 	}
 	
 }
