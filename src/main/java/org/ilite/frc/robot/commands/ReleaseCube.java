@@ -22,17 +22,21 @@ public class ReleaseCube implements ICommand {
   public void initialize(double pNow) {
     mStartTime = pNow;
     mRelaseTime = pNow + mDuration;
+    mCarriage.setFinishedKicking(false);
   }
 
   @Override
   public boolean update(double pNow) {
-    mCarriage.setDesiredState(CarriageState.KICKING);
-    System.out.println("UPDATE KICK ====================");
-    if(pNow >= mRelaseTime) {
+    if(mCarriage.isFinishedKicking()) {
+      mCarriage.setDesiredState(CarriageState.RESET);
+    } else {
       mCarriage.setDesiredState(CarriageState.KICKING);
-      return true;
     }
-    return false;
+//    if(pNow >= mRelaseTime) {
+//      mCarriage.setDesiredState(CarriageState.KICKING);
+//      return true;
+//    }
+    return mCarriage.isFinishedKicking();
   }
 
   @Override

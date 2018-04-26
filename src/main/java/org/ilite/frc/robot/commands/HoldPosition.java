@@ -17,6 +17,14 @@ public class HoldPosition implements ICommand {
 
     public enum HoldType {
         HOLD_LEFT, HOLD_RIGHT, HOLD_BOTH;
+      
+      public HoldType opposite() {
+        switch(this) {
+        case HOLD_LEFT: return HOLD_RIGHT;
+        case HOLD_RIGHT: return HOLD_LEFT;
+        }
+        return HOLD_BOTH;
+      }
     }
 
     public HoldPosition(DriveTrain pDrivetrain, Data pData, HoldType pHoldType, double pHoldTime) {

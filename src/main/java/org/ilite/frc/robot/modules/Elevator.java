@@ -38,7 +38,7 @@ public class Elevator implements IModule {
 	private boolean isAtPosition = false;
 	
 	EElevatorState elevatorState = EElevatorState.STOP;
-	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM;
+	EElevatorPosition elevatorPosition = EElevatorPosition.BOTTOM, lastElevPosition = EElevatorPosition.BOTTOM;
 	EElevatorGearState elevGearState = EElevatorGearState.NORMAL;
 	ElevatorControlMode elevControlMode = ElevatorControlMode.MANUAL;
 	ElevDirection elevatorDirection = ElevDirection.UP;
@@ -190,14 +190,15 @@ public class Elevator implements IModule {
 	boolean hasStarted = false;
 	private void updateElevatorControl(double now) {
 	  currentElevControlMode = elevControlMode;
-	  //compare last control mode with current control mode. Checks if our control mode has just changed, ie the button has been pressed
-	  //if has just entered position control mode, sets this as the start time for positional control
-	  //necessary for the timout to allow the motor to begin moving before checking if we are within threshold for error
-	  if(currentElevControlMode == ElevatorControlMode.POSITION && lastElevControlMode != ElevatorControlMode.POSITION)
+	  /*
+	   * Check if our position setpoint has been updated. If it has, reset our start time so we don't exit before the motors begin moving.
+	   */
+	  if(currentElevControlMode == ElevatorControlMode.POSITION && elevatorPosition.encoderThreshold != lastElevPosition.encoderThreshold)
     {
       hasStarted = true;
+    } else {
+      hasStarted = false;
     }
-    else hasStarted = false;
 	  
     switch(elevControlMode) {
       case POSITION:
@@ -210,7 +211,7 @@ public class Elevator implements IModule {
         // 1.0 power = 1000 ticks
         double kp = 1d / 2000d * 1.2;
         log.warn(currentEncoderTicks + "============ CURRENT TICKS");
-
+        log.warn("Time going to setpoint: " + (lastTime - startTime));
 //        int directionScalar = 0;
         // If we are past the setpoint, hold position
         if(Math.abs(error - lastError) <= SystemSettings.ELEVATOR_ERROR_DEADBAND_TICKS && lastTime - startTime >= SystemSettings.ELEVATOR_ENCODER_TIMEOUT)
@@ -311,6 +312,7 @@ public class Elevator implements IModule {
     }
     
     lastElevControlMode = currentElevControlMode;
+    lastElevPosition = elevatorPosition;
 //    if(shouldstop) {
 //      elevatorState = ElevatorState.STOP;
 //    }

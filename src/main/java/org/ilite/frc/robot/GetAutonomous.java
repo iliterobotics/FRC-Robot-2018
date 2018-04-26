@@ -337,15 +337,16 @@ public class GetAutonomous {
   public void doOppositeScale() {
     // TODO replace with turning scalar
     log.info("Doing opposite scale autonomous starting on %s\n", mStartingPos);
+    HoldPosition.HoldType initialLeg = mStartingPos == EStartingPosition.LEFT ? HoldPosition.HoldType.HOLD_RIGHT : HoldPosition.HoldType.HOLD_LEFT;
     switch (mStartingPos) {
     case LEFT:
     case RIGHT:
       mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
-      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
+      mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg, 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
 		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
       mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
+		mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg.opposite(), 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
 		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.1));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
@@ -354,9 +355,12 @@ public class GetAutonomous {
       mCommands.add(new DriveStraight(mDriveTrain, mData, 9 , 0.2));
       */
       
-      mCommands.add(new ParallelCommand(new DriveStraight(mDriveTrain, mData, 9 , 0.2), new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3)));
-      mCommands.add(new Delay(0.5));
+      mCommands.add(new ParallelCommand(
+          new DriveStraight(mDriveTrain, mData, 9 + 8 , 0.2), 
+          new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE)));
+      mCommands.add(new Delay(0.1));
       mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
+      mCommands.add(new Delay(0.5));
       mCommands.add(new DriveStraight(mDriveTrain, mData, -12));
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.FIRST_TAPE));
       break;

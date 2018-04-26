@@ -139,6 +139,7 @@ public class Carriage implements IModule{
     //if the kick sequence is not scheduled to start, set the boolean value to true and record the start time
     if(!isScheduled)
     {
+      setFinishedKicking(false);
       releaseTime = pNow + RELEASE_DELAY;
       resetTime = pNow + RESET_DELAY;
       isScheduled = true;
@@ -157,6 +158,9 @@ public class Carriage implements IModule{
       reset();
     }
   }
+  
+  private boolean mIsFinishedKicking = true;
+  
   //set the current state to no cube, reset the start time of the kick sequence
   //to 0, and make sure that the kick sequence is not scheduled to start
   private void reset()
@@ -165,6 +169,7 @@ public class Carriage implements IModule{
     releaseTime = 0d;
     resetTime = 0d;
     isScheduled = false;
+    setFinishedKicking(true);
     //undo kick and release
   }
   //verify that the beamBreak is functioning
@@ -175,6 +180,14 @@ public class Carriage implements IModule{
 
   public CarriageState getCurrentState() {
     return mCurrentState;
+  }
+
+  public boolean isFinishedKicking() {
+    return mIsFinishedKicking;
+  }
+
+  public void setFinishedKicking(boolean mIsFinishedKicking) {
+    this.mIsFinishedKicking = mIsFinishedKicking;
   }
   
 }
