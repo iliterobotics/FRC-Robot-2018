@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator implements IModule {
   public static final double TOP_LIMIT = 30d/12d, BOTTOM_LIMIT = 10d/12d;
-  public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 20;
-  public static final double RAMP_OPEN_LOOP = 0.7d;
+  public static final int DEFAULT_CONTINOUS_LIMIT_AMPS = 25;
+  public static final double RAMP_OPEN_LOOP = 0.4d;
   
   private Data mData;
   private final Hardware mHardware;
@@ -61,12 +61,10 @@ public class Elevator implements IModule {
     masterElevator.setSelectedSensorPosition(0, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.configContinuousCurrentLimit(DEFAULT_CONTINOUS_LIMIT_AMPS, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		masterElevator.enableCurrentLimit(true);
-		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, 0);
 		masterElevator.setSensorPhase(true);
 		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		masterElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 15, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		followerElevator.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 15, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		// TODO set voltage ramp & current limit
+		masterElevator.configOpenloopRamp(RAMP_OPEN_LOOP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+    followerElevator.configOpenloopRamp(RAMP_OPEN_LOOP, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 	}
 
   public enum ElevatorControlMode

@@ -46,7 +46,7 @@ public enum ElevDirection
 
 	public boolean isCurrentRatioLimited(Codex<Double, EElevator> pData)
 	{
-	  if(pData.get(EElevator.MASTER_VOLTAGE) != 0 && pData.get(EElevator.MASTER_CURRENT) > 20d)
+	  if(pData.get(EElevator.MASTER_VOLTAGE) != 0 && pData.get(EElevator.MASTER_CURRENT) > 5d)
 	  {
 //	    System.out.println("LIMIT: " + pMasterTalon.getOutputCurrent() / pMasterTalon.getMotorOutputVoltage());
       return Math.abs(pData.get(EElevator.MASTER_CURRENT)) / Math.abs(pData.get(EElevator.MASTER_VOLTAGE)) >= mCurrentLimitRatio;
