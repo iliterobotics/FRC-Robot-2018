@@ -209,7 +209,7 @@ public class GetAutonomous {
 	 * Do scale autonomous; switch based on starting position.
 	 */ 
 	public void doScale() {
-	  double scaleTurnDegrees = 55d;
+	  double scaleTurnDegrees = 75d;
 		// TODO replace with turning scalar
 		log.info("Doing scale autonomous starting on %s\n", mStartingPos);
 		switch (mStartingPos) {
@@ -226,7 +226,8 @@ public class GetAutonomous {
 		  
       //drives forward and raises elevator at the same time
 	  //need to slow down with DriveStraight  
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 16, 0.1, true));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 3, 0.01, true));
+      mCommands.add(new Delay(0.5));
 		  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
       mCommands.add(new Delay(0.5));
 //		 //Back up from scale

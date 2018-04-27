@@ -7,7 +7,7 @@ package org.ilite.frc.robot.modules;
  */
 public enum EElevatorGearState
 {
-	NORMAL(true, 0.9),
+	NORMAL(true, 0.8),
 	CLIMBING(false, 1.1);
 
 	boolean gearState;
