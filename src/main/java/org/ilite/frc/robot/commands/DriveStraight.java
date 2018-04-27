@@ -46,6 +46,8 @@ public class DriveStraight implements ICommand{
   
   // In degrees
   private double mDesiredHeadingYaw;
+  
+  private NeutralMode mBrakeCoast = NeutralMode.Brake;
 
   public DriveStraight(DriveTrain dt, Data pData, double inches, double power, boolean ignoreGyro) {
     this.driveTrain = dt;
@@ -97,7 +99,7 @@ public class DriveStraight implements ICommand{
           // 2 degrees of correction before % power is saturated
           mPower + kP * remainingDistance,
           0d,
-           NeutralMode.Brake));
+          mBrakeCoast));
       
     } else {
       // negative error = turn left; positive error = turn right
@@ -111,7 +113,7 @@ public class DriveStraight implements ICommand{
           // 2 degrees of correction before % power is saturated
           Utils.clamp(mPower + kP * remainingDistance, 1 - 2*TURN_PROPORTION),
            yawError * TURN_PROPORTION, 
-           NeutralMode.Brake));
+           mBrakeCoast));
       
     }
     
@@ -126,6 +128,11 @@ public class DriveStraight implements ICommand{
   
   public void shutdown(double pNow) {
     
+  }
+  
+  public DriveStraight coast() {
+    mBrakeCoast = NeutralMode.Coast;
+    return this();
   }
   
   /**
