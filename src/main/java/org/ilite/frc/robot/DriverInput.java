@@ -109,7 +109,8 @@ public class DriverInput implements IModule{
 //		{
 //		  throttle = Utils.clamp(throttle, 0.5);
 //		}
-		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
+//		if(mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
+		if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
 	      throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
 	      rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
 		}

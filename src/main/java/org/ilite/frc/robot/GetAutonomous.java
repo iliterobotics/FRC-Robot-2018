@@ -358,11 +358,11 @@ public class GetAutonomous {
       mCommands.add(new DriveStraight(mDriveTrain, mData, 16 * 12));
       mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg, 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90d, 5));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
-      mCommands.add(new DriveStraight(mDriveTrain, mData, 14.5 * 12));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg.opposite(), 0.1));
+      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
+      mCommands.add(new DriveStraight(mDriveTrain, mData, 13.5 * 12));
+      mCommands.add(new HoldPosition(mDriveTrain, mData, initialLeg.opposite(), 0.1));
       mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -95d, 5));
-		mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
+      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
 //      mCommands.add(new DriveStraight(mDriveTrain, mData, Utils.feetToInches(0.5d)));
      /* 
       mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.THIRD_TAPE, 3));

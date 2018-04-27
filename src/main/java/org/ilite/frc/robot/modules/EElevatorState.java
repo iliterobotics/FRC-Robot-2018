@@ -7,9 +7,9 @@ package org.ilite.frc.robot.modules;
  */
 public enum EElevatorState
 {
-	NORMAL(0.3),
+	NORMAL(0.35),
 	DECELERATE_TOP(0.22),
-	DECELERATE_BOTTOM(-0.15),
+	DECELERATE_BOTTOM(-0.25),
 	HOLD(0),
 	STOP(0);
 
