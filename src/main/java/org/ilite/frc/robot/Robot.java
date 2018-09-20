@@ -68,7 +68,8 @@ public class Robot extends IterativeRobot {
   private GetAutonomous getAutonomous;
 
   public Robot() {
-    System.out.println("Hardware init");
+
+    mLog.info("Hardware init");
     mHardware.init(
         mExecutor,
         new Joystick(SystemSettings.JOYSTICK_PORT_DRIVER), 
@@ -87,10 +88,10 @@ public class Robot extends IterativeRobot {
         
         // Talons TBD ... they're somewhat picky.
     );
-    System.out.println("Finished hardware init");
+    mLog.info("Finished hardware init");
     
     mBeamBreak = new BeamBreakSensor(mHardware.getCarriageBeamBreak());
-    System.out.println("Beam break init finished");
+    mLog.info("Beam break init finished");
     mElevator = new Elevator(mHardware, mData);
     mIntake = new Intake(mElevator, mHardware, mBeamBreak);
   	mPneumaticControl = new PneumaticModule(SystemSettings.RELAY_COMPRESSOR_PORT, SystemSettings.DIO_PRESSURE_SWITCH);
@@ -101,7 +102,8 @@ public class Robot extends IterativeRobot {
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mIntake, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
-  	System.out.println("Modules instantiateds");
+  	mLog.info("Modules instantiated");
+
   	Logger.setLevel(ELevel.DEBUG);
   }
 
