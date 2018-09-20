@@ -7,7 +7,7 @@ public class DriveTeamInputMap {
   
     DRIVER_TURN_AXIS = ELogitech310.RIGHT_X_AXIS,
     DRIVER_THROTTLE_AXIS = ELogitech310.LEFT_Y_AXIS,
-    
+
     DRIVER_SUB_WARP_AXIS = ELogitech310.RIGHT_TRIGGER_AXIS,
     
     DRIVER_SEARCH_CUBE_LEFT_BTN = ELogitech310.L_BTN,

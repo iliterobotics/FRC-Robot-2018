@@ -168,8 +168,8 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // =============================================================================
   // Input Constants
   // =============================================================================
-  public static double  SNAIL_MODE_THROTTLE_LIMITER = .5;
-  public static double  SNAIL_MODE_ROTATE_LIMITER = .4;
+  public static double  SNAIL_MODE_THROTTLE_LIMITER = .2;
+  public static double  SNAIL_MODE_ROTATE_LIMITER = .2;
   public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
   public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
   public static int     JOYSTICK_PORT_DRIVER = 0;
