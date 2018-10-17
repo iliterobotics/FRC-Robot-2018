@@ -6,6 +6,7 @@ import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.robot.Data;
 import org.ilite.frc.robot.Hardware;
 //import org.usfirst.frc.team1885.robot.SystemSettings;
+import org.ilite.frc.robot.Utils;
 import org.ilite.frc.robot.controlloop.IControlLoop;
 import org.ilite.frc.robot.modules.drivetrain.*;
 
@@ -252,6 +253,14 @@ public class DriveTrain implements IControlLoop {
   
   public TalonSRX getRightFollower2() {
     return rightFollower2;
+  }
+
+  public double getLeftInches() {
+		return Utils.ticksToInches(leftMaster.getSelectedSensorPosition(0));
+  }
+
+  public double getRightInches() {
+		return Utils.ticksToInches(rightMaster.getSelectedSensorPosition(0));
   }
 
 }
