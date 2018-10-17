@@ -1,12 +1,18 @@
 package org.ilite.frc.robot;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import lib.geometry.Pose2d;
+import lib.geometry.Pose2dWithCurvature;
+import lib.geometry.Rotation2d;
+import lib.physics.DriveCharacterization;
+import lib.trajectory.Trajectory;
+import lib.trajectory.timing.CentripetalAccelerationConstraint;
+import lib.trajectory.timing.TimedState;
+import lib.trajectory.timing.TimingConstraint;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.input.EDriverControlMode;
 import org.ilite.frc.common.sensors.TalonTach;
@@ -27,6 +33,7 @@ import org.ilite.frc.robot.modules.Intake;
 import org.ilite.frc.robot.modules.LEDControl;
 import org.ilite.frc.robot.modules.PneumaticModule;
 import org.ilite.frc.robot.modules.TestingInputs;
+import org.ilite.frc.robot.modules.drivetrain.TrajectoryFollower;
 import org.ilite.frc.robot.sensors.BeamBreakSensor;
 
 import com.ctre.phoenix.CANifier;
@@ -39,6 +46,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import org.jfree.chart.util.Rotation;
+import paths.TrajectoryGenerator;
+import paths.autos.NearScaleAuto;
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -64,8 +74,12 @@ public class Robot extends IterativeRobot {
   private Joystick testJoystick;
   private  LEDControl mLedController;
 
-  
+  private TrajectoryFollower mTrajectoryFollower;
+
   private GetAutonomous getAutonomous;
+
+//  List<DriveCharacterization.AccelerationDataPoint> accelData = new ArrayList<>();
+//    List<DriveCharacterization.VelocityDataPoint> velData = new ArrayList<>();
 
   public Robot() {
     System.out.println("Hardware init");
@@ -100,6 +114,7 @@ public class Robot extends IterativeRobot {
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
+  	mTrajectoryFollower = new TrajectoryFollower(mDrivetrain);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mIntake, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
   	System.out.println("Modules instantiateds");
   	Logger.setLevel(ELevel.DEBUG);
@@ -118,15 +133,28 @@ public class Robot extends IterativeRobot {
     System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mapInputsAndCachedSensors();
     
-    setRunningModules(mDrivetrain, mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
-    mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
+    setRunningModules(mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
+    mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach()*/mTrajectoryFollower, mDrivetrain);
     mControlLoop.start();
-    
+
+      TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController().getDriveMotionPlanner());
+      List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
+      List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
+           new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
+              new Pose2d(SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * 3.0, 0.0, Rotation2d.fromDegrees(0.0))
+      });
+      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 30.0, 12.0);
+
     mCommandQueue.clear();
 
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mCommandQueue = getAutonomous.getAutonomousCommands();
-    System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
+    mCommandQueue.clear();
+//    mCommandQueue.add(new CollectVelocityData(mDrivetrain, velData, false, false, false));
+//    mCommandQueue.add(new Delay(3));
+//    mCommandQueue.add(new CollectAccelerationData(mDrivetrain, accelData, false, false, false));
+      mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
+      System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);
     
@@ -137,7 +165,12 @@ public class Robot extends IterativeRobot {
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
     updateRunningModules();
-      
+
+//    if(mCommandQueue.isEmpty()) {
+//        DriveCharacterization.CharacterizationConstants constants = DriveCharacterization.characterizeDrive(velData, accelData);
+//        System.out.println(constants.toString());
+//    }
+
   }
  
   public void switchDriverControlModes(DriverInput dc) {
@@ -165,9 +198,9 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
 	   
-	  setRunningModules(mBeamBreak, mDriverInput, mDrivetrain, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController);
+	  setRunningModules(/*mBeamBreak,*/ mDriverInput, mDrivetrain/*, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController*/);
     
-	  mControlLoop.setRunningControlLoops(mHardware.getTalonTach());
+	  mControlLoop.setRunningControlLoops(/* mHardware.getTalonTach()*/);
     mControlLoop.start();
   }
 
@@ -215,6 +248,7 @@ public class Robot extends IterativeRobot {
 	    if(firstRun) mCurrentCommand.initialize(mCurrentTime);
 	    //If this command is finished executing
 	    if(mCurrentCommand.update(mCurrentTime)) {
+	        mCurrentCommand.shutdown(mCurrentTime);
 	      mCommandQueue.poll(); //Discard the command and initialize the next one
 	      if(mCommandQueue.peek() != null) {
 	        mCommandQueue.peek().initialize(mCurrentTime);
@@ -274,7 +308,9 @@ public class Robot extends IterativeRobot {
 
   public void disabledInit() {
 	  mLog.info("DISABLED");
-	  mControlLoop.stop();
+      mCurrentTime = Timer.getFPGATimestamp();
+      mControlLoop.stop();
+	  mRunningModules.forEach(m -> m.shutdown(mCurrentTime));
 	  // Stop blinking if we don't have a cube
   }
   
