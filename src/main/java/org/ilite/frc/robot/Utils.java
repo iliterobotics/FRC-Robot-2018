@@ -56,6 +56,10 @@ public class Utils {
   public static double ticksToFPS(double ticks) {
     return ticksToRotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0;
   }
+
+  public static double ticksToRads(double ticks) {
+    return ticksToRotations(ticks) * Math.PI * 10.0;
+  }
   
   public static double fpsToTicks(double fps) {
     return fps * 12 * (1 / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE) * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN * (1 / 1000) * (1 / 10);
