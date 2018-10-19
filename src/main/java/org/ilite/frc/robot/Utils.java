@@ -58,7 +58,7 @@ public class Utils {
   }
 
   public static double ticksToRads(double ticks) {
-    return ticksToRotations(ticks) * Math.PI * 10.0;
+    return ticksToRotations(ticks) * 2 * Math.PI * 10.0;
   }
   
   public static double fpsToTicks(double fps) {
