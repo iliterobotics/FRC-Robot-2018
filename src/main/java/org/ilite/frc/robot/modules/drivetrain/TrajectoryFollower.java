@@ -1,11 +1,11 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team254.lib.util.ReflectingCSVWriter;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import control.DriveOutput;
 import lib.geometry.Pose2d;
+import lib.util.ReflectingCSVWriter;
 import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EDriveTrain;
@@ -17,8 +17,8 @@ import profiles.LockdownProfile;
 
 public class TrajectoryFollower implements IControlLoop {
 
-    private ReflectingCSVWriter<Pose2d> mOdometryWriter = new ReflectingCSVWriter<>( "/home/lvuser/ODOMETRY.csv", Pose2d.class);
-    private ReflectingCSVWriter<DriveMotionPlanner> mTrajectoryWriter = new ReflectingCSVWriter<>("/home/lvuser/TRAJECTORY.csv", DriveMotionPlanner.class);
+    private ReflectingCSVWriter<Pose2d> mOdometryWriter = new ReflectingCSVWriter<>( "/home/lvuser/logs/ODOMETRY.csv", Pose2d.class);
+    private ReflectingCSVWriter<DriveMotionPlanner> mTrajectoryWriter = new ReflectingCSVWriter<>("/home/lvuser/logs/TRAJECTORY.csv", DriveMotionPlanner.class);
 
     private DriveController mDriveController = new DriveController(new MikeyProfile(), SystemSettings.CONTROL_LOOP_PERIOD);
     private DriveOutput mCurrentDriveOutput = new DriveOutput();
