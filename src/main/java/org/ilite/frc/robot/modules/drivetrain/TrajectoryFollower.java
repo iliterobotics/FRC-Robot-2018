@@ -7,7 +7,9 @@ import control.DriveMotionPlanner;
 import control.DriveOutput;
 import lib.geometry.Pose2d;
 import org.ilite.frc.common.config.SystemSettings;
+import org.ilite.frc.common.sensors.IMU;
 import org.ilite.frc.common.types.EDriveTrain;
+import org.ilite.frc.robot.Hardware;
 import org.ilite.frc.robot.controlloop.IControlLoop;
 import org.ilite.frc.robot.modules.DriveTrain;
 import org.ilite.frc.robot.modules.IModule;
@@ -22,11 +24,13 @@ public class TrajectoryFollower implements IControlLoop {
     private DriveOutput mCurrentDriveOutput = new DriveOutput();
 
     private final DriveTrain mDriveTrain;
+    private final Hardware mHardware;
 
     private double mLastTimeUpdated = 0.0;
 
-    public TrajectoryFollower(DriveTrain pDriveTrain) {
+    public TrajectoryFollower(DriveTrain pDriveTrain, Hardware pHardware) {
         mDriveTrain = pDriveTrain;
+        mHardware = pHardware;
     }
 
     @Override
@@ -37,11 +41,15 @@ public class TrajectoryFollower implements IControlLoop {
     @Override
     public boolean update(double pNow) {
         writeToCsv();
-        mCurrentDriveOutput = mDriveController.getOutput(pNow, mDriveTrain.getLeftInches(), mDriveTrain.getRightInches());
+        mCurrentDriveOutput = mDriveController.getOutput(pNow, mDriveTrain.getLeftInches(), mDriveTrain.getRightInches(), IMU.clampDegrees(mHardware.getPigeon().getHeading()));
+
+
         DrivetrainMessage driveMessage = new DrivetrainMessage(mCurrentDriveOutput.left_feedforward_voltage / 12.0,
                                                                 mCurrentDriveOutput.right_feedforward_voltage / 12.0,
                                                                 DrivetrainMode.PercentOutput, NeutralMode.Brake);
-        mDriveTrain.setDriveMessage(driveMessage);
+        if(!mDriveController.isDone()) {
+            mDriveTrain.setDriveMessage(driveMessage);
+        }
 
         System.out.println("Updating TrajectoryFollower - DT is " + (pNow - mLastTimeUpdated));
 

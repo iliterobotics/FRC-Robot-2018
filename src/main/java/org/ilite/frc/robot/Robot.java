@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import control.DriveMotionPlanner;
 import lib.geometry.Pose2d;
 import lib.geometry.Pose2dWithCurvature;
 import lib.geometry.Rotation2d;
@@ -78,8 +79,8 @@ public class Robot extends IterativeRobot {
 
   private GetAutonomous getAutonomous;
 
-//  List<DriveCharacterization.AccelerationDataPoint> accelData = new ArrayList<>();
-//    List<DriveCharacterization.VelocityDataPoint> velData = new ArrayList<>();
+  List<DriveCharacterization.AccelerationDataPoint> accelData = new ArrayList<>();
+    List<DriveCharacterization.VelocityDataPoint> velData = new ArrayList<>();
 
   public Robot() {
     System.out.println("Hardware init");
@@ -114,7 +115,7 @@ public class Robot extends IterativeRobot {
   	testJoystick = new Joystick(SystemSettings.JOYSTICK_PORT_TESTER);
   	mDriverInput = new DriverInput(mDrivetrain, mIntake, mCarriage, mElevator, mData);
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
-  	mTrajectoryFollower = new TrajectoryFollower(mDrivetrain);
+  	mTrajectoryFollower = new TrajectoryFollower(mDrivetrain, mHardware);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mIntake, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
   	System.out.println("Modules instantiateds");
   	Logger.setLevel(ELevel.DEBUG);
@@ -134,16 +135,17 @@ public class Robot extends IterativeRobot {
     mapInputsAndCachedSensors();
     
     setRunningModules(mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
-    mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach()*/mTrajectoryFollower, mDrivetrain);
+    mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
     mControlLoop.start();
 
+//      mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
       TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController().getDriveMotionPlanner());
       List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
       List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-              new Pose2d(SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * 3.0, 0.0, Rotation2d.fromDegrees(0.0))
+              new Pose2d(SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * 10.0, 0.0, Rotation2d.fromDegrees(0.0))
       });
-      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 30.0, 12.0);
+      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 120.0, 120.0, 12.0);
 
     mCommandQueue.clear();
 
