@@ -55,7 +55,7 @@ public class TrajectoryFollower implements IControlLoop {
             mDriveTrain.zeroOutputs();
         } else {
             // Since we aren't trying to deal with Talon velocity control yet - correct for error manually
-//            mCurrentDriveOutput = velocityFeedbackCorrection();
+//            mCurrentDriveOutput = velocityFeedbackCorrection(mCurrentDriveOutput);
             mDriveTrain.setDriveMessage(driveMessage);
         }
 
@@ -71,22 +71,22 @@ public class TrajectoryFollower implements IControlLoop {
         mTrajectoryWriter.flush();
     }
 
-    private double getLeftVelError() {
-        return mCurrentDriveOutput.left_velocity - mDriveTrain.getLeftVelInches();
+    private double getLeftVelError(DriveOutput pOutputToCorrect) {
+        return pOutputToCorrect.left_velocity - mDriveTrain.getLeftVelInches();
     }
 
-    private double getRightVelError() {
-        return mCurrentDriveOutput.right_velocity - mDriveTrain.getRightVelInches();
+    private double getRightVelError(DriveOutput pOutputToCorrect) {
+        return pOutputToCorrect.right_velocity - mDriveTrain.getRightVelInches();
     }
 
-    private DriveOutput velocityFeedbackCorrection() {
+    private DriveOutput velocityFeedbackCorrection(DriveOutput pOutputToCorrect) {
         DriveOutput correctedOutput = new DriveOutput();
-        correctedOutput.left_accel = mCurrentDriveOutput.left_accel;
-        correctedOutput.right_accel = mCurrentDriveOutput.right_accel;
-        correctedOutput.left_velocity = mCurrentDriveOutput.left_velocity;
-        correctedOutput.right_velocity = mCurrentDriveOutput.right_velocity;
-        correctedOutput.left_feedforward_voltage = kP * getLeftVelError();
-        correctedOutput.right_feedforward_voltage = kP * getRightVelError();
+        correctedOutput.left_accel = pOutputToCorrect.left_accel;
+        correctedOutput.right_accel = pOutputToCorrect.right_accel;
+        correctedOutput.left_velocity = pOutputToCorrect.left_velocity;
+        correctedOutput.right_velocity = pOutputToCorrect.right_velocity;
+        correctedOutput.left_feedforward_voltage = kP * getLeftVelError(pOutputToCorrect);
+        correctedOutput.right_feedforward_voltage = kP * getRightVelError(pOutputToCorrect);
 
         return correctedOutput;
     }
