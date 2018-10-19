@@ -27,7 +27,7 @@ public class TrajectoryFollower implements IControlLoop {
     private final Hardware mHardware;
 
     private double mLastTimeUpdated = 0.0;
-    private final DrivetrainMessage kStoppedMessage = new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake);
+    private final double kP = 0.0;
 
     public TrajectoryFollower(DriveTrain pDriveTrain, Hardware pHardware) {
         mDriveTrain = pDriveTrain;
@@ -52,8 +52,10 @@ public class TrajectoryFollower implements IControlLoop {
 
         // Hopefully this will bring the robot to a full stop at the end of the path
         if(mDriveController.isDone()) {
-            mDriveTrain.setDriveMessage(kStoppedMessage);
+            mDriveTrain.zeroOutputs();
         } else {
+            // Since we aren't trying to deal with Talon velocity control yet - correct for error manually
+//            mCurrentDriveOutput = velocityFeedbackCorrection();
             mDriveTrain.setDriveMessage(driveMessage);
         }
 
@@ -67,6 +69,26 @@ public class TrajectoryFollower implements IControlLoop {
     public void shutdown(double pNow) {
         mOdometryWriter.flush();
         mTrajectoryWriter.flush();
+    }
+
+    private double getLeftVelError() {
+        return mCurrentDriveOutput.left_velocity - mDriveTrain.getLeftVelInches();
+    }
+
+    private double getRightVelError() {
+        return mCurrentDriveOutput.right_velocity - mDriveTrain.getRightVelInches();
+    }
+
+    private DriveOutput velocityFeedbackCorrection() {
+        DriveOutput correctedOutput = new DriveOutput();
+        correctedOutput.left_accel = mCurrentDriveOutput.left_accel;
+        correctedOutput.right_accel = mCurrentDriveOutput.right_accel;
+        correctedOutput.left_velocity = mCurrentDriveOutput.left_velocity;
+        correctedOutput.right_velocity = mCurrentDriveOutput.right_velocity;
+        correctedOutput.left_feedforward_voltage = kP * getLeftVelError();
+        correctedOutput.right_feedforward_voltage = kP * getRightVelError();
+
+        return correctedOutput;
     }
 
     private void writeToCsv() {

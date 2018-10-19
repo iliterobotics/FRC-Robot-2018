@@ -263,6 +263,14 @@ public class DriveTrain implements IControlLoop {
 		return Utils.ticksToInches(rightMaster.getSelectedSensorPosition(0));
   }
 
+  public double getLeftVelInches() {
+		return Utils.ticksToInches(leftMaster.getSelectedSensorVelocity(0));
+  }
+
+  public double getRightVelInches() {
+		return Utils.ticksToInches(rightMaster.getSelectedSensorVelocity(0));
+  }
+
 }
 	
 	
