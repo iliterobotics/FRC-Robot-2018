@@ -17,6 +17,7 @@ import profiles.LockdownProfile;
 
 public class TrajectoryFollower implements IControlLoop {
 
+    // These must be OUR implementation
     private ReflectingCSVWriter<Pose2d> mOdometryWriter = new ReflectingCSVWriter<>( "/home/lvuser/logs/ODOMETRY.csv", Pose2d.class);
     private ReflectingCSVWriter<DriveMotionPlanner> mTrajectoryWriter = new ReflectingCSVWriter<>("/home/lvuser/logs/TRAJECTORY.csv", DriveMotionPlanner.class);
 
