@@ -27,6 +27,7 @@ public class TrajectoryFollower implements IControlLoop {
     private final Hardware mHardware;
 
     private double mLastTimeUpdated = 0.0;
+    private final DrivetrainMessage kStoppedMessage = new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake);
 
     public TrajectoryFollower(DriveTrain pDriveTrain, Hardware pHardware) {
         mDriveTrain = pDriveTrain;
@@ -40,6 +41,7 @@ public class TrajectoryFollower implements IControlLoop {
 
     @Override
     public boolean update(double pNow) {
+
         writeToCsv();
         mCurrentDriveOutput = mDriveController.getOutput(pNow, mDriveTrain.getLeftInches(), mDriveTrain.getRightInches(), IMU.clampDegrees(mHardware.getPigeon().getHeading()));
 
@@ -47,7 +49,11 @@ public class TrajectoryFollower implements IControlLoop {
         DrivetrainMessage driveMessage = new DrivetrainMessage(mCurrentDriveOutput.left_feedforward_voltage / 12.0,
                                                                 mCurrentDriveOutput.right_feedforward_voltage / 12.0,
                                                                 DrivetrainMode.PercentOutput, NeutralMode.Brake);
-        if(!mDriveController.isDone()) {
+
+        // Hopefully this will bring the robot to a full stop at the end of the path
+        if(mDriveController.isDone()) {
+            mDriveTrain.setDriveMessage(kStoppedMessage);
+        } else {
             mDriveTrain.setDriveMessage(driveMessage);
         }
 
