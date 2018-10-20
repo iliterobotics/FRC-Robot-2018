@@ -52,7 +52,7 @@ public class CollectAccelerationData implements ICommand {
 
     @Override
     public boolean update(double pNow) {
-        double averageTicksPer100Ms = (Math.abs(mDrive.getLeftMaster().getSelectedSensorVelocity(0)) + Math.abs(mDrive.getRightMaster().getSelectedSensorVelocity(0))) / 2;
+        double averageTicksPer100Ms = (Math.abs(mDrive.getLeftMaster().getSelectedSensorVelocity(0)) + Math.abs(mDrive.getRightMaster().getSelectedSensorVelocity(0))) / 2.0;
         double currentVelocity = Utils.ticksToRads(averageTicksPer100Ms);
         double currentTime = Timer.getFPGATimestamp();
 

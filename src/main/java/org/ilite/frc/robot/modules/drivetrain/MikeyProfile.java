@@ -6,28 +6,43 @@ import profiles.RobotProfile;
 
 public class MikeyProfile implements RobotProfile {
     @Override
-    public double getVoltPerAccel() {
-        return 0.010284174323007975;
+    public double getLeftVoltPerAccel() {
+        return 0.037288968942691854;
     }
 
     @Override
-    public double getVoltPerSpeed() {
-        return 0.18533132326271728;
+    public double getLeftVoltPerSpeed() {
+        return 0.21681437087695135;
     }
 
     @Override
-    public double getFrictionVoltage() {
-        return 0.896048227779587 * 0.99;
+    public double getLeftFrictionVoltage() {
+        return 0.9050766127768425;
+    }
+
+    @Override
+    public double getRightVoltPerAccel() {
+        return 0.037288968942691854;
+    }
+
+    @Override
+    public double getRightVoltPerSpeed() {
+        return 0.21681437087695135;
+    }
+
+    @Override
+    public double getRightFrictionVoltage() {
+        return 0.9050766127768425;
     }
 
     @Override
     public double getWheelRadiusMeters() {
-        return Units.inches_to_meters(SystemSettings.DRIVETRAIN_WHEEL_DIAMETER) / 2.0;
+        return Units.inches_to_meters(SystemSettings.DRIVETRAIN_WHEEL_DIAMETER / 2.0);
     }
 
     @Override
     public double getWheelbaseRadiusMeters() {
-        return Units.inches_to_meters(24.0) / 2.0;
+        return Units.inches_to_meters(24.5) / 2.0;
     }
 
     @Override
@@ -37,16 +52,16 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 1.0;
+        return 60.0;
     }
 
     @Override
     public double getAngularInertia() {
-        return 1.0;
+        return 7.0;
     }
 
     @Override
     public double getAngularDrag() {
-        return 1.0;
+        return 4.0;
     }
 }

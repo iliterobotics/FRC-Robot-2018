@@ -25,6 +25,7 @@ public class FollowTrajectory implements ICommand {
     @Override
     public void initialize(double pNow) {
         mTrajectoryFollower.getDriveController().setTrajectory(mTrajectory, mResetPose);
+        mTrajectoryFollower.enable();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class FollowTrajectory implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-
+        mTrajectoryFollower.disable();
     }
 
     public FollowTrajectory setWriteToCsv() {

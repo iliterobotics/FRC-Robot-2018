@@ -138,14 +138,14 @@ public class Robot extends IterativeRobot {
     mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
     mControlLoop.start();
 
-//      mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
+      mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
       TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController().getDriveMotionPlanner());
       List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
       List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-              new Pose2d(SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * 10.0, 0.0, Rotation2d.fromDegrees(0.0))
+              new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
       });
-      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 120.0, 120.0, 12.0);
+      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 120.0, 30.0, 12.0);
 
     mCommandQueue.clear();
 

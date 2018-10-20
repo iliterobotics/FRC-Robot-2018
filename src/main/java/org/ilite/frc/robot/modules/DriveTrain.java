@@ -48,7 +48,7 @@ public class DriveTrain implements IControlLoop {
 		rightMaster = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_FOLLOW2);
 		rightFollower = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_FOLLOW1);
 		rightFollower2 = TalonFactory.createDefault(SystemSettings.kDRIVETRAIN_TALONID_RIGHT_MASTER);
-		
+
 		rightFollower.follow(rightMaster);
 		rightFollower2.follow(rightMaster);
 		leftFollower.follow(leftMaster);
@@ -65,8 +65,8 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 		
-		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-        leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+        leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 
 		
 		rightMaster.configOpenloopRamp(0.1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
@@ -263,12 +263,12 @@ public class DriveTrain implements IControlLoop {
 		return Utils.ticksToInches(rightMaster.getSelectedSensorPosition(0));
   }
 
-  public double getLeftVelInches() {
-		return Utils.ticksToInches(leftMaster.getSelectedSensorVelocity(0));
+  public double getLeftVelTicks() {
+		return leftMaster.getSelectedSensorVelocity(0);
   }
 
-  public double getRightVelInches() {
-		return Utils.ticksToInches(rightMaster.getSelectedSensorVelocity(0));
+  public double getRightVelTicks() {
+		return rightMaster.getSelectedSensorVelocity(0);
   }
 
 }

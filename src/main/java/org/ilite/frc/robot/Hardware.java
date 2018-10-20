@@ -51,6 +51,7 @@ public class Hardware {
     mPDP = pPDP;
     mPigeon = pPigeon;
     mPigeonWrapper = new Pigeon(mPigeon, data, SystemSettings.PIGEON_COLLISION_THRESHOLD);
+    mPigeonWrapper.zeroAll();
     //mVisionCamera = pVisionCamera;
     //mVisionCamera.setFPS(30);
     mTalonTach = pTalonTach;
