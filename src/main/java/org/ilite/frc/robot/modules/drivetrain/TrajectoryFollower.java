@@ -54,6 +54,7 @@ public class TrajectoryFollower implements IControlLoop {
 
         leftVelRads = Utils.ticksToRads(mDriveTrain.getLeftVelTicks());
         rightVelRads = Utils.ticksToRads(mDriveTrain.getRightVelTicks());
+        // Invert heading later
         mCurrentDriveOutput = mDriveController.getOutput(pNow, mDriveTrain.getLeftInches(), mDriveTrain.getRightInches(), Rotation2d.fromDegrees(IMU.clampDegrees(mHardware.getPigeon().getHeading())).getDegrees());
 
 

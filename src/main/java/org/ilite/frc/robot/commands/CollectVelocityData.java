@@ -16,30 +16,27 @@ public class CollectVelocityData implements ICommand {
     private static final double kRampRate = 0.02;
     private final DriveTrain mDriveTrain;
 
-    private final ReflectingCSVWriter<DriveCharacterization.VelocityDataPoint> mCSVWriter;
-    private final List<DriveCharacterization.VelocityDataPoint> mVelocityData;
+    private final ReflectingCSVWriter<DriveCharacterization.VelocityDataPoint> mLeftCSVWriter, mRightCSVWriter;
+    private final List<DriveCharacterization.VelocityDataPoint> mLeftVelocityData, mRightVelocityData;
     private final boolean mTurn;
     private final boolean mReverse;
-    private final boolean mHighGear;
 
     private boolean isFinished = false;
     private double mStartTime = 0.0;
 
     /**
-     * @param data     reference to the list where data points should be stored
-     * @param highGear use high gear or low
      * @param reverse  if true drive in reverse, if false drive normally
      * @param turn     if true turn, if false drive straight
      */
 
-    public CollectVelocityData(DriveTrain pDriveTrain, List<DriveCharacterization.VelocityDataPoint> data, boolean highGear, boolean reverse, boolean turn) {
+    public CollectVelocityData(DriveTrain pDriveTrain, List<DriveCharacterization.VelocityDataPoint> leftData, List<DriveCharacterization.VelocityDataPoint> rightData, boolean reverse, boolean turn) {
         mDriveTrain = pDriveTrain;
-        mVelocityData = data;
-        mHighGear = highGear;
+        mLeftVelocityData = leftData;
+        mRightVelocityData = rightData;
         mReverse = reverse;
         mTurn = turn;
-        mCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/VELOCITY_DATA.csv", DriveCharacterization.VelocityDataPoint.class);
-
+        mLeftCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/LEFT_VELOCITY_DATA.csv", DriveCharacterization.VelocityDataPoint.class);
+        mRightCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/RIGHT_VELOCITY_DATA.csv", DriveCharacterization.VelocityDataPoint.class);
     }
 
     @Override
@@ -56,19 +53,24 @@ public class CollectVelocityData implements ICommand {
         }
         mDriveTrain.setDriveMessage(new DrivetrainMessage((mReverse ? -1.0 : 1.0) * percentPower, (mReverse ? -1.0 : 1.0) * (mTurn ? -1.0 : 1.0) * percentPower, DrivetrainMode.PercentOutput, NeutralMode.Coast));
 
-        double averageTicksPer100Ms = (Math.abs(mDriveTrain.getLeftMaster().getSelectedSensorVelocity(0)) + Math.abs(mDriveTrain.getRightMaster().getSelectedSensorVelocity(0))) / 2;
-        mVelocityData.add(new DriveCharacterization.VelocityDataPoint(
-                Utils.ticksToRads(averageTicksPer100Ms), //convert velocity to radians per second
-                percentPower * 12.0 //convert to volts
-        ));
-        mCSVWriter.add(mVelocityData.get(mVelocityData.size() - 1));
+        updateData(mLeftVelocityData, mLeftCSVWriter, percentPower, mDriveTrain.getLeftVelTicks());
+        updateData(mRightVelocityData, mRightCSVWriter, percentPower, mDriveTrain.getRightVelTicks());
 
         return isFinished;
+    }
+
+    public void updateData(List<DriveCharacterization.VelocityDataPoint> pVelocityDataPoints, ReflectingCSVWriter<DriveCharacterization.VelocityDataPoint> pCSVWriter, double pCurrentPercentPower, double pVelocityTicks) {
+        pVelocityDataPoints.add(new DriveCharacterization.VelocityDataPoint(
+                Utils.ticksToRads(pVelocityTicks), //convert velocity to radians per second
+                pCurrentPercentPower * 12.0 //convert to volts
+        ));
+        pCSVWriter.add(pVelocityDataPoints.get(pVelocityDataPoints.size() - 1));
     }
 
     @Override
     public void shutdown(double pNow) {
         mDriveTrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Coast));
-        mCSVWriter.flush();
+        mLeftCSVWriter.flush();
+        mRightCSVWriter.flush();
     }
 }

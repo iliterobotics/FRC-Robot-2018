@@ -1,6 +1,5 @@
 package org.ilite.frc.robot;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -25,9 +24,7 @@ import org.ilite.frc.common.util.SystemUtils;
 import org.ilite.frc.robot.commands.*;
 import org.ilite.frc.robot.controlloop.ControlLoopManager;
 import org.ilite.frc.robot.modules.Carriage;
-import org.ilite.frc.robot.modules.Carriage.CarriageState;
 import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.EElevatorPosition;
 import org.ilite.frc.robot.modules.Elevator;
 import org.ilite.frc.robot.modules.IModule;
 import org.ilite.frc.robot.modules.Intake;
@@ -47,9 +44,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import org.jfree.chart.util.Rotation;
 import paths.TrajectoryGenerator;
-import paths.autos.NearScaleAuto;
 
 public class Robot extends IterativeRobot {
   private final ILog mLog = Logger.createLog(Robot.class);
@@ -79,8 +74,10 @@ public class Robot extends IterativeRobot {
 
   private GetAutonomous getAutonomous;
 
-  List<DriveCharacterization.AccelerationDataPoint> accelData = new ArrayList<>();
-    List<DriveCharacterization.VelocityDataPoint> velData = new ArrayList<>();
+  List<DriveCharacterization.AccelerationDataPoint> leftAccelData = new ArrayList<>();
+    List<DriveCharacterization.VelocityDataPoint> leftVelData = new ArrayList<>();
+    List<DriveCharacterization.AccelerationDataPoint> rightAccelData = new ArrayList<>();
+    List<DriveCharacterization.VelocityDataPoint> rightVelData = new ArrayList<>();
 
   public Robot() {
     System.out.println("Hardware init");
@@ -152,10 +149,10 @@ public class Robot extends IterativeRobot {
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-//    mCommandQueue.add(new CollectVelocityData(mDrivetrain, velData, false, false, false));
-//    mCommandQueue.add(new Delay(3));
-//    mCommandQueue.add(new CollectAccelerationData(mDrivetrain, accelData, false, false, false));
-      mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
+    mCommandQueue.add(new CollectVelocityData(mDrivetrain, leftVelData, rightVelData, false, false));
+    mCommandQueue.add(new Delay(3));
+    mCommandQueue.add(new CollectAccelerationData(mDrivetrain, leftAccelData, rightAccelData, false, false));
+//      mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
       System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);
@@ -168,10 +165,13 @@ public class Robot extends IterativeRobot {
     updateCommandQueue(false);
     updateRunningModules();
 
-//    if(mCommandQueue.isEmpty()) {
-//        DriveCharacterization.CharacterizationConstants constants = DriveCharacterization.characterizeDrive(velData, accelData);
-//        System.out.println(constants.toString());
-//    }
+    if(mCommandQueue.isEmpty()) {
+        DriveCharacterization.CharacterizationConstants leftConstants = DriveCharacterization.characterizeDrive(leftVelData, leftAccelData);
+        DriveCharacterization.CharacterizationConstants rightConstants = DriveCharacterization.characterizeDrive(rightVelData, rightAccelData);
+
+        System.out.println("Left:\n" + leftConstants.toString());
+        System.out.println("Right:\n" + rightConstants.toString());
+    }
 
   }
  
