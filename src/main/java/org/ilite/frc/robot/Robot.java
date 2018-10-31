@@ -135,12 +135,13 @@ public class Robot extends IterativeRobot {
     mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
     mControlLoop.start();
 
-      mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
+      // mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
       TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController().getDriveMotionPlanner());
       List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
       List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-              new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+              // new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+              new Pose2d(20.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
       });
       Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 120.0, 30.0, 12.0);
 
@@ -149,10 +150,10 @@ public class Robot extends IterativeRobot {
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
-    mCommandQueue.add(new CollectVelocityData(mDrivetrain, leftVelData, rightVelData, false, false));
-    mCommandQueue.add(new Delay(3));
-    mCommandQueue.add(new CollectAccelerationData(mDrivetrain, leftAccelData, rightAccelData, false, false));
-//      mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
+    // mCommandQueue.add(new CollectVelocityData(mDrivetrain, leftVelData, rightVelData, false, false));
+    // mCommandQueue.add(new Delay(3));
+    // mCommandQueue.add(new CollectAccelerationData(mDrivetrain, leftAccelData, rightAccelData, false, false));
+     mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
       System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     // Add commands here
     updateCommandQueue(true);
@@ -165,13 +166,13 @@ public class Robot extends IterativeRobot {
     updateCommandQueue(false);
     updateRunningModules();
 
-    if(mCommandQueue.isEmpty()) {
-        DriveCharacterization.CharacterizationConstants leftConstants = DriveCharacterization.characterizeDrive(leftVelData, leftAccelData);
-        DriveCharacterization.CharacterizationConstants rightConstants = DriveCharacterization.characterizeDrive(rightVelData, rightAccelData);
+    // if(mCommandQueue.isEmpty()) {
+    //     DriveCharacterization.CharacterizationConstants leftConstants = DriveCharacterization.characterizeDrive(leftVelData, leftAccelData);
+    //     DriveCharacterization.CharacterizationConstants rightConstants = DriveCharacterization.characterizeDrive(rightVelData, rightAccelData);
 
-        System.out.println("Left:\n" + leftConstants.toString());
-        System.out.println("Right:\n" + rightConstants.toString());
-    }
+    //     System.out.println("Left:\n" + leftConstants.toString());
+    //     System.out.println("Right:\n" + rightConstants.toString());
+    // }
 
   }
  

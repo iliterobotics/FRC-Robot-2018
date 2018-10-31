@@ -12,7 +12,7 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getLeftVoltPerSpeed() {
-        return 0.21681437087695135;
+        return 0.21681437087695135 * 0.80;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getRightVoltPerSpeed() {
-        return 0.21681437087695135;
+        return 0.2168143708769513 * 0.80;
     }
 
     @Override
@@ -52,16 +52,16 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 60.0;
+        return 1.0;
     }
 
     @Override
     public double getAngularInertia() {
-        return 7.0;
+        return 1.0;
     }
 
     @Override
     public double getAngularDrag() {
-        return 4.0;
+        return 1.0;
     }
 }

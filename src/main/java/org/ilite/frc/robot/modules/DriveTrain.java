@@ -84,6 +84,8 @@ public class DriveTrain implements IControlLoop {
 		
 		rightMaster.setSensorPhase(true);
 		leftMaster.setSensorPhase(true);
+
+		
 	}
 	
 	
@@ -113,8 +115,9 @@ public class DriveTrain implements IControlLoop {
 	  leftMaster.setNeutralMode(currentDrivetrainMessage.leftNeutralMode);
 	  rightMaster.setNeutralMode(currentDrivetrainMessage.rightNeutralMode);
 
-	  leftMaster.set(leftControlMode, currentDrivetrainMessage.leftOutput);
-	  rightMaster.set(rightControlMode, currentDrivetrainMessage.rightOutput);
+	  leftMaster.set(leftControlMode, currentDrivetrainMessage.leftOutput, currentDrivetrainMessage.leftDemandType, currentDrivetrainMessage.leftDemand);
+		rightMaster.set(rightControlMode, currentDrivetrainMessage.rightOutput, currentDrivetrainMessage.rightDemandType, currentDrivetrainMessage.rightDemand);
+		
 
 	  leftMaxVelocityTicks = Math.max(leftMaxVelocityTicks, leftMaster.getSelectedSensorVelocity(0));
 	  rightMaxVelocityTicks = Math.max(rightMaxVelocityTicks, rightMaster.getSelectedSensorVelocity(0));
@@ -147,14 +150,15 @@ public class DriveTrain implements IControlLoop {
 				break;
 			case Position:
 				controlMode = ControlMode.Position;
-				configTalonForPosition(talon, SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_TOLERANCE,
-						SystemSettings.POSITION_P, SystemSettings.POSITION_I, SystemSettings.POSITION_D, SystemSettings.POSITION_F);
+				configTalonForPosition(talon);
 				break;
 			case MotionMagic:
 				controlMode = ControlMode.MotionMagic;
-				configTalonForMotionMagic(talon, SystemSettings.MOTION_MAGIC_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT,
-						SystemSettings.MOTION_MAGIC_P, SystemSettings.MOTION_MAGIC_I, SystemSettings.MOTION_MAGIC_D, SystemSettings.MOTION_MAGIC_F,
-						SystemSettings.MOTION_MAGIC_V, SystemSettings.MOTION_MAGIC_A);
+				configTalonForMotionMagic(talon);
+				break;
+			case Velocity:
+				controlMode = ControlMode.Velocity;
+				configTalonForVelocity(talon);
 				break;
 			case Pathfinder:
 				controlMode = ControlMode.PercentOutput;
@@ -165,25 +169,35 @@ public class DriveTrain implements IControlLoop {
 		return controlMode;
 	}
 
-	private void configTalonForPosition(TalonSRX talon, int pidSlot, int errorTolerance, double p, double i, double d, double f) {
-		talon.configAllowableClosedloopError(pidSlot, errorTolerance, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kP(pidSlot, p, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kI(pidSlot, i, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kD(pidSlot, d, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kF(pidSlot, f, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	private void configTalonForPosition(TalonSRX talon) {
+		talon.configAllowableClosedloopError(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_TOLERANCE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kP(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kI(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kD(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kF(SystemSettings.POSITION_PID_SLOT, SystemSettings.POSITION_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		
 	}
 	
-	private void configTalonForMotionMagic(TalonSRX talon, int pidSlot, int loopSlot, double p, double i, double d, double f, int v, int a) {
-		talon.selectProfileSlot(pidSlot, loopSlot);
-		talon.config_kP(pidSlot, p, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kI(pidSlot, i, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kD(pidSlot, d, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.config_kF(pidSlot, f, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	private void configTalonForVelocity(TalonSRX talon) {
+		talon.selectProfileSlot(SystemSettings.DRIVE_VELOCITY_PID_SLOT, 0);
+		talon.config_kP(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kI(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kD(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kF(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_IntegralZone(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_IZONE, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	}
 
-		talon.configMotionCruiseVelocity(v, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		talon.configMotionAcceleration(a, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+	private void configTalonForMotionMagic(TalonSRX talon) {
+		talon.selectProfileSlot(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.MOTION_MAGIC_LOOP_SLOT);
+		talon.config_kP(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_P, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kI(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_I, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kD(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_D, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.config_kF(SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.DRIVE_VELOCITY_F, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 
-		talon.setSelectedSensorPosition(0, pidSlot, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.configMotionCruiseVelocity(SystemSettings.MOTION_MAGIC_V, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		talon.configMotionAcceleration(SystemSettings.MOTION_MAGIC_A, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+
+		talon.setSelectedSensorPosition(0, SystemSettings.DRIVE_VELOCITY_PID_SLOT, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
 	}
 
 	@Override

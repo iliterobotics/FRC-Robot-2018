@@ -1,5 +1,6 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import control.DriveController;
 import control.DriveMotionPlanner;
@@ -64,16 +65,43 @@ public class TrajectoryFollower implements IControlLoop {
             System.out.println("DONE");
         } else if (!mDriveController.isDone() && enabled){
             // Since we aren't trying to deal with Talon velocity control yet - correct for error manually
-            mCurrentDriveOutput = velocityFeedbackCorrection(mCurrentDriveOutput);
-            DrivetrainMessage driveMessage = new DrivetrainMessage(mCurrentDriveOutput.left_feedforward_voltage / 12.0,
-                    mCurrentDriveOutput.right_feedforward_voltage / 12.0,
-                    DrivetrainMode.PercentOutput, NeutralMode.Brake);
+            // mCurrentDriveOutput = velocityFeedbackCorrection(mCurrentDriveOutput);
+            DrivetrainMessage driveMessage = new DrivetrainMessage(
+                radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.left_velocity),
+                radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.right_velocity),
+                DrivetrainMode.Velocity, NeutralMode.Brake);
+
+            driveMessage.setDemand(
+             DemandType.ArbitraryFeedForward,
+             (mCurrentDriveOutput.left_feedforward_voltage / 12.0) + (SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.left_accel) / 1000.0) / 1023.0),
+             (mCurrentDriveOutput.right_feedforward_voltage / 12.0) + (SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.right_accel) / 1000.0) / 1023.0));
+
             mDriveTrain.setDriveMessage(driveMessage);
         }
         System.out.println(pNow - mLastTimeUpdated);
 
         mLastTimeUpdated = pNow;
         return false;
+    }
+
+    private static double rotationsToInches(double rotations) {
+        return rotations * (SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * Math.PI);
+    }
+
+    private static double rpmToInchesPerSecond(double rpm) {
+        return rotationsToInches(rpm) / 60;
+    }
+
+    private static double inchesToRotations(double inches) {
+        return inches / (SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * Math.PI);
+    }
+
+    private static double inchesPerSecondToRpm(double inches_per_second) {
+        return inchesToRotations(inches_per_second) * 60;
+    }
+
+    private static double radiansPerSecondToTicksPer100ms(double rad_s) {
+        return rad_s / (Math.PI * 2.0) * 1024.0 / 10.0;
     }
 
     @Override

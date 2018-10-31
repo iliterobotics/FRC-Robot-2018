@@ -1,11 +1,16 @@
 package org.ilite.frc.robot.modules.drivetrain;
 
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class DrivetrainMessage {
 
   public final double leftOutput, rightOutput;
   public final DrivetrainMode leftDriveMode, rightDriveMode;
+  public DemandType leftDemandType = DemandType.ArbitraryFeedForward;
+  public DemandType rightDemandType = DemandType.ArbitraryFeedForward;
+  public double leftDemand = 0.0;
+  public double rightDemand = 0.0;
   public final NeutralMode leftNeutralMode, rightNeutralMode;
   public final boolean initMode;
 
@@ -45,4 +50,13 @@ public class DrivetrainMessage {
   public static DrivetrainMessage fromThrottleAndTurn(double pThrottle, double pTurn, NeutralMode pMode) {
     return new DrivetrainMessage(pThrottle + pTurn, pThrottle - pTurn, DrivetrainMode.PercentOutput, pMode);
   }
+
+  public DrivetrainMessage setDemand(DemandType pDemandType, double pLeftDemand, double pRightDemand) {
+    this.leftDemandType = pDemandType;
+    this.rightDemandType = pDemandType;
+    this.leftDemand = pLeftDemand;
+    this.rightDemand = pRightDemand;
+    return this;
+  }
+
 }

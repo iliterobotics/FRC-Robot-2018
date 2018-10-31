@@ -188,12 +188,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // Motion Magic Constants
   // =============================================================================
   public static double 	MOTION_MAGIC_TURN_DEGREE_TOLERANCE = 3;
-  public static int		MOTION_MAGIC_PID_SLOT = 0;
   public static int		MOTION_MAGIC_LOOP_SLOT = 0;
-  public static double	MOTION_MAGIC_P = 0.5;
-  public static double	MOTION_MAGIC_I = 0.0;
-  public static double	MOTION_MAGIC_D = 0.0;
-  public static double	MOTION_MAGIC_F = 1023 / 951;
   public static int		MOTION_MAGIC_V = 951;
   public static int		MOTION_MAGIC_A = 951;
   
@@ -201,12 +196,23 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // Closed-Loop Position Constants
   // =============================================================================
   public static int    POSITION_TOLERANCE = 0;
-  public static int    POSITION_PID_SLOT = 0;
+  public static int    POSITION_PID_SLOT = 1;
   public static double POSITION_P = 0.3;
   public static double POSITION_I = 0;
   public static double POSITION_D = 0;
   public static double POSITION_F = 0;
   
+  // =============================================================================
+  // Closed-Loop Velocity Constants
+  // =============================================================================
+  public static int DRIVE_VELOCITY_PID_SLOT = 0;
+  public static double DRIVE_VELOCITY_P = 3.0;
+  public static double DRIVE_VELOCITY_I = 0.0;
+  public static double DRIVE_VELOCITY_D = 10.0;
+  public static double DRIVE_VELOCITY_F = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
+  public static int DRIVE_VELOCITY_IZONE = 0;
+
+
   // =============================================================================
   // Autonomous Constants
   // =============================================================================
