@@ -143,7 +143,7 @@ public class Robot extends IterativeRobot {
               // new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
               new Pose2d(20.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
       });
-      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 120.0, 30.0, 12.0);
+      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 60.0, 12.0);
 
     mCommandQueue.clear();
 
