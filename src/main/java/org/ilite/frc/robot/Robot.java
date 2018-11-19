@@ -131,7 +131,7 @@ public class Robot extends IterativeRobot {
     System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
     mapInputsAndCachedSensors();
     
-    setRunningModules(mIntake, mElevator, mCarriage, mBeamBreak, mLedController);
+    setRunningModules(/*mIntake, mElevator, mCarriage, mBeamBreak, mLedController*/);
     mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
     mControlLoop.start();
 
@@ -160,7 +160,7 @@ public class Robot extends IterativeRobot {
     
   }
   public void autonomousPeriodic() {
-    mapInputsAndCachedSensors();
+    // mapInputsAndCachedSensors();
     
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
@@ -201,7 +201,7 @@ public class Robot extends IterativeRobot {
     mHardware.getPigeon().zeroAll();
     mapInputsAndCachedSensors();
 	   
-	  setRunningModules(/*mBeamBreak,*/ mDriverInput, mDrivetrain/*, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController*/);
+	  setRunningModules(/*mBeamBreak,*/ mDriverInput, mDrivetrain, mTrajectoryFollower/*, mIntake, mCarriage, mPneumaticControl, mElevator, mLedController*/);
     
 	  mControlLoop.setRunningControlLoops(/* mHardware.getTalonTach()*/);
     mControlLoop.start();
