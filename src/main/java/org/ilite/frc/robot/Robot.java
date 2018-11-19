@@ -136,7 +136,8 @@ public class Robot extends IterativeRobot {
     mControlLoop.start();
 
       // mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
-      TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController().getDriveMotionPlanner());
+      // mTrajectoryFollower.getDriveController().getController().setGains(0.65, 0.175);
+      TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mTrajectoryFollower.getDriveController());
       List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
       List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
