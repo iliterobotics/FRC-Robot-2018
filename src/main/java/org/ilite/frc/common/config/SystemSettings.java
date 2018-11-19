@@ -206,9 +206,9 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   // Closed-Loop Velocity Constants
   // =============================================================================
   public static int DRIVE_VELOCITY_PID_SLOT = 0;
-  public static double DRIVE_VELOCITY_P = 3.0;
+  public static double DRIVE_VELOCITY_P = 0.0;
   public static double DRIVE_VELOCITY_I = 0.0;
-  public static double DRIVE_VELOCITY_D = 10.0;
+  public static double DRIVE_VELOCITY_D = 0.0;
   public static double DRIVE_VELOCITY_F = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
   public static int DRIVE_VELOCITY_IZONE = 0;
 
