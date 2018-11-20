@@ -33,8 +33,12 @@ public class TrajectoryFollower implements IControlLoop {
     private double mLastTimeUpdated = 0.0;
     private final double kP = 0.2;
 
+    private double lastLeftVelRads = 0.0;
+    private double lastRightVelRads = 0.0;
     private double leftVelRads = 0.0;
     private double rightVelRads = 0.0;
+    private double leftAccelRads = 0.0;
+    private double rightAccelRads = 0.0;
 
     private boolean enabled = false;
 
@@ -55,6 +59,13 @@ public class TrajectoryFollower implements IControlLoop {
 
         leftVelRads = Utils.ticksToRads(mDriveTrain.getLeftVelTicks());
         rightVelRads = Utils.ticksToRads(mDriveTrain.getRightVelTicks());
+
+        leftAccelRads = (leftVelRads - lastLeftVelRads) / SystemSettings.CONTROL_LOOP_PERIOD;
+        rightAccelRads = (rightVelRads - lastRightVelRads) / SystemSettings.CONTROL_LOOP_PERIOD;
+
+        lastLeftVelRads = leftVelRads;
+        lastRightVelRads = rightVelRads;
+
         // Invert heading later
         mCurrentDriveOutput = mDriveController.getOutput(pNow, mDriveTrain.getLeftInches(), mDriveTrain.getRightInches(), Rotation2d.fromDegrees(IMU.clampDegrees(mHardware.getPigeon().getHeading())).getDegrees());
 
