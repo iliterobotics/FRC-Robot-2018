@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SimDisplay",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "org.ilite.frc.display.sim.SimDisplay",
+            "args": "",
+            "projectName": "FRC-Robot-2018"
+        }
+    ]
+}

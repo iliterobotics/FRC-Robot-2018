@@ -43,6 +43,7 @@ dependencies {
 	compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
 	compile pathfinder()
 	  
+	compile name: 'jfxrt'
 	compile name: 'eu.hansolo.fx.horizon-1.0'
 	compile 'eu.hansolo:tilesfx:1.5.2'
 	compile 'org.jfree:jfreechart-fx:1.0.0'
