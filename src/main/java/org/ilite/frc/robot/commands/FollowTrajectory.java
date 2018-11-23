@@ -33,7 +33,6 @@ public class FollowTrajectory implements ICommand {
         if(mTrajectoryFollower.getDriveController().isDone()) {
             return true;
         }
-
         return false;
     }
 

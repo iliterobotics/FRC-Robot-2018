@@ -62,17 +62,17 @@ public class DriveTrain implements IControlLoop {
 		currentDrivetrainMessage = new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake);
 		currentProfilingMessage = new DrivetrainProfilingMessage(null, null, false);
 		
-		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 50);
+		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 50);
 		
-		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-        leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 50);
+        leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 1, 50);
 
 		
-		rightMaster.configOpenloopRamp(0.1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		leftMaster.configOpenloopRamp(0.1, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-		rightMaster.configContinuousCurrentLimit(40, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
-        leftMaster.configContinuousCurrentLimit(40, SystemSettings.TALON_CONFIG_TIMEOUT_MS);
+		rightMaster.configOpenloopRamp(0.1, 50);
+		leftMaster.configOpenloopRamp(0.1, 50);
+		rightMaster.configContinuousCurrentLimit(40, 50);
+        leftMaster.configContinuousCurrentLimit(40, 50);
 		
 		rightMaster.setInverted(true);
 		rightFollower.setInverted(true);
@@ -110,12 +110,12 @@ public class DriveTrain implements IControlLoop {
 	  
 	  setMode(currentDrivetrainMessage);
 
-	  if(leftDriveMode.equals(DrivetrainMode.Pathfinder) && rightDriveMode.equals(DrivetrainMode.Pathfinder)) {
-		  currentDrivetrainMessage = PathFollower.calculateOutputs(currentProfilingMessage.leftFollower, currentProfilingMessage.rightFollower,
-				  leftPositionTicks, rightPositionTicks,
-				  IMU.clampDegrees(hardware.getPigeon().getYaw()),
-				  currentProfilingMessage.isBackwards);
-	  }
+	  // if(leftDriveMode.equals(DrivetrainMode.Pathfinder) && rightDriveMode.equals(DrivetrainMode.Pathfinder)) {
+		//   currentDrivetrainMessage = PathFollower.calculateOutputs(currentProfilingMessage.leftFollower, currentProfilingMessage.rightFollower,
+		// 		  leftPositionTicks, rightPositionTicks,
+		// 		  IMU.clampDegrees(hardware.getPigeon().getYaw()),
+		// 		  currentProfilingMessage.isBackwards);
+	  // }
 
 	  leftMaster.setNeutralMode(currentDrivetrainMessage.leftNeutralMode);
 	  rightMaster.setNeutralMode(currentDrivetrainMessage.rightNeutralMode);

@@ -1,6 +1,5 @@
 package org.ilite.frc.common.input;
 
-import org.ilite.frc.common.types.ECross;
 
 public enum EDriverControlMode {
 	ARCADE,
