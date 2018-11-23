@@ -22,7 +22,8 @@ public class TrajectoryFollower implements IControlLoop {
     // These must be OUR implementation
     private ReflectingCSVWriter<Pose2d> mOdometryWriter = new ReflectingCSVWriter<>( "/home/lvuser/ODOMETRY.csv", Pose2d.class);
     private ReflectingCSVWriter<DriveMotionPlanner> mTrajectoryWriter = new ReflectingCSVWriter<>("/home/lvuser/TRAJECTORY.csv", DriveMotionPlanner.class);
-    private ReflectingCSVWriter<SetpointInfo> mSetpointWriter = new ReflectingCSVWriter<>("/home/lvuser/SETPOINT.csv", SetpointInfo.class);
+    private ReflectingCSVWriter<SetpointInfo> mVelWriter = new ReflectingCSVWriter<>("/home/lvuser/VEL.csv", SetpointInfo.class);
+    private ReflectingCSVWriter<SetpointInfo> mAccelWriter = new ReflectingCSVWriter<>("/home/lvuser/ACCEL.csv", SetpointInfo.class);
 
     private DriveController mDriveController = new DriveController(new MikeyProfile(), SystemSettings.CONTROL_LOOP_PERIOD);
     private DriveOutput mCurrentDriveOutput = new DriveOutput();
@@ -55,13 +56,11 @@ public class TrajectoryFollower implements IControlLoop {
     @Override
     public boolean update(double pNow) {
 
-        writeToCsv(pNow);
-
         leftVelRads = Utils.ticksToRads(mDriveTrain.getLeftVelTicks());
         rightVelRads = Utils.ticksToRads(mDriveTrain.getRightVelTicks());
 
-        leftAccelRads = (leftVelRads - lastLeftVelRads) / SystemSettings.CONTROL_LOOP_PERIOD;
-        rightAccelRads = (rightVelRads - lastRightVelRads) / SystemSettings.CONTROL_LOOP_PERIOD;
+        leftAccelRads = (leftVelRads - lastLeftVelRads) / (pNow - mLastTimeUpdated);
+        rightAccelRads = (rightVelRads - lastRightVelRads) / (pNow - mLastTimeUpdated);
 
         lastLeftVelRads = leftVelRads;
         lastRightVelRads = rightVelRads;
@@ -84,12 +83,14 @@ public class TrajectoryFollower implements IControlLoop {
 
             driveMessage.setDemand(
              DemandType.ArbitraryFeedForward,
-             (mCurrentDriveOutput.left_feedforward_voltage / 12.0) + (SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.left_accel) / 1000.0) / 1023.0),
-             (mCurrentDriveOutput.right_feedforward_voltage / 12.0) + (SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.right_accel) / 1000.0) / 1023.0));
+             (mCurrentDriveOutput.left_feedforward_voltage / 12.0) + SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.left_accel) / 1000.0) / 1023.0,
+             (mCurrentDriveOutput.right_feedforward_voltage / 12.0) + SystemSettings.DRIVE_VELOCITY_D * (radiansPerSecondToTicksPer100ms(mCurrentDriveOutput.right_accel) / 1000.0) / 1023.0);
 
             mDriveTrain.setDriveMessage(driveMessage);
         }
         System.out.println(pNow - mLastTimeUpdated);
+
+        writeToCsv(pNow);
 
         mLastTimeUpdated = pNow;
         return false;
@@ -119,7 +120,8 @@ public class TrajectoryFollower implements IControlLoop {
     public void shutdown(double pNow) {
         mOdometryWriter.flush();
         mTrajectoryWriter.flush();
-        mSetpointWriter.flush();
+        mVelWriter.flush();
+        mAccelWriter.flush();
     }
 
     private double getLeftVelError(DriveOutput pOutputToCorrect) {
@@ -145,7 +147,8 @@ public class TrajectoryFollower implements IControlLoop {
     private void writeToCsv(double time) {
         Pose2d latestPose = getDriveController().getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
 
-        mSetpointWriter.add(new SetpointInfo(time, leftVelRads, rightVelRads, mCurrentDriveOutput.left_velocity, mCurrentDriveOutput.right_velocity));
+        mVelWriter.add(new SetpointInfo(time, leftVelRads, rightVelRads, mCurrentDriveOutput.left_velocity, mCurrentDriveOutput.right_velocity));
+        mAccelWriter.add(new SetpointInfo(time, leftAccelRads, rightAccelRads, mCurrentDriveOutput.left_accel, mCurrentDriveOutput.right_accel));
         mOdometryWriter.add(latestPose);
         mTrajectoryWriter.add(getDriveController().getDriveMotionPlanner());
     }
