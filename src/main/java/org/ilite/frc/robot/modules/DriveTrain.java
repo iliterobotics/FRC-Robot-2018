@@ -85,6 +85,11 @@ public class DriveTrain implements IControlLoop {
 		rightMaster.setSensorPhase(true);
 		leftMaster.setSensorPhase(true);
 
+		rightMaster.configVoltageCompSaturation(12.0, 50);
+		rightMaster.enableVoltageCompensation(true);
+		leftMaster.configVoltageCompSaturation(12.0, 50);
+		leftMaster.enableVoltageCompensation(true);
+
 		
 	}
 	
