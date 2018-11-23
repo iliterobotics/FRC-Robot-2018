@@ -129,11 +129,7 @@ public class Robot extends IterativeRobot {
     double start = Timer.getFPGATimestamp();
     mHardware.getPigeon().zeroAll();
     System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    mapInputsAndCachedSensors();
-    
-    setRunningModules(/*mIntake, mElevator, mCarriage, mBeamBreak, mLedController*/);
-    mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
-    mControlLoop.start();
+    // mapInputsAndCachedSensors();
 
       // mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
       // mTrajectoryFollower.getDriveController().getController().setGains(0.65, 0.175);
@@ -144,24 +140,30 @@ public class Robot extends IterativeRobot {
               // new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
               new Pose2d(20.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
       });
-      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 60.0, 12.0);
+      Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 30.0, 12.0);
 
     mCommandQueue.clear();
 
     System.out.println("Loops took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    mCommandQueue = getAutonomous.getAutonomousCommands();
+    // mCommandQueue = getAutonomous.getAutonomousCommands();
     mCommandQueue.clear();
     // mCommandQueue.add(new CollectVelocityData(mDrivetrain, leftVelData, rightVelData, false, false));
     // mCommandQueue.add(new Delay(3));
     // mCommandQueue.add(new CollectAccelerationData(mDrivetrain, leftAccelData, rightAccelData, false, false));
      mCommandQueue.add(new FollowTrajectory(trajectory, mTrajectoryFollower, true));
       System.out.println("Get auton commands init took " + (Timer.getFPGATimestamp() - start) + " seconds");
+
+      setRunningModules(/*mIntake, mElevator, mCarriage, mBeamBreak, mLedController*/);
+      mControlLoop.setRunningControlLoops(/*mHardware.getTalonTach(),*/ mTrajectoryFollower, mDrivetrain);
+      mControlLoop.start();
+
     // Add commands here
     updateCommandQueue(true);
     
   }
   public void autonomousPeriodic() {
     // mapInputsAndCachedSensors();
+    mCurrentTime = Timer.getFPGATimestamp();
     
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
