@@ -84,7 +84,7 @@ public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
   public static int INTAKE_TALONID_RIGHT = 14;
   public static int INTAKE_TALONID_LEFT = 13;
 	
-	public static int TALON_CONFIG_TIMEOUT_MS = 50;
+	public static int TALON_CONFIG_TIMEOUT_MS = 10;
 	public static int kCONTROLLER_ID = 0;
   // =============================================================================
   // CANifier Constants
