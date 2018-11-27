@@ -129,7 +129,7 @@ public class Robot extends IterativeRobot {
     double start = Timer.getFPGATimestamp();
     mHardware.getPigeon().zeroAll();
     System.out.println("Pigeon init took " + (Timer.getFPGATimestamp() - start) + " seconds");
-    // mapInputsAndCachedSensors();
+    mapInputsAndCachedSensors();
 
       // mTrajectoryFollower.getDriveController().setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
       // mTrajectoryFollower.getDriveController().getController().setGains(0.65, 0.175);
@@ -162,8 +162,7 @@ public class Robot extends IterativeRobot {
     
   }
   public void autonomousPeriodic() {
-    // mapInputsAndCachedSensors();
-    mCurrentTime = Timer.getFPGATimestamp();
+    mapInputsAndCachedSensors();
     
     //TODO put updateCommandQueue into autoninit
     updateCommandQueue(false);
@@ -230,17 +229,17 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       mCurrentTime = Timer.getFPGATimestamp();
     
-      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
-      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
+      // ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
+      // ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
 //      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here
     // Such as using a button to reset the gyros
-      EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
-      EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
-      EElevator.map(mData.elevator, mElevator, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
-      SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
+      // EPigeon.map(mData.pigeon, mHardware.getPigeon(), mCurrentTime);
+      // EDriveTrain.map(mData.drivetrain, mDrivetrain, mDrivetrain.getDriveMessage());
+      // EElevator.map(mData.elevator, mElevator, mCurrentTime);
+      // SystemUtils.writeCodexToSmartDashboard(EDriveTrain.class, mData.drivetrain, mCurrentTime);
+      // SystemUtils.writeCodexToSmartDashboard(EElevator.class, mData.elevator, mCurrentTime);
   }
   
   /**
