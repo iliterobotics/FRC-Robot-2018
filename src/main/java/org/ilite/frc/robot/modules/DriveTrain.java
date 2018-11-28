@@ -90,7 +90,8 @@ public class DriveTrain implements IControlLoop {
 		leftMaster.configVoltageCompSaturation(12.0, 50);
 		leftMaster.enableVoltageCompensation(true);
 
-		
+		configTalonForVelocity(leftMaster);
+		configTalonForVelocity(rightMaster);
 	}
 	
 	
