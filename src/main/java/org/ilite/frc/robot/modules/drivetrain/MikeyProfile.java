@@ -6,33 +6,33 @@ import profiles.RobotProfile;
 
 public class MikeyProfile implements RobotProfile {
     @Override
-    public double getLeftVoltPerAccel() {
-        return 0.03217677393640587 * 1.5;
-    }
-
-    @Override
-    public double getLeftVoltPerSpeed() {
-        return 0.2145841808650226;
-    }
-
-    @Override
-    public double getLeftFrictionVoltage() {
-        return 0.7892487640968108;
-    }
-
-    @Override
     public double getRightVoltPerAccel() {
-        return 0.02757180183116733 * 1.5;
+        return 0.016864324364531374;
     }
 
     @Override
     public double getRightVoltPerSpeed() {
-        return 0.20865527274973875;
+        return 0.18073618726728796;
     }
 
     @Override
     public double getRightFrictionVoltage() {
-        return 0.8438511952245853;
+        return 1.1959927471792733;
+    }
+
+    @Override
+    public double getLeftVoltPerAccel() {
+        return 0.013749622791233014;
+    }
+
+    @Override
+    public double getLeftVoltPerSpeed() {
+        return 0.17994777099607262;
+    }
+
+    @Override
+    public double getLeftFrictionVoltage() {
+        return 1.1869717385926033;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 60.0;
+        return 27.2155;
     }
 
     @Override
