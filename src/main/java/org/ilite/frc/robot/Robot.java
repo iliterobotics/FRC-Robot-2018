@@ -229,8 +229,8 @@ public class Robot extends IterativeRobot {
   private void mapInputsAndCachedSensors() {
       mCurrentTime = Timer.getFPGATimestamp();
     
-      // ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
-      // ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
+      ELogitech310.map(mData.driverinput, mHardware.getDriverJoystick(), 1.0, true);
+      ELogitech310.map(mData.operator, mHardware.getOperatorJoystick(), 1.0, true);
 //      ELogitech310.map(mData.tester, testJoystick);
     // Any input processing goes here, such as 'split arcade driver'
     // Any further input-to-direct-hardware processing goes here

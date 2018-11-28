@@ -70,9 +70,9 @@ public class DriverInput implements IModule{
 		if(!canRunCommandQueue) {
 		  updateDriveTrain();
 		}
-		updateIntake();
-		updateElevator(pNow);
-		updateCarriage();
+		// updateIntake();
+		// updateElevator(pNow);
+		// updateCarriage();
 		updateCommands();
 		return false;
 	}
