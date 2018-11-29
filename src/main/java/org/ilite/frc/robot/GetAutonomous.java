@@ -265,7 +265,7 @@ public class GetAutonomous {
 			mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 90, 3));
 			mCommands.add(new HoldPosition(mDriveTrain, mData, HoldPosition.HoldType.HOLD_BOTH, 0.0));
   		mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE));
-			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.1, true));
+			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_TO_SWITCH, 0.05, true)); //changed power from 0.1 to 0.05
 			mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			mCommands.add(new Delay(1));
 			mCommands.add(new DriveStraight(mDriveTrain, mData, AutoDimensions.SAME_SIDE_SWITCH_BACK_UP, 0.01).coast());
@@ -277,20 +277,31 @@ public class GetAutonomous {
 			switch(mSwitchSide) {
 			case LEFT:
 				//26 inches is how far we need to move off the alliance station wall without worrying about hitting it
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.4));
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -41, 3));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.01));
+			  mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+			  
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -41, 3));
+	      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 			  //98 inches is the distance to the left of the switch
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, 98.0, 0.2));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 98.0, 0.01));
+	      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 			  //turn back to be aligned square with the switch
-			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 41, 3));
+			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 41, 3));
+	      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 			  //0.1 set to timeout just to make sure that it gets past its initial spike
 			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE));
 			  //distance is actually 40 inches, but we want to make sure that we actually hit the switch
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1, 0.4));
+			  mCommands.add(new DriveStraight(mDriveTrain, mData, 40, 0.01));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM));
 			  //move back same distance that we drive to the switch
-			  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.4));
+//			  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.01));
+//	      mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
+			  /*
 			  //67 degrees is about what we need to line up with a cube in the cube stack (highly subject to change)
 			  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -67, 3));
 			  //64 inches is about the distance needed to drive into the cube in the cube stack. Probably an overshoot
@@ -305,26 +316,37 @@ public class GetAutonomous {
 			  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1));
 			  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 			  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM));
-			  
+			  */
 			  
 			  
 			  break;
 			case RIGHT:
 				//26 inches is how far we need to move off the alliance station wall without worrying about hitting it
-				  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.4));
-				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * -36, 3));
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 26.0, 0.01));
+	        mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, 36, 3));
+	        mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 				  //92 inches is the distance to the left of the switch
-				  mCommands.add(new DriveStraight(mDriveTrain, mData, 92.0, 0.2));
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 92.0, 0.01));
+	        mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 				  //turn back to be aligned square with the switch
-				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, mTurnScalar * 36, 3));
+				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -36, 3));
+	        mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
 				  //0.1 set to timeout just to make sure that it gets past its initial spike
 				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.SECOND_TAPE));
 				  //distance is actually 40 inches, but we want to make sure that we actually hit the switch
-				  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1, 0.4));
+				  mCommands.add(new DriveStraight(mDriveTrain, mData, 40, 0.01));
 				  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM));
 				  //move back same distance that we drive to the switch
-				  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.4));
+//				  mCommands.add(new DriveStraight(mDriveTrain, mData, -40, 0.01));
+//	        mCommands.add(new HoldPosition(mDriveTrain, mData, HoldType.HOLD_BOTH, 0.0));
+
+	        /*
 				  //67 degrees is about what we need to line up with a cube in the cube stack (highly subject to change)
 				  mCommands.add(new GyroTurn(mDriveTrain, mPigeon, -67, 3));
 				  //64 inches is about the distance needed to drive into the cube in the cube stack. Probably an overshoot
@@ -339,6 +361,7 @@ public class GetAutonomous {
 				  mCommands.add(new DriveStraight(mDriveTrain, mData, 40 + 1));
 				  mCommands.add(new ReleaseCube(mCarriage, CarriageState.KICKING, 1));
 				  mCommands.add(new ElevatorToPosition(mElevator, EElevatorPosition.BOTTOM));
+				  */
 			  break;
 			}
 			break;

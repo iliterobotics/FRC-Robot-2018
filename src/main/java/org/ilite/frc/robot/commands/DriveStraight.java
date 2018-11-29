@@ -132,7 +132,7 @@ public class DriveStraight implements ICommand{
   
   public DriveStraight coast() {
     mBrakeCoast = NeutralMode.Coast;
-    return this();
+    return this;
   }
   
   /**
