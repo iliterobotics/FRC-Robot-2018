@@ -67,7 +67,7 @@ public class DriverInput implements IModule{
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-		if(!canRunCommandQueue) {
+		if( !canRunCommandQueue) {
 		  updateDriveTrain();
 		}
 		updateIntake();

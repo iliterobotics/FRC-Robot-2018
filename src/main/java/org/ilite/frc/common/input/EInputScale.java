@@ -17,7 +17,7 @@ public enum EInputScale {
   ;
 
   /**
-   * @param pJoystickInput - the joystick, as-read from the codex
+   * @param pJoystickInput - the joystick, as-read from the
    * @param pScalar - the scalar to be applied.  How it is applied depends upon the enumeration itself.  
    *    USE SYSTEM SETTINGS to define constants for these scalars.
    * @return - the scaled equivalent of the joystick input
