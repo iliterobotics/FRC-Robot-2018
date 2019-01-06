@@ -44,7 +44,7 @@ public class Elevator implements IModule {
 	
   private static final ILog log = Logger.createLog(Elevator.class);
 
-  
+   
   
   public Elevator(Hardware pHardware, Data pData) {
 		mHardware = pHardware;

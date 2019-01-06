@@ -18,6 +18,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import org.ilite.frc.common.config.SystemSettings;
 import org.ilite.frc.common.types.ELogitech310;
 import org.ilite.frc.robot.Data;
 
@@ -78,9 +80,9 @@ public class DriverHUD extends Application {
 
     }
 
-    public static void main ( String[] args ) {
-        launch( args );
+    public static void main(String[] args) {
+        System.out.println( SystemSettings.LOGGING_TABLE.getEntry("Carriage State") );
+        // launch( args );
     }
 
 }
-

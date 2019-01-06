@@ -101,7 +101,7 @@ public class Carriage implements IModule{
   public void initialize(double pNow) {
     isScheduled = false;
     mDesiredState = mCurrentState = getBeamBreak() ? CarriageState.GRAB_CUBE : CarriageState.RESET;
-    // SystemSettings.LOGGING_TABLE.putString(  )
+    SystemSettings.LOGGING_TABLE.putString("Carriage State", getCurrentState() + "");
   }
   @Override
   public boolean update(double pNow)
@@ -134,8 +134,11 @@ public class Carriage implements IModule{
       solenoidGrabber.set(mCurrentState.mGrab.grabber);
       break;
     }
-    log.debug(String.format("State: %s Scheduled: %s Desired State: %s", mCurrentState.toString(), isScheduled, mDesiredState));
+    log.debug(String.format("State: %s Scheduled: %s Desired State: %s", mCurrentState.toString(), isScheduled,
+        mDesiredState));
+    SystemSettings.LOGGING_TABLE.getEntry("Carriage State").forceSetString(getCurrentState() + "");
     return false;
+
   } 
 
   private void isKicking(double pNow)
