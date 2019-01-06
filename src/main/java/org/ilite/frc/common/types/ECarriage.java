@@ -1,15 +1,17 @@
 package org.ilite.frc.common.types;
 
-public enum ECarriage {
+import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.codex.CodexOf;
+import org.ilite.frc.robot.modules.Carriage;
 
-    RESET,
-    GRAB_CUBE,
-    KICKING;
+public enum ECarriage implements CodexOf<Double> {
 
+    CURRENT_STATE, HEIGHT, CLOSED;
 
-    private void set() {
+    public static void map( Codex<Double, ECarriage> pCodex, Carriage mCarriage ) {
+        pCodex.reset();
     }
 
-
-
 }
+
+

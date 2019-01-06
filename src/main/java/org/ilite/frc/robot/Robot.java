@@ -282,7 +282,4 @@ public class Robot extends IterativeRobot {
 //    System.out.println(getAutonomous.getAutonomousCommands());
   }
   
-  
-  
-  
 }

@@ -1,0 +1,70 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-IMU<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.common.sensors.IMU",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-AutonConfigDisplay<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.auton.AutonConfigDisplay",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DisplayApplication<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.frclog.display.DisplayApplication",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DriverHUD<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.frclog.display.DriverHUD",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-NetworkTablesDisplay<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.frclog.display.NetworkTablesDisplay",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-NetworkTest<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.frclog.display.NetworkTest",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-NetworkTablesDisplay<FRC-Robot-2018>(1)",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.display.frclog.networktable.NetworkTablesDisplay",
+            "projectName": "FRC-Robot-2018"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SourceTestMain<FRC-Robot-2018>",
+            "request": "launch",
+            "mainClass": "org.ilite.frc.robot.SourceTestMain",
+            "projectName": "FRC-Robot-2018"
+        }
+    ]
+}

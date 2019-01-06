@@ -18,11 +18,11 @@ public class Data {
   public final Codex<Double, EDriveTrain> drivetrain = new Codex<>(EDriveTrain.class);
   public final Codex<Double, ECubeTarget> vision = new Codex<>(ECubeTarget.class);
   public final Codex<Double, EElevator> elevator = new Codex<>(EElevator.class);
-  public final Codex<Double, ECarriage> carriage = new Codex<>( ECarriage.class );
+  public final Codex<Double, ECarriage> carriage = new Codex<>(ECarriage.class);
   public final List<Codex<Double, ETalonSRX>> talons = new ArrayList<>();
   
   private final Codex<?,?>[] all = {
-    driverinput,operator,pdp,pigeon,drivetrain,vision
+    driverinput,operator,pdp,pigeon,drivetrain,vision,carriage
   };
   
   Data() {

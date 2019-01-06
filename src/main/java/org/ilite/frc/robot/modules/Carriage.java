@@ -101,6 +101,7 @@ public class Carriage implements IModule{
   public void initialize(double pNow) {
     isScheduled = false;
     mDesiredState = mCurrentState = getBeamBreak() ? CarriageState.GRAB_CUBE : CarriageState.RESET;
+    // SystemSettings.LOGGING_TABLE.putString(  )
   }
   @Override
   public boolean update(double pNow)
@@ -109,10 +110,13 @@ public class Carriage implements IModule{
       // If we have a cube and we aren't overriding the beam break, grab the cube
       if(getBeamBreak() && mDesiredState == null) setCurrentState(CarriageState.GRAB_CUBE);
       // If we haven't already set the desired state, set it
-      if(mDesiredState != null) {
-        mCurrentState = mDesiredState; 
+      if (mDesiredState != null) {
+        mCurrentState = mDesiredState;
         mDesiredState = null; // Reset our desired state
       }
+      
+      
+
     }
     //cycles through enum states
     switch(mCurrentState)

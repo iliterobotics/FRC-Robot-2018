@@ -60,9 +60,9 @@ public class DriverHUD extends Application {
         HashSet<String> inputs = new HashSet<>(  );
         ArrayList<KeyButtons> registered = new ArrayList<>(  );
 
-        scene.setOnKeyPressed( e -> inputs.add( e.getCode().toString() ));
+        // scene.setOnKeyPressed( e -> inputs.add( e.getCode().toString() ));
 
-        scene.setOnKeyReleased( e -> inputs.remove( e.getCode().toString() ) );
+        // scene.setOnKeyReleased( e -> inputs.remove( e.getCode().toString() ) );
 
         registered.add( yKey );
 
@@ -70,37 +70,6 @@ public class DriverHUD extends Application {
 
         new AnimationTimer() {
             public void handle( long currentNanoTime ) {
-
-                if ( inputs.contains( "A" ) && !registered.contains( aKey ) ) {
-                    registered.add( aKey );
-                } else if ( !inputs.contains( "A" ) ){
-                    registered.remove( aKey );
-                }
-
-                if ( inputs.contains( "B" ) && !registered.contains( bKey ) ) {
-                    registered.add( bKey );
-                } else if ( !inputs.contains( "B" ) ){
-                    registered.remove( bKey );
-                }
-
-                if ( inputs.contains( "X" ) && !registered.contains( xKey ) ) {
-                    registered.add( xKey );
-                } else if ( !inputs.contains( "X" ) ){
-                    registered.remove( xKey );
-                }
-
-//                if ( inputs.contains( "Y" ) && !registered.contains( yKey )) {
-//                    registered.add( yKey );
-//                } else if ( !inputs.contains( "Y" ) ) {
-//                    registered.remove( yKey );
-//                }
-
-
-                System.out.println( inputs.toString() );
-                gc.clearRect( 0, 0, canvas.getWidth(), canvas.getHeight() );
-                for ( int i = 0; i < registered.size(); i++ ) {
-                    gc.drawImage( registered.get( i ).getImage(), canvas.getWidth() * ( ( ( i )/ ( ( double )registered.size() ) ) ), canvas.getHeight()/2  );
-                }
 
             }
         }.start();
