@@ -81,7 +81,8 @@ public class DriverHUD extends Application {
     }
 
     public static void main(String[] args) {
-        System.out.println( SystemSettings.LOGGING_TABLE.getEntry("Carriage State") );
+      //TODO: Make more "professional"
+        while(true)System.out.println( SystemSettings.LOGGING_TABLE.getInstance().getEntry("Carriage State").getString("heck.") );
         // launch( args );
     }
 

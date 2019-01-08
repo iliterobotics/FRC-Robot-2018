@@ -106,6 +106,9 @@ public class Carriage implements IModule{
   @Override
   public boolean update(double pNow)
   {
+    SystemSettings.LOGGING_TABLE.getInstance().getEntry("Carriage State").setString(getCurrentState() + "");
+    //TODO: Get rid of print statement
+    System.out.println(getCurrentState() + "");
     if(mCurrentState != CarriageState.KICKING) {
       // If we have a cube and we aren't overriding the beam break, grab the cube
       if(getBeamBreak() && mDesiredState == null) setCurrentState(CarriageState.GRAB_CUBE);
