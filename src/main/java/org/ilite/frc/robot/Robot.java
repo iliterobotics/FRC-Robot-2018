@@ -102,7 +102,7 @@ public class Robot extends IterativeRobot {
   	mLedController = new LEDControl(mIntake, mElevator, mCarriage, mHardware);
   	getAutonomous = new GetAutonomous(SystemSettings.AUTON_TABLE, mIntake, mElevator, mCarriage, mHardware.getPigeon(), mDrivetrain, mData);
   	System.out.println("Modules instantiateds");
-  	Logger.setLevel(ELevel.DEBUG);
+    System.out.println("VISIONSNNSNSNSDN");
   }
 
   public void robotInit() {
