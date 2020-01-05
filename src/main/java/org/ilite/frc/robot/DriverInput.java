@@ -100,9 +100,9 @@ public class DriverInput implements IModule{
 	private void updateDriveTrain() {
 		double desiredLeftOutput, desiredRightOutput;
 	  
-		double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+		double rotate = (mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS)) * SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
 		rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-		double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+		double throttle = (-mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) * SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
 //		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
 		
 //		if(mElevatorModule.decelerateHeight())
